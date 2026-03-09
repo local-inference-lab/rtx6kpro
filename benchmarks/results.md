@@ -221,12 +221,31 @@ KV cache capacity with `--mem-fraction-static 0.92`: 314,304 tokens total, conte
 
 ## MiniMax-M2.5 Benchmarks
 
-4x RTX 6000 Pro:
+### Single-Stream Decode Speed
 
-| Quant | Engine | Concurrency | Decode tok/s |
-|:-----:|:------:|:-----------:|:------------:|
-| FP8 | vLLM | 1 | 74-76 |
-| NVFP4 (2 GPUs) | -- | 1 | Competes well with FP8 on 4 GPUs |
+| GPUs | Quant | Engine | Decode tok/s | Notes |
+|:----:|:-----:|:------:|:------------:|-------|
+| 1× | REAP NVFP4 | SGLang | ~70 | luke, pruned 139B model |
+| 2× | NVFP4 | SGLang | 85-89 | Festr, destroyed |
+| 2× | NVFP4 | vLLM | ~85 | Festr, TP2 |
+| 2× | AWQ | vLLM | ~114 (low ctx) | Marky, faster at low context |
+| 2× | AWQ | vLLM | ~50 (130K+ ctx) | Marky, slower at high context |
+| 4× | FP8 | SGLang | ~71 | Ixtrix, defaults |
+| 4× | FP8 | vLLM | ~81 (20K ctx) | chisleu |
+| 8× | FP8 (EP) | SGLang | ~86 | CyySky, tuned MoE kernels |
+
+### Concurrency (AWQ, 2× GPUs, vLLM, Marky)
+
+| Metric | Value |
+|--------|-------|
+| Output throughput (64 concurrent) | 930 tok/s |
+| Peak output throughput | 1551 tok/s |
+| Mean TTFT | 340 ms |
+| Mean TPOT | 56 ms |
+
+### Key Finding: NVFP4 2× vs FP8 4×
+
+At high concurrency with 500W power limit, NVFP4 on 2× GPUs nearly matches FP8 on 4× GPUs at 300W — strong value proposition for 2-GPU builds.
 
 ### Wattage Scaling (MiniMax-M2.5 NVFP4, 4 cards)
 
@@ -250,13 +269,15 @@ KV cache capacity with `--mem-fraction-static 0.92`: 314,304 tokens total, conte
 | Kimi K2.5 | 8x | INT4 | SGLang | No (no MTP) | 101 |
 | Kimi K2.5 | 8x | INT4 | vLLM | No | 90 |
 | GLM-5 | 8x | NVFP4 | SGLang | MTP | ~100 |
-| MiniMax-M2.5 | 4x | FP8 | vLLM | No | 76 |
+| MiniMax-M2.5 | 2x | NVFP4 | SGLang | No | 85-89 |
+| MiniMax-M2.5 | 2x | AWQ | vLLM | No | 114 (low ctx) |
+| MiniMax-M2.5 | 4x | FP8 | SGLang | No | 71 |
 
 ### Model Sizing Guide
 
 | GPUs | NVFP4 Models | FP8 Models |
 |:----:|:-------------|:-----------|
-| 1x 96GB | Qwen3.5-27B | -- |
+| 1x 96GB | Qwen3.5-27B, MiniMax-M2.5-REAP NVFP4 | -- |
 | 2x 96GB | MiniMax-M2.5 NVFP4, Qwen3.5-122B NVFP4 | -- |
 | 4x 96GB | Qwen3.5-397B NVFP4, GLM-4.7 NVFP4, MiniMax-M2.5 FP8 | MiniMax-M2.5 FP8 |
 | 6x 96GB | GLM-5 NVFP4 (TP2 PP3) | -- |

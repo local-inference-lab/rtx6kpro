@@ -11,7 +11,6 @@
 - [Docker Images](#docker-images)
 - [SGLang Launch Commands](#sglang-launch-commands)
 - [MTP / Speculative Decoding](#mtp--speculative-decoding)
-- [Required Patches for glm5-blackwell Docker](#required-patches-for-glm5-blackwell-docker)
 - [FlashInfer CUTLASS Race Condition Fix](#flashinfer-cutlass-race-condition-fix)
 - [Power Consumption](#power-consumption)
 - [Benchmark Results](#benchmark-results)
@@ -212,7 +211,7 @@ docker run -it --rm \
 | Image | Notes |
 |---|---|
 | `lmsysorg/sglang:dev-cu13` | Official SGLang nightly, CUDA 13.0. Needs `pip install --upgrade transformers` inside. |
-| `lmsysorg/sglang:glm5-blackwell` | Official GLM5-specific image. Built for SM90/SM100 -- **broken on SM120 without patches** (see patches section). |
+| `lmsysorg/sglang:glm5-blackwell` | Official GLM5-specific image. Built for SM90/SM100 -- **broken on SM120**, use `voipmonitor` or `dev-cu13` instead. |
 | `voipmonitor/llm-pytorch-blackwell:nightly-fp4-prezero` | Experimental build with FlashInfer pre-zero fix. |
 
 ### Patching the official dev-cu13 image (orangezed's Dockerfile)
@@ -424,41 +423,6 @@ MTP roughly **doubles throughput** over the non-MTP baseline:
 
 ---
 
-## Required Patches for glm5-blackwell Docker
-
-If using the official `lmsysorg/sglang:glm5-blackwell` image (built for SM90/SM100), three patches are required for SM120:
-
-### Patch 1: server_args.py
-
-Forces KV cache dtype to bfloat16 for DSA on SM120. Overrides NSA prefill backend from `flashmla_sparse` to `flashinfer`. Overrides NSA decode backend from `trtllm` to `flashinfer`.
-
-Target: `/usr/local/lib/python3.12/dist-packages/sglang/srt/server_args.py`
-
-### Patch 2: nsa_backend.py
-
-Wraps `deep_gemm.get_paged_mqa_logits_metadata()` in try/except. Falls back to None metadata on SM120, forcing the FlashInfer path.
-
-Target: `/usr/local/lib/python3.12/dist-packages/sglang/srt/layers/attention/nsa_backend.py`
-
-### Patch 3: nsa_indexer.py
-
-Adds SM120 detection for dynamic head_dim with bfloat16 KV cache.
-
-Target: `/usr/local/lib/python3.12/dist-packages/sglang/srt/layers/attention/nsa_indexer.py`
-
-Full patch scripts are available in the deployment guide: `glm-5/images/1478868208835629201_GLM5_NVFP4_Blackwell_deployment_guide.md`
-
-### DeepGemm scale fix
-
-For NVFP4 on SM120, the DeepGemm scale format detection is wrong. NVFP4 uses `float8_e4m3fn` scales, not `ue8m0`. The hardcoded `True` causes NaN:
-
-```bash
-sed -i "s/DEEPGEMM_SCALE_UE8M0 = DEEPGEMM_BLACKWELL/DEEPGEMM_SCALE_UE8M0 = False/" \
-    /sgl-workspace/sglang/python/sglang/srt/layers/deep_gemm_wrapper/configurer.py
-```
-
----
-
 ## FlashInfer CUTLASS Race Condition Fix
 
 A race condition in the FlashInfer CUTLASS FP4 GEMM kernel produces NaN values, causing crashes.
@@ -638,7 +602,7 @@ torch.AcceleratorError: CUDA error: device-side assert triggered
 RuntimeError: Assertion error (attention.hpp:159): Unsupported architecture
 ```
 
-**Fix:** Override to FlashInfer backend. Set `nsa_prefill_backend = "flashinfer"` and `nsa_decode_backend = "flashinfer"` (see patches section).
+**Fix:** Override to FlashInfer backend. Set `nsa_prefill_backend = "flashinfer"` and `nsa_decode_backend = "flashinfer"` in server_args.py, or use `voipmonitor/llm-pytorch-blackwell:nightly` which includes this fix.
 
 ### Error 5: vLLM "No valid attention backend found"
 

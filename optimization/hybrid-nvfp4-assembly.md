@@ -1,14 +1,51 @@
-# Hybrid NVFP4 Assembly: BF16 Shared Expert
+# Hybrid NVFP4 Assembly: BF16 Sensitive Layers
 
-Replace the NVFP4-quantized shared expert in NVIDIA's checkpoint with full-precision BF16 weights from the original model. The shared expert runs on **every token** (unlike routed experts where only 10/512 activate), so its precision has outsized impact on output quality.
+Replace quality-sensitive layers in an NVFP4 checkpoint with full-precision BF16 weights from the original model. **No SGLang patches required** — layer exclusion is handled entirely through `config.json` ignore patterns.
 
-## What Changes vs Pure NVIDIA NVFP4
+## Layers Worth Keeping in BF16
 
-Only the shared expert weights change. Everything else is identical to `nvidia/Qwen3.5-397B-A17B-NVFP4`.
+| Layer | Why | VRAM cost |
+|-------|-----|-----------|
+| **Shared expert** (1/layer, 60 layers) | Runs on **every token** (unlike routed experts where 10/512 activate). Precision has outsized quality impact. | +1 GB (+0.4%) |
+| **Layer 0 routed experts** (512 experts) | First layer — sets the representation for all subsequent layers. Quality-sensitive. | +3 GB (+1.3%) |
 
-| Component | NVIDIA NVFP4 | Hybrid | Changed? |
-|-----------|-------------|--------|----------|
-| Routed experts (512/layer, 60 layers) | NVFP4 (uint8 packed) | NVFP4 (uint8 packed) | No |
+Both combined: ~237 GB vs 233 GB (+4 GB, +1.7%).
+
+## How It Works: config.json Ignore Patterns
+
+SGLang's `modelopt_fp4` quantization reads the `ignore` list from `config.json` → `quantization_config` section. Any layer matching an ignore pattern is loaded as unquantized BF16 instead of NVFP4.
+
+The key patterns:
+
+```json
+{
+  "quantization_config": {
+    "ignore": [
+      "*.mlp.shared_expert.*",
+      "*.layers.0.mlp.experts*",
+      "..."
+    ]
+  }
+}
+```
+
+**How pattern matching works internally:**
+
+1. SGLang reads `quantization_config.ignore` from `config.json` (takes priority over `hf_quant_config.json`)
+2. `ModelOptFp4Config.from_config()` stores them as `exclude_modules`
+3. `_get_quant_method()` calls `is_layer_excluded(prefix)` for each layer
+4. Patterns are converted from glob to regex: `*.mlp.shared_expert.*` → `.*\.mlp\.shared_expert\..*`
+5. For `LinearBase` layers (shared expert): returns `UnquantizedLinearMethod()` — loads as BF16
+6. For `FusedMoE` layers (layer 0 experts): returns `None` → falls back to `UnquantizedFusedMoEMethod` — allocates full BF16 buffers
+
+**Important:** The prefix SGLang sees is `model.layers.X.mlp...` (without `language_model`), so patterns must use wildcards like `*.layers.0.mlp.experts*` rather than full HuggingFace paths. The `model.language_model.layers.X...` patterns from the original checkpoint's ignore list only work for `LinearBase` layers because `is_layer_excluded` also does part-by-part matching.
+
+## What Changes vs Pure NVFP4
+
+| Component | NVFP4 | Hybrid | Changed? |
+|-----------|-------|--------|----------|
+| Routed experts layers 1-59 (512/layer) | NVFP4 (uint8 packed) | NVFP4 (uint8 packed) | No |
+| **Routed experts layer 0** (512 experts) | **NVFP4 (uint8 packed)** | **BF16 (full precision)** | **Yes** |
 | **Shared expert (1/layer, 60 layers)** | **NVFP4 (uint8 packed)** | **BF16 (full precision)** | **Yes** |
 | Router / gate | BF16 | BF16 | No |
 | Self-attention (15 layers) | BF16 | BF16 | No |
@@ -17,32 +54,10 @@ Only the shared expert weights change. Everything else is identical to `nvidia/Q
 | Layer norms | BF16 | BF16 | No |
 | Embeddings + lm_head | BF16 | BF16 | No |
 
-**Size impact:** 234 GB vs 233 GB (+1 GB). The shared expert is only ~0.19% of total model parameters.
-
-## NVIDIA NVFP4 Quantization Breakdown
-
-For reference, here's what NVIDIA quantized and what they left in BF16:
-
-**NVFP4 (quantized):**
-- Routed expert weights — gate_proj, up_proj, down_proj x 512 experts x 60 layers (370,176 tensors)
-- Shared expert weights — gate_proj, up_proj, down_proj x 60 layers (723 tensors including scales)
-
-**FP8:**
-- KV cache scales (k_scale, v_scale) — 30 tensors for the 15 full-attention layers
-
-**BF16 (untouched by NVIDIA):**
-- Router / gate (61 tensors)
-- Shared expert gate (61 tensors)
-- Self-attention layers (126 tensors)
-- Linear attention / GatedDeltaNet layers (405 tensors)
-- Layer norms (236 tensors)
-- Embeddings (4 tensors)
-- lm_head (1 tensor)
-
 ## Prerequisites
 
-- HuggingFace access to both models (accept gated model agreements):
-  - `nvidia/Qwen3.5-397B-A17B-NVFP4` (~233 GB)
+- HuggingFace access to both models:
+  - `lukealonso/Qwen3.5-397B-A17B-NVFP4` (~233 GB) — or `nvidia/Qwen3.5-397B-A17B-NVFP4`
   - `Qwen/Qwen3.5-397B-A17B` (~752 GB BF16)
 - Both models downloaded to HF cache (`~/.cache/huggingface/hub/`)
 - Python packages: `torch`, `safetensors`, `huggingface_hub`
@@ -51,11 +66,22 @@ For reference, here's what NVIDIA quantized and what they left in BF16:
 
 ## Step 1: Assemble the Hybrid Checkpoint
 
+The assembly script takes:
+- Routed expert NVFP4 weights (layers 1-59) from the NVFP4 checkpoint
+- Routed expert BF16 weights (layer 0) from the original model
+- Shared expert BF16 weights (all layers) from the original model
+- KV cache FP8 scales from the NVFP4 checkpoint
+- Everything else (attention, norms, router, embeddings) from the original BF16 model
+
 Save as `assemble_hybrid.py` and run:
 
 ```python
 #!/usr/bin/env python3
-"""Assemble hybrid NVFP4 model: shared expert BF16, everything else from NVIDIA NVFP4."""
+"""Assemble hybrid NVFP4 model with BF16 sensitive layers.
+
+Layer 0 routed experts + all shared experts kept in BF16.
+Everything else from the NVFP4 source checkpoint.
+"""
 
 import json
 import os
@@ -75,20 +101,31 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
                     handlers=[logging.StreamHandler(sys.stdout)])
 logger = logging.getLogger(__name__)
 
-NVFP4_MODEL = "nvidia/Qwen3.5-397B-A17B-NVFP4"
-BF16_MODEL = "Qwen/Qwen3.5-397B-A17B"
+NVFP4_MODEL = os.environ.get("NVFP4_MODEL", "lukealonso/Qwen3.5-397B-A17B-NVFP4")
+BF16_MODEL = os.environ.get("BF16_MODEL", "Qwen/Qwen3.5-397B-A17B")
 HF_TOKEN = os.environ.get("HF_TOKEN", "")
-OUTPUT_DIR = Path("./hybrid-nvfp4")
+OUTPUT_DIR = Path(os.environ.get("OUTPUT_DIR", "./hybrid-nvfp4"))
+
+# Layers whose routed experts stay in BF16
+BF16_EXPERT_LAYERS = {0}
+
+
+def get_layer_num(key: str) -> int | None:
+    m = re.search(r"layers\.(\d+)\.", key)
+    return int(m.group(1)) if m else None
 
 
 def classify_key(key: str) -> str:
     """Classify tensor key to determine source model.
 
-    Returns: 'nvfp4_expert', 'nvfp4_kv', 'bf16_shared', 'bf16'
+    Returns: 'nvfp4_expert', 'bf16_expert', 'bf16_shared', 'nvfp4_kv', 'bf16'
     """
+    layer = get_layer_num(key)
     if key.endswith(".k_scale") or key.endswith(".v_scale"):
         return "nvfp4_kv"
     if ".mlp.experts." in key and ".shared_expert" not in key:
+        if layer is not None and layer in BF16_EXPERT_LAYERS:
+            return "bf16_expert"
         return "nvfp4_expert"
     if ".mlp.shared_expert." in key and ".shared_expert_gate" not in key:
         return "bf16_shared"
@@ -113,20 +150,28 @@ def main():
     for key in nvfp4_wm:
         cat = classify_key(key)
         if cat in ("nvfp4_expert", "nvfp4_kv"):
-            # Routed experts + KV scales from NVIDIA
             plan[key] = {"source": "nvfp4", "file": nvfp4_wm[key], "category": cat}
+        elif cat == "bf16_expert":
+            # Skip ALL NVFP4 tensors for BF16 expert layers (weights + scales)
+            # BF16 originals will be added from bf16_wm below
+            pass
         elif cat == "bf16_shared":
-            # Shared expert: only .weight from BF16 (skip NVFP4 scale tensors)
             if key.endswith(".weight"):
                 if key in bf16_wm:
                     plan[key] = {"source": "bf16", "file": bf16_wm[key], "category": cat}
             # else: skip .weight_scale, .weight_scale_2, .input_scale
         else:
-            # Everything else (attention, norms, router, embeddings, lm_head)
             if key in bf16_wm:
                 plan[key] = {"source": "bf16", "file": bf16_wm[key], "category": cat}
             elif not any(key.endswith(s) for s in (".input_scale", ".weight_scale", ".weight_scale_2")):
                 plan[key] = {"source": "nvfp4", "file": nvfp4_wm[key], "category": "nvfp4_fallback"}
+
+    # Add BF16 expert tensors for BF16_EXPERT_LAYERS from original model
+    for key in bf16_wm:
+        layer = get_layer_num(key)
+        if layer is not None and layer in BF16_EXPERT_LAYERS:
+            if ".mlp.experts." in key and ".shared_expert" not in key:
+                plan[key] = {"source": "bf16", "file": bf16_wm[key], "category": "bf16_expert"}
 
     # Summary
     by_cat = defaultdict(int)
@@ -138,7 +183,6 @@ def main():
     logger.info("By category: %s", dict(by_cat))
     logger.info("Total tensors: %d", len(plan))
 
-    # Collect needed source files
     nvfp4_files = {info["file"] for key, info in plan.items() if info["source"] == "nvfp4"}
     bf16_files = {info["file"] for key, info in plan.items() if info["source"] == "bf16"}
     logger.info("Need %d NVFP4 shards, %d BF16 shards", len(nvfp4_files), len(bf16_files))
@@ -165,7 +209,6 @@ def main():
         current_shard_bytes = 0
         shard_idx += 1
 
-    # Process NVFP4 tensors
     for nvf in sorted(nvfp4_files):
         logger.info("Processing NVFP4 shard: %s", nvf)
         local = hf_hub_download(NVFP4_MODEL, nvf, token=HF_TOKEN)
@@ -178,7 +221,6 @@ def main():
                     if current_shard_bytes >= MAX_SHARD_BYTES:
                         flush_shard()
 
-    # Process BF16 tensors
     for bf in sorted(bf16_files):
         logger.info("Processing BF16 shard: %s", bf)
         local = hf_hub_download(BF16_MODEL, bf, token=HF_TOKEN)
@@ -193,7 +235,7 @@ def main():
 
     flush_shard()
 
-    # Fix shard names (replace XXXXX with actual count)
+    # Fix shard names
     total_shards = shard_idx
     final_wm = {}
     for key, sn in weight_map.items():
@@ -204,11 +246,10 @@ def main():
         if old.exists():
             old.rename(new)
 
-    # Write index
     with open(OUTPUT_DIR / "model.safetensors.index.json", "w") as f:
         json.dump({"metadata": {}, "weight_map": final_wm}, f, indent=2)
 
-    # Copy config files from NVIDIA checkpoint
+    # Copy config files from NVFP4 checkpoint
     for cfg in ["config.json", "generation_config.json", "tokenizer.json",
                 "tokenizer_config.json", "vocab.json", "preprocessor_config.json",
                 "processor_config.json", "video_preprocessor_config.json",
@@ -230,73 +271,87 @@ if __name__ == "__main__":
 Run:
 
 ```bash
-HF_TOKEN=hf_your_token python3 assemble_hybrid.py
+HF_TOKEN=hf_your_token \
+NVFP4_MODEL=lukealonso/Qwen3.5-397B-A17B-NVFP4 \
+OUTPUT_DIR=./hybrid-nvfp4 \
+python3 assemble_hybrid.py
 ```
 
-Takes ~2 minutes if both models are already in HF cache. Output: ~234 GB, ~47 shards, ~371K tensors.
+Takes ~2 minutes if both models are already in HF cache.
 
-## Step 2: Patch SGLang
+## Step 2: Add Ignore Patterns to config.json
 
-SGLang's `modelopt_fp4` loader will try to load shared expert weights as NVFP4 (expecting uint8 packed tensors with scale factors). Since our hybrid has BF16 shared expert weights, we need to tell SGLang to load them as unquantized.
-
-Edit `sglang/srt/layers/quantization/modelopt_quant.py`, find the `_get_quant_method` method in the `ModelOptFp4Config` class, and add the shared_expert check:
-
-```python
-def _get_quant_method(
-    self,
-    layer: torch.nn.Module,
-    prefix: str,
-    *,
-    Linear: type[LinearMethodBase],
-    Moe: type[FusedMoEMethodBase],
-) -> Optional[QuantizeMethodBase]:
-    from sglang.srt.layers.linear import LinearBase
-    from sglang.srt.layers.moe.fused_moe_triton import FusedMoE
-
-    if isinstance(layer, LinearBase):
-        # Hybrid NVFP4: keep shared_expert in BF16
-        if '.shared_expert.' in prefix and '.shared_expert_gate' not in prefix:
-            return UnquantizedLinearMethod()
-        if is_layer_skipped(
-            prefix, self.exclude_modules, self.packed_modules_mapping
-        ) or self.is_layer_excluded(prefix):
-            return UnquantizedLinearMethod()
-        return Linear(self)
-    elif self.kv_cache_quant_algo and isinstance(layer, RadixAttention):
-        return ModelOptFp8KVCacheMethod(self)
-    elif isinstance(layer, FusedMoE):
-        if self.is_layer_excluded(prefix):
-            return None
-        return Moe(self)
-    return None
-```
-
-The key addition is lines 12-13: any `LinearBase` layer with `.shared_expert.` in its prefix (but not `.shared_expert_gate`) is forced to `UnquantizedLinearMethod()`, bypassing NVFP4 dequantization.
-
-### Applying the patch
+After assembly, add the BF16 layer patterns to `config.json`'s `quantization_config.ignore` list. This tells SGLang to load these layers as unquantized BF16 instead of NVFP4.
 
 ```bash
-# Inside your SGLang container:
-QUANT_FILE="/opt/sglang/python/sglang/srt/layers/quantization/modelopt_quant.py"
+python3 << 'PYEOF'
+import json
 
-# One-liner sed patch (adds the shared_expert check before the is_layer_skipped check):
-python3 -c "
-content = open('$QUANT_FILE').read()
-old = '''        if isinstance(layer, LinearBase):
-            if is_layer_skipped('''
-new = '''        if isinstance(layer, LinearBase):
-            # Hybrid NVFP4: keep shared_expert in BF16
-            if '.shared_expert.' in prefix and '.shared_expert_gate' not in prefix:
-                return UnquantizedLinearMethod()
-            if is_layer_skipped('''
-assert old in content, 'Patch target not found - SGLang version may differ'
-content = content.replace(old, new)
-open('$QUANT_FILE', 'w').write(content)
-print('Patch applied successfully')
-"
+with open("./hybrid-nvfp4/config.json") as f:
+    config = json.load(f)
+
+qc = config["quantization_config"]
+ignore = list(qc.get("ignore", []))
+
+# Shared expert: glob pattern matches all layers
+# Regex: .*\.mlp\.shared_expert\..* → matches model.layers.X.mlp.shared_expert.gate_proj etc.
+if "*.mlp.shared_expert.*" not in ignore:
+    ignore.insert(ignore.index("lm_head") + 1 if "lm_head" in ignore else 0,
+                  "*.mlp.shared_expert.*")
+
+# Layer 0 routed experts: matches the FusedMoE prefix model.layers.0.mlp.experts
+# When is_layer_excluded returns True for FusedMoE, it falls back to UnquantizedFusedMoEMethod
+if "*.layers.0.mlp.experts*" not in ignore:
+    ignore.insert(ignore.index("*.mlp.shared_expert.*") + 1,
+                  "*.layers.0.mlp.experts*")
+
+qc["ignore"] = ignore
+config["quantization_config"] = qc
+
+with open("./hybrid-nvfp4/config.json", "w") as f:
+    json.dump(config, f, indent=2)
+
+# Also update hf_quant_config.json for consistency
+import os
+hf_path = "./hybrid-nvfp4/hf_quant_config.json"
+if os.path.exists(hf_path):
+    with open(hf_path) as f:
+        hf_config = json.load(f)
+    hf_ignore = list(hf_config.get("ignore", []))
+    for pat in ["*.mlp.shared_expert.*", "*.layers.0.mlp.experts*"]:
+        if pat not in hf_ignore:
+            hf_ignore.insert(0, pat)
+    hf_config["ignore"] = hf_ignore
+    with open(hf_path, "w") as f:
+        json.dump(hf_config, f, indent=2)
+
+print("Done. Ignore patterns added.")
+PYEOF
+```
+
+### Verify the config
+
+The `quantization_config.ignore` list should start with:
+
+```json
+{
+  "quantization_config": {
+    "ignore": [
+      "lm_head",
+      "*.mlp.shared_expert.*",
+      "*.layers.0.mlp.experts*",
+      "model.language_model.layers.0.linear_attn*",
+      "..."
+    ],
+    "quant_algo": "NVFP4",
+    "kv_cache_scheme": { "dynamic": false, "num_bits": 8, "type": "float" }
+  }
+}
 ```
 
 ## Step 3: Launch SGLang
+
+No patches needed. SGLang reads `config.json` → `quantization_config` → `ignore` list and handles everything natively.
 
 ```bash
 SGLANG_ENABLE_SPEC_V2=True python3 -m sglang.launch_server \
@@ -309,7 +364,7 @@ SGLANG_ENABLE_SPEC_V2=True python3 -m sglang.launch_server \
   --kv-cache-dtype fp8_e4m3 \
   --trust-remote-code \
   --attention-backend triton \
-  --moe-runner-backend flashinfer_cutlass \
+  --moe-runner-backend cutlass \
   --fp4-gemm-backend flashinfer_cudnn \
   --cuda-graph-max-bs 4 \
   --max-running-requests 4 \
@@ -328,12 +383,55 @@ SGLANG_ENABLE_SPEC_V2=True python3 -m sglang.launch_server \
 
 You will see "not found in params_dict" warnings during loading — these are normal (TP sharding: each rank only loads 1/4 of experts, warnings appear for experts assigned to other ranks).
 
-## Why Not BF16 Routed Experts on Layers 0 and 59?
+### Requires
 
-We tested keeping routed experts on layers 0 (first) and 59 (last, affects logits) in BF16. These are the most quality-sensitive layers. However, SGLang's `FusedMoE` layer requires uniform tensor format across all experts — mixing NVFP4 packed (uint8, half-size) with BF16 (full-size) within the same FusedMoE causes shape mismatches at load time.
+```bash
+pip install nvidia-cudnn-cu13==9.19.1.2  # for flashinfer_cudnn backend
+```
 
-Making this work would require patching SGLang's FusedMoE to handle per-layer format switching, which is significantly more invasive than the shared_expert patch.
+## How SGLang Handles Mixed BF16/NVFP4 Layers
 
-## Why exclude_modules Doesn't Work
+### Shared expert (LinearBase)
 
-SGLang has an `exclude_modules` mechanism in `hf_quant_config.json`, but it doesn't work for shared expert in this model because SGLang's `WeightsMapper` transforms the key prefixes during loading. The prefix seen by `_get_quant_method` doesn't match the patterns in `exclude_modules`. The hardcoded prefix check (`.shared_expert.` in prefix) bypasses this issue entirely.
+Pattern `*.mlp.shared_expert.*` matches prefix `model.layers.X.mlp.shared_expert.gate_proj` via `re.fullmatch`. `_get_quant_method` returns `UnquantizedLinearMethod()` → allocates standard BF16 weight buffers → loads BF16 `.weight` tensors directly (NVFP4 scale tensors are absent and skipped).
+
+### Layer 0 routed experts (FusedMoE)
+
+Pattern `*.layers.0.mlp.experts*` matches prefix `model.layers.0.mlp.experts` via `re.fullmatch`. `_get_quant_method` returns `None` for this FusedMoE layer → SGLang falls back to `UnquantizedFusedMoEMethod` which allocates full BF16 `w13_weight` and `w2_weight` buffers → per-expert BF16 weight tensors load via the standard `weight_loader` with correct TP sharding.
+
+### Config file priority
+
+SGLang reads config in this order:
+1. `config.json` → `quantization_config` section (preferred, via HuggingFace `AutoConfig`)
+2. `hf_quant_config.json` (legacy fallback, only if `quantization_config` is absent from `config.json`)
+
+Both files should have matching ignore lists for consistency, but only `config.json` matters at runtime.
+
+## Choosing What to Keep in BF16
+
+The assembly script uses `BF16_EXPERT_LAYERS = {0}` by default. You can customize:
+
+| Configuration | `BF16_EXPERT_LAYERS` | Pattern to add | VRAM delta |
+|---------------|---------------------|----------------|-----------|
+| Shared expert only | `set()` | `*.mlp.shared_expert.*` | +1 GB |
+| + Layer 0 experts | `{0}` | + `*.layers.0.mlp.experts*` | +4 GB |
+| + Layer 59 experts | `{0, 59}` | + `*.layers.59.mlp.experts*` | +7 GB |
+
+Layer 59 (last layer, directly affects logits) is the next most impactful after layer 0, but adds another ~3 GB.
+
+## Why Not BF16 Routed Experts on All Layers?
+
+512 experts × 60 layers × 3 projections × BF16 would require the full ~752 GB BF16 model. The point of NVFP4 is to fit on 4 GPUs (~96 GB each). Keeping 1-2 layers in BF16 is the sweet spot: minimal VRAM cost, maximum quality impact on the most sensitive positions in the network.
+
+## NVIDIA vs lukealonso Source Checkpoint
+
+Both work as the NVFP4 source. Key difference:
+
+| Property | nvidia | lukealonso |
+|----------|--------|------------|
+| Shared expert | NVFP4 | **BF16 already** (no assembly needed for shared expert) |
+| KV cache scales | Calibrated FP8 | Calibrated FP8 |
+| `config.json` format | `hf_quant_config.json` only | Both `config.json` + `hf_quant_config.json` |
+| Ignore list | Minimal | Full per-layer patterns (linear_attn, self_attn, shared_expert_gate) |
+
+**Recommendation:** Use `lukealonso/Qwen3.5-397B-A17B-NVFP4` — it already has shared expert in BF16 and proper ignore patterns in `config.json`. You only need to add `*.layers.0.mlp.experts*` for layer 0 BF16 and assemble the layer 0 weights from the original model.

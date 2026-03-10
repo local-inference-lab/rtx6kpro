@@ -74,9 +74,20 @@ The key difference is KV cache calibration:
 
 ## Hybrid NVFP4: BF16 Shared Expert
 
-It's possible to replace the shared expert weights with full-precision BF16 from the original model for improved quality. The shared expert runs on every token (unlike routed experts where 10/512 activate), so its precision has outsized quality impact, while adding only ~1 GB (+0.4%).
+It's possible to replace quality-sensitive layers with full-precision BF16 from the original model. No SGLang patches required — layer exclusion is handled entirely through `config.json` ignore patterns.
 
-See **[Hybrid NVFP4 Assembly Guide](hybrid-nvfp4-assembly.md)** for full instructions including the assembly script and required SGLang patch.
+**What to keep in BF16:**
+- **Shared expert** (all 60 layers): Runs on every token, outsized quality impact. +1 GB (+0.4%).
+- **Layer 0 routed experts** (512 experts): First layer, sets representations for all subsequent layers. +3 GB (+1.3%).
+
+The key is adding glob patterns to `config.json` → `quantization_config` → `ignore`:
+```json
+"ignore": ["*.mlp.shared_expert.*", "*.layers.0.mlp.experts*", "..."]
+```
+
+SGLang's `is_layer_excluded()` converts these to regex and returns `UnquantizedLinearMethod` / `UnquantizedFusedMoEMethod` for matching layers, which allocate BF16 buffers and load weights correctly.
+
+See **[Hybrid NVFP4 Assembly Guide](hybrid-nvfp4-assembly.md)** for the assembly script, config.json setup, and full instructions.
 
 ---
 

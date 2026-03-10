@@ -72,6 +72,14 @@ The key difference is KV cache calibration:
 
 ---
 
+## Hybrid NVFP4: BF16 Shared Expert
+
+It's possible to replace the shared expert weights with full-precision BF16 from the original model for improved quality. The shared expert runs on every token (unlike routed experts where 10/512 activate), so its precision has outsized quality impact, while adding only ~1 GB (+0.4%).
+
+See **[Hybrid NVFP4 Assembly Guide](hybrid-nvfp4-assembly.md)** for full instructions including the assembly script and required SGLang patch.
+
+---
+
 ## Calibration and Quantization Process
 
 ### Using NVIDIA ModelOpt

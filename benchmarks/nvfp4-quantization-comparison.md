@@ -67,14 +67,14 @@ For 8-repeat tests, each repeat was run sequentially (not parallel) to avoid ser
 
 ### Summary Table
 
-| Benchmark | AWQ (QuantTrio) | lukealonso NVFP4 | nvidia NVFP4 | Notes |
-|-----------|----------------|------------------|--------------|-------|
-| **GPQA** (thinking, 8-repeat mean) | **88.40%** ±1.39 | 88.28% ±1.06 | 87.46% ±1.57 | 198 examples, 8 runs, MTP ON |
-| **GSM8K** (thinking) | **99.0%** | **99.0%** | 97.5% | 200 examples, max-tokens 16000 |
-| **Hard Math** (no thinking) | **89.5%** (17/19) | **89.5%** (17/19) | 84.2% (16/19) | 19 custom questions |
-| **KL Divergence** (vs FP8) | **0.024** | 0.035 | 0.109 | 204,800 positions, WikiText-2 |
+| Benchmark | AWQ (QuantTrio) | lukealonso NVFP4 | nvidia NVFP4 | nvidia NVFP4 (vLLM) | Notes |
+|-----------|----------------|------------------|--------------|---------------------|-------|
+| **GPQA** (thinking, 8-repeat mean) | **88.40%** ±1.39 | 88.28% ±1.06 | 87.46% ±1.57 | **88.53%** ±1.92 | 198 examples, 8 runs, MTP ON |
+| **GSM8K** (thinking) | **99.0%** | **99.0%** | 97.5% | — | 200 examples, max-tokens 16000 |
+| **Hard Math** (no thinking) | **89.5%** (17/19) | **89.5%** (17/19) | 84.2% (16/19) | — | 19 custom questions |
+| **KL Divergence** (vs FP8) | **0.024** | 0.035 | 0.109 | — | 204,800 positions, WikiText-2 |
 
-**On GPQA, all three models are statistically indistinguishable** (overlapping 95% CIs, Welch t-test p>0.05 for all pairs). AWQ and lukealonso tie on GSM8K and Hard Math. nvidia is consistently the weakest. AWQ's advantage is clearest in KLD (deterministic, 0.024 vs 0.035 vs 0.109) and throughput (15-38% faster than NVFP4).
+**On GPQA, all four configurations are statistically indistinguishable** (overlapping 95% CIs, Welch t-test p>0.05 for all pairs). nvidia NVFP4 on vLLM (88.53%) scores higher than on SGLang (87.46%), suggesting inference engine matters as much as quantization. AWQ and lukealonso tie on GSM8K and Hard Math. AWQ's clear advantages are in KLD (deterministic, 0.024 vs 0.035 vs 0.109) and throughput (15-38% faster than NVFP4 on SGLang).
 
 ---
 
@@ -127,12 +127,44 @@ For full KLD methodology, reproduction steps, and automation script, see [kld-ev
 | 2 | lukealonso NVFP4 | 88.28% | 88.9, 87.9, 86.9, 88.4, 90.4, 88.4, 87.9, 87.4 | 1.06 | ~24 min |
 | 3 | nvidia NVFP4 | 87.46% | 85.9, 90.4, 85.9, 88.4, 87.9, 85.9, 87.4, 87.9 | 1.57 | ~24 min |
 
-**Statistical significance (Welch t-test, two-tailed):**
-- AWQ vs lukealonso: Δ=+0.12%, t=0.20, p>0.05 — **not significant**
-- AWQ vs nvidia: Δ=+0.94%, t=1.27, p>0.05 — **not significant**
-- lukealonso vs nvidia: Δ=+0.81%, t=1.21, p>0.05 — **not significant**
+### GPQA 8-Repeat Detail (nvidia NVFP4 on vLLM, thinking mode, MTP ON)
 
-95% confidence intervals overlap for all three models: AWQ [87.4–89.4], lukealonso [87.5–89.0], nvidia [86.4–88.5]. With 8 repeats and std ~1.0–1.6, the GPQA benchmark cannot distinguish these quantizations at the 95% confidence level.
+| # | Model | Engine | GPQA Mean | Scores (8 repeats) | Std |
+|---|-------|--------|-----------|---------------------|-----|
+| 1 | nvidia NVFP4 | **vLLM** | **88.53%** | 91.9, 87.9, 89.4, 85.9, 86.4, 88.4, 89.9, 88.4 | 1.92 |
+| 2 | nvidia NVFP4 | SGLang | 87.46% | 85.9, 90.4, 85.9, 88.4, 87.9, 85.9, 87.4, 87.9 | 1.57 |
+
+vLLM server config:
+```bash
+VLLM_LOG_STATS_INTERVAL=1 NCCL_P2P_LEVEL=SYS SAFETENSORS_FAST_GPU=1 \
+python3 -m vllm.entrypoints.openai.api_server \
+  --model nvidia/Qwen3.5-397B-A17B-NVFP4 \
+  --host 0.0.0.0 --port 5199 \
+  --served-model-name Qwen3_5-397B-A17B-NVFP4 \
+  --trust-remote-code \
+  --tensor-parallel-size 4 \
+  --gpu-memory-utilization 0.9 \
+  --max-num-batched-tokens 8192 \
+  --max-num-seqs 128 \
+  --enable-auto-tool-choice \
+  --tool-call-parser qwen3_coder \
+  --reasoning-parser qwen3 \
+  --mm-encoder-tp-mode data \
+  --mm-processor-cache-type shm \
+  --speculative-config '{"method":"qwen3_next_mtp","num_speculative_tokens":2}' \
+  --enable-prefix-caching --enable-chunked-prefill
+```
+
+nvidia NVFP4 scores +1.07% higher on vLLM than SGLang (88.53% vs 87.46%), though the difference is not statistically significant (Welch t=1.22, p>0.05).
+
+**Statistical significance (Welch t-test, two-tailed, all pairs):**
+- AWQ (SGLang) vs lukealonso (SGLang): Δ=+0.12%, t=0.20, p>0.05 — **not significant**
+- AWQ (SGLang) vs nvidia (SGLang): Δ=+0.94%, t=1.27, p>0.05 — **not significant**
+- AWQ (SGLang) vs nvidia (vLLM): Δ=−0.13%, t=0.15, p>0.05 — **not significant**
+- lukealonso (SGLang) vs nvidia (SGLang): Δ=+0.81%, t=1.21, p>0.05 — **not significant**
+- nvidia (vLLM) vs nvidia (SGLang): Δ=+1.07%, t=1.22, p>0.05 — **not significant**
+
+95% confidence intervals overlap for all configurations. With 8 repeats and std ~1.0–1.9, the GPQA benchmark cannot distinguish these quantizations or inference engines at the 95% confidence level.
 
 ### GPQA 8-Repeat Detail (lukealonso & nvidia, MTP OFF)
 
@@ -235,15 +267,15 @@ For full decode + prefill tables across context lengths, see [inference-throughp
 
 ### 1. AWQ (QuantTrio) is the best quantization for Qwen3.5-397B-A17B
 
-| Metric | AWQ | lukealonso NVFP4 | nvidia NVFP4 |
-|--------|-----|------------------|--------------|
-| GPQA (8-repeat mean) | **88.40%** | 88.28% | 87.46% |
-| GSM8K | **99.0%** | **99.0%** | 97.5% |
-| Hard Math | **89.5%** | **89.5%** | 84.2% |
-| KL Divergence | **0.024** | 0.035 | 0.109 |
-| Throughput (C=64) | **1662 tok/s** | 1202 tok/s | — |
+| Metric | AWQ (SGLang) | lukealonso NVFP4 (SGLang) | nvidia NVFP4 (SGLang) | nvidia NVFP4 (vLLM) |
+|--------|-----|------------------|--------------|---------------------|
+| GPQA (8-repeat mean) | **88.40%** | 88.28% | 87.46% | **88.53%** |
+| GSM8K | **99.0%** | **99.0%** | 97.5% | — |
+| Hard Math | **89.5%** | **89.5%** | 84.2% | — |
+| KL Divergence | **0.024** | 0.035 | 0.109 | — |
+| Throughput (C=64) | **1662 tok/s** | 1202 tok/s | — | — |
 
-On task benchmarks (GPQA, GSM8K, Hard Math), AWQ and lukealonso NVFP4 are **statistically equivalent** — the 0.12% GPQA difference is well within noise (Welch t-test p>0.05). AWQ's clear advantages are in **KLD** (0.024 vs 0.035 — 32% closer to FP8 reference) and **throughput** (15-38% faster at all concurrency levels).
+On GPQA, all four configurations are **statistically equivalent** (Welch t-test p>0.05 for all pairs). nvidia NVFP4 on vLLM (88.53%) scores comparably to AWQ on SGLang (88.40%), suggesting inference engine choice can matter as much as quantization method. AWQ's clear advantages are in **KLD** (0.024 vs 0.035 — 32% closer to FP8 reference) and **throughput** (15-38% faster than NVFP4 on SGLang).
 
 ### 2. If NVFP4 is required, use lukealonso over nvidia
 lukealonso NVFP4 trends higher than nvidia NVFP4 across all benchmarks (+0.8% on GPQA, though not statistically significant). The advantage is clear without thinking mode (GSM8K: +5%, Hard Math: +5.3%). nvidia NVFP4 has significant KLD (0.109, 3x worse than lukealonso), consistent with community reports (vLLM Issue #36094).

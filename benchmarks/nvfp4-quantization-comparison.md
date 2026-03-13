@@ -38,7 +38,7 @@
 ### AWQ Server Config
 Same as above but without `--quantization modelopt_fp4` and `--fp4-gemm-backend` (SGLang auto-detects AWQ from checkpoint config).
 
-### MTP-specific flags (only for "MTP ON" tests)
+### MTP-specific flags (speculative decoding)
 ```
 SGLANG_ENABLE_SPEC_V2=True
 --speculative-algo NEXTN
@@ -46,6 +46,20 @@ SGLANG_ENABLE_SPEC_V2=True
 --speculative-eagle-topk 1
 --speculative-num-draft-tokens 6
 ```
+
+### Eval Command
+All GPQA evaluations were run using the same command:
+```bash
+python3 -u -m sglang.test.run_eval \
+  --eval-name gpqa \
+  --model Qwen3.5 \
+  --base-url http://localhost:5000 \
+  --num-examples 198 \
+  --repeat 1 \
+  --thinking-mode qwen3 \
+  --max-tokens 64000
+```
+For 8-repeat tests, each repeat was run sequentially (not parallel) to avoid server overload. Results were collected from 8 independent runs.
 
 ---
 
@@ -55,7 +69,7 @@ SGLANG_ENABLE_SPEC_V2=True
 
 | Benchmark | AWQ (QuantTrio) | lukealonso NVFP4 | nvidia NVFP4 | Notes |
 |-----------|----------------|------------------|--------------|-------|
-| **GPQA** (thinking) | **89.9%** | 88.4% | 87.4% | 198 examples, 1 repeat, MTP ON |
+| **GPQA** (thinking, 8-repeat mean) | **88.40%** | 88.26% | 87.44% | 198 examples, MTP ON |
 | **GSM8K** (thinking) | **99.0%** | **99.0%** | 97.5% | 200 examples, max-tokens 16000 |
 | **Hard Math** (no thinking) | **89.5%** (17/19) | **89.5%** (17/19) | 84.2% (16/19) | 19 custom questions |
 | **KL Divergence** (vs FP8) | **0.024** | 0.035 | 0.109 | 204,800 positions, WikiText-2 |
@@ -99,37 +113,41 @@ nvidia/Qwen3.5-397B-A17B-NVFP4            0.108526     0.027302   0.467703   1.4
 
 nvidia NVFP4 falls into "significant quality loss" territory (0.109), while both AWQ and lukealonso are in the "good" range.
 
+For full KLD methodology, reproduction steps, and automation script, see [kld-evaluation.md](kld-evaluation.md).
+
 ---
 
-## Part 2: Benchmark Results Detail
+## Part 2: GPQA (Graduate-Level Google-Proof Q&A)
 
-### GPQA (Graduate-Level Google-Proof Q&A)
+### GPQA 8-Repeat Detail (all three models, thinking mode, MTP ON)
 
-198 examples, thinking mode enabled.
+| # | Model | GPQA Mean | Scores (8 repeats) | Std | Runtime per repeat |
+|---|-------|-----------|---------------------|-----|--------------------|
+| 1 | **AWQ (QuantTrio)** | **88.40%** | 87.9, 89.9, 88.9, 89.9, 87.4, 89.4, 85.9, 87.9 | 1.389 | ~20 min |
+| 2 | lukealonso NVFP4 | 88.26% | 88.9, 87.9, 86.9, 88.4, 90.4, 88.4, 87.9, 87.4 | 0.332 | ~24 min |
+| 3 | nvidia NVFP4 | 87.44% | 85.9, 90.4, 85.9, 88.4, 87.9, 85.9, 87.4, 87.9 | 0.326 | ~24 min |
 
-| Model | Repeats | Score | Notes |
-|-------|---------|-------|-------|
-| **AWQ (QuantTrio)** | 1 | **89.9%** | MTP ON |
-| lukealonso NVFP4 | 1 | 88.4% | MTP ON, fresh run |
-| lukealonso NVFP4 | 8 (mean) | 88.26% | MTP ON, std 0.332 |
-| lukealonso NVFP4 | 8 (mean) | 87.50% | MTP OFF, std 0.332 |
-| nvidia NVFP4 | 8 (mean) | 87.44% | MTP ON, std 0.326 |
-| nvidia NVFP4 | 8 (mean) | 86.55% | MTP OFF, std 0.314 |
+### GPQA 8-Repeat Detail (lukealonso & nvidia, MTP OFF)
 
-AWQ scores 1.5% higher than lukealonso NVFP4 and 2.5% higher than nvidia NVFP4.
+| # | Model | GPQA Mean | Scores (8 repeats) | Std | Runtime per repeat |
+|---|-------|-----------|---------------------|-----|--------------------|
+| 1 | lukealonso NVFP4 | 87.50% | 86.4, 87.4, 89.4, 86.9, 88.9, 86.4, 87.4, 87.4 | 0.332 | ~30 min |
+| 2 | nvidia NVFP4 | 86.55% | 86.4, 85.9, 86.9, 86.4, 84.8, 86.4, 86.9, 88.9 | 0.314 | ~34 min |
 
-#### GPQA 8-Repeat Detail (lukealonso & nvidia, MTP ON vs OFF)
+### MTP Impact on GPQA (lukealonso & nvidia)
 
-| # | Model | MTP | GPQA Mean | Scores (8 repeats) | Std | Runtime |
-|---|-------|-----|-----------|---------------------|-----|---------|
-| 1 | lukealonso | ON  | **88.26%** | 88.9, 87.9, 86.9, 88.4, 90.4, 88.4, 87.9, 87.4 | 0.332 | ~1h 29m |
-| 2 | lukealonso | OFF | **87.50%** | 86.4, 87.4, 89.4, 86.9, 88.9, 86.4, 87.4, 87.4 | 0.332 | ~1h 48m |
-| 3 | nvidia      | ON  | **87.44%** | 85.9, 90.4, 85.9, 88.4, 87.9, 85.9, 87.4, 87.9 | 0.326 | ~1h 43m |
-| 4 | nvidia      | OFF | **86.55%** | 86.4, 85.9, 86.9, 86.4, 84.8, 86.4, 86.9, 88.9 | 0.314 | ~2h 15m |
+| Model | MTP ON | MTP OFF | Delta |
+|-------|--------|---------|-------|
+| lukealonso | 88.26% | 87.50% | **+0.76%** (within noise) |
+| nvidia | 87.44% | 86.55% | **+0.89%** (within noise) |
 
-### GSM8K (Grade School Math 8K)
+MTP does NOT degrade accuracy — both models score marginally higher with MTP (within statistical noise). MTP provides 18-24% inference speedup.
 
-200 examples, thinking mode, max-tokens 16000.
+---
+
+## Part 3: GSM8K (Grade School Math 8K)
+
+### GSM8K with thinking mode (200 examples, max-tokens 16000)
 
 | Model | Score | Std |
 |-------|-------|-----|
@@ -139,7 +157,7 @@ AWQ scores 1.5% higher than lukealonso NVFP4 and 2.5% higher than nvidia NVFP4.
 
 AWQ and lukealonso tie at 99.0%. nvidia lags at 97.5% with higher variance.
 
-#### GSM8K Without Thinking (5-shot, lukealonso vs nvidia only)
+### GSM8K without thinking (5-shot, lukealonso vs nvidia only)
 
 | Model | Score |
 |-------|-------|
@@ -148,7 +166,9 @@ AWQ and lukealonso tie at 99.0%. nvidia lags at 97.5% with higher variance.
 
 Without thinking mode, the gap between NVFP4 quantizations widens to 5%, consistent with vLLM Issue #36094 reporting nvidia NVFP4 accuracy problems.
 
-### Hard Math Test (19 custom questions, no thinking mode)
+---
+
+## Part 4: Hard Math Test (19 custom questions, no thinking mode)
 
 | Model | Score | Correct |
 |-------|-------|---------|
@@ -156,7 +176,7 @@ Without thinking mode, the gap between NVFP4 quantizations widens to 5%, consist
 | lukealonso NVFP4 | **89.5%** | 17/19 |
 | nvidia NVFP4 | 84.2% | 16/19 |
 
-#### Per-Question Detail
+### Per-Question Detail
 
 | Q# | Question | AWQ | lukealonso | nvidia |
 |----|----------|-----|-----------|--------|
@@ -184,24 +204,7 @@ Q1 and Q3 are failed by all models (multi-digit arithmetic without thinking). Q9
 
 ---
 
-## Part 3: MTP (Multi-Token Prediction) Impact
-
-### MTP Impact per Model (GPQA 8-repeat)
-
-| Model | MTP ON | MTP OFF | Delta |
-|-------|--------|---------|-------|
-| lukealonso | 88.26% | 87.50% | **+0.76%** (within noise) |
-| nvidia | 87.44% | 86.55% | **+0.89%** (within noise) |
-
-### MTP Conclusions
-
-1. **MTP does NOT degrade accuracy** — both models score marginally higher with MTP (within statistical noise)
-2. **MTP provides 18-24% inference speedup** without accuracy penalty
-3. **Recommendation: enable MTP** with `--disable-shared-experts-fusion`, `--speculative-eagle-topk 1`, `SGLANG_ENABLE_SPEC_V2=True`
-
----
-
-## Part 4: Throughput Benchmark
+## Part 5: Throughput Benchmark
 
 All models tested with MTP enabled (NEXTN, 5 steps, 6 draft tokens), 4x RTX PRO 6000 Blackwell (TP4). Server-side `sglang:gen_throughput` Prometheus metric.
 
@@ -217,6 +220,8 @@ lukealonso/Qwen3.5-397B-A17B-NVFP4   132    581     852    1191    1202
 
 **AWQ is faster at every concurrency level:** 15% faster at C=1, growing to 38% at C=64 where AWQ still scales (1662 tok/s) while NVFP4 plateaus (1202 tok/s).
 
+For full decode + prefill tables across context lengths, see [inference-throughput/](inference-throughput/).
+
 ---
 
 ## Overall Conclusions
@@ -225,7 +230,7 @@ lukealonso/Qwen3.5-397B-A17B-NVFP4   132    581     852    1191    1202
 
 | Metric | AWQ | lukealonso NVFP4 | nvidia NVFP4 |
 |--------|-----|------------------|--------------|
-| GPQA | **89.9%** | 88.4% | 87.4% |
+| GPQA (8-repeat mean) | **88.40%** | 88.26% | 87.44% |
 | GSM8K | **99.0%** | **99.0%** | 97.5% |
 | Hard Math | **89.5%** | **89.5%** | 84.2% |
 | KL Divergence | **0.024** | 0.035 | 0.109 |
@@ -258,7 +263,7 @@ SGLANG_ENABLE_SPEC_V2=True
 --mamba-scheduler-strategy extra_buffer
 ```
 
-### Warning
+### Warning (NVFP4 only)
 ```
 DeepGemm is enabled but the scale_fmt of checkpoint is not ue8m0.
 This might cause accuracy degradation on Blackwell.

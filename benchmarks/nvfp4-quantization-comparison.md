@@ -124,22 +124,22 @@ For full KLD methodology, reproduction steps, and automation script, see [kld-ev
 | # | Model | GPQA Mean | Scores (8 repeats) | Std | Runtime per repeat |
 |---|-------|-----------|---------------------|-----|--------------------|
 | 1 | **AWQ (QuantTrio)** | **88.40%** | 87.9, 89.9, 88.9, 89.9, 87.4, 89.4, 85.9, 87.9 | 1.389 | ~20 min |
-| 2 | lukealonso NVFP4 | 88.26% | 88.9, 87.9, 86.9, 88.4, 90.4, 88.4, 87.9, 87.4 | 0.332 | ~24 min |
-| 3 | nvidia NVFP4 | 87.44% | 85.9, 90.4, 85.9, 88.4, 87.9, 85.9, 87.4, 87.9 | 0.326 | ~24 min |
+| 2 | lukealonso NVFP4 | 88.28% | 88.9, 87.9, 86.9, 88.4, 90.4, 88.4, 87.9, 87.4 | 1.06 | ~24 min |
+| 3 | nvidia NVFP4 | 87.46% | 85.9, 90.4, 85.9, 88.4, 87.9, 85.9, 87.4, 87.9 | 1.57 | ~24 min |
 
 ### GPQA 8-Repeat Detail (lukealonso & nvidia, MTP OFF)
 
 | # | Model | GPQA Mean | Scores (8 repeats) | Std | Runtime per repeat |
 |---|-------|-----------|---------------------|-----|--------------------|
-| 1 | lukealonso NVFP4 | 87.50% | 86.4, 87.4, 89.4, 86.9, 88.9, 86.4, 87.4, 87.4 | 0.332 | ~30 min |
-| 2 | nvidia NVFP4 | 86.55% | 86.4, 85.9, 86.9, 86.4, 84.8, 86.4, 86.9, 88.9 | 0.314 | ~34 min |
+| 1 | lukealonso NVFP4 | 87.53% | 86.4, 87.4, 89.4, 86.9, 88.9, 86.4, 87.4, 87.4 | 1.09 | ~30 min |
+| 2 | nvidia NVFP4 | 86.58% | 86.4, 85.9, 86.9, 86.4, 84.8, 86.4, 86.9, 88.9 | 1.15 | ~34 min |
 
 ### MTP Impact on GPQA (lukealonso & nvidia)
 
 | Model | MTP ON | MTP OFF | Delta |
 |-------|--------|---------|-------|
-| lukealonso | 88.26% | 87.50% | **+0.76%** (within noise) |
-| nvidia | 87.44% | 86.55% | **+0.89%** (within noise) |
+| lukealonso | 88.28% | 87.53% | **+0.75%** (within noise) |
+| nvidia | 87.46% | 86.58% | **+0.88%** (within noise) |
 
 MTP does NOT degrade accuracy — both models score marginally higher with MTP (within statistical noise). MTP provides 18-24% inference speedup.
 
@@ -230,7 +230,7 @@ For full decode + prefill tables across context lengths, see [inference-throughp
 
 | Metric | AWQ | lukealonso NVFP4 | nvidia NVFP4 |
 |--------|-----|------------------|--------------|
-| GPQA (8-repeat mean) | **88.40%** | 88.26% | 87.44% |
+| GPQA (8-repeat mean) | **88.40%** | 88.28% | 87.46% |
 | GSM8K | **99.0%** | **99.0%** | 97.5% |
 | Hard Math | **89.5%** | **89.5%** | 84.2% |
 | KL Divergence | **0.024** | 0.035 | 0.109 |

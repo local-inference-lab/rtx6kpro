@@ -96,6 +96,7 @@ All GPQA results are 8-repeat means with thinking mode enabled, 198 examples.
 | **KL Divergence** (vs FP8) | **0.024** | 0.035 | 0.109 | — |
 | **Throughput ctx=0** (C=128, MTP ON) | **3519** | 3220 | 3232 | — |
 | **Throughput ctx=64k** (C=64, MTP ON) | 1747 | **1905** | **1912** | — |
+| **Throughput ctx=128k** (C=1, MTP ON) | **40** | **122** | **123** | — |
 
 **Key findings:**
 - **GPQA with MTP ON:** all four configurations are statistically indistinguishable (Welch t-test p>0.05 for all pairs)
@@ -103,6 +104,7 @@ All GPQA results are 8-repeat means with thinking mode enabled, 198 examples.
 - **GSM8K/Hard Math:** AWQ and lukealonso tie; nvidia is weaker (97.5% / 84.2%), same results on both engines
 - **KLD:** AWQ clearly best (0.024), lukealonso good (0.035), nvidia poor (0.109)
 - **Throughput (vLLM):** AWQ fastest at short context (3519 tok/s ctx=0), but NVFP4 is 9% faster at long context (1912 vs 1747 at ctx=64k/C=64 MTP ON). AWQ collapses at 128k/C=128 MTP ON (646 tok/s vs NVFP4's 2157)
+- **AWQ MTP long-context trap:** At C=1, AWQ MTP drops to 40 tok/s at 128k — 3.1x slower than NVFP4 MTP (122). MTP becomes *harmful* for AWQ at ctx=32k+ (slower than AWQ without MTP)
 
 ---
 
@@ -280,7 +282,20 @@ All models tested on vLLM 0.17.0rc1, 4x RTX PRO 6000 Blackwell (TP4), with and w
 | lukealonso NVFP4 | OFF | 78 | 398 | 636 | 922 | 1338 | 1907 |
 | nvidia NVFP4 | OFF | 76 | 390 | 621 | 891 | 1339 | 1783 |
 
-### MTP speedup
+### Per-request decode at C=1 across context lengths (tok/s) — the agentic use case
+
+| Model | MTP | ctx=0 | 16k | 32k | 64k | 128k | Degradation |
+|-------|-----|-------|-----|-----|-----|------|-------------|
+| **AWQ** | **ON** | **147** | 110 | 88 | 61 | **40** | **-73%** |
+| AWQ | OFF | 104 | 104 | 103 | 100 | 96 | -8% |
+| lukealonso NVFP4 | ON | 127 | 127 | 127 | 128 | 122 | -4% |
+| nvidia NVFP4 | ON | 121 | 122 | 120 | 125 | 123 | -2% |
+| lukealonso NVFP4 | OFF | 81 | 80 | 80 | 78 | 77 | -5% |
+| nvidia NVFP4 | OFF | 79 | 78 | 78 | 76 | 75 | -5% |
+
+**AWQ MTP is the only configuration that degrades significantly with context length.** At ctx=32k, it becomes slower than AWQ without MTP. At ctx=128k, NVFP4 MTP is 3.1x faster.
+
+### MTP speedup (context=0)
 
 | Model | C=1 | C=8 | C=32 | C=64 | C=128 |
 |-------|-----|-----|------|------|-------|
@@ -288,7 +303,7 @@ All models tested on vLLM 0.17.0rc1, 4x RTX PRO 6000 Blackwell (TP4), with and w
 | lukealonso NVFP4 | +57% | +49% | +46% | +44% | +41% |
 | nvidia NVFP4 | +53% | +42% | +44% | +42% | +41% |
 
-**AWQ is fastest at short context (ctx=0)** but NVFP4 overtakes at long context (64k+) with MTP ON. AWQ has a severe anomaly at 128k/C=128 MTP ON (646 tok/s, queue=81%) due to its larger vocab_size (248320 vs 152064) exhausting KV cache. Without MTP, all models converge at 128k to ~1527 tok/s.
+**AWQ is fastest at short context (ctx=0)** but NVFP4 overtakes at long context (64k+) with MTP ON. AWQ has a severe anomaly at 128k/C=128 MTP ON (646 tok/s, queue=81%). The root cause is under investigation — all models share identical vocab_size (248320) and VLM architecture, so the degradation is specific to AWQ INT4 + MTP interaction in vLLM. Without MTP, all models converge at 128k to ~1527 tok/s.
 
 For full results across all context lengths, see [inference-throughput/](inference-throughput/).
 
@@ -307,42 +322,66 @@ For full results across all context lengths, see [inference-throughput/](inferen
 | KL Divergence | **0.024** | 0.035 | 0.109 | — |
 | Throughput ctx=0 (C=128, MTP) | **3519 tok/s** | 3220 tok/s | 3232 tok/s | — |
 | Throughput ctx=64k (C=64, MTP) | 1747 tok/s | **1905 tok/s** | **1912 tok/s** | — |
+| Throughput ctx=128k (C=1, MTP) | **40 tok/s** | **122 tok/s** | **123 tok/s** | — |
 
 On GPQA, no pair of configurations is statistically distinguishable (p>0.05 for all). nvidia on vLLM (88.53%) and AWQ on SGLang (88.40%) score highest, but with std 1.0–1.9, 8 repeats cannot resolve differences below ~2pp.
 
 ### 2. AWQ wins on KLD and short-context throughput, NVFP4 wins long-context
 
-AWQ has the lowest KL divergence from FP8 (0.024 vs 0.035 vs 0.109) and is fastest at short context (3519 vs 3220 tok/s at ctx=0/C=128). But at long context (64k+) with MTP, NVFP4 is 9% faster (1912 vs 1747 at ctx=64k/C=64). AWQ collapses at 128k/C=128 MTP (646 tok/s) due to larger vocab_size. Choose AWQ for short-context batch workloads, NVFP4 for long-context deployments.
+AWQ has the lowest KL divergence from FP8 (0.024 vs 0.035 vs 0.109) and is fastest at short context (3519 vs 3220 tok/s at ctx=0/C=128). But at long context (64k+) with MTP, NVFP4 dominates — at C=1, NVFP4 MTP delivers 122 tok/s at 128k vs AWQ MTP's 40 tok/s (3.1x faster). AWQ collapses at 128k/C=128 MTP (646 tok/s).
 
-### 3. If NVFP4 is required, use lukealonso over nvidia
+### 3. AWQ MTP is unsuitable for long-context agentic workloads
+
+MTP becomes actively harmful for AWQ at ctx=32k+ (slower than AWQ without MTP). For agentic workloads — tool-calling, RAG, multi-turn with growing context — AWQ MTP will degrade to 40 tok/s at 128k, making it unsuitable. Use NVFP4 (lukealonso) + MTP for these workloads (stable 122 tok/s at 128k). If AWQ is required for quality, disable MTP for long-context requests.
+
+### 4. If NVFP4 is required, use lukealonso over nvidia
 
 lukealonso NVFP4 ties AWQ on GSM8K (99.0%) and Hard Math (89.5%). nvidia is consistently weaker: GSM8K 97.5-98.5%, Hard Math 84.2% (same failures on both engines). nvidia has 3x worse KLD (0.109 vs 0.035), consistent with community reports (vLLM Issue #36094).
 
-### 4. Inference engine does not significantly affect accuracy
+### 5. Inference engine does not significantly affect accuracy
 
 nvidia NVFP4 scores similarly on vLLM and SGLang across all benchmarks. Hard Math produces identical results (same questions wrong, same wrong answers). Without MTP, GPQA converges to ~86.6-86.9% on both engines.
 
-### 5. Enable MTP for production serving
+### 6. Enable MTP for production serving — with context-length awareness
 
-MTP provides 18-24% inference speedup with no measurable accuracy degradation on either engine (p>0.05 for all MTP ON vs OFF comparisons).
+MTP provides 40-57% inference speedup with no measurable accuracy degradation on either engine (p>0.05 for all MTP ON vs OFF comparisons). However, **MTP is only universally beneficial for NVFP4.** For AWQ, MTP should be disabled when context exceeds ~16k tokens.
 
-### 6. Recommended production config
+### 7. Recommended production config
 
+**For short-context / batch workloads (ctx < 16k):**
 ```bash
-# Model (best overall)
+# AWQ — fastest at short context
 --model QuantTrio/Qwen3.5-397B-A17B-AWQ
+# Enable MTP (safe at short context)
+--speculative-config '{"method":"qwen3_next_mtp","num_speculative_tokens":2}'  # vLLM
+```
 
-# MTP — SGLang
+**For long-context / agentic workloads (ctx may exceed 16k):**
+```bash
+# NVFP4 — stable throughput across all context lengths
+--model lukealonso/Qwen3.5-397B-A17B-NVFP4
+# Enable MTP — safe at all context lengths for NVFP4
+--speculative-config '{"method":"qwen3_next_mtp","num_speculative_tokens":2}'  # vLLM
+```
+
+**For mixed workloads where AWQ quality is needed:**
+```bash
+# AWQ without MTP — 96 tok/s at 128k vs 40 with MTP
+--model QuantTrio/Qwen3.5-397B-A17B-AWQ
+# Do NOT enable MTP if context may exceed 16k
+```
+
+Common MTP flags (SGLang):
+```bash
 SGLANG_ENABLE_SPEC_V2=True
 --speculative-algo NEXTN
 --speculative-num-steps 5
 --speculative-eagle-topk 1
 --speculative-num-draft-tokens 6
+```
 
-# MTP — vLLM
---speculative-config '{"method":"qwen3_next_mtp","num_speculative_tokens":2}'
-
-# Required flags (SGLang)
+Common required flags (SGLang):
+```bash
 --disable-shared-experts-fusion
 --disable-custom-all-reduce
 --attention-backend triton

@@ -94,14 +94,15 @@ All GPQA results are 8-repeat means with thinking mode enabled, 198 examples.
 | **GSM8K** (thinking) | **99.0%** | **99.0%** | 97.5% | 98.5% |
 | **Hard Math** (no thinking) | **89.5%** | **89.5%** | 84.2% | 84.2% |
 | **KL Divergence** (vs FP8) | **0.024** | 0.035 | 0.109 | — |
-| **Throughput** (C=64, tok/s) | **1662** | 1202 | — | — |
+| **Throughput MTP ON** (C=128, ctx=0) | **3519** | 3220 | 3232 | — |
+| **Throughput MTP OFF** (C=128, ctx=0) | **2796** | 2291 | 2294 | — |
 
 **Key findings:**
 - **GPQA with MTP ON:** all four configurations are statistically indistinguishable (Welch t-test p>0.05 for all pairs)
 - **GPQA MTP OFF:** both engines converge to ~86.6-86.9% for nvidia, confirming MTP ON does not hurt accuracy
 - **GSM8K/Hard Math:** AWQ and lukealonso tie; nvidia is weaker (97.5% / 84.2%), same results on both engines
 - **KLD:** AWQ clearly best (0.024), lukealonso good (0.035), nvidia poor (0.109)
-- **Throughput:** AWQ 15-38% faster than NVFP4 on SGLang
+- **Throughput (vLLM):** AWQ is fastest (3519 tok/s MTP ON, 2796 MTP OFF at C=128). NVFP4 models are identical without MTP (~2293 tok/s)
 
 ---
 
@@ -253,23 +254,32 @@ Q1 and Q3 are failed by all models (multi-digit arithmetic without thinking). Q9
 
 ---
 
-## Part 5: Throughput Benchmark (SGLang only)
+## Part 5: Throughput Benchmark (vLLM, TP4)
 
-All models tested with MTP enabled (NEXTN, 5 steps, 6 draft tokens), 4x RTX PRO 6000 Blackwell (TP4). Server-side `sglang:gen_throughput` Prometheus metric.
+All models tested on vLLM 0.17.0rc1, 4x RTX PRO 6000 Blackwell (TP4), with and without MTP.
 
-```
-Aggregate decode throughput (tok/s), context=0
-=========================================================================
+### Decode throughput at context=0 (tok/s)
 
-Model                                 C=1    C=8    C=16    C=32    C=64
-------------------------------------------------------------------------
-QuantTrio/Qwen3.5-397B-A17B-AWQ      152    665     976    1516    1662
-lukealonso/Qwen3.5-397B-A17B-NVFP4   132    581     852    1191    1202
-```
+| Model | MTP | C=1 | C=8 | C=16 | C=32 | C=64 | C=128 |
+|-------|-----|-----|-----|------|------|------|-------|
+| **AWQ** | **ON** | **147** | **767** | **1163** | **1679** | **2622** | **3519** |
+| lukealonso NVFP4 | ON | 127 | 615 | 934 | 1441 | 2283 | 3220 |
+| nvidia NVFP4 | ON | 121 | 577 | 918 | 1418 | 2252 | 3232 |
+| AWQ | OFF | 104 | 509 | 843 | 1272 | 1909 | 2796 |
+| lukealonso NVFP4 | OFF | 81 | 414 | 668 | 987 | 1590 | 2291 |
+| nvidia NVFP4 | OFF | 79 | 406 | 652 | 987 | 1590 | 2294 |
 
-**AWQ is faster at every concurrency level:** 15% faster at C=1, growing to 38% at C=64 where AWQ still scales (1662 tok/s) while NVFP4 plateaus (1202 tok/s).
+### MTP speedup
 
-For full decode + prefill tables across context lengths, see [inference-throughput/](inference-throughput/).
+| Model | C=1 | C=8 | C=32 | C=64 | C=128 |
+|-------|-----|-----|------|------|-------|
+| AWQ | +41% | +51% | +32% | +37% | +26% |
+| lukealonso NVFP4 | +57% | +49% | +46% | +44% | +41% |
+| nvidia NVFP4 | +53% | +42% | +44% | +42% | +41% |
+
+AWQ is fastest at all concurrency levels. MTP gives 26-57% speedup. NVFP4 models have identical throughput without MTP.
+
+For full results across context lengths, see [inference-throughput/](inference-throughput/).
 
 ---
 
@@ -284,7 +294,8 @@ For full decode + prefill tables across context lengths, see [inference-throughp
 | GSM8K | **99.0%** | **99.0%** | 97.5% | 98.5% |
 | Hard Math | **89.5%** | **89.5%** | 84.2% | 84.2% |
 | KL Divergence | **0.024** | 0.035 | 0.109 | — |
-| Throughput (C=64) | **1662 tok/s** | 1202 tok/s | — | — |
+| Throughput MTP ON (C=128) | **3519 tok/s** | 3220 tok/s | 3232 tok/s | — |
+| Throughput MTP OFF (C=128) | **2796 tok/s** | 2291 tok/s | 2294 tok/s | — |
 
 On GPQA, no pair of configurations is statistically distinguishable (p>0.05 for all). nvidia on vLLM (88.53%) and AWQ on SGLang (88.40%) score highest, but with std 1.0–1.9, 8 repeats cannot resolve differences below ~2pp.
 

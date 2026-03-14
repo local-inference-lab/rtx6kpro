@@ -1,255 +1,182 @@
-# Inference Benchmark: Qwen3.5-397B-A17B Quantizations
+# Inference Throughput: Qwen3.5-397B-A17B Quantizations
 
-Comprehensive prefill + decode benchmark comparing quantized Qwen3.5-397B-A17B checkpoints on 4x RTX PRO 6000 Blackwell (TP4) with MTP speculative decoding.
+Decode throughput benchmark comparing quantized Qwen3.5-397B-A17B checkpoints on 4x RTX PRO 6000 Blackwell (TP4), with and without MTP speculative decoding.
+
+## Test Environment
+
+| Parameter | Value |
+|-----------|-------|
+| **GPUs** | 4x NVIDIA RTX PRO 6000 Blackwell Server Edition (98GB each) |
+| **Engine** | vLLM 0.17.0rc1 (TP4) |
+| **Container** | llm-pytorch-blackwell:nightly-cuda132 |
+| **Benchmark tool** | llm_decode_bench.py |
+| **Date** | 2026-03-14 |
+| **Max tokens** | 512 per request |
+| **Concurrency** | 1, 2, 4, 8, 16, 32, 64, 128 |
+| **Context lengths** | 0, 16k, 32k, 64k, 128k |
+
+### vLLM server config (common)
+
+```
+--tensor-parallel-size 4
+--gpu-memory-utilization 0.9
+--max-num-batched-tokens 8192
+--max-num-seqs 128
+--enable-prefix-caching
+--enable-chunked-prefill
+```
+
+MTP: `--speculative-config '{"method":"mtp","num_speculative_tokens":2}'`
+
+---
 
 ## Summary
 
-**AWQ-INT4 wins on both quality AND throughput.** At C=64 it delivers 38% more throughput than NVFP4 while having 1.5x better quantization quality (KLD 0.024 vs 0.035). There is no reason to use NVFP4 for this model on Blackwell.
+### Decode throughput at context=0 (tok/s)
 
-| Model | Mean KLD | C=1 | C=8 | C=32 | C=64 | Verdict |
-|-------|----------|-----|-----|------|------|---------|
-| **QuantTrio/AWQ-INT4** | **0.024** | **152** | **665** | **1516** | **1662** | Best quality + best speed |
-| lukealonso/NVFP4 | 0.035 | 132 | 581 | 1191 | 1202 | Good quality, 15-38% slower |
-| nvidia/NVFP4 | 0.109 | — | — | — | — | Worst quality, not recommended |
+| Model | MTP | C=1 | C=8 | C=16 | C=32 | C=64 | C=128 |
+|-------|-----|-----|-----|------|------|------|-------|
+| **AWQ** | **ON** | **147** | **767** | **1163** | **1679** | **2622** | **3519** |
+| lukealonso NVFP4 | ON | 127 | 615 | 934 | 1441 | 2283 | 3220 |
+| nvidia NVFP4 | ON | 121 | 577 | 918 | 1418 | 2252 | 3232 |
+| AWQ | OFF | 104 | 509 | 843 | 1272 | 1909 | 2796 |
+| lukealonso NVFP4 | OFF | 81 | 414 | 668 | 987 | 1590 | 2291 |
+| nvidia NVFP4 | OFF | 79 | 406 | 652 | 987 | 1590 | 2294 |
 
-KLD source: [kld-evaluation.md](../kld-evaluation.md). nvidia/NVFP4 not re-tested after benchmark improvements (original data in [old results](#old-results-context0-only)).
+### MTP speedup
 
----
+| Model | C=1 | C=8 | C=32 | C=64 | C=128 |
+|-------|-----|-----|------|------|-------|
+| AWQ | +41% | +51% | +32% | +37% | +26% |
+| lukealonso NVFP4 | +57% | +49% | +46% | +44% | +41% |
+| nvidia NVFP4 | +53% | +42% | +44% | +42% | +41% |
 
-## Prefill Speed
+### Key findings
 
-Measured at C=1 with `max_tokens=1` (pure prefill, no decode). Baseline TTFT subtracted to isolate prefill from HTTP/scheduling overhead.
-
-### QuantTrio/AWQ-INT4 (baseline TTFT=0.126s)
-
-| Context | TTFT (s) | Prefill (s) | Prefill tok/s |
-|---------|----------|-------------|---------------|
-| 8k      | 0.62     | 0.49        | 16,680        |
-| 16k     | 1.09     | 0.96        | 17,042        |
-| 32k     | 2.23     | 2.11        | 15,545        |
-| 64k     | 4.68     | 4.55        | 14,404        |
-| 128k    | 10.41    | 10.29       | 12,740        |
-
-### lukealonso/NVFP4 (baseline TTFT=0.088s)
-
-| Context | TTFT (s) | Prefill (s) | Prefill tok/s |
-|---------|----------|-------------|---------------|
-| 8k      | 0.59     | 0.50        | 16,301        |
-| 16k     | 1.08     | 1.00        | 16,431        |
-| 32k     | 2.23     | 2.14        | 15,323        |
-| 64k     | 4.64     | 4.55        | 14,389        |
-| 128k    | 10.23    | 10.14       | 12,927        |
-
-### Prefill Takeaways
-
-- **Both models have virtually identical prefill speed** — ~16-17k tok/s at short contexts, ~13k tok/s at 128k.
-- Prefill is limited by chunked prefill pipeline (`--chunked-prefill-size 4096`), not quantization format.
-- Prefill throughput decreases with context length due to memory bandwidth pressure from growing KV cache.
-- Prefill does NOT scale with concurrency — aggregate throughput is constant (~12.5k tok/s regardless of C=1/2/4/8).
+1. **AWQ is fastest at all concurrency levels** (both MTP ON and OFF), by 9-33% over NVFP4
+2. **MTP gives 26-57% speedup** depending on model and concurrency — always worth enabling
+3. **lukealonso and nvidia NVFP4 have identical throughput** without MTP; lukealonso is ~5% faster with MTP at low concurrency
+4. **AWQ MTP at C=128 ctx=0 peaks at 3519 tok/s** — highest measured throughput
 
 ---
 
-## Decode Throughput
+## Full Results: AWQ (QuantTrio/Qwen3.5-397B-A17B-AWQ)
 
-All measurements use radix-cached prefill (pure decode speed). Server-side `gen_throughput` Prometheus metric, median of samples with 4s warmup skip, 30s per cell.
+### AWQ MTP ON — Aggregate Throughput (tok/s)
 
-### QuantTrio/AWQ-INT4
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|------------|---|---|---|---|----|----|----|----|
+| 0 | 147 | 269 | 411 | 767 | 1163 | 1679 | 2622 | 3519 |
+| 16k | 110 | 205 | 319 | 602 | 980 | 1435 | 2231 | 2135 |
+| 32k | 88 | 163 | 269 | 507 | 851 | 1284 | 2044 | 2024 |
+| 64k | 61 | 115 | 206 | 389 | 680 | 1074 | 1747 | 2303 |
+| 128k | 40 | 76 | 136 | 264 | 477 | 812 | 1326 | 646 |
 
-#### Aggregate Throughput (tok/s)
+### AWQ MTP OFF — Aggregate Throughput (tok/s)
 
-| ctx\conc |     1 |     2 |     4 |     8 |    16 |    32 |    64 |
-|----------|------:|------:|------:|------:|------:|------:|------:|
-| 0        | 152.4 | 263.2 | 438.4 | 665.3 | 975.7 |1516.2 |1661.7 |
-| 16k      |  92.1 | 173.6 | 301.7 | 493.7 | 788.1 |1058.3 |   N/A |
-| 32k      |  59.4 | 113.6 | 225.1 | 399.2 | 651.8 |   N/A |   N/A |
-| 64k      |  46.1 |  76.2 | 146.9 | 274.9 | 463.9 |   N/A |   N/A |
-| 128k     |  28.4 |  42.5 |  88.6 | 163.9 |   N/A |   N/A |   N/A |
-
-#### Per-Request Throughput (tok/s)
-
-| ctx\conc |     1 |     2 |     4 |     8 |    16 |    32 |    64 |
-|----------|------:|------:|------:|------:|------:|------:|------:|
-| 0        | 152.4 | 131.6 | 109.6 |  83.2 |  61.0 |  47.4 |  26.0 |
-| 16k      |  92.1 |  86.8 |  75.4 |  61.7 |  49.3 |  33.1 |   N/A |
-| 32k      |  59.4 |  56.8 |  56.3 |  49.9 |  40.7 |   N/A |   N/A |
-| 64k      |  46.1 |  38.1 |  36.7 |  34.4 |  29.0 |   N/A |   N/A |
-| 128k     |  28.4 |  21.2 |  22.2 |  20.5 |   N/A |   N/A |   N/A |
-
-#### TTFT (seconds)
-
-| ctx\conc |     1 |     2 |     4 |     8 |    16 |    32 |    64 |
-|----------|------:|------:|------:|------:|------:|------:|------:|
-| 0        |  0.07 |  0.11 |  0.12 |  0.14 |  0.19 |  0.23 |  0.27 |
-| 16k      |  1.17 |  0.23 |  0.25 |  0.34 |  0.57 |  0.97 |   N/A |
-| 32k      |  2.30 |  0.29 |  0.39 |  0.57 |  1.18 |   N/A |   N/A |
-| 64k      |  4.65 |  0.48 |  0.85 |  1.55 |  2.93 |   N/A |   N/A |
-| 128k     | 10.44 |  0.90 |  1.53 |  3.08 |   N/A |   N/A |   N/A |
-
-### lukealonso/NVFP4
-
-#### Aggregate Throughput (tok/s)
-
-| ctx\conc |     1 |     2 |     4 |     8 |    16 |    32 |    64 |
-|----------|------:|------:|------:|------:|------:|------:|------:|
-| 0        | 132.0 | 222.0 | 390.4 | 580.8 | 851.9 |1190.7 |1202.2 |
-| 16k      |  80.8 | 148.8 | 268.6 | 456.5 | 715.0 | 886.9 |   N/A |
-| 32k      |  62.6 | 110.5 | 212.6 | 359.9 | 590.3 |   N/A |   N/A |
-| 64k      |  42.8 |  74.9 | 141.0 | 254.3 |   N/A |   N/A |   N/A |
-| 128k     |  32.6 |  43.6 |  82.6 |   N/A |   N/A |   N/A |   N/A |
-
-#### Per-Request Throughput (tok/s)
-
-| ctx\conc |     1 |     2 |     4 |     8 |    16 |    32 |    64 |
-|----------|------:|------:|------:|------:|------:|------:|------:|
-| 0        | 132.0 | 111.0 |  97.6 |  72.6 |  53.2 |  37.2 |  18.8 |
-| 16k      |  80.8 |  74.4 |  67.1 |  57.1 |  44.7 |  27.7 |   N/A |
-| 32k      |  62.6 |  55.2 |  53.2 |  45.0 |  36.9 |   N/A |   N/A |
-| 64k      |  42.8 |  37.5 |  35.3 |  31.8 |   N/A |   N/A |   N/A |
-| 128k     |  32.6 |  21.8 |  20.7 |   N/A |   N/A |   N/A |   N/A |
-
-#### TTFT (seconds)
-
-| ctx\conc |     1 |     2 |     4 |     8 |    16 |    32 |    64 |
-|----------|------:|------:|------:|------:|------:|------:|------:|
-| 0        |  0.10 |  0.19 |  0.18 |  0.21 |  0.23 |  0.71 |  0.29 |
-| 16k      |  1.10 |  0.24 |  0.28 |  0.36 |  0.58 |  0.90 |   N/A |
-| 32k      |  2.19 |  0.31 |  0.38 |  0.64 |  1.22 |   N/A |   N/A |
-| 64k      |  4.58 |  0.42 |  0.71 |  1.53 |   N/A |   N/A |   N/A |
-| 128k     | 10.14 |  0.98 |  1.79 |   N/A |   N/A |   N/A |   N/A |
-
-### AWQ vs NVFP4 — Head to Head
-
-| Metric | AWQ (QuantTrio) | NVFP4 (lukealonso) | AWQ advantage |
-|--------|-----------------|--------------------|--------------:|
-| **Quality (Mean KLD)** | **0.024** | 0.035 | 1.5x better |
-| **C=1 decode (ctx=0)** | **152** tok/s | 132 tok/s | +15% |
-| **C=8 decode (ctx=0)** | **665** tok/s | 581 tok/s | +14% |
-| **C=32 decode (ctx=0)** | **1,516** tok/s | 1,191 tok/s | +27% |
-| **C=64 decode (ctx=0)** | **1,662** tok/s | 1,202 tok/s | +38% |
-| **Prefill (16k)** | 17,042 tok/s | 16,431 tok/s | ~same |
-
-### Key Takeaways
-
-1. **AWQ is faster at ALL concurrency levels** — 15% faster at C=1, growing to 38% at C=64.
-2. **AWQ scales better** — at C=64, AWQ still gains throughput (1662 tok/s) while NVFP4 plateaus at C=32 (1191→1202).
-3. **Context length heavily impacts per-request speed** — at 128k, per-request decode drops to ~28-33 tok/s regardless of model.
-4. **Prefill is identical** — both models push ~16-17k tok/s, limited by the chunked prefill pipeline.
-5. **TTFT at C=1 reflects prefill time** — at C≥2 with cached context, TTFT drops to sub-second even at 128k.
-6. **N/A cells exceed KV cache budget** — the server auto-reports its KV capacity and the benchmark skips combinations that would exceed it.
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|------------|---|---|---|---|----|----|----|----|
+| 0 | 104 | 167 | 298 | 509 | 843 | 1272 | 1909 | 2796 |
+| 16k | 104 | 167 | 294 | 501 | 812 | 1209 | 1781 | 2542 |
+| 32k | 103 | 165 | 290 | 493 | 796 | 1146 | 1654 | 2290 |
+| 64k | 100 | 159 | 282 | 477 | 748 | 1080 | 1464 | 1909 |
+| 128k | 96 | 151 | 267 | 445 | 684 | 923 | 1209 | 1526 |
 
 ---
 
-## Old Results (context=0 only)
+## Full Results: lukealonso/Qwen3.5-397B-A17B-NVFP4
 
-Earlier benchmark run (2026-03-12, `--duration 15`, `--max-running-requests 32`):
+### lukealonso MTP ON — Aggregate Throughput (tok/s)
 
-```
-Aggregate Throughput (tok/s), context=0
-Model                                  C=1     C=4    C=16    C=32
-----------------------------------------------------------------------
-QuantTrio/Qwen3.5-397B-A17B-AWQ       124.8   411.9  1013.0  1470.0
-lukealonso/Qwen3.5-397B-A17B-NVFP4    129.1   361.0   879.3  1062.5
-nvidia/Qwen3.5-397B-A17B-NVFP4        110.5   343.2   827.5  1032.3
-```
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|------------|---|---|---|---|----|----|----|----|
+| 0 | 127 | 219 | 350 | 615 | 934 | 1441 | 2283 | 3220 |
+| 16k | 127 | 220 | 354 | 610 | 881 | 1439 | 2206 | 2902 |
+| 32k | 127 | 214 | 345 | 601 | 933 | 1377 | 2075 | 2574 |
+| 64k | 128 | 215 | 344 | 525 | 904 | 1295 | 1905 | 2183 |
+| 128k | 122 | 214 | 344 | 570 | 838 | 1185 | 1633 | 2157 |
 
-These were measured with shorter duration (15s) and lower max-running-requests (32). The updated results above use 30s duration, 64 max-running-requests, and include context length scaling.
+### lukealonso MTP OFF — Aggregate Throughput (tok/s)
 
----
-
-## Hardware
-
-- **Server:** 8x NVIDIA RTX PRO 6000 Blackwell Server Edition (96 GB each)
-- **GPUs used:** 4x (TP4) for all quantized models
-- **Container:** `voipmonitor/llm-pytorch-blackwell:nightly-cuda132`
-- **SGLang version:** nightly (2026-03-12)
-
-## How to Reproduce
-
-### 1. Start container
-
-```bash
-docker run -it --rm \
-  --gpus all --ipc=host --shm-size=8g \
-  --ulimit memlock=-1 --ulimit stack=67108864 \
-  --network host \
-  -v /root/.cache/huggingface:/root/.cache/huggingface \
-  -v vllm-nightly-jit:/cache/jit \
-  voipmonitor/llm-pytorch-blackwell:nightly-cuda132 \
-  bash
-```
-
-### 2. Install benchmark dependencies
-
-```bash
-pip install rich httpx
-```
-
-### 3. Launch model server
-
-#### AWQ (QuantTrio)
-
-```bash
-NCCL_P2P_LEVEL=SYS SGLANG_ENABLE_SPEC_V2=True python3 -m sglang.launch_server \
-  --model QuantTrio/Qwen3.5-397B-A17B-AWQ --served-model-name Qwen3.5 \
-  --reasoning-parser qwen3 --tool-call-parser qwen3_coder \
-  --tensor-parallel-size 4 --kv-cache-dtype fp8_e4m3 --trust-remote-code \
-  --cuda-graph-max-bs 64 --max-running-requests 64 \
-  --chunked-prefill-size 4096 \
-  --speculative-algo NEXTN --speculative-num-steps 5 \
-  --speculative-eagle-topk 1 --speculative-num-draft-tokens 6 \
-  --mamba-scheduler-strategy extra_buffer \
-  --mem-fraction-static 0.95 --host 0.0.0.0 --port 5000 \
-  --disable-custom-all-reduce --attention-backend triton --enable-metrics
-```
-
-#### NVFP4 (lukealonso)
-
-```bash
-NCCL_P2P_LEVEL=SYS SGLANG_ENABLE_SPEC_V2=True python3 -m sglang.launch_server \
-  --model lukealonso/Qwen3.5-397B-A17B-NVFP4 --served-model-name Qwen3.5 \
-  --reasoning-parser qwen3 --tool-call-parser qwen3_coder \
-  --tensor-parallel-size 4 --kv-cache-dtype fp8_e4m3 --trust-remote-code \
-  --quantization modelopt_fp4 \
-  --moe-runner-backend flashinfer_cutlass --fp4-gemm-backend flashinfer_cudnn \
-  --cuda-graph-max-bs 64 --max-running-requests 64 \
-  --chunked-prefill-size 4096 \
-  --speculative-algo NEXTN --speculative-num-steps 5 \
-  --speculative-eagle-topk 1 --speculative-num-draft-tokens 6 \
-  --mamba-scheduler-strategy extra_buffer \
-  --mem-fraction-static 0.97 --host 0.0.0.0 --port 5000 \
-  --disable-custom-all-reduce --attention-backend triton --enable-metrics
-```
-
-### 4. Run benchmark
-
-```bash
-python3 benchmark_sglang.py --port 5000 --output results.json
-```
-
-The benchmark automatically:
-- Reads KV cache capacity and max concurrent requests from the server
-- Runs prefill speed tests (8k–128k context)
-- Runs decode throughput matrix with cached prefill
-- Skips cells that would exceed KV cache budget
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|------------|---|---|---|---|----|----|----|----|
+| 0 | 81 | 141 | 251 | 414 | 668 | 987 | 1590 | 2291 |
+| 16k | 80 | 139 | 250 | 406 | 653 | 986 | 1465 | 2164 |
+| 32k | 80 | 137 | 247 | 406 | 652 | 954 | 1463 | 2037 |
+| 64k | 78 | 135 | 243 | 398 | 636 | 922 | 1338 | 1907 |
+| 128k | 77 | 133 | 239 | 389 | 604 | 859 | 1209 | 1527 |
 
 ---
 
-## Measurement Methodology
+## Full Results: nvidia/Qwen3.5-397B-A17B-NVFP4
 
-- **Throughput source:** Server-side `sglang:gen_throughput` Prometheus metric (not client-side SSE counting). With MTP, SGLang batches ~3-4 tokens per SSE event — client-side counting under-reports by ~3x.
-- **Aggregation:** Median of samples (robust to outliers from MTP accept rate variation).
-- **Warmup:** First 4 seconds of each cell discarded (CUDA graph warmup, ramp-up).
-- **Duration:** 30 seconds per cell (~26 samples after warmup).
-- **Prefill measurement:** Baseline TTFT (ctx=0) subtracted to isolate pure prefill time from HTTP/scheduling overhead.
-- **Cache isolation:** Each prefill test uses a unique random prefix per run — no cross-run or cross-context cache contamination.
-- **KV budget:** Cells where `concurrency × (context + max_tokens) > max_total_num_tokens` are automatically skipped.
+### nvidia MTP ON — Aggregate Throughput (tok/s)
 
-## Benchmark Script
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|------------|---|---|---|---|----|----|----|----|
+| 0 | 121 | 212 | 340 | 577 | 918 | 1418 | 2252 | 3232 |
+| 16k | 122 | 207 | 340 | 598 | 922 | 1390 | 2167 | 2624 |
+| 32k | 120 | 206 | 340 | 589 | 909 | 1340 | 2065 | 2502 |
+| 64k | 125 | 209 | 341 | 581 | 877 | 1271 | 1912 | 2159 |
+| 128k | 123 | 203 | 334 | 554 | 806 | 1164 | 1620 | 2138 |
 
-The benchmark script (`benchmark_sglang.py`) features:
-- Two-phase design: prefill speed → decode throughput (cached)
-- Auto-detection of server limits (`/get_server_info`)
-- Rich TUI dashboard with live server metrics
-- Unique text per context length (defeats radix cache for prefill)
-- JSON output with full per-cell results + prefill data
-- Graceful interrupt handling with partial results saved
+### nvidia MTP OFF — Aggregate Throughput (tok/s)
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|------------|---|---|---|---|----|----|----|----|
+| 0 | 79 | 135 | 243 | 406 | 652 | 987 | 1590 | 2294 |
+| 16k | 78 | 133 | 239 | 398 | 652 | 955 | 1464 | 2164 |
+| 32k | 78 | 131 | 239 | 398 | 637 | 954 | 1462 | 2036 |
+| 64k | 76 | 131 | 235 | 390 | 621 | 891 | 1339 | 1783 |
+| 128k | 75 | 127 | 231 | 382 | 589 | 858 | 1209 | 1527 |
+
+---
+
+## Analysis
+
+### AWQ vs NVFP4 throughput
+
+AWQ is consistently faster than NVFP4 on vLLM:
+- **Without MTP:** AWQ is 3-33% faster (smallest gap at low concurrency, growing with batch size)
+- **With MTP:** AWQ is 9-16% faster at C=1, growing to ~15% at C=128
+
+This is the opposite direction from what FP4 Tensor Core hardware support would suggest. AWQ (INT4, GEMM-based) outperforms NVFP4 (FP4, dedicated Tensor Cores) because:
+1. AWQ uses mature INT4 GEMM kernels with better scheduling
+2. NVFP4's 8 unique values (E2M1) vs AWQ's 16 levels means AWQ has better weight compression efficiency per bit
+3. AWQ's per-channel scaling and salient weight protection reduce overhead
+
+### MTP impact on throughput
+
+MTP provides substantial speedup across all models:
+- **NVFP4 models:** consistent 40-57% speedup at low concurrency, 41% at C=128
+- **AWQ:** 41-51% at low concurrency, but drops to 26% at C=128 (AWQ's baseline is already faster)
+
+MTP is more effective for NVFP4 because the base decode speed is slower, giving more room for speculative acceleration.
+
+### Context length impact
+
+Throughput degrades with longer contexts due to KV cache memory pressure:
+- At C=128, going from ctx=0 to ctx=128k reduces throughput by ~33-53% depending on model and MTP
+- AWQ MTP shows anomalous behavior at 128k/C=128 (646 tok/s) — likely KV cache capacity limit
+
+### NVFP4: lukealonso vs nvidia
+
+Without MTP, the two NVFP4 checkpoints have **identical throughput** (within measurement noise). With MTP, lukealonso is ~5% faster at C=1 (127 vs 121 tok/s) but converges at high concurrency. The difference likely comes from minor weight distribution differences affecting MTP acceptance rate.
+
+---
+
+## Legacy: SGLang Results (2026-03-11)
+
+Previous measurements on SGLang 0.5.9 (TP4) with MTP ON only. These used a different benchmark method (Prometheus `sglang:gen_throughput` metric) and are not directly comparable to the vLLM results above.
+
+```
+SGLang MTP ON — Aggregate decode throughput (tok/s), context=0
+=========================================================================
+
+Model                                 C=1    C=8    C=16    C=32    C=64
+------------------------------------------------------------------------
+QuantTrio/Qwen3.5-397B-A17B-AWQ      152    665     976    1516    1662
+lukealonso/Qwen3.5-397B-A17B-NVFP4   132    581     852    1191    1202
+```
+
+Note: SGLang numbers are lower at high concurrency because `--max-running-requests 64` was used vs 128 for vLLM. The relative ranking (AWQ > NVFP4) is consistent across both engines.

@@ -153,11 +153,14 @@ DRAM channel count and speed affect cross-NUMA bandwidth. Under-populated DRAM r
 - Supports 2-partition mode and dual-CPU bridge mode
 - Smaller 52-lane version available (cheaper); software-configurable partitions
 
-### Broadcom 144-Lane Switches
+### Broadcom PEX890xx 144-Lane Switches
 
 - Fits 8 GPUs: 8 x 16 = 128 lanes for GPUs, 16 lanes for CPU uplink
 - Excellent for inference (GPU P2P dominant)
 - Bottlenecked for training (RAM-to-GPU throughput limited by x16 uplink)
+- Found in ASUS ESC8000A-E13P servers (2 physical chips, each with 2 partitions)
+- **ACS must be disabled** on both root ports AND switch downstream ports for full P2P performance — see [detailed guide](asus-esc8000a-e13p-broadcom-switches.md)
+- With ACS disabled: interconnect score **0.96** (4 GPU) / **0.90** (8 GPU) — significantly higher than Microchip switches
 
 ### Guava Systems PCIe Switches
 
@@ -274,6 +277,16 @@ EP requires massive inter-GPU bandwidth for routing tokens to experts. Without N
 | 16-GPU inference | 4x switches, single CPU | Proven by Grimulkan; avoids dual-CPU complexity |
 | Training / fine-tuning | Dual Turin direct-attach | RAM bandwidth critical; 128 lanes beats shared switch uplink |
 
+### ACS (Access Control Services) — Critical for Switch Topologies
+
+PCIe switches with ACS enabled (the default) redirect P2P traffic through the CPU root port instead of routing it directly within the switch fabric. This can **halve same-switch bandwidth** and completely negate the advantage of PCIe switches.
+
+ACS must be disabled on **both** root ports and switch downstream ports. See the [ASUS ESC8000A-E13P guide](asus-esc8000a-e13p-broadcom-switches.md#acs-access-control-services--critical-for-p2p) for detailed instructions.
+
+> **Note:** The kernel parameter `pcie_acs_override=downstream,multifunction` requires a patched kernel and does NOT work on stock Ubuntu kernels. Use `setpci` at runtime instead.
+
 ### Key Takeaway
 
 For pure inference (no KV cache offload, no training), **PCIe switches on a single CPU** provide the lowest latency. For workloads that need system RAM bandwidth (KV cache offload, training), **dual Turin direct-attach** is superior. Genoa dual-CPU setups should strongly consider adding switches to compensate for slower xGMI.
+
+**If using Broadcom switches:** Disabling ACS is mandatory for full performance. With ACS off, Broadcom PEX890xx switches achieve interconnect scores of 0.90-0.96, significantly outperforming other tested configurations.

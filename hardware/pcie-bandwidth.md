@@ -28,6 +28,7 @@ Measured with P2P Writes, PCIe Gen5 x16 links.
 | orangezed | Dual EPYC 9374F, 8x 6000 Pro MaxQ | ~54 GB/s | ~39 GB/s |
 | Festr | Dual Turin, 8x 6000 Pro Server | ~53 GB/s | -- |
 | luke | Switches, 8x 6000 Pro MaxQ | ~54 GB/s | N/A (single CPU) |
+| voipmonitor | [ASUS ESC8000A-E13P, Broadcom PEX890xx switches](asus-esc8000a-e13p-broadcom-switches.md), 8x 6000 Pro Server | ~54 GB/s | ~50 GB/s (cross-NUMA) |
 
 **Theoretical maximum:** PCIe Gen5 x16 = 63 GB/s unidirectional. The ~56 GB/s measured represents ~89% efficiency.
 
@@ -37,6 +38,7 @@ Measured with P2P Writes, PCIe Gen5 x16 links.
 |--------|-------|-----------|------------|
 | purplepow3r | Dual Turin | ~111 GB/s | ~99 GB/s |
 | orangezed | Dual EPYC 9374F | ~103 GB/s | ~64 GB/s |
+| voipmonitor | [ASUS ESC8000A-E13P + Broadcom switches](asus-esc8000a-e13p-broadcom-switches.md) (ACS off) | ~103 GB/s | ~95 GB/s |
 
 ### Full P2P Bandwidth Matrix Example
 
@@ -73,6 +75,7 @@ luke's [p2pmark](https://github.com/lukealonso/p2pmark) tool provides a standard
 | luke (3x switches, single CPU) | 0.86 (54.3 GB/s) | 0.44 (191.8 / 434.7 GB/s) | 6.79 us |
 | Festr (dual Turin, direct-attach) | 0.84 (52.7 GB/s) | 0.41 (173.1 / 421.3 GB/s) | 6.03 us |
 | Grimulkan (4x switches, single CPU) | 0.86 (53.9 GB/s) | 0.38 (164.3 / 431.2 GB/s) | 7.04 us |
+| [voipmonitor (ASUS ESC8000A-E13P, Broadcom, ACS off)](asus-esc8000a-e13p-broadcom-switches.md) | 0.72 (45.3 GB/s) | **0.90** (381 / 422 GB/s) | 7.40 us |
 
 ### p2pmark Scores (4 GPUs)
 
@@ -80,6 +83,7 @@ luke's [p2pmark](https://github.com/lukealonso/p2pmark) tool provides a standard
 |--------|----------------|------------------------|-------------------|
 | luke (1 switch) | 0.86 | 0.64 (138.3 / 217.7 GB/s) | 4.10 us |
 | Festr (Turin, same NUMA) | 0.88 | 0.59 (129.7 / 220.6 GB/s) | 2.28 us |
+| [voipmonitor (ASUS ESC8000A-E13P, Broadcom, ACS off)](asus-esc8000a-e13p-broadcom-switches.md) | 0.86 | **0.96** (207 / 216 GB/s) | 2.12 us |
 
 ---
 

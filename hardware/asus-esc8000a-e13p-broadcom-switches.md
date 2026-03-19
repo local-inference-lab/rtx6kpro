@@ -289,7 +289,9 @@ The two cross-NUMA hops (GPU3→4 and GPU7→0) at ~37 GB/s are the ring bottlen
 +7: 48.85 GB/s avg (391 total)   ← neighbors (wrapping)
 ```
 
-### AllReduce: Custom vs NCCL (4 GPU, fp16)
+### AllReduce: Custom vs NCCL (4 GPU, fp16, default)
+
+Default NCCL config — NODE pairs use SHM/shared memory transport:
 
 | Size | Custom (us) | NCCL (us) | Winner |
 |---|---|---|---|
@@ -305,7 +307,26 @@ The two cross-NUMA hops (GPU3→4 and GPU7→0) at ~37 GB/s are the ring bottlen
 | 4 MB | 362.7 | 234.0 | NCCL 1.5x |
 | 32 MB | 2882 | 1629 | NCCL 1.8x |
 
-Custom allreduce wins up to **512 KB** on this topology — significantly further than on other systems where NCCL takes over around 64 KB.
+Custom allreduce wins up to **512 KB** — significantly further than on other systems where NCCL takes over around 64 KB.
+
+### AllReduce: Custom vs NCCL (4 GPU, fp16, NCCL_P2P_LEVEL=SYS)
+
+With `NCCL_P2P_LEVEL=SYS` — forces all pairs to use P2P/direct pointer instead of SHM. NCCL gets significantly faster, especially at medium sizes:
+
+| Size | Custom (us) | NCCL (us) | NCCL default (us) | Winner |
+|---|---|---|---|---|
+| 256 B | 6.2 | 21.0 | 20.4 | Custom 3.4x |
+| 4 KB | 6.2 | 13.4 | 14.1 | Custom 2.2x |
+| 32 KB | 9.6 | 13.4 | 15.4 | Custom 1.4x |
+| 64 KB | 12.3 | 13.8 | 16.8 | Custom 1.1x |
+| 128 KB | 17.5 | **15.5** | 24.6 | **NCCL 1.1x** |
+| 256 KB | 28.7 | **24.7** | 40.7 | **NCCL 1.2x** |
+| 512 KB | 50.9 | **43.1** | 72.0 | **NCCL 1.2x** |
+| 1 MB | 95.3 | **58.5** | 86.3 | **NCCL 1.6x** |
+| 4 MB | 362.7 | **171.0** | 234.0 | **NCCL 2.1x** |
+| 32 MB | 2879 | **1277** | 1629 | **NCCL 2.3x** |
+
+With `P2P_LEVEL=SYS`, NCCL takes over already at **128 KB** (vs 1 MB without). The NCCL improvement is dramatic at larger sizes: 32 MB goes from 1629 us to 1277 us (22% faster).
 
 ### AllReduce: Custom vs NCCL (8 GPU, fp16)
 

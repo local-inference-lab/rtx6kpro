@@ -176,189 +176,98 @@ amd_iommu=pt    # on AMD platforms
 
 ## Docker Images
 
-### Recommended: voipmonitor nightly
+### Recommended: voipmonitor/sglang:cu130
 
 ```bash
-docker pull voipmonitor/llm-pytorch-blackwell:nightly
+docker pull voipmonitor/sglang:cu130
 ```
 
-Custom image by Festr containing:
-- SGLang compiled from source with SM120 patches
-- PyTorch 2.12, latest FlashInfer, CUTLASS 4.4.1, cuDNN 91901
-- SM_120f compilation target enabled
-- Pre-generated Triton MoE kernel configs for RTX PRO 6000 Blackwell Server Edition
+Pre-built image with all SM120 patches:
+- SGLang with FlashInfer compiled from source (GDC fix PR #2913)
+- PyTorch 2.11 cu130, CUTLASS MoE kernels
+- b12x TP-only NVFP4 MoE/GEMM backend (lukealonso)
+- PCIe oneshot allreduce (lukealonso)
+- NCCL graph XML baked in at `/etc/nccl_graph_opt.xml`
+- Pre-generated Triton MoE configs for RTX PRO 6000
+- Model profiles in `/profiles/`
+
+Source: [github.com/voipmonitor/blackwell-llm-docker](https://github.com/voipmonitor/blackwell-llm-docker)
 
 ### Docker run command
 
 ```bash
-docker run -it --rm \
-    --entrypoint /bin/bash \
-    --gpus all \
-    --ipc=host \
-    --shm-size=8g \
-    --ulimit memlock=-1 \
-    --ulimit stack=67108864 \
-    --network host \
-    --cpuset-cpus "0-63" \
-    -v /root/.cache/huggingface:/root/.cache/huggingface \
-    -v /mnt:/mnt \
-    -v vllm-nightly-jit:/cache/jit \
-    voipmonitor/llm-pytorch-blackwell:nightly
+docker run --gpus all \
+    --ipc=host --shm-size=8g --network=host \
+    --ulimit memlock=-1 --ulimit stack=67108864 \
+    -v ~/.cache/huggingface:/root/.cache/huggingface \
+    -v jit-cache:/cache/jit \
+    voipmonitor/sglang:cu130 bash
 ```
 
 ### Alternative images
 
 | Image | Notes |
 |---|---|
-| `lmsysorg/sglang:dev-cu13` | Official SGLang nightly, CUDA 13.0. Needs `pip install --upgrade transformers` inside. |
-| `lmsysorg/sglang:glm5-blackwell` | Official GLM5-specific image. Built for SM90/SM100 -- **broken on SM120**, use `voipmonitor` or `dev-cu13` instead. |
-| `voipmonitor/llm-pytorch-blackwell:nightly-fp4-prezero` | Experimental build with FlashInfer pre-zero fix. |
-
-### Patching the official dev-cu13 image (orangezed's Dockerfile)
-
-```dockerfile
-# sglang dev-cu13 nightly pulled 2026-03-04
-FROM lmsysorg/sglang@sha256:426d1fa4b10722688678b99d817c2caa92a89eed4a8ee2927ab44a848bbe77df
-
-RUN pip install --no-cache-dir transformers==5.2.0
-
-# Fix DeepGemm scale format detection for NVFP4 models on Blackwell (SM120)
-# NVFP4 uses float8_e4m3fn scales, not ue8m0 -- hardcoded True causes NaN
-RUN sed -i "s/DEEPGEMM_SCALE_UE8M0 = DEEPGEMM_BLACKWELL/DEEPGEMM_SCALE_UE8M0 = False/" \
-    /sgl-workspace/sglang/python/sglang/srt/layers/deep_gemm_wrapper/configurer.py
-```
+| `lmsysorg/sglang:dev-cu13` | Official SGLang nightly, CUDA 13.0. May need `pip install transformers>=5.3,<5.4`. |
 
 ---
 
 ## SGLang Launch Commands
 
-### Best known working command (with MTP)
+### Recommended: Docker run with MTP + b12x
 
 ```bash
-SGLANG_ENABLE_SPEC_V2=True \
-SGLANG_ENABLE_JIT_DEEPGEMM=0 \
-SGLANG_ENABLE_DEEP_GEMM=0 \
-NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml \
-NCCL_IB_DISABLE=1 \
-NCCL_P2P_LEVEL=SYS \
-NCCL_ALLOC_P2P_NET_LL_BUFFERS=1 \
-NCCL_MIN_NCHANNELS=8 \
-OMP_NUM_THREADS=8 \
-SAFETENSORS_FAST_GPU=1 \
-python3 -m sglang.launch_server \
-  --model-path /mnt/GLM-5-NVFP4-MTP \
-  --tp 8 \
-  --trust-remote-code \
-  --attention-backend flashinfer \
-  --moe-runner-backend cutlass \
-  --kv-cache-dtype bf16 \
-  --tool-call-parser glm47 \
-  --reasoning-parser glm45 \
-  --quantization modelopt_fp4 \
-  --disable-custom-all-reduce \
-  --enable-flashinfer-allreduce-fusion \
-  --mem-fraction-static 0.85 \
-  --cuda-graph-max-bs 32 \
-  --host 0.0.0.0 \
-  --port 5000 \
-  --served-model-name glm-5 \
-  --max-running-requests 64 \
-  --model-loader-extra-config '{"enable_multithread_load": true, "num_threads": 8}' \
-  --speculative-algorithm NEXTN \
-  --speculative-num-steps 3 \
-  --speculative-num-draft-tokens 4 \
-  --speculative-eagle-topk 1 \
-  --enable-metrics
+docker run --gpus all \
+  --ipc=host --shm-size=8g --network=host \
+  --ulimit memlock=-1 --ulimit stack=67108864 \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -v jit-cache:/cache/jit \
+  -e SGLANG_ENABLE_SPEC_V2=True \
+  -e SGLANG_ENABLE_JIT_DEEPGEMM=0 \
+  -e SGLANG_ENABLE_DEEP_GEMM=0 \
+  -e NCCL_GRAPH_FILE=/etc/nccl_graph_opt.xml \
+  -e NCCL_IB_DISABLE=1 \
+  -e NCCL_P2P_LEVEL=SYS \
+  -e NCCL_ALLOC_P2P_NET_LL_BUFFERS=1 \
+  -e NCCL_MIN_NCHANNELS=8 \
+  -e OMP_NUM_THREADS=8 \
+  -e SAFETENSORS_FAST_GPU=1 \
+  voipmonitor/sglang:cu130 \
+  python3 -m sglang.launch_server \
+    --model-path festr2/GLM-5-NVFP4-MTP \
+    --served-model-name glm-5 \
+    --reasoning-parser glm45 \
+    --tool-call-parser glm47 \
+    --tensor-parallel-size 8 \
+    --quantization modelopt_fp4 \
+    --kv-cache-dtype bf16 \
+    --trust-remote-code \
+    --cuda-graph-max-bs 32 \
+    --max-running-requests 64 \
+    --mem-fraction-static 0.85 \
+    --chunked-prefill-size 16384 \
+    --host 0.0.0.0 --port 5000 \
+    --disable-custom-all-reduce \
+    --enable-flashinfer-allreduce-fusion \
+    --enable-metrics \
+    --attention-backend flashinfer \
+    --fp4-gemm-backend b12x \
+    --moe-runner-backend b12x \
+    --model-loader-extra-config '{"enable_multithread_load": true, "num_threads": 16}' \
+    --speculative-algorithm NEXTN \
+    --speculative-num-steps 4 \
+    --speculative-num-draft-tokens 6 \
+    --speculative-eagle-topk 1 \
+    --json-model-override-args '{"index_topk_pattern": "FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS"}'
 ```
 
-### Without MTP (stable baseline)
-
-```bash
-NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml \
-NCCL_IB_DISABLE=1 \
-NCCL_P2P_LEVEL=SYS \
-NCCL_ALLOC_P2P_NET_LL_BUFFERS=1 \
-NCCL_MIN_NCHANNELS=8 \
-OMP_NUM_THREADS=8 \
-SAFETENSORS_FAST_GPU=1 \
-python3 -m sglang.launch_server \
-  --model-path lukealonso/GLM-5-NVFP4 \
-  --tp 8 \
-  --trust-remote-code \
-  --attention-backend flashinfer \
-  --moe-runner-backend flashinfer_cutlass \
-  --kv-cache-dtype bf16 \
-  --tool-call-parser glm47 \
-  --reasoning-parser glm45 \
-  --quantization modelopt_fp4 \
-  --disable-custom-all-reduce \
-  --enable-flashinfer-allreduce-fusion \
-  --mem-fraction-static 0.9 \
-  --cuda-graph-max-bs 8 \
-  --host 0.0.0.0 \
-  --port 5000 \
-  --served-model-name glm-5 \
-  --max-running-requests 8 \
-  --model-loader-extra-config '{"enable_multithread_load": true, "num_threads": 8}'
+For high-concurrency serving (4+ users), switch MoE backend:
 ```
-
-### Docker Compose example (orangezed)
-
-```yaml
-services:
-  sglang-glm5:
-    build: .
-    image: sglang-glm5:latest
-    container_name: sglang-glm5-nightly
-    runtime: nvidia
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
-      - CUDA_DEVICE_ORDER=PCI_BUS_ID
-      - NCCL_IB_DISABLE=1
-      - NCCL_P2P_LEVEL=SYS
-      - NCCL_ALLOC_P2P_NET_LL_BUFFERS=1
-      - NCCL_MIN_NCHANNELS=8
-      - OMP_NUM_THREADS=8
-      - SAFETENSORS_FAST_GPU=1
-      - NCCL_CUMEM_HOST_ENABLE=0
-      - FLASHINFER_DISABLE_VERSION_CHECK=1
-      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-    volumes:
-      - /mnt/raid0/models:/models:ro
-      - huggingface-cache:/root/.cache/huggingface
-    ports:
-      - "8003:5000"
-    command:
-      - python3
-      - -m
-      - sglang.launch_server
-      - --model-path=/models/festr2/GLM-5-NVFP4-MTP
-      - --served-model-name=glm-5
-      - --reasoning-parser=glm45
-      - --tool-call-parser=glm47
-      - --trust-remote-code
-      - --tp=8
-      - --mem-fraction-static=0.9
-      - --max-running-requests=64
-      - --kv-cache-dtype=bf16
-      - --quantization=modelopt_fp4
-      - --attention-backend=flashinfer
-      - --moe-runner-backend=deep_gemm
-      - --disable-custom-all-reduce
-      - --cuda-graph-max-bs=32
-      - --host=0.0.0.0
-      - --port=5000
-      - '--model-loader-extra-config={"enable_multithread_load": true, "num_threads": 8}'
-      - --speculative-algorithm=EAGLE
-      - --speculative-num-steps=3
-      - --speculative-eagle-topk=1
-      - --speculative-num-draft-tokens=4
-    cpuset: "0-63"
-    ipc: host
-    shm_size: "8g"
-    ulimits:
-      memlock: -1
-      stack: 67108864
+--fp4-gemm-backend cutlass --moe-runner-backend cutlass
+```
+Or for best high-concurrency throughput:
+```
+--fp4-gemm-backend flashinfer_cutedsl --moe-runner-backend flashinfer_cutedsl
 ```
 
 ### Launch parameter reference
@@ -413,13 +322,14 @@ MTP roughly **doubles throughput** over the non-MTP baseline:
 - Without MTP: 35-50 tok/s
 - With MTP: 70-105 tok/s
 
-### MoE runner backend comparison for MTP
+### MoE runner backend comparison
 
-| Backend | Performance | Notes |
+| Backend | Best for | Notes |
 |---|---|---|
-| `--moe-runner-backend cutlass` | Fastest | Best for MTP speculative decoding |
-| `--moe-runner-backend flashinfer_cutlass` | Slightly slower | Default fallback |
-| `--moe-runner-backend deep_gemm` | Falls back to cutlass | DeepGemm not supported on SM120; misleading in logs |
+| `b12x` | conc 1-2 (single user) | Fused kernel, lowest latency. 95 tok/s at conc=1 with MTP. |
+| `cutlass` | conc 4-32 | Better batching efficiency. 962 tok/s at conc=32 with MTP. |
+| `flashinfer_cutedsl` | conc 32-64 | Best high-concurrency. **1425 tok/s** at conc=64 with MTP. |
+| `deep_gemm` | -- | Falls back to cutlass (not supported on SM120) |
 
 ---
 
@@ -471,20 +381,75 @@ Plan cooling and PSU capacity accordingly. An 8-GPU setup draws up to **4,800W**
 
 ## Benchmark Results
 
-### Decode throughput (tok/s) -- single batch
+### Decode throughput — MTP ON, 8x RTX PRO 6000, TP=8 (March 2026)
 
-| Configuration | 0 Context | 15K Context | 100K Context | 200K Context |
-|---|---|---|---|---|
-| NVFP4, no MTP (luke, early) | ~50 | -- | -- | -- |
-| NVFP4, no MTP (Festr/JTazz) | 35-44 | 30 | -- | -- |
-| NVFP4 + MTP (EAGLE) | 70-105 | -- | 60-80 | -- |
-| NVFP4 + MTP (latest, Festr) | ~100 | -- | 60-80 | ~50 |
-| NVFP4 + MTP (orangezed) | 97.2 | -- | -- | -- |
+**b12x** (`--moe-runner-backend b12x`):
 
-### Concurrent throughput (with MTP)
+```
+ctx\conc     1      2      4      8     16     32     64   128
+   0      95.1  173.4  186.5  266.8  363.4  709.5  924.3    -
+  16k     83.0  150.4  161.2  225.8   skip   skip   skip    -
+  32k     77.7  130.3  143.9   skip   skip   skip   skip    -
+  64k     73.4  120.5   skip   skip   skip   skip   skip    -
+ 128k     67.7   skip   skip   skip   skip   skip   skip    -
+```
 
-- 3 running requests: **133-135 tok/s** generation throughput (accept rate 0.55-0.70)
-- Accept length: 2.19-2.80 tokens
+**cutlass** (`--moe-runner-backend cutlass`):
+
+```
+ctx\conc     1      2      4      8     16     32    64   128
+   0      93.6  161.2  242.3  376.8  630.9  961.6     -    -
+  16k     83.0  137.9  200.2  316.2   skip   skip     -    -
+  32k     70.0  119.2  191.8   skip   skip   skip     -    -
+  64k     73.2  112.4   skip   skip   skip   skip     -    -
+ 128k     67.6   skip   skip   skip   skip   skip     -    -
+```
+
+**flashinfer_cutedsl** (`--moe-runner-backend flashinfer_cutedsl`):
+
+```
+ctx\conc     1      2      4      8     16     32      64   128
+   0      93.7  156.9  243.9  392.4  590.1  994.5  1424.6    -
+  16k     82.9  141.4  203.6  331.5   skip   skip    skip    -
+  32k     73.4  122.7  186.5   skip   skip   skip    skip    -
+  64k     66.3  112.6   skip   skip   skip   skip    skip    -
+ 128k     54.8   skip   skip   skip   skip   skip    skip    -
+```
+
+### Decode throughput — MTP OFF, 8x RTX PRO 6000, TP=8
+
+**b12x:**
+
+```
+ctx\conc     1      2      4      8     16     32     64   128
+   0      51.6   99.5  180.2  301.9  315.2  451.2  590.7    -
+  16k     44.3   84.3  143.1  228.3   skip   skip   skip    -
+  32k     42.4   73.6  126.4   skip   skip   skip   skip    -
+  64k     36.2   64.2   skip   skip   skip   skip   skip    -
+ 128k     31.1   skip   skip   skip   skip   skip   skip    -
+```
+
+**cutlass:**
+
+```
+ctx\conc     1      2      4      8     16     32      64   128
+   0      50.4   95.2  164.2  276.9  427.4  659.7  1010.6    -
+  16k     43.6   81.1  131.6  209.4   skip   skip    skip    -
+  32k     41.7   71.0  117.4   skip   skip   skip    skip    -
+  64k     35.5   62.0   skip   skip   skip   skip    skip    -
+ 128k     30.6   skip   skip   skip   skip   skip    skip    -
+```
+
+### Summary — best backend by scenario
+
+| Concurrency | MTP OFF | MTP ON |
+|-------------|---------|--------|
+| 1-2 users | b12x (52-100 tok/s) | **b12x (95-173 tok/s)** |
+| 4-8 users | b12x (180-302) | cutedsl (244-392) |
+| 16-32 users | cutlass (427-660) | cutedsl (590-995) |
+| 64 users | cutlass (1011) | **cutedsl (1425)** |
+
+MTP doubles single-user throughput: 51→95 tok/s (+84%).
 
 ### Prefill throughput
 
@@ -494,13 +459,9 @@ Plan cooling and PSU capacity accordingly. An 8-GPU setup draws up to **4,800W**
 
 | Phase | Duration |
 |---|---|
-| Model load (multithread, 8-16 threads) | ~36 seconds |
+| Model load (multithread, 16 threads) | ~36 seconds |
 | CUDA graph capture | ~208 seconds |
 | **Total startup** | **~7-8 minutes** |
-
-### FP8 KV cache speed (broken, for reference)
-
-FP8 KV cache: 20 tok/s (vs 90 tok/s with bf16 KV cache) -- confirmed broken on SM120.
 
 ![GLM-5 MTP at 0 context](../images/1477791305089421312_image.png)
 ![GLM-5 MTP at 100K context](../images/1477791594039083018_image.png)

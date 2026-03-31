@@ -28,7 +28,7 @@ Community-sourced knowledge base for running large language models (Qwen3.5-397B
 - [FlashInfer](inference-engines/flashinfer.md) — CUTLASS, SM120, bug fixes
 
 ### Optimization
-- [NCCL Tuning](optimization/nccl-tuning.md) — Env vars, P2P levels, graph XML fix
+- [NCCL Tuning](optimization/nccl-tuning.md) — Env vars, P2P levels, graph XML fix, tuner plugin
 - [PCIe Oneshot AllReduce](optimization/pcie-oneshot-allreduce.md) — 5–11% faster decode, setup guide, benchmarks
 - [NVFP4 Quantization](optimization/nvfp4-quantization.md) — Setup, calibration, models
 - [Speculative Decoding](optimization/speculative-decoding.md) — MTP configs, EAGLE

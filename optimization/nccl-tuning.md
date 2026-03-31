@@ -14,6 +14,7 @@ NCCL (NVIDIA Collective Communications Library) configuration is one of the most
 - [Performance Comparison Tables](#performance-comparison-tables)
 - [Debugging NCCL Issues](#debugging-nccl-issues)
 - [Complete Configuration Examples](#complete-configuration-examples)
+- [NCCL Tuner Plugin (voipmonitor/nccl-tuner-amd)](#nccl-tuner-plugin)
 
 ---
 
@@ -464,4 +465,145 @@ sysctl -w kernel.sched_migration_cost_ns=50000
 
 # Set CPU affinity for SGLang
 export SGLANG_SET_CPU_AFFINITY=1
+```
+
+---
+
+## NCCL Tuner Plugin
+
+**Repository:** [voipmonitor/nccl-tuner-amd](https://github.com/voipmonitor/nccl-tuner-amd)
+
+A tuner plugin (API v5) that optimizes NCCL AllReduce protocol selection on AMD EPYC systems with PCIe-connected GPUs. NCCL's default cost model is tuned for NVLink and makes suboptimal choices on PCIe — specifically, LL128 is completely disabled for PHB/SYS paths, creating a latency gap in the 512K–2M range.
+
+### How It Works
+
+The plugin overrides NCCL's protocol selection:
+
+| GPUs | LL | LL128 | Simple |
+|------|-----|-------|--------|
+| ≤4 (same NUMA) | 0–576K | — | >576K |
+| >4 (cross-socket) | 0–448K | 448K–3M | >3M |
+
+Thresholds are tunable via env vars: `NCCL_TUNER_LL_MAX_4GPU`, `NCCL_TUNER_LL_MAX_8GPU`, `NCCL_TUNER_LL128_MAX_8GPU`.
+
+### Setup
+
+```bash
+git clone https://github.com/voipmonitor/nccl-tuner-amd.git
+cd nccl-tuner-amd && make    # produces libnccl-tuner.so
+
+# Add to your launch environment:
+export NCCL_TUNER_PLUGIN=/path/to/libnccl-tuner.so
+export NCCL_PROTO=LL,LL128,Simple    # required: enables all 3 protocols
+```
+
+Zero dependencies — builds with just gcc, no NCCL source or CUDA SDK needed.
+
+### AllReduce Benchmark Results
+
+Tested on 8× RTX PRO 6000 Blackwell, AMD EPYC 9575F (Turin), dual-socket. NCCL 2.28.3, nccl-tests.
+
+#### 4 GPU (same NUMA socket)
+
+```
+Size      Baseline   Plugin     Δ
+8K        1.10       1.09      -1%
+64K       7.70       8.46     +10%
+256K     13.96      14.01       0%
+512K     17.39      17.50      +1%
+1M       25.13      25.17       0%
+4M       39.09      39.81      +2%
+16M      45.58      45.34       0%
+Avg BW   14.38      14.45    +0.5%
+```
+
+Minimal impact — expected. Plugin only extends LL range slightly, no LL128 for ≤4 GPUs.
+
+#### 8 GPU (cross-socket: 4+4 across two NUMA nodes)
+
+```
+Size      Baseline   Plugin     Δ
+64K       4.96       4.91      -1%
+256K      9.36       8.99      -4%
+512K     13.06      14.43     +10%    ← LL128 zone starts
+1M       16.47      21.32     +29%    ← LL128
+2M       19.10      28.67     +50%    ← LL128 peak
+4M       33.46      33.34       0%
+16M      40.39      40.19       0%
+Avg BW   11.05      11.94     +8%
+```
+
+**The LL128 zone (512K–2M) delivers 10–50% improvement.** This is where LL saturates but Simple isn't yet efficient.
+
+### LLM Inference Impact
+
+Tested GLM-5 NVFP4 (TP=8, b12x MoE) and Qwen3.5-397B NVFP4 (TP=4, cutlass MoE). Full decode benchmark across all concurrency levels and context lengths (0–128K).
+
+**Result: zero measurable impact on decode throughput.**
+
+#### Why: AllReduce Message Sizes During Inference
+
+NCCL call trace from Qwen3.5-397B TP=4 (PyNCCL instrumentation during CUDA graph capture):
+
+```
+AllReduce size distribution (per forward pass = ~363 calls/layer):
+
+Size       Bytes      Calls    %      Protocol Zone
+  8 KB       8,192      363    8.3%   LL
+ 16 KB      16,384      363    8.3%   LL
+ 32 KB      32,768      363    8.3%   LL
+ 64 KB      65,536      363    8.3%   LL
+ 96 KB      98,304      363    8.3%   LL
+128 KB     131,072      363    8.3%   LL
+192 KB     196,608      363    8.3%   LL
+256 KB     262,144      363    8.3%   LL
+320 KB     327,680      363    8.3%   LL
+384 KB     393,216      363    8.3%   LL
+448 KB     458,752      363    8.3%   LL
+512 KB     524,288      363    8.3%   LL128 ←
+
+LL (≤448K):    91.7%
+LL128 (>448K):  8.3%   (only bs=64)
+Simple (>3M):   0.0%
+```
+
+The sizes correspond to `batch_size × hidden_size_per_shard × 2B (bf16)`. With Qwen3.5 hidden=4096 sharded across TP=4:
+- bs=1 → 8 KB, bs=2 → 16 KB, ..., bs=64 → 512 KB
+
+**91.7% of AllReduce calls fall in the LL zone where the plugin changes nothing.** Only the maximum batch size (64) reaches 512 KB — barely into LL128 territory. At typical serving concurrency (1–16 requests), all AllReduce calls are ≤256 KB, fully in the LL zone.
+
+#### When Would the Plugin Help?
+
+The plugin would benefit workloads with **larger AllReduce payloads** (>512K per call):
+
+- **TP=2 instead of TP=4** — doubles the per-GPU hidden size, doubling AllReduce payload
+- **Dense models** (not MoE) — larger hidden states
+- **Expert Parallelism (EP)** — all-to-all/allgather with larger payloads
+- **Higher TP with larger models** — models with hidden_size >8K
+- **Non-CUDA-graph workloads** — prefill, dynamic batching with large batch sizes
+
+### FlashInfer AllReduce Fusion: Not Available on SM120
+
+A related finding: `--enable-flashinfer-allreduce-fusion` does **not** work on RTX PRO 6000 (SM120). The code checks:
+
+```python
+# communicator.py:100
+(_is_sm90_supported or _is_sm100_supported)
+```
+
+SM120 (capability 12.0) satisfies neither condition. All allreduce operations go through NCCL regardless of this flag. This has been verified:
+
+```
+>>> is_sm90_supported() → False
+>>> is_sm100_supported() → False
+>>> torch.cuda.get_device_capability(0) → (12, 0)
+```
+
+### Verification
+
+Confirm the plugin is loaded:
+```bash
+NCCL_DEBUG=INFO your_app 2>&1 | grep TUNER
+# TUNER/Plugin: Using AMD-Turin-Optimal (v5)
+# Successfully loaded external tuner plugin
 ```

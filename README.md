@@ -2,7 +2,7 @@
 
 Community-sourced knowledge base for running large language models (Qwen3.5-397B, MiniMax M2.5, Kimi-K2.5, GLM-5) on NVIDIA RTX 6000 Pro (Blackwell, SM120) GPUs in 2×, 4×, and 8× PCIe configurations **without NVLink**.
 
-> Synthesized from ~5,000 Discord messages, 300+ screenshots, and months of community experimentation.
+> Synthesized from ~5,000 [Discord](https://discord.gg/pYCvaQTf) messages, 300+ screenshots, and months of community experimentation.
 
 ## Quick Links
 

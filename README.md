@@ -34,6 +34,9 @@ Community-sourced knowledge base for running large language models (Qwen3.5-397B
 - [Speculative Decoding](optimization/speculative-decoding.md) — MTP configs, EAGLE
 - [Docker Images](optimization/docker-images.md) — Images, compose, custom builds
 
+### Community
+- [Daily Summaries](daily-summaries/) — Auto-generated daily digests of Discord activity
+
 ### Results & Troubleshooting
 - [Benchmark Results](benchmarks/results.md) — Consolidated tables across all models
 - [KLD Evaluation](benchmarks/kld-evaluation.md) — Quantization quality (KL divergence vs FP8 reference)

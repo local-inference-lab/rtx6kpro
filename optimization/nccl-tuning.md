@@ -318,13 +318,12 @@ For PCIe topologies (without NVLink), luke's PCIe oneshot allreduce kernel repla
 
 See **[PCIe Oneshot AllReduce Guide](pcie-oneshot-allreduce.md)** for setup, benchmarks, and patch instructions.
 
-Quick summary (Qwen3.5-397B, TP=4, 4× RTX PRO 6000):
+Quick summary — consistent +7% across models:
 
-| Concurrency | PCIe Oneshot | NCCL Only | Improvement |
-|---|---|---|---|
-| 1 | 74.9 tok/s | 67.3 tok/s | +11.3% |
-| 16 | 608.1 tok/s | 577.3 tok/s | +5.3% |
-| 64 | 1376.9 tok/s | 1283.1 tok/s | +7.3% |
+| Model | Config (conc=1) | PCIe Oneshot | NCCL Only | Improvement |
+|---|---|---|---|---|
+| Qwen3.5-397B TP=4 | cutlass | 76.1 tok/s | 70.6 tok/s | +7.8% |
+| GLM-5 TP=8 | b12x | 56.6 tok/s | 52.8 tok/s | +7.2% |
 
 ---
 
@@ -543,14 +542,23 @@ Tested GLM-5 NVFP4 (TP=8, b12x MoE) and Qwen3.5-397B NVFP4 (TP=4, cutlass MoE). 
 
 ### Better Alternative: PCIe Oneshot AllReduce + Fusion
 
-Instead of the NCCL tuner plugin, use lukealonso's **PCIe oneshot allreduce** with fused RMSNorm, which directly replaces NCCL for small messages (<120KB) where it's 1.3–1.8× faster.
+Instead of the NCCL tuner plugin, use lukealonso's **PCIe oneshot allreduce** with fused RMSNorm, which directly replaces NCCL for small messages where it's 1.3–1.8× faster. Auto crossover: **120 KB on 4 GPUs**, **48 KB on 8 GPUs**.
 
 ```
 --enable-pcie-oneshot-allreduce            # PCIe oneshot for small messages
 --enable-pcie-oneshot-allreduce-fusion      # fused allreduce + RMSNorm kernel
 ```
 
-See [PCIe Oneshot AllReduce](pcie-oneshot-allreduce.md) for details. Measured **+6–9% decode throughput** on Qwen3.5-397B TP=4.
+See [PCIe Oneshot AllReduce](pcie-oneshot-allreduce.md) for details. Measured a consistent **+7% decode throughput** across both Qwen3.5 and GLM-5.
+
+#### PCIe Oneshot Benchmark Results (conc=1, context=0)
+
+| Model | Config | Without PCIe Oneshot | With PCIe Oneshot | Improvement |
+|---|---|---|---|---|
+| Qwen3.5-397B TP=4 | cutlass, no MTP | 70.6 tok/s | 76.1 tok/s | **+7.8%** |
+| Qwen3.5-397B TP=4 | b12x, no MTP | — | 98.4 tok/s | (b12x baseline N/A) |
+| Qwen3.5-397B TP=4 | b12x + MTP | — | 165.9 tok/s | (b12x+MTP baseline N/A) |
+| GLM-5 TP=8 | b12x, no MTP | 52.8 tok/s | 56.6 tok/s | **+7.2%** |
 
 > **Do NOT use** `--disable-custom-all-reduce` — it disables PCIe oneshot too.
 > **Do NOT use** `--enable-flashinfer-allreduce-fusion` — it does not work on SM120.

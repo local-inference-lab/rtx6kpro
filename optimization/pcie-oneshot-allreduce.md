@@ -1,6 +1,6 @@
 # PCIe Oneshot AllReduce for Inference
 
-Custom PCIe allreduce kernel that replaces NCCL for small messages on PCIe topologies (without NVLink). Provides **5–11% faster decode throughput** on RTX PRO 6000 Blackwell systems.
+Custom PCIe allreduce kernel that replaces NCCL for small messages on PCIe topologies (without NVLink). Provides a consistent **~7% faster decode throughput** across models on RTX PRO 6000 Blackwell systems (verified on both Qwen3.5 TP=4 and GLM-5 TP=8).
 
 ## Table of Contents
 
@@ -37,7 +37,7 @@ The kernel uses a one-shot approach: all GPUs write their data to all peers simu
 
 - **Double-buffered**: eliminates end-barrier overhead
 - **Fused AllReduce + RMSNorm**: combines reduction with normalization in one kernel launch
-- **Auto-crossover**: benchmarks at startup to find the optimal size threshold vs NCCL
+- **Auto-crossover**: benchmarks at startup to find the optimal size threshold vs NCCL. Verified thresholds: **120 KB on 4 GPUs**, **48 KB on 8 GPUs**
 - **Topology-aware**: auto-detects PCIe (non-NVLink) configurations
 
 ---
@@ -107,6 +107,26 @@ xychart-beta
 | NCCL only + SYS | 69.7 | 1381.1 | +3.6% at c=1 |
 
 `NCCL_P2P_LEVEL=SYS` has no effect on PCIe oneshot (it bypasses NCCL for small messages). For NCCL-only, SYS provides a small improvement.
+
+### Cross-Model Verification (conc=1, context=0)
+
+PCIe oneshot delivers a consistent ~7% improvement across different models and GPU counts:
+
+| Model | TP | MoE Backend | Without Oneshot | With Oneshot | Improvement |
+|---|---|---|---|---|---|
+| Qwen3.5-397B | 4 | cutlass | 70.6 tok/s | 76.1 tok/s | **+7.8%** |
+| Qwen3.5-397B | 4 | b12x | — | 98.4 tok/s | — |
+| Qwen3.5-397B | 4 | b12x + MTP | — | 165.9 tok/s | — |
+| GLM-5 | 8 | b12x | 52.8 tok/s | 56.6 tok/s | **+7.2%** |
+
+### Auto Crossover Thresholds
+
+The auto-crossover benchmark runs at server startup and determines the message size below which PCIe oneshot is used instead of NCCL:
+
+| GPU Count | Crossover Threshold | Notes |
+|---|---|---|
+| 4 GPUs (same NUMA) | **120 KB** | Higher threshold — oneshot wins over a wider range |
+| 8 GPUs (cross-NUMA) | **48 KB** | Lower threshold — cross-socket overhead reduces oneshot advantage |
 
 ---
 

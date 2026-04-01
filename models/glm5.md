@@ -454,6 +454,15 @@ ctx\conc     1      2      4      8     16     32      64   128
 
 MTP doubles single-user throughput: 51→95 tok/s (+84%).
 
+### PCIe Oneshot AllReduce Impact (MTP OFF, b12x, TP=8, conc=1, context=0)
+
+| Config | tok/s | Notes |
+|---|---|---|
+| b12x + PCIe oneshot | **56.6** | +7.2% vs NCCL-only baseline |
+| b12x (NCCL only) | 52.8 | Baseline without PCIe oneshot |
+
+PCIe oneshot allreduce provides a consistent **+7% decode throughput** improvement, matching the gains seen on Qwen3.5 TP=4. Auto crossover: 48 KB on 8 GPUs.
+
 ### Prefill throughput
 
 - Single batch prefill: **~4,000 tok/s**

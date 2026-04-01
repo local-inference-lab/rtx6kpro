@@ -17,7 +17,7 @@
 - [Decode Context Parallel (DCP)](#decode-context-parallel-dcp)
 - [MOE Runner Backend Selection](#moe-runner-backend-selection)
 - [EAGLE Speculative Decoding](#eagle-speculative-decoding)
-- [FlashInfer Allreduce Fusion](#flashinfer-allreduce-fusion)
+- [PCIe Oneshot Allreduce Fusion](#pcie-oneshot-allreduce-fusion)
 - [Performance Tuning Tips](#performance-tuning-tips)
 - [Profiling](#profiling)
 - [Relevant PRs](#relevant-prs)
@@ -114,8 +114,10 @@ RUN sed -i "s/DEEPGEMM_SCALE_UE8M0 = DEEPGEMM_BLACKWELL/DEEPGEMM_SCALE_UE8M0 = F
 | `--max-running-requests N` | Maximum concurrent requests. |
 | `--context-length N` | Override maximum context length. |
 | `--chunked-prefill-size N` | Chunk size for prefill. 4096-32768 typical. |
-| `--disable-custom-all-reduce` | Required for PCIe-only setups (custom allreduce is NVLink-optimized). |
-| `--enable-flashinfer-allreduce-fusion` | Fuse allreduce with attention. Measurable throughput gain. |
+| `--disable-custom-all-reduce` | Legacy flag. No longer needed -- use `--enable-pcie-oneshot-allreduce` instead. |
+| `--enable-flashinfer-allreduce-fusion` | Legacy flag. Does not work on SM120. Use `--enable-pcie-oneshot-allreduce-fusion` instead. |
+| `--enable-pcie-oneshot-allreduce` | PCIe oneshot allreduce -- recommended for PCIe-only setups (replaces `--disable-custom-all-reduce`). |
+| `--enable-pcie-oneshot-allreduce-fusion` | Fuses allreduce with attention. Measurable throughput gain on PCIe. |
 | `--page-size 64` | KV cache page size. |
 | `--mamba-scheduler-strategy extra_buffer` | Scheduler strategy for hybrid models (Qwen3.5 GDN). |
 | `--skip-server-warmup` | Skip warmup, saves ~3 min startup. |
@@ -193,8 +195,8 @@ python3 -m sglang.launch_server \
   --tool-call-parser qwen3 \
   --reasoning-parser qwen3 \
   --quantization modelopt_fp4 \
-  --disable-custom-all-reduce \
-  --enable-flashinfer-allreduce-fusion \
+  --enable-pcie-oneshot-allreduce \
+  --enable-pcie-oneshot-allreduce-fusion \
   --mem-fraction-static 0.9 \
   --cuda-graph-max-bs 8 \
   --host 0.0.0.0 --port 5000 \
@@ -332,8 +334,8 @@ python3 -m sglang.launch_server \
   --tool-call-parser glm47 \
   --reasoning-parser glm45 \
   --quantization modelopt_fp4 \
-  --disable-custom-all-reduce \
-  --enable-flashinfer-allreduce-fusion \
+  --enable-pcie-oneshot-allreduce \
+  --enable-pcie-oneshot-allreduce-fusion \
   --mem-fraction-static 0.85 \
   --cuda-graph-max-bs 32 \
   --host 0.0.0.0 --port 5000 \
@@ -374,8 +376,8 @@ python3 -m sglang.launch_server \
   --tool-call-parser glm47 \
   --reasoning-parser glm45 \
   --quantization modelopt_fp4 \
-  --disable-custom-all-reduce \
-  --enable-flashinfer-allreduce-fusion \
+  --enable-pcie-oneshot-allreduce \
+  --enable-pcie-oneshot-allreduce-fusion \
   --mem-fraction-static 0.9 \
   --cuda-graph-max-bs 8 \
   --host 0.0.0.0 --port 5000 \
@@ -469,17 +471,19 @@ EAGLE3 support for Kimi K2.5 is in development:
 
 ---
 
-## FlashInfer Allreduce Fusion
+## PCIe Oneshot Allreduce Fusion
 
-`--enable-flashinfer-allreduce-fusion` fuses allreduce with attention operations. This is gated to SM120 and uses TRT-LLM allreduce fusion with norm through FlashInfer, optimized for RTX 6000 Pro P2P over PCIe.
+`--enable-pcie-oneshot-allreduce-fusion` fuses allreduce with attention operations, optimized for RTX 6000 Pro P2P over PCIe.
 
-This provides a measurable throughput gain and should be used on all RTX 6000 Pro setups.
+This provides a measurable throughput gain and should be used on all RTX 6000 Pro setups. Use together with `--enable-pcie-oneshot-allreduce`.
+
+> **Note:** The older `--enable-flashinfer-allreduce-fusion` flag does not work on SM120 and has been superseded by `--enable-pcie-oneshot-allreduce-fusion`.
 
 ---
 
 ## Performance Tuning Tips
 
-1. **Use `--disable-custom-all-reduce`** on PCIe-only setups. The default custom allreduce is optimized for NVLink.
+1. **Use `--enable-pcie-oneshot-allreduce --enable-pcie-oneshot-allreduce-fusion`** on PCIe-only setups. PCIe oneshot is the recommended allreduce path (replaces the old `--disable-custom-all-reduce`).
 
 2. **NCCL Graph XML on AMD Turin/Genoa**: Download from `https://www.voipmonitor.org/nccl_graph_opt.xml`. Measured +11% throughput improvement on Genoa with 2 NUMA nodes.
 

@@ -535,11 +535,25 @@ Avg BW   11.05      11.94     +8%
 
 **The LL128 zone (512K–2M) delivers 10–50% improvement.** This is where LL saturates but Simple isn't yet efficient.
 
-### LLM Inference Impact
+### LLM Inference Impact — NCCL Tuner Plugin
 
 Tested GLM-5 NVFP4 (TP=8, b12x MoE) and Qwen3.5-397B NVFP4 (TP=4, cutlass MoE). Full decode benchmark across all concurrency levels and context lengths (0–128K).
 
-**Result: zero measurable impact on decode throughput.**
+**Result: zero measurable impact on decode throughput** — allreduce message sizes are too small for the LL128 zone (see below).
+
+### Better Alternative: PCIe Oneshot AllReduce + Fusion
+
+Instead of the NCCL tuner plugin, use lukealonso's **PCIe oneshot allreduce** with fused RMSNorm, which directly replaces NCCL for small messages (<120KB) where it's 1.3–1.8× faster.
+
+```
+--enable-pcie-oneshot-allreduce            # PCIe oneshot for small messages
+--enable-pcie-oneshot-allreduce-fusion      # fused allreduce + RMSNorm kernel
+```
+
+See [PCIe Oneshot AllReduce](pcie-oneshot-allreduce.md) for details. Measured **+6–9% decode throughput** on Qwen3.5-397B TP=4.
+
+> **Do NOT use** `--disable-custom-all-reduce` — it disables PCIe oneshot too.
+> **Do NOT use** `--enable-flashinfer-allreduce-fusion` — it does not work on SM120.
 
 #### Why: AllReduce Message Sizes During Inference
 

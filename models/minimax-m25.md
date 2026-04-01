@@ -168,8 +168,8 @@ python3 -m sglang.launch_server \
   --quantization modelopt_fp4 \
   --attention-backend flashinfer \
   --moe-runner-backend flashinfer_cutlass \
-  --disable-custom-all-reduce \
-  --enable-flashinfer-allreduce-fusion \
+  --enable-pcie-oneshot-allreduce \
+  --enable-pcie-oneshot-allreduce-fusion \
   --sleep-on-idle \
   --host 0.0.0.0 --port 5000
 ```

@@ -34,6 +34,7 @@ Community-sourced knowledge base for running large language models (Qwen3.5-397B
 - [NVFP4 Quantization](optimization/nvfp4-quantization.md) — Setup, calibration, models
 - [Speculative Decoding](optimization/speculative-decoding.md) — MTP configs, EAGLE
 - [Docker Images](optimization/docker-images.md) — Images, compose, custom builds
+- [I/O Tuning (md RAID5)](optimization/io-tuning.md) — stripe_cache, group_idle, Docker overlay2
 
 ### Community
 - [Daily Summaries](daily-summaries/) — Auto-generated daily digests of Discord activity

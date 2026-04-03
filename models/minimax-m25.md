@@ -154,7 +154,6 @@ docker run -it --rm \
 ```bash
 SGL_DISABLE_TP_MEMORY_INBALANCE_CHECK=True \
 NCCL_P2P_LEVEL=4 \
-PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 SGLANG_ENABLE_JIT_DEEPGEMM=0 \
 python3 -m sglang.launch_server \
   --model lukealonso/MiniMax-M2.5-NVFP4 \

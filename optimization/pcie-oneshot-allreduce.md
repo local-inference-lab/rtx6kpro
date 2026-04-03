@@ -356,6 +356,25 @@ rm -rf /root/.cache/torch_extensions/
 - `--disable-custom-all-reduce` overrides everything — do not combine with oneshot flag.
 - Check logs for: `PCIe oneshot allreduce enabled (max_size=auto)`
 
+### `RuntimeError: invalid argument` at `pcie_allreduce.cu:321`
+
+**Root cause:** `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` is incompatible with `--enable-pcie-oneshot-allreduce`.
+
+The expandable segments allocator uses expandable virtual memory ranges instead of fixed-size allocations. This breaks the IPC memory handle exchange that pcie_allreduce relies on — IPC handles require contiguous physical GPU memory backing, which expandable segments does not guarantee.
+
+The crash occurs during `find_crossover_size()` → `get_graph_buffer_ipc_meta()` at startup.
+
+**Fix:** Remove `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` from your environment when using PCIe oneshot allreduce.
+
+```bash
+# CRASHES:
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
+python3 -m sglang.launch_server ... --enable-pcie-oneshot-allreduce
+
+# WORKS:
+python3 -m sglang.launch_server ... --enable-pcie-oneshot-allreduce
+```
+
 ### Performance is same as NCCL
 
 - **Most likely cause: missing nvidia P2P driver config.** See [Critical Prerequisite](#critical-prerequisite-nvidia-p2p-driver-config) above.

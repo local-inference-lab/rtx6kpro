@@ -147,7 +147,7 @@ RUN sed -i "s/DEEPGEMM_SCALE_UE8M0 = DEEPGEMM_BLACKWELL/DEEPGEMM_SCALE_UE8M0 = F
 | `NCCL_ALLOC_P2P_NET_LL_BUFFERS=1` | Allocate LL buffers for P2P. |
 | `SAFETENSORS_FAST_GPU=1` | Faster weight loading. |
 | `OMP_NUM_THREADS=8` | Limit OpenMP threads. |
-| `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` | Expandable CUDA memory segments. |
+| `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` | Expandable CUDA memory segments. **Incompatible with `--enable-pcie-oneshot-allreduce`** — causes crash at `pcie_allreduce.cu:321`. |
 | `FLASHINFER_DISABLE_VERSION_CHECK=1` | Skip FlashInfer version check. |
 
 ---

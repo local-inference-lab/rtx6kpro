@@ -154,7 +154,8 @@ Alternative (simpler but less optimal): `export NCCL_PROTO=LL`
 export OMP_NUM_THREADS=8
 export SAFETENSORS_FAST_GPU=1
 export NVIDIA_TF32_OVERRIDE=1
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+## Do NOT set expandable_segments if using --enable-pcie-oneshot-allreduce (crashes IPC handles)
+# export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export FLASHINFER_DISABLE_VERSION_CHECK=1
 export NCCL_CUMEM_HOST_ENABLE=0
 

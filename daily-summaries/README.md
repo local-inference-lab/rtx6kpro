@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-03](2026-04/2026-04-03.md) | b12x 0.7.1 fixes OOM and >8 concurrency crashes on SM120; attention backend now launches for all bat |
 | [2026-04-02](2026-04/2026-04-02.md) | b12x v0.7.0 released: fixes OOM on prefill, adds attention backend support (bs=1 only for now); new  |
 | [2026-04-01](2026-04/2026-04-01.md) | PCIe oneshot AllReduce + fusion gives +7-8% decode throughput on SM120 across all tested models (Qwe |
 | [2026-03-31](2026-03/2026-03-31.md) | b12x fused MoE kernel launched for SM120: 29–37% faster than cutlass at conc 1–8 on Qwen3.5-397B |
@@ -48,6 +49,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-03](2026-04/2026-04-03.md) | b12x 0.7.1 fixes OOM and >8 concurrency crashes on SM120; attention backend now launches for all bat |
 | [2026-04-02](2026-04/2026-04-02.md) | b12x v0.7.0 released: fixes OOM on prefill, adds attention backend support (bs=1 only for now); new  |
 | [2026-04-01](2026-04/2026-04-01.md) | PCIe oneshot AllReduce + fusion gives +7-8% decode throughput on SM120 across all tested models (Qwe |
 | [2026-02-28](2026-02/2026-02-28.md) | GLM-5 NVFP4 on 8 cards: 44 tok/s @ 0 ctx, 30 @ 150k; 4000 tok/s prefill at 400W |

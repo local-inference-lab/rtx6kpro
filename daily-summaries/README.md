@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-05](2026-04/2026-04-05.md) | vLLM 0.19 MoE TP regression identified and fixed — PR vllm-project/vllm#38990 awaiting merge; bran |
 | [2026-04-04](2026-04/2026-04-04.md) | Qwen3.5-397B NVFP4 benchmarks on 4× RTX PRO 6000 (sglang b12x 0.7.2): MTP on = 180 tok/s single-use |
 | [2026-04-03](2026-04/2026-04-03.md) | b12x 0.7.1 fixes OOM and >8 concurrency crashes on SM120; attention backend now launches for all bat |
 | [2026-04-02](2026-04/2026-04-02.md) | b12x v0.7.0 released: fixes OOM on prefill, adds attention backend support (bs=1 only for now); new  |
@@ -50,6 +51,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-05](2026-04/2026-04-05.md) | vLLM 0.19 MoE TP regression identified and fixed — PR vllm-project/vllm#38990 awaiting merge; bran |
 | [2026-04-04](2026-04/2026-04-04.md) | Qwen3.5-397B NVFP4 benchmarks on 4× RTX PRO 6000 (sglang b12x 0.7.2): MTP on = 180 tok/s single-use |
 | [2026-04-03](2026-04/2026-04-03.md) | b12x 0.7.1 fixes OOM and >8 concurrency crashes on SM120; attention backend now launches for all bat |
 | [2026-04-02](2026-04/2026-04-02.md) | b12x v0.7.0 released: fixes OOM on prefill, adds attention backend support (bs=1 only for now); new  |

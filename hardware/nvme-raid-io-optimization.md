@@ -1,8 +1,8 @@
 # NVMe RAID I/O Optimization for Docker GPU Servers
 
-Comprehensive benchmark results and optimization guide for md RAID arrays with NVMe SSDs running Docker containers on RunPod GPU infrastructure (53 bare-metal servers, 8x RTX 5090 each).
+Comprehensive benchmark results and optimization guide for md RAID arrays with NVMe SSDs running Docker containers on GPU infrastructure.
 
-**Test environment:** Inferno-10 (I10), AMD EPYC 256-core, 1 TB RAM, Ubuntu 22.04, kernel 6.8.0-106-generic
+**Test environment:** AMD EPYC 256-core, 1 TB RAM, Ubuntu 22.04, kernel 6.8.0-106-generic
 
 ## Table of Contents
 

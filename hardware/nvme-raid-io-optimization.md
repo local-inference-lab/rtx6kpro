@@ -236,17 +236,47 @@ RAID5 3x Samsung PM9A3, effect of `group_thread_cnt` and `stripe_cache_size`:
 
 #### RAID5 vs RAID10 (3x Samsung PM9A3)
 
-| Test | RAID10 | RAID5 |
-|---|---|---|
-| Sequential Write 1M | **6.7 GB/s** | 1.77 GB/s |
-| Sequential Read 1M | 8.4 GB/s | 8.5 GB/s |
-| Random Write 4K | 96,600 IOPS | **109,000 IOPS** |
-| Random Read 4K | 126,000 IOPS | 134,000 IOPS |
-| Docker create (nosync+libnosync) | 5.4s | 5.7s |
-| Docker stop (nosync+libnosync) | 2.6s | 2.6s |
-| Usable capacity (4 disks) | 50% | 67% |
+**5-minute sustained throughput (libaio, bs=1M, iodepth=16):**
 
-RAID10 advantage is sequential write throughput (3.8x). RAID5 gives more capacity and slightly better random IOPS (NUMA-tuned). Docker lifecycle is identical.
+| Test | RAID10 | RAID5 | Difference |
+|---|---|---|---|
+| Sequential Write (sustained 5 min) | **8.26 GB/s** | 2.49 GB/s | RAID10 **3.3x** faster |
+| Sequential Read (sustained 5 min) | **11.7 GB/s** | 10.3 GB/s | RAID10 +14% |
+| Random Write 4K | 96,600 IOPS | **109,000 IOPS** | RAID5 +13% (NUMA-tuned) |
+| Random Read 4K | 126,000 IOPS | 134,000 IOPS | Similar |
+| Docker create (nosync+libnosync) | 5.4s | 5.7s | Identical |
+| Docker stop (nosync+libnosync) | 2.6s | 2.6s | Identical |
+| Usable capacity (4 disks) | 50% | 67% | RAID5 +33% |
+
+Enterprise NVMe (Samsung PM9A3) shows **zero performance degradation** after 5 minutes sustained — no SLC cache cliff.
+
+**I/O parallelism scaling (sequential write):**
+
+| jobs x depth | RAID10 | RAID5 |
+|---|---|---|
+| 1x1 (single request) | **5.5 GB/s** | **0.64 GB/s** |
+| 1x16 | 7.8 GB/s | 2.3 GB/s |
+| 4x16 | 7.9 GB/s | 1.6 GB/s (contention!) |
+| 1x64 | 7.8 GB/s | 2.5 GB/s |
+| 4x64 | 7.9 GB/s | 2.6 GB/s |
+
+**Critical finding: RAID5 with depth=1 is 8.6x slower than RAID10** (640 MB/s vs 5.5 GB/s). This is the single-threaded `raid5d` bottleneck at its worst — each stripe must complete the full state machine (queue → XOR compute → submit 3 bios → wait for 3 completions) before the next stripe can begin. With depth=16+, pipelining masks this latency, but RAID5 sequential write still caps at ~2.5 GB/s due to `raid5d` single-thread dispatch.
+
+RAID5 with multiple jobs (4x16) is **slower** than single job (1x16) due to lock contention on `conf->device_lock` in the raid5d path. More writer threads = more contention = less throughput.
+
+RAID10 saturates at ~7.9 GB/s regardless of parallelism (from depth=16 onward) — no parity overhead, no state machine, no single-thread bottleneck.
+
+**Sequential read scaling (for reference):**
+
+| jobs x depth | RAID10 | RAID5 |
+|---|---|---|
+| 1x1 | 4.7 GB/s | 4.1 GB/s |
+| 1x16 | 11.8 GB/s | 10.4 GB/s |
+| 4x16 | **12.9 GB/s** | **10.8 GB/s** |
+
+Read performance is similar — both RAID types read in parallel from all disks. RAID5 reads parity stripe too (used for verification), giving slightly less usable read bandwidth.
+
+**Bottom line:** RAID10 advantage is sequential write throughput (3.3x sustained, 8.6x at depth=1). RAID5 gives more capacity and slightly better random write IOPS. Docker lifecycle is identical with nosync+libnosync. The RAID5 sequential write limit (~2.5 GB/s) is a kernel architecture constraint (single-threaded `raid5d` stripe dispatch) that cannot be fixed without rewriting the kernel module — no patches, alternative implementations, or tuning can overcome it.
 
 ---
 

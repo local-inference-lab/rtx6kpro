@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-15](2026-04/2026-04-15.md) | Introspective Diffusion (I-DLM-8B) matches AR model quality, beats LLaDA-2.1-mini (16B) by +26 AIME- |
 | [2026-04-14](2026-04/2026-04-14.md) | GLM 5.1 with native NSA/DSA attention now working on TP=8 with NVFP4 weights + FP8 KV cache via cust |
 | [2026-04-13](2026-04/2026-04-13.md) | MiniMax M2.7 NVFP4 quant released by luke, then updated mid-day incorporating Jon's calibration data |
 | [2026-04-12](2026-04/2026-04-12.md) | MiniMax M2.7 dropped (~1am) with same architecture as M2.5 — just a weight update. luke confirmed  |
@@ -60,6 +61,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-15](2026-04/2026-04-15.md) | Introspective Diffusion (I-DLM-8B) matches AR model quality, beats LLaDA-2.1-mini (16B) by +26 AIME- |
 | [2026-04-14](2026-04/2026-04-14.md) | GLM 5.1 with native NSA/DSA attention now working on TP=8 with NVFP4 weights + FP8 KV cache via cust |
 | [2026-04-13](2026-04/2026-04-13.md) | MiniMax M2.7 NVFP4 quant released by luke, then updated mid-day incorporating Jon's calibration data |
 | [2026-04-12](2026-04/2026-04-12.md) | MiniMax M2.7 dropped (~1am) with same architecture as M2.5 — just a weight update. luke confirmed  |

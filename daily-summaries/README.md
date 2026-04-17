@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-17](2026-04/2026-04-17.md) | Qwen3.6-35B-A3B released (MoE); community upset the poll-winner 27B wasn't chosen first — speculat |
 | [2026-04-16](2026-04/2026-04-16.md) | b12x FP4 GEMM kernel merged into FlashInfer ([jump](https://discord.com/channels/1466898002793857221 |
 | [2026-04-15](2026-04/2026-04-15.md) | Introspective Diffusion (I-DLM-8B) matches AR model quality, beats LLaDA-2.1-mini (16B) by +26 AIME- |
 | [2026-04-14](2026-04/2026-04-14.md) | GLM 5.1 with native NSA/DSA attention now working on TP=8 with NVFP4 weights + FP8 KV cache via cust |
@@ -62,6 +63,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-17](2026-04/2026-04-17.md) | Qwen3.6-35B-A3B released (MoE); community upset the poll-winner 27B wasn't chosen first — speculat |
 | [2026-04-16](2026-04/2026-04-16.md) | b12x FP4 GEMM kernel merged into FlashInfer ([jump](https://discord.com/channels/1466898002793857221 |
 | [2026-04-15](2026-04/2026-04-15.md) | Introspective Diffusion (I-DLM-8B) matches AR model quality, beats LLaDA-2.1-mini (16B) by +26 AIME- |
 | [2026-04-14](2026-04/2026-04-14.md) | GLM 5.1 with native NSA/DSA attention now working on TP=8 with NVFP4 weights + FP8 KV cache via cust |

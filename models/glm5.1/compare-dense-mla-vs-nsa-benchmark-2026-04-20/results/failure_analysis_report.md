@@ -52,27 +52,15 @@ The main comparison below excludes the pathological breakdown runs:
 - `dense_mla`: exclude run `8`
 - `nsa`: exclude runs `21` and `29`
 
-### dense_mla (run 8 excluded)
-- completed: 29
-- correct: 22
-- wrong: 7
-- correct rate: 75.86%
-- completion tokens min / median / mean / max: 3219 / 8631 / 8560.000 / 16875
-- elapsed seconds min / median / mean / max: 36.813 / 100.648 / 103.488 / 189.575
-- generation tok/s min / median / mean / max: 80.198 / 86.621 / 85.731 / 90.039
-- mean TTFT: 3.577 s
-- mean end-to-end tok/s: 83.173
+| Variant | Excluded runs | Completed | Correct | Wrong |
+|---|---|---:|---:|---:|
+| `dense_mla` | `8` | 29 | 22 | 7 |
+| `nsa` | `21, 29` | 28 | 25 | 3 |
 
-### nsa (runs 21 and 29 excluded)
-- completed: 28
-- correct: 25
-- wrong: 3
-- correct rate: 89.29%
-- completion tokens min / median / mean / max: 1784 / 4965.5 / 5618.464 / 27297
-- elapsed seconds min / median / mean / max: 25.270 / 76.562 / 97.013 / 615.137
-- generation tok/s min / median / mean / max: 44.408 / 68.029 / 67.085 / 71.871
-- mean TTFT: 6.365 s
-- mean end-to-end tok/s: 63.533
+| Variant | Tok min | Tok med | Tok avg | Tok max | Elapsed min | Elapsed med | Elapsed avg | Elapsed max | Gen min | Gen med | Gen avg | Gen max | Mean TTFT | Mean e2e tok/s |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `dense_mla` | 3219 | 8631 | 8560.000 | 16875 | 36.813 | 100.648 | 103.488 | 189.575 | 80.198 | 86.621 | 85.731 | 90.039 | 3.577 | 83.173 |
+| `nsa` | 1784 | 4965.5 | 5618.464 | 27297 | 25.270 | 76.562 | 97.013 | 615.137 | 44.408 | 68.029 | 67.085 | 71.871 | 6.365 | 63.533 |
 
 ## Raw All-Run Statistics
 

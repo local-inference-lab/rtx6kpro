@@ -1,6 +1,6 @@
 # RTX 6000 Pro Wiki — Running Large LLMs on PCIe GPUs
 
-Community-sourced knowledge base for running large language models (Qwen3.5-397B, MiniMax M2.5, Kimi-K2.5, GLM-5) on NVIDIA RTX 6000 Pro (Blackwell, SM120) GPUs in 2×, 4×, and 8× PCIe configurations **without NVLink**.
+Community-sourced knowledge base for running large language models (Qwen3.5-397B, MiniMax M2.5, Kimi-K2.5, Kimi-K2.6, GLM-5) on NVIDIA RTX 6000 Pro (Blackwell, SM120) GPUs in 2×, 4×, and 8× PCIe configurations **without NVLink**.
 
 > Synthesized from ~5,000 [Discord](https://discord.gg/pYCvaQTf) messages, 300+ screenshots, and months of community experimentation.
 
@@ -14,6 +14,7 @@ Community-sourced knowledge base for running large language models (Qwen3.5-397B
 | [Qwen3.5-27B/122B](models/qwen35-27b.md) | 27B–122B | — | 1× | — | [→](models/qwen35-27b.md) |
 | [MiniMax M2.5](models/minimax-m25.md) | 229B MoE | — | 2× | 85-89 tok/s (NVFP4) | [→](models/minimax-m25.md) |
 | [Kimi-K2.5](models/kimi-k25.md) | 530B MoE | — | 8× | 101 tok/s (PCIe switch) | [→](models/kimi-k25.md) |
+| [Kimi-K2.6](models/kimi-k26.md) | MoE | — | 8× | Community image + MLA Eagle | [→](models/kimi-k26.md) |
 | [GLM-5](models/glm5.md) | 744B MoE | 40B | 8× | 105 tok/s (MTP) | [→](models/glm5.md) |
 
 ### Hardware & Topology

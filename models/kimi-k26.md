@@ -169,29 +169,33 @@ Prefill expectations:
 
 At the moment `DCP=4` is the recommended community setting and `DCP=8` is the reference comparison point.
 
-## KV Cache Capacity for the Community Recipe
+## KV Cache Capacity from the Benchmark Logs
 
-For the current public community recipe:
+The values below are taken directly from startup logs of the benchmark launch used for validation:
 - target model: `moonshotai/Kimi-K2.5`
 - draft model: `lightseekorg/kimi-k2.5-eagle3-mla`
 - `TRITON_MLA`
 - `fp8` KV cache
+- `--max-model-len 65536`
 - `--gpu-memory-utilization 0.90`
+- speculative decode enabled
 
-Expected GPU KV cache size from the startup log:
+They are useful as a sanity check for the benchmark profile, but they should not be treated as universal values for every Kimi launch. The reported KV cache size changes with launch options such as `--max-model-len`, `--gpu-memory-utilization`, multimodal flags, and other memory consumers.
+
+GPU KV cache size reported in those benchmark logs:
 
 | Setting | Expected GPU KV cache size |
 |---|---:|
 | `DCP=4` | `512,192 tokens` |
 | `DCP=8` | `1,022,592 tokens` |
 
-These values come from the vLLM startup log line:
+Source log line:
 
 ```text
 GPU KV cache size: ... tokens
 ```
 
-If the reported cache size is far lower than these numbers, the launch configuration is not matching the community recipe.
+If the reported cache size is far lower than these numbers, the launch configuration is not matching the benchmark profile above.
 
 ## NCCL XML vs no-XML Validation
 

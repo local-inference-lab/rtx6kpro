@@ -264,8 +264,16 @@ Practical interpretation:
 >
 > Current recommendation: `DCP=4` with `NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml`. `DCP=8` remains the reference alternative. Patched NCCL without XML is functional, but still slower on prefill.
 
-## MTP long-context investigation (WIP, 2026-04-23)
+## MTP long-context FULL cudagraph fix (2026-04-23) — 4.3× at 30k ctx
 
-Exploratory debugging session on why MTP collapses at 30k+ context:
-- full write-up, benchmarks, patches, and docker image tags: **[kimi-k26-mtp-long-ctx-wip/](kimi-k26-mtp-long-ctx-wip/README.md)**
-- TL;DR: root cause is target-forward GPU time at `num_tokens=4` (≈85 ms at 30k ctx with `TRITON_MLA`); the draft/metadata side was ruled out. `FLASHINFER_MLA` would cut target forward to ~19 ms and flatten interarrival across ctx but on SM120 FP8 it silently gives 0 % draft acceptance (XQA can't causally-mask within the 4-query verification span, trtllm-gen not compiled for SM120).
+Enabling FULL CUDA graph capture for `TRITON_MLA` on spec-verify shapes turned the 30k-ctx MTP workload from **25 tok/s → 107.5 tok/s** — beating sglang's ~70 tok/s on the same hardware.
+
+| ctx    | before | after   | speedup |
+|--------|-------:|--------:|---------|
+| 2 000  |  75.0  | **116.6** | 1.55× |
+| 10 000 |  32.2  | **112.8** | 3.5×  |
+| 30 000 |  25.3  | **107.5** | **4.3×** |
+
+Docker image with the fix: `voipmonitor/vllm:cu130-mtp-cg-fix-20260423`
+
+Full write-up, patch, and reproduction recipe: **[kimi-k26-mtp-long-ctx-wip/](kimi-k26-mtp-long-ctx-wip/README.md)**. `VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000` is no longer needed (use `100000` or unset). The only serve-cmd change is adding `--max-model-len 131072` to fit the larger CG capture pool.

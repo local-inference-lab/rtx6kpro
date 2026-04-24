@@ -55,9 +55,11 @@ Ending point (this image):
 | `voipmonitor/vllm:cu130-mtp-tuned-v3-20260423` | **USE THIS** | 5-seq-len retune + `zero_()` removal |
 
 Every image contains the full modified vLLM source at `/opt/vllm` (not a
-mount); the important deltas are in
+mount); the important MTP/TRITON_MLA deltas are in
 `/opt/vllm/vllm/v1/attention/backends/mla/triton_mla.py` and the new sibling
-`triton_mla_tuning.py`.
+`triton_mla_tuning.py`. The shipping container also has a small
+`vllm/v1/worker/gpu_model_runner.py` delta that reverts an earlier local
+`optimistic_seq_lens_cpu` experiment back to upstream `main` behavior.
 
 ---
 
@@ -699,9 +701,11 @@ here), e.g. `VLLM_SPECULATIVE_DISABLE_WHEN_BATCH_ABOVE=32`.
 
 ## Files you care about
 
-### In the image (`/opt/vllm/vllm/v1/attention/backends/mla/`)
+### In the image
 
-- **`triton_mla.py`** — the only materially modified vLLM source file (also
+Under `/opt/vllm/vllm/v1/attention/backends/mla/`:
+
+- **`triton_mla.py`** — the main materially modified vLLM source file (also
   copied here at [`patches/triton_mla_final.py`](patches/triton_mla_final.py)).
   Contains `TritonMLAMetadataBuilder`, inline stage-1/stage-2 launches in
   `forward_mqa`, and the full DCP-aware `_build_decode`.
@@ -709,6 +713,13 @@ here), e.g. `VLLM_SPECULATIVE_DISABLE_WHEN_BATCH_ABOVE=32`.
   `aggregate_tune.py`. 108-entry lookup table of
   `(q_num_heads, max_model_len, B) → best kernel config`.
   Copied at [`patches/triton_mla_tuning.py`](patches/triton_mla_tuning.py).
+
+Under `/opt/vllm/vllm/v1/worker/`:
+
+- **`gpu_model_runner.py`** — contains a small final delta represented by
+  [`patches/final_diff.patch`](patches/final_diff.patch). This is a local
+  snapshot cleanup: upstream `main` already has the same final
+  `seq_lens_cpu = None` behavior in async spec decode.
 
 Backup copies preserved in the container:
 
@@ -878,13 +889,15 @@ metadata builder) already at
 
 - Session on 2026-04-23 by `festr2@gmail.com` + the agent, across **16 hours
   wall-clock** of iteration.
-- All code changes are in
-  `/opt/vllm/vllm/v1/attention/backends/mla/{triton_mla.py, triton_mla_tuning.py}`
-  (plus the `.bak_*` backups of intermediate states) inside the docker
-  container `mystifying_herschel` (image base: `voipmonitor/vllm:cu130`).
+- The material MTP/TRITON_MLA code changes are in
+  `/opt/vllm/vllm/v1/attention/backends/mla/{triton_mla.py, triton_mla_tuning.py}`.
+  The container also has the small `gpu_model_runner.py` cleanup described
+  above, plus `.bak_*` backups of intermediate states.
 - The `triton_mla.py` under `patches/` is a verbatim snapshot of what's in
   the **shipping image** `cu130-mtp-tuned-v3-20260423`.
-- vLLM base commit: `47fcb8ca6` on branch
-  `snapshot/kimi-k25-eagle3mla-current-20260423`. The patch is not applicable
-  cleanly against upstream main without adjusting for the `MLACommonImpl`
-  refactor deltas.
+- vLLM snapshot commit: `7dab799d36af5c3eb4dd980f248ab4ba7a56e170` on branch
+  `snapshot/kimi-k25-eagle3mla-current-20260423` and tag
+  `kimi-k25-eagle3mla-current-20260423`. `47fcb8ca6` was the upstream-main
+  point used during earlier comparison, not the snapshot HEAD. The patch is not
+  applicable cleanly against upstream main without adjusting for refactor
+  deltas.

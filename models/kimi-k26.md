@@ -1,279 +1,301 @@
-# Kimi K2.6 on RTX PRO 6000 Blackwell
+# Kimi-K2.6 on 8x RTX PRO 6000 Blackwell
 
-## Overview
+This is the current practical recipe for running `moonshotai/Kimi-K2.6` with
+vLLM on 8x RTX PRO 6000 Blackwell / sm120. It uses the Kimi MLA path:
 
-This page tracks the current public community recipe for the Kimi MLA serving stack on RTX PRO 6000 Blackwell systems.
-
-The reproducible public demo path currently uses:
-- target model: `moonshotai/Kimi-K2.5`
-- speculative draft: `lightseekorg/kimi-k2.5-eagle3-mla`
-- serving engine: `vLLM`
-- attention backend: `TRITON_MLA`
+- target model: `moonshotai/Kimi-K2.6`
+- draft model for MTP: `lightseekorg/kimi-k2.5-eagle3-mla`
+- attention backend: `TRITON_MLA` for target and draft
 - KV cache: `fp8`
-- decode context parallelism: `DCP=4` or `DCP=8`
+- tensor parallel: `TP=8`
+- decode context parallelism: `DCP=1`, `DCP=4`, or `DCP=8`
+- runtime topology: PCIe P2P custom allreduce + NCCL XML graph file
 
-That setup is used here because it exercises the same MLA serving path that matters for Kimi K2.x, is public, and is significantly more representative for Kimi than the non-MLA Llama-style EAGLE draft.
+## Quick Start
 
-## Community Image
-
-Docker image:
-
-```bash
-docker pull voipmonitor/vllm:kimi-k25-eagle3mla-nccl2297-community-20260422
-```
-
-What is inside:
-- vLLM `0.19.2rc1.dev48+g47fcb8ca6.d20260420`
-- patched NCCL `2.29.7`
-- Kimi MLA runtime path: `TRITON_MLA + fp8 KV`
-- DCP=4 XML-scoped workaround included in the image
-- community-tested `Kimi-K2.5 + eagle3-mla` launch path
-
-## Why This Uses `eagle3-mla` Instead of the Llama Draft
-
-The MLA draft is the right public demo for Kimi because:
-- it is MLA-aware, so it uses the same `TRITON_MLA + fp8 KV + DCP` stack as the target model
-- it is a better proxy for real Kimi serving than the non-MLA Llama-style draft
-- in practical Kimi testing it behaved better than the Llama draft for this serving path
-- it keeps the benchmark focused on the Kimi MLA runtime instead of mixing in a different draft backend/runtime path
-
-## Recommended Launch Commands
-
-### Fastest known: DCP=4
+Use this Docker image:
 
 ```bash
-docker run --rm --gpus all --network host --ipc host \
-  -v ~/.cache/huggingface:/root/.cache/huggingface \
-  -v /mnt/nccl_graph_opt.xml:/mnt/nccl_graph_opt.xml:ro \
-  voipmonitor/vllm:kimi-k25-eagle3mla-nccl2297-community-20260422 \
-  bash -lc '
-VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000 \
-VLLM_ENABLE_PCIE_ALLREDUCE=1 \
-NCCL_P2P_LEVEL=SYS \
-VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 \
-NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml \
-VLLM_LOG_STATS_INTERVAL=1 \
-VLLM_TEST_FORCE_FP8_MARLIN=1 \
-VLLM_MARLIN_USE_ATOMIC_ADD=1 \
-VLLM_MARLIN_INPUT_DTYPE=fp8 \
-/opt/venv/bin/vllm serve moonshotai/Kimi-K2.5 \
-  --served-model-name Kimi-K2.5 \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 5000 \
-  --tensor-parallel-size 8 \
-  --pipeline-parallel-size 1 \
-  --enable-chunked-prefill \
-  --enable-prefix-caching \
-  --load-format fastsafetensors \
-  --async-scheduling \
-  --gpu-memory-utilization 0.90 \
-  --max-num-batched-tokens 32768 \
-  --max-num-seqs 128 \
-  --mm-processor-cache-gb 0 \
-  --mm-encoder-tp-mode weights \
-  --attention-backend TRITON_MLA \
-  --kv-cache-dtype fp8 \
-  --decode-context-parallel-size 4 \
-  --tool-call-parser kimi_k2 \
-  --enable-auto-tool-choice \
-  --reasoning-parser kimi_k2 \
-  --speculative-config '\''{"model":"lightseekorg/kimi-k2.5-eagle3-mla","method":"eagle3","num_speculative_tokens":3,"draft_attention_backend":"TRITON_MLA","draft_kv_cache_dtype":"fp8","rejection_sample_method":"probabilistic"}'\''
-'
+docker pull voipmonitor/vllm:kimi-k26-mtp-upstream-stack-pcie-env-test-20260424
 ```
 
-### Reference alternative: DCP=8
+The image is built from upstream vLLM plus the Kimi/K2.6 MTP patch stack tracked
+in:
 
-```bash
-docker run --rm --gpus all --network host --ipc host \
-  -v ~/.cache/huggingface:/root/.cache/huggingface \
-  -v /mnt/nccl_graph_opt.xml:/mnt/nccl_graph_opt.xml:ro \
-  voipmonitor/vllm:kimi-k25-eagle3mla-nccl2297-community-20260422 \
-  bash -lc '
-VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000 \
-VLLM_ENABLE_PCIE_ALLREDUCE=1 \
-NCCL_P2P_LEVEL=SYS \
-VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 \
-NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml \
-VLLM_LOG_STATS_INTERVAL=1 \
-VLLM_TEST_FORCE_FP8_MARLIN=1 \
-VLLM_MARLIN_USE_ATOMIC_ADD=1 \
-VLLM_MARLIN_INPUT_DTYPE=fp8 \
-/opt/venv/bin/vllm serve moonshotai/Kimi-K2.5 \
-  --served-model-name Kimi-K2.5 \
-  --trust-remote-code \
-  --host 0.0.0.0 \
-  --port 5000 \
-  --tensor-parallel-size 8 \
-  --pipeline-parallel-size 1 \
-  --enable-chunked-prefill \
-  --enable-prefix-caching \
-  --load-format fastsafetensors \
-  --async-scheduling \
-  --gpu-memory-utilization 0.90 \
-  --max-num-batched-tokens 32768 \
-  --max-num-seqs 128 \
-  --mm-processor-cache-gb 0 \
-  --mm-encoder-tp-mode weights \
-  --attention-backend TRITON_MLA \
-  --kv-cache-dtype fp8 \
-  --decode-context-parallel-size 8 \
-  --tool-call-parser kimi_k2 \
-  --enable-auto-tool-choice \
-  --reasoning-parser kimi_k2 \
-  --speculative-config '\''{"model":"lightseekorg/kimi-k2.5-eagle3-mla","method":"eagle3","num_speculative_tokens":3,"draft_attention_backend":"TRITON_MLA","draft_kv_cache_dtype":"fp8","rejection_sample_method":"probabilistic"}'\''
-'
-```
+- vLLM issue: <https://github.com/vllm-project/vllm/issues/40608>
+- vLLM draft PR: <https://github.com/vllm-project/vllm/pull/40750>
+- detailed work log: [kimi-k26-mtp-long-ctx-wip/](kimi-k26-mtp-long-ctx-wip/README.md)
 
-## Expected `llm_decode_bench.py` Results
-
-Command:
-
-```bash
-python3 /mnt/llm_decode_bench.py --port 5000
-```
-
-### DCP=4 decode expectations (tok/s)
-
-| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 85.5 | 116.2 | 174.0 | 281.3 | 427.5 | 639.3 | 929.6 | 1224.5 |
-| 16k | 52.7 | 97.3 | 174.8 | 262.2 | 365.5 | 572.8 | 826.7 | 1144.5 |
-| 32k | 52.7 | 97.2 | 159.0 | 246.3 | 317.9 | 477.4 | 698.8 | 889.8 |
-| 64k | 52.7 | 89.5 | 151.1 | 206.7 | 270.1 | 381.6 | 508.4 | 509.1 |
-| 128k | 51.6 | 83.4 | 123.2 | 166.9 | 204.9 | 254.3 | 317.7 | 381.1 |
-
-Prefill expectations:
-- 8k: `7885 tok/s`, TTFT `0.713s`
-- 16k: `7998 tok/s`, TTFT `1.350s`
-- 32k: `7693 tok/s`, TTFT `2.746s`
-- 64k: `6999 tok/s`, TTFT `5.969s`
-- 128k: `6108 tok/s`, TTFT `13.602s`
-
-### DCP=8 decode expectations (tok/s)
-
-| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 78.6 | 111.4 | 172.0 | 268.1 | 435.8 | 608.1 | 924.6 | 1024.8 |
-| 16k | 47.7 | 87.4 | 151.1 | 238.1 | 318.1 | 508.4 | 763.5 | 1018.1 |
-| 32k | 49.7 | 89.4 | 151.2 | 230.7 | 302.2 | 445.2 | 635.7 | 763.5 |
-| 64k | 49.7 | 85.4 | 143.0 | 198.8 | 254.5 | 349.7 | 445.2 | 508.6 |
-| 128k | 47.7 | 79.5 | 119.3 | 159.1 | 190.9 | 254.3 | 318.0 | 381.1 |
-
-Prefill expectations:
-- 8k: `7907 tok/s`, TTFT `0.712s`
-- 16k: `8015 tok/s`, TTFT `1.347s`
-- 32k: `7695 tok/s`, TTFT `2.746s`
-- 64k: `6991 tok/s`, TTFT `5.977s`
-- 128k: `6096 tok/s`, TTFT `13.630s`
-
-At the moment `DCP=4` is the recommended community setting and `DCP=8` is the reference comparison point.
-
-## KV Cache Capacity from the Benchmark Logs
-
-The values below are taken directly from startup logs of the benchmark launch used for validation:
-- target model: `moonshotai/Kimi-K2.5`
-- draft model: `lightseekorg/kimi-k2.5-eagle3-mla`
-- `TRITON_MLA`
-- `fp8` KV cache
-- `--max-model-len 65536`
-- `--gpu-memory-utilization 0.90`
-- speculative decode enabled
-
-They are useful as a sanity check for the benchmark profile, but they should not be treated as universal values for every Kimi launch. The reported KV cache size changes with launch options such as `--max-model-len`, `--gpu-memory-utilization`, multimodal flags, and other memory consumers.
-
-GPU KV cache size reported in those benchmark logs:
-
-| Setting | Expected GPU KV cache size |
-|---|---:|
-| `DCP=4` | `512,192 tokens` |
-| `DCP=8` | `1,022,592 tokens` |
-
-Source log line:
+The current validated startup profile is `DCP=8 + MTP + XML` on port `5002`:
 
 ```text
-GPU KV cache size: ... tokens
+GPU KV cache size:           1,753,088 tokens
+Maximum concurrency @262144: 6.69x
+PCIe custom allreduce:       enabled on all 8 workers
+TRITON_MLA:                  target and draft
 ```
 
-If the reported cache size is far lower than these numbers, the launch configuration is not matching the benchmark profile above.
+## Choose A Profile
 
-## NCCL XML vs no-XML Validation
+| Goal | DCP | MTP | max model len | Why |
+|---|---:|---:|---:|---|
+| Fastest single-stream / short-ctx speed | 1 | on | 150k or 262k | highest C=1 decode speed; smallest KV pool |
+| Balanced long-ctx + concurrency | 4 | on | 262k | good speed with much larger KV pool |
+| Maximum KV cache with MTP | 8 | on | 262k | best MTP capacity; slightly lower single-stream speed |
+| Maximum KV cache / many short requests | 8 | off | 262k | no draft model VRAM; largest KV pool |
 
-`NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml` is still the shipped public recipe for the fastest known configuration.
+For most community validation start with `DCP=8 + MTP + --max-model-len 262144`.
+For latency or single-stream comparisons also test `DCP=1 + MTP`. For maximum
+batch capacity remove the speculative config and use `DCP=8`.
 
-Patched NCCL without XML was functional, but prefill was still slower than the XML-based path. The cleanest validation was a prefill-only test on the same Kimi MLA stack with `DCP=8`, `TRITON_MLA`, `fp8 KV`, `max_tokens=1`, and no prefix cache.
+## Launch: MTP Enabled
 
-### Prefill-only A/B
+Set the profile variables first:
 
-| Mode | Concurrency | Avg TTFT | Aggregate Prompt tok/s |
+```bash
+export IMAGE=voipmonitor/vllm:kimi-k26-mtp-upstream-stack-pcie-env-test-20260424
+export PORT=5002
+export DCP=8
+export MAX_MODEL_LEN=262144
+export MAX_NUM_BATCHED_TOKENS=8192
+export MAX_NUM_SEQS=128
+```
+
+Then start vLLM:
+
+```bash
+docker run --rm --gpus all --network host --ipc host \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -v /mnt/nccl_graph_opt.xml:/mnt/nccl_graph_opt.xml:ro \
+  --entrypoint /bin/bash \
+  "$IMAGE" \
+  -lc "VLLM_ENABLE_PCIE_ALLREDUCE=1 \
+NCCL_P2P_LEVEL=SYS \
+NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml \
+VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 \
+VLLM_TEST_FORCE_FP8_MARLIN=1 \
+VLLM_MARLIN_USE_ATOMIC_ADD=1 \
+VLLM_MARLIN_INPUT_DTYPE=fp8 \
+VLLM_LOG_STATS_INTERVAL=1 \
+/opt/venv/bin/vllm serve moonshotai/Kimi-K2.6 \
+  --served-model-name Kimi-K2.6 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port ${PORT} \
+  --tensor-parallel-size 8 \
+  --pipeline-parallel-size 1 \
+  --decode-context-parallel-size ${DCP} \
+  --enable-chunked-prefill \
+  --enable-prefix-caching \
+  --load-format fastsafetensors \
+  --async-scheduling \
+  --gpu-memory-utilization 0.94 \
+  --max-model-len ${MAX_MODEL_LEN} \
+  --max-num-batched-tokens ${MAX_NUM_BATCHED_TOKENS} \
+  --max-num-seqs ${MAX_NUM_SEQS} \
+  --mm-processor-cache-gb 0 \
+  --mm-encoder-tp-mode weights \
+  --attention-backend TRITON_MLA \
+  --kv-cache-dtype fp8 \
+  --tool-call-parser kimi_k2 \
+  --enable-auto-tool-choice \
+  --reasoning-parser kimi_k2 \
+  --speculative-config '{\"model\":\"lightseekorg/kimi-k2.5-eagle3-mla\",\"method\":\"eagle3\",\"num_speculative_tokens\":3,\"draft_attention_backend\":\"TRITON_MLA\",\"draft_kv_cache_dtype\":\"fp8\",\"rejection_sample_method\":\"probabilistic\"}'"
+```
+
+Sanity check:
+
+```bash
+curl http://127.0.0.1:${PORT}/v1/models
+```
+
+Run the benchmark:
+
+```bash
+python3 /mnt/llm_decode_bench.py --port ${PORT}
+```
+
+## Launch: Maximum KV Cache, No MTP
+
+Use this when you want the largest KV cache and many concurrent requests more
+than single-stream MTP latency. It is the same command as above, but remove the
+entire `--speculative-config ...` argument.
+
+Recommended variables:
+
+```bash
+export DCP=8
+export MAX_MODEL_LEN=262144
+export MAX_NUM_BATCHED_TOKENS=8192
+export MAX_NUM_SEQS=128
+```
+
+Expected KV cache at `--max-model-len 262144` from the final benchmark matrix:
+
+| Config | KV tokens | Max concurrency |
+|---|---:|---:|
+| DCP=8, no MTP | 3,424,256 | 13.03x |
+| DCP=8, MTP=3 | 1,769,600 | 6.75x |
+| DCP=4, MTP=3 | 1,126,528 | 4.30x |
+| DCP=1, MTP=3 | 337,296 | 1.29x |
+
+The current upstream-stack test image reported `1,753,088` KV tokens for
+`DCP=8 + MTP=3`, which is effectively the same deployment class as the final
+matrix above.
+
+## Speed Vs Context Length
+
+`--max-model-len` is a real performance knob, not just a limit. Larger values
+increase the captured block-table stride and cost decode throughput even for
+short prompts.
+
+Use this for short-context speed:
+
+```bash
+export MAX_MODEL_LEN=150000
+export MAX_NUM_BATCHED_TOKENS=4096
+export MAX_NUM_SEQS=256
+```
+
+Use this for full long-context flexibility:
+
+```bash
+export MAX_MODEL_LEN=262144
+export MAX_NUM_BATCHED_TOKENS=8192
+export MAX_NUM_SEQS=128
+```
+
+Measured isolation result from the long-context work: changing only
+`--max-model-len` from `262144` to `150000` restored short-context
+high-concurrency throughput from about `1397 tok/s` to `1527 tok/s` in the
+DCP=8 no-MTP diagnostic run. The trade-off is obvious: lower max request length,
+better short-context throughput.
+
+## Expected Decode Throughput
+
+Final image matrix, `llm_decode_bench.py --skip-prefill`, 10 seconds per cell,
+aggregate tok/s.
+
+### DCP=1 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 114.1 | 178.9 | 243.7 | 417.4 | 659.0 | 1055.2 | 1522.0 | 1992.3 |
+| 16k | 108.1 | 166.4 | 226.4 | 353.3 | 502.9 | 680.6 | 879.5 | 1080.1 |
+| 64k | 85.6 | 136.3 | 157.5 | 222.8 | 286.5 | 354.1 | 420.4 | 384.8 |
+| 128k | 66.6 | 105.4 | 121.2 | 152.6 | 186.5 | 211.1 | 189.1 | 374.1 |
+
+### DCP=4 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 98.8 | 160.0 | 211.4 | 363.3 | 576.5 | 853.2 | 1239.1 | 1506.2 |
+| 16k | 96.4 | 145.1 | 190.0 | 311.0 | 453.4 | 603.1 | 741.0 | 891.9 |
+| 64k | 76.5 | 114.3 | 151.9 | 205.4 | 267.5 | 303.4 | 404.9 | 432.4 |
+| 128k | 67.6 | 87.4 | 112.4 | 152.0 | 175.8 | 213.5 | 247.7 | 383.9 |
+
+### DCP=8 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 90.4 | 142.7 | 176.1 | 311.3 | 498.3 | 641.2 | 908.0 | 1137.0 |
+| 16k | 85.4 | 131.2 | 186.9 | 297.1 | 466.0 | 590.7 | 744.4 | 861.0 |
+| 64k | 79.3 | 114.2 | 156.1 | 237.3 | 340.5 | 432.9 | 560.7 | 581.7 |
+| 128k | 75.4 | 99.4 | 135.2 | 197.9 | 252.2 | 312.5 | 417.6 | 416.2 |
+
+### DCP=8, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 74.1 | 113.4 | 185.8 | 276.6 | 363.5 | 600.9 | 948.4 | 1260.6 |
+| 16k | 73.6 | 111.2 | 178.7 | 262.2 | 333.9 | 571.3 | 826.7 | 1137.4 |
+| 64k | 69.7 | 104.7 | 162.9 | 229.1 | 301.8 | 445.7 | 632.2 | 757.0 |
+| 128k | 65.6 | 95.5 | 146.8 | 197.5 | 252.9 | 350.0 | 476.8 | 635.3 |
+
+Interpretation:
+
+- MTP wins single-stream at every tested context length.
+- At high concurrency and short context, no-MTP can be faster because the GPU is
+  already saturated and speculative verification adds work.
+- `VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000` is obsolete for this image. Do
+  not use it for the Kimi-K2.6 MTP path.
+
+## Prefill Sanity Checks
+
+DCP=1 + MTP=3 prefill, C=1:
+
+| ctx | prompt tokens | TTFT | prefill tok/s |
 |---|---:|---:|---:|
-| XML | 1 | 0.310s | 20.7k tok/s |
-| no-XML | 1 | 1.329s | 6.75k tok/s |
-| XML | 16 | 0.903s | 115.3k tok/s |
-| no-XML | 16 | 0.999s | 108.1k tok/s |
+| 8k | 5,312 | 0.71s | 7,892 |
+| 16k | 10,480 | 1.44s | 7,478 |
+| 32k | 20,822 | 2.94s | 7,177 |
+| 64k | 41,505 | 6.48s | 6,449 |
+| 128k | 82,845 | 14.82s | 5,604 |
 
-So:
-- no-XML was about `3.07x` slower on the single-request prefill test
-- no-XML was still about `6.7%` slower at concurrency 16
+If your numbers are much lower, first check:
 
-### What NCCL Debug Showed
+- `NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml` is mounted and set.
+- `VLLM_ENABLE_PCIE_ALLREDUCE=1` is present.
+- logs say `PCIe custom allreduce enabled via VLLM_ENABLE_PCIE_ALLREDUCE=1`.
+- logs say `Using AttentionBackendEnum.TRITON_MLA backend`.
+- `--max-model-len` matches the profile you are comparing against.
 
-The transport was the same in both cases (`P2P/CUMEM`). The difference was the graph/search result:
+## NCCL XML Status
 
-With XML:
-- `Pattern 4 ... bw 38/32, type PHB/PIX`
-- `Pattern 1 ... bw 38/32, type PHB/PIX`
-- 4 total channels
+The public recipe still uses:
 
-Without XML:
-- `Pattern 4 ... bw 15/15, type SYS/PIX`
-- `Pattern 1 ... bw 0.1/0.1, type SYS/SYS`
-- 2 total channels
+```bash
+NCCL_P2P_LEVEL=SYS
+NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml
+```
 
-That is why the XML path is still the best known public recipe for Kimi MLA.
+Without the XML, NCCL historically picked a much worse ring graph on this Turin
+system. The bad no-XML path showed single cold 8k prefill around `876 tok/s`,
+while XML was around `7478 tok/s`.
 
-### Upstream no-XML NCCL status
+There is now an upstream NCCL draft PR for the no-XML topology issue:
 
-There is now an upstream NCCL draft PR that specifically targets the Turin no-XML pathological ring selection:
+- <https://github.com/NVIDIA/nccl/pull/2127>
 
-- [`NVIDIA/nccl#2127`](https://github.com/NVIDIA/nccl/pull/2127) — Improve AMD Turin no-XML ring graph selection
+With that NCCL fix, the targeted single cold 8k prefill reproducer reached
+`7455 tok/s`, effectively matching XML. Until that fix is released in a normal
+NCCL package, keep the XML file in the public recipe.
 
-That fix was validated on the real Kimi MLA community serving path using a single cold `8k` prefill request:
+## Why The MLA Draft
 
-| Mode | TTFT | Prompt tokens | Prompt tok/s |
-|---|---:|---:|---:|
-| broken no-XML (before fix) | `9.138s` | `8005` | `875.98` |
-| no-XML with PR `#2127` | `1.074s` | `8005` | `7455.28` |
-| XML baseline | `1.071s` | `8005` | `7477.64` |
+Use `lightseekorg/kimi-k2.5-eagle3-mla` rather than a Llama-style Eagle draft
+because it exercises the same MLA runtime path as Kimi:
 
-So the no-XML path is now effectively at parity with XML on that targeted reproducer.
+- `TRITON_MLA` target and draft
+- fp8 KV cache target and draft
+- DCP correctness path
+- Kimi tool-call and reasoning parsers
 
-Practical interpretation:
-- today: keep using `NCCL_GRAPH_FILE` in the public recipe
-- medium term: if NCCL PR `#2127` lands and ships, the XML file should no longer be required on this Turin setup
+The non-MLA Llama draft is useful for separate debugging, but it is not the
+representative public Kimi serving path.
 
-## Minimal Discord Summary
+## Current Upstream Patch Stack
 
-> Community image: `voipmonitor/vllm:kimi-k25-eagle3mla-nccl2297-community-20260422`
->
-> The public demo path uses `moonshotai/Kimi-K2.5` + `lightseekorg/kimi-k2.5-eagle3-mla` because that is the most representative MLA setup for Kimi on vLLM: same `TRITON_MLA + fp8 KV + DCP` serving path, and better behavior than the non-MLA Llama draft.
->
-> Expected `llm_decode_bench.py --port 5000` results:
-> - DCP=4: `85.5 tok/s` at `ctx=0, C=1`, `52.7 tok/s` at `ctx=16k, C=1`, `1224.5 tok/s` at `ctx=0, C=128`
-> - DCP=8: `78.6 tok/s` at `ctx=0, C=1`, `47.7 tok/s` at `ctx=16k, C=1`, `1024.8 tok/s` at `ctx=0, C=128`
->
-> Current recommendation: `DCP=4` with `NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml`. `DCP=8` remains the reference alternative. Patched NCCL without XML is functional, but still slower on prefill.
+The current reconstruction branch includes:
 
-## MTP long-context FULL cudagraph fix (2026-04-23) — 4.3× at 30k ctx
+- `vllm-project/vllm#39633`: explicit PCIe custom-allreduce opt-in
+- `vllm-project/vllm#40609`: MLA + DCP + fp8 KV support
+- `vllm-project/vllm#40610`: async proposer synchronization fix
+- `vllm-project/vllm#40611`: draft-specific attention backend and KV dtype
+- `vllm-project/vllm#40750`: TRITON_MLA full CUDA graphs, DCP correctness,
+  batch-aware KV split selection, and sm120/fp8 tuning table
 
-Enabling FULL CUDA graph capture for `TRITON_MLA` on spec-verify shapes turned the 30k-ctx MTP workload from **25 tok/s → 107.5 tok/s** — beating sglang's ~70 tok/s on the same hardware.
+The draft PR is intentionally a runnable consolidation branch. It can be split
+for upstream review after the end-to-end recipe is fully validated.
 
-| ctx    | before | after   | speedup |
-|--------|-------:|--------:|---------|
-| 2 000  |  75.0  | **116.6** | 1.55× |
-| 10 000 |  32.2  | **112.8** | 3.5×  |
-| 30 000 |  25.3  | **107.5** | **4.3×** |
+## Legacy Kimi-K2.5 Community Image
 
-Docker image with the fix: `voipmonitor/vllm:cu130-mtp-cg-fix-20260423`
+The older public Kimi-K2.5 image remains useful for historical comparison:
 
-Full write-up, patch, and reproduction recipe: **[kimi-k26-mtp-long-ctx-wip/](kimi-k26-mtp-long-ctx-wip/README.md)**. `VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000` is no longer needed (use `100000` or unset). The only serve-cmd change is adding `--max-model-len 131072` to fit the larger CG capture pool.
+```bash
+voipmonitor/vllm:kimi-k25-eagle3mla-nccl2297-community-20260422
+```
+
+Do not use that image as the current Kimi-K2.6 recipe. It predates the final
+Kimi-K2.6 MTP full-CG path, still documented the old speculation kill-switch,
+and used older benchmark assumptions.

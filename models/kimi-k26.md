@@ -19,6 +19,7 @@ vLLM on 8x RTX PRO 6000 Blackwell / sm120. It uses the Kimi MLA path:
 - [Launch: Maximum KV Cache, No MTP](#launch-maximum-kv-cache-no-mtp)
 - [Speed Vs Context Length](#speed-vs-context-length)
 - [Expected Decode Throughput](#expected-decode-throughput)
+- [Historical Decode Throughput: Marlin FP8 Forcing](#historical-decode-throughput-marlin-fp8-forcing)
 - [Prefill Sanity Checks](#prefill-sanity-checks)
 - [NCCL XML Status](#nccl-xml-status)
 - [Why The MLA Draft](#why-the-mla-draft)
@@ -41,13 +42,15 @@ in:
 - vLLM draft PR: <https://github.com/vllm-project/vllm/pull/40750>
 - detailed work log: [kimi-k26-mtp-long-ctx-wip/](kimi-k26-mtp-long-ctx-wip/README.md)
 
-The current validated startup profile is `DCP=8 + MTP + XML` on port `5002`:
+The current validated startup profile is `DCP=8 + MTP + XML`, without Marlin
+FP8 activation forcing, on port `5002`:
 
 ```text
-GPU KV cache size:           1,753,088 tokens
-Maximum concurrency @262144: 6.69x
+GPU KV cache size:           1,822,464 tokens
+Maximum concurrency @262144: 6.95x
 PCIe custom allreduce:       enabled on all 8 workers
 TRITON_MLA:                  target and draft
+Marlin FP8 activation force: disabled
 ```
 
 ## Choose A Profile
@@ -62,6 +65,10 @@ TRITON_MLA:                  target and draft
 For most community validation start with `DCP=8 + MTP + --max-model-len 262144`.
 For latency or single-stream comparisons also test `DCP=1 + MTP`. For maximum
 batch capacity remove the speculative config and use `DCP=8`.
+
+If you change this recipe to `DCP=4` while keeping `NCCL_GRAPH_FILE`, use a
+build or runtime mount that includes the DCP/XML guard. Otherwise startup can
+fail when the 8-GPU XML graph is applied to a 4-rank DCP subgroup.
 
 ## Launch: MTP Enabled
 
@@ -88,10 +95,8 @@ docker run --rm --gpus all --network host --ipc host \
 NCCL_P2P_LEVEL=SYS \
 NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml \
 VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 \
-VLLM_TEST_FORCE_FP8_MARLIN=1 \
-VLLM_MARLIN_USE_ATOMIC_ADD=1 \
-VLLM_MARLIN_INPUT_DTYPE=fp8 \
 VLLM_LOG_STATS_INTERVAL=1 \
+VLLM_DISABLED_KERNELS=MarlinFP8ScaledMMLinearKernel \
 /opt/venv/bin/vllm serve moonshotai/Kimi-K2.6 \
   --served-model-name Kimi-K2.6 \
   --trust-remote-code \
@@ -127,8 +132,20 @@ curl http://127.0.0.1:${PORT}/v1/models
 Run the benchmark:
 
 ```bash
-python3 /mnt/llm_decode_bench.py --port ${PORT}
+python3 /mnt/llm_decode_bench.py \
+  --port ${PORT} \
+  --model Kimi-K2.6 \
+  --concurrency 1,2,4,8,16,32,64,128 \
+  --contexts 0,16k,32k,64k,128k \
+  --duration 10 \
+  --skip-prefill
 ```
+
+Do not set `VLLM_TEST_FORCE_FP8_MARLIN`,
+`VLLM_MARLIN_INPUT_DTYPE=fp8`, or `VLLM_MARLIN_USE_ATOMIC_ADD` for the default
+community recipe. The full matrix below showed no useful speed win, and forcing
+target MoE activations to runtime FP8 is less quality-safe than leaving the
+target path in its normal INT4-weight/BF16-activation mode.
 
 ## Launch: Maximum KV Cache, No MTP
 
@@ -145,18 +162,20 @@ export MAX_NUM_BATCHED_TOKENS=8192
 export MAX_NUM_SEQS=128
 ```
 
-Expected KV cache at `--max-model-len 262144` from the final benchmark matrix:
+Expected KV cache at `--max-model-len 262144` from the current no-Marlin
+benchmark matrix:
 
 | Config | KV tokens | Max concurrency |
 |---|---:|---:|
-| DCP=8, no MTP | 3,424,256 | 13.03x |
-| DCP=8, MTP=3 | 1,769,600 | 6.75x |
-| DCP=4, MTP=3 | 1,126,528 | 4.30x |
-| DCP=1, MTP=3 | 337,296 | 1.29x |
+| DCP=1, MTP=3 | 343,664 | 1.31x |
+| DCP=1, no MTP | 437,264 | 1.67x |
+| DCP=4, MTP=3 | 1,152,960 | 4.40x |
+| DCP=4, no MTP | 1,686,656 | 6.43x |
+| DCP=8, MTP=3 | 1,822,464 | 6.95x |
+| DCP=8, no MTP | 3,267,968 | 12.47x |
 
-The current upstream-stack test image reported `1,753,088` KV tokens for
-`DCP=8 + MTP=3`, which is effectively the same deployment class as the final
-matrix above.
+The DCP=4 rows were measured with the runtime DCP/XML guard described in
+[NCCL XML Status](#nccl-xml-status).
 
 ## Speed Vs Context Length
 
@@ -188,8 +207,117 @@ better short-context throughput.
 
 ## Expected Decode Throughput
 
-Final image matrix, `llm_decode_bench.py --skip-prefill`, 10 seconds per cell,
-aggregate tok/s.
+Current quality-safe matrix, `llm_decode_bench.py --skip-prefill`, 10 seconds
+per cell, aggregate tok/s. Common launch settings:
+
+```text
+image:                       voipmonitor/vllm:kimi-k26-mtp-upstream-stack-pcie-env-test-20260424
+target model:                moonshotai/Kimi-K2.6
+draft model when MTP is on:  lightseekorg/kimi-k2.5-eagle3-mla
+TP / DCP:                    8 / 1, 4, or 8
+attention backend:           TRITON_MLA
+target KV cache dtype:       fp8
+draft KV cache dtype:        fp8
+max_model_len:               262144
+max_num_batched_tokens:      8192
+max_num_seqs:                128
+gpu_memory_utilization:      0.94
+NCCL graph file:             /mnt/nccl_graph_opt.xml
+Marlin FP8 force envs:       disabled
+disabled kernel:             MarlinFP8ScaledMMLinearKernel
+```
+
+DCP=4 was measured with the runtime DCP/XML guard that keeps XML for full-size
+TP/world communicators but unsets `NCCL_GRAPH_FILE` for DCP subgroup
+communicators.
+
+### DCP=1 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 112.5 | 176.0 | 261.4 | 454.5 | 729.7 | 1104.0 | 1602.2 | 2044.3 |
+| 16k | 99.4 | 163.9 | 227.4 | 384.3 | 542.3 | 730.9 | 905.9 | 1143.2 |
+| 32k | 102.5 | 146.1 | 194.8 | 309.2 | 419.3 | 512.2 | 603.2 | 810.8 |
+| 64k | 99.5 | 127.3 | 162.1 | 231.7 | 288.2 | 364.6 | 454.0 | 409.1 |
+| 128k | 73.6 | 109.3 | 117.3 | 159.0 | 191.3 | 301.1 | 215.2 | 395.5 |
+
+### DCP=1, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 91.5 | 151.3 | 242.6 | 350.0 | 492.7 | 858.8 | 1398.0 | 2164.7 |
+| 16k | 84.6 | 141.3 | 218.7 | 318.2 | 429.1 | 700.0 | 1018.1 | 1397.9 |
+| 32k | 79.6 | 133.3 | 198.9 | 286.1 | 381.5 | 573.1 | 763.9 | 1016.2 |
+| 64k | 70.5 | 119.2 | 171.1 | 246.6 | 318.2 | 445.2 | 509.0 | 635.1 |
+| 128k | 56.7 | 99.3 | 135.1 | 191.0 | 238.3 | 286.5 | 318.2 | 381.3 |
+
+### DCP=4 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 101.5 | 156.0 | 219.8 | 381.9 | 597.2 | 925.7 | 1255.1 | 1596.0 |
+| 16k | 96.3 | 143.1 | 194.7 | 330.1 | 465.2 | 648.6 | 840.9 | 1144.7 |
+| 32k | 87.5 | 135.3 | 187.0 | 259.3 | 368.0 | 500.7 | 705.0 | 855.1 |
+| 64k | 83.4 | 114.2 | 145.2 | 221.0 | 275.4 | 362.0 | 467.8 | 641.4 |
+| 128k | 73.7 | 93.4 | 118.2 | 155.0 | 198.7 | 242.3 | 315.5 | 424.4 |
+
+### DCP=4, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 76.6 | 125.4 | 207.0 | 310.3 | 429.5 | 732.1 | 1145.5 | 1781.3 |
+| 16k | 74.5 | 121.2 | 198.8 | 286.3 | 381.7 | 604.6 | 891.2 | 1270.2 |
+| 32k | 73.6 | 117.1 | 182.9 | 262.5 | 350.0 | 509.4 | 700.0 | 890.7 |
+| 64k | 68.6 | 107.3 | 163.1 | 222.8 | 286.2 | 413.5 | 509.0 | 636.4 |
+| 128k | 61.6 | 93.5 | 139.1 | 174.9 | 206.6 | 286.0 | 317.9 | 381.4 |
+
+### DCP=8 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 89.4 | 146.1 | 192.8 | 323.1 | 506.1 | 649.4 | 938.8 | 1168.9 |
+| 16k | 88.5 | 132.4 | 184.9 | 299.2 | 463.1 | 599.8 | 892.0 | 1205.2 |
+| 32k | 86.4 | 130.1 | 176.0 | 281.4 | 411.5 | 538.7 | 747.1 | 907.5 |
+| 64k | 76.6 | 121.2 | 156.9 | 248.5 | 355.0 | 446.2 | 657.2 | 850.4 |
+| 128k | 77.6 | 108.4 | 141.1 | 194.8 | 268.2 | 368.9 | 485.8 | 464.2 |
+
+### DCP=8, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 75.5 | 117.3 | 190.8 | 278.4 | 365.9 | 604.1 | 1017.7 | 1399.9 |
+| 16k | 74.6 | 113.3 | 182.9 | 262.5 | 350.0 | 572.6 | 890.6 | 1144.9 |
+| 32k | 74.5 | 109.3 | 175.1 | 254.1 | 333.7 | 509.2 | 826.6 | 1016.3 |
+| 64k | 71.5 | 105.3 | 163.1 | 230.8 | 302.1 | 477.4 | 699.2 | 888.2 |
+| 128k | 66.6 | 97.4 | 147.0 | 198.8 | 254.5 | 349.8 | 508.7 | 635.4 |
+
+Interpretation:
+
+- MTP is the default for single-stream and latency-sensitive decode. It wins
+  C=1 in all DCP=1/DCP=4 cells and most DCP=8 cells.
+- No-MTP is the default for maximum KV cache and high-concurrency throughput.
+  It wins many C=128 cells because the target path is already saturated and
+  speculative verification adds work.
+- DCP=1 + MTP is the fastest single-stream profile, but has the smallest KV
+  pool.
+- DCP=8 no-MTP has the largest KV pool and best high-concurrency long-context
+  throughput.
+- DCP=8 + MTP is the best public "large KV plus speculation enabled" profile.
+- `VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000` is obsolete for this image. Do
+  not use it for the Kimi-K2.6 MTP path.
+
+## Historical Decode Throughput: Marlin FP8 Forcing
+
+Earlier matrix preserved for comparison. This used the old default recipe with
+Marlin FP8 forcing envs enabled:
+
+```text
+VLLM_TEST_FORCE_FP8_MARLIN=1
+VLLM_MARLIN_INPUT_DTYPE=fp8
+VLLM_MARLIN_USE_ATOMIC_ADD=1
+```
+
+That path is no longer the recommended public recipe.
 
 ### DCP=1 + MTP=3
 
@@ -251,14 +379,6 @@ aggregate tok/s.
 | 64k | 69.7 | 104.7 | 162.9 | 229.1 | 301.8 | 445.7 | 632.2 | 757.0 |
 | 128k | 65.6 | 95.5 | 146.8 | 197.5 | 252.9 | 350.0 | 476.8 | 635.3 |
 
-Interpretation:
-
-- MTP wins single-stream at every tested context length.
-- At high concurrency and short context, no-MTP can be faster because the GPU is
-  already saturated and speculative verification adds work.
-- `VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000` is obsolete for this image. Do
-  not use it for the Kimi-K2.6 MTP path.
-
 ## Prefill Sanity Checks
 
 DCP=1 + MTP=3 prefill, C=1:
@@ -287,6 +407,13 @@ The public recipe still uses:
 NCCL_P2P_LEVEL=SYS
 NCCL_GRAPH_FILE=/mnt/nccl_graph_opt.xml
 ```
+
+DCP=4 with XML needs the runtime DCP/XML guard used for the matrix above. The
+guard keeps `NCCL_GRAPH_FILE` for full TP/world communicators, but temporarily
+unsets it while creating and using DCP subgroup communicators. Without that
+guard, NCCL can try to apply the full 8-GPU XML graph to a 4-rank DCP subgroup
+and fail during communicator initialization. DCP=8 does not hit that partial
+subgroup mismatch because the DCP group size matches TP size.
 
 Without the XML, NCCL historically picked a much worse ring graph on this Turin
 system. The bad no-XML path showed single cold 8k prefill around `876 tok/s`,
@@ -390,6 +517,8 @@ The current reconstruction branch includes:
 - `vllm-project/vllm#40611`: draft-specific attention backend and KV dtype
 - `vllm-project/vllm#40750`: TRITON_MLA full CUDA graphs, DCP correctness,
   batch-aware KV split selection, and sm120/fp8 tuning table
+- runtime DCP/XML guard for partial DCP validation: unset `NCCL_GRAPH_FILE`
+  only around DCP subgroup communicators when `1 < DCP < TP`
 
 The draft PR is intentionally a runnable consolidation branch. It can be split
 for upstream review after the end-to-end recipe is fully validated.

@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-25](2026-04/2026-04-25.md) | DS V4/Flash blocked on SM120: DeepGEMM explicitly confirmed no SM120 support planned. Both DS V4 Pro |
 | [2026-04-24](2026-04/2026-04-24.md) | DeepSeek V4 dropped (MIT): V4-Pro 1.6T params/49B active, Flash 284B. Flash fits 2× RTX 6000 Pro (~ |
 | [2026-04-23](2026-04/2026-04-23.md) | Qwen 3.6 27B + FP8 released — 40–130 tok/s on single RTX 6k with MTP3, 70–90% acceptance rate; |
 | [2026-04-22](2026-04/2026-04-22.md) | Kimi K2.6 hits 120–130 tok/s on 8×RTX 6000 Pro with DCP8 + Eagle3 speculative decoding + 3.6M fp8 |
@@ -70,6 +71,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-04-25](2026-04/2026-04-25.md) | DS V4/Flash blocked on SM120: DeepGEMM explicitly confirmed no SM120 support planned. Both DS V4 Pro |
 | [2026-04-24](2026-04/2026-04-24.md) | DeepSeek V4 dropped (MIT): V4-Pro 1.6T params/49B active, Flash 284B. Flash fits 2× RTX 6000 Pro (~ |
 | [2026-04-23](2026-04/2026-04-23.md) | Qwen 3.6 27B + FP8 released — 40–130 tok/s on single RTX 6k with MTP3, 70–90% acceptance rate; |
 | [2026-04-22](2026-04/2026-04-22.md) | Kimi K2.6 hits 120–130 tok/s on 8×RTX 6000 Pro with DCP8 + Eagle3 speculative decoding + 3.6M fp8 |

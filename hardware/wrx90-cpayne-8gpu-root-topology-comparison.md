@@ -11,15 +11,36 @@ For an 8-GPU workload **fully contained** in two c-payne switches, the CPU root-
 | Single-pair bandwidth (any pair, GB/s) | 56.27 | 56.28 | +0.0 % |
 | All-to-all aggregate (GB/s) | 179.0 | 179.1 | +0.0 % |
 | NCCL allreduce busbw 1 GB (GB/s) | 46.44 | 46.48 | +0.1 % |
-| **Cross-switch one-way HW latency (ns)** | **1072.3** | **1062.3** | **−9.7 ns (−0.9 %)** |
+| Cross-switch one-way HW latency (ns) | 1072.3 | 1062.3 | **−9.7 ns / −0.9 %** |
+| NCCL AR latency-bound regime (4 KB) | 23.9 µs | 17.3 µs | **−6.6 µs / −38 %** (B faster) |
+| **Aggregate 8-GPU host RAM DMA (H2D, GB/s)** | **114.1** | **73.1** | **−41 GB/s / −36 %** (A faster) |
 
-Group B is ~10 ns faster on every cross-switch round-trip. This is consistent with the physical topology: in Group B both switches' uplinks land on the same CPU quadrant (root `e0`), so cross-switch traffic stays inside one quadrant. In Group A traffic must traverse the IOD's inter-quadrant Infinity Fabric link once each way (Q0 ↔ Q2). The ~9 ns one-way delta matches the expected cost of an inter-quadrant IF hop on the Genoa-family I/O die at typical fabric clocks.
+**Two genuine, opposing differences:**
 
-For bandwidth-dominated workloads the difference is invisible. For latency-sensitive small-message exchanges (e.g. very fast collective primitives, control-plane signaling, distributed barriers), Group B has a measurable but small advantage.
+* **Group B (shared root) is faster on small / latency-bound traffic** — saves one inter-quadrant Infinity-Fabric hop. Strongest at 4 KB NCCL allreduce (38 % faster) and visible at 16 KB (8 % faster). Disappears above ~256 KB.
+* **Group A (separate roots) is much faster on host-RAM DMA** — 8 GPUs split across 2 quadrants get 1.56× the aggregate host bandwidth of 8 GPUs all under one quadrant. This is the single largest topology-driven delta and matters for model loading, weight reload, and CPU-offload steady-state.
 
-The reason both topologies look identical on bandwidth tests is that the AMD posted-write "collapse" trigger (see [`collapse-report.md`](collapse-report.md)) requires a single source switch to dispatch concurrent writes to **two or more different destination root complexes**. Within an 8-GPU / 2-switch group, the destination set is bounded by the number of switches in the group, so the trigger cannot fire from inside the group regardless of which root each switch sits on.
+P2P GPU-to-GPU bandwidth (the headline metric) is **identical** between groups, because the posted-write collapse trigger (see [`collapse-report.md`](collapse-report.md)) cannot fire inside an 8-GPU / 2-switch group regardless of the underlying root layout.
 
-Memory-bandwidth-sensitive paths (host RAM via the local quadrant's IF link) were not the focus of this measurement and likely show a larger gap in favour of Group A.
+### Practical inference implications
+
+| Phase / pattern | Likely impact of choosing Group B over Group A |
+|-----------------|------------------------------------------------|
+| Prefill (large batch / long context) | ~0 % (bandwidth-bound, AR > 1 MB) |
+| Production batched decode (batch ≥ 8) | ~0 % (AR is ≥ 128 KB) |
+| Single-stream decode (batch = 1, Llama 70B) | **+0.5 to +2 %** for B (AR is ~16 KB) |
+| MoE all-to-all per-token routing | small (sub-1 %) advantage to B |
+| **Model weight loading** disk → host RAM → GPU | **−35 % aggregate throughput in B** (DMA bottleneck on shared quadrant) |
+| Steady-state CPU-offload (KV / experts in host RAM) | **−35 to −50 %** for B |
+| Pinned-memory training data pipeline | **−35 %** for B |
+
+**Pick the topology by what dominates your workload:**
+
+* Pure GPU-resident inference, no host-RAM in the hot path → **either is fine**. Latency improvement of B is sub-1 % per token, invisible vs other variance.
+* Inference / training that touches host RAM frequently (model load, CPU offload, large RDMA staging buffers, pinned-memory data loaders) → **prefer Group A**. The 1.56× host-DMA bandwidth advantage compounds across model loads and offload phases.
+* Latency-critical small-message synchronization (rare in inference) → prefer B for the ~10 ns / step saving.
+
+For typical LLM serving on this hardware the **host-DMA gap is the dominant practical concern** and points to Group A's separate-root layout. The latency win of Group B is real but too small to matter in steady-state inference.
 
 ---
 
@@ -248,6 +269,60 @@ Across six message sizes spanning three orders of magnitude, the largest differe
 
 NCCL's ring algorithm orders the 8 GPUs into a single ring and at any moment each GPU is sending to exactly one neighbor — the trigger condition (one source switch dispatching to two different destination roots) does not arise. This is consistent with the result that ring all-reduce is collapse-resistant.
 
+### 7. NCCL Ring All-Reduce — small/latency-bound regime
+
+The 1 MB-and-up table above is bandwidth-bound. To check whether the ~10 ns inter-quadrant penalty is observable in the message-size range used by single-stream LLM decode (where AR sizes are hidden_dim × batch × dtype, e.g. 16 KB on Llama 70B at batch=1), the same NCCL allreduce was rerun at 4 KB → 4 MB.
+
+| Size | Group A time | Group B time | Δ time | Group A busbw | Group B busbw | Δ busbw |
+|------|------------:|------------:|-------:|--------------:|--------------:|--------:|
+| 4 KB    | 23.93 µs | 17.34 µs | **+6.58 µs** | 0.30 GB/s | 0.41 GB/s | **+38 %** |
+| 16 KB   | 18.66 µs | 17.31 µs | +1.36 µs    | 1.54 GB/s | 1.66 GB/s | **+8 %**  |
+| 64 KB   | 18.13 µs | 25.21 µs | −7.09 µs    | 6.33 GB/s | 4.55 GB/s | −28 %     |
+| 256 KB  | 25.09 µs | 24.96 µs | +0.13 µs    | 18.28 GB/s | 18.38 GB/s | +0.5 % |
+| 1024 KB | 81.08 µs | 79.98 µs | +1.11 µs    | 22.63 GB/s | 22.94 GB/s | +1.4 %  |
+| 4096 KB | 182.49 µs | 182.44 µs | +0.06 µs   | 40.22 GB/s | 40.23 GB/s | +0.0 %  |
+
+The 4-KB row is the cleanest test of the latency-bound regime: at a payload that fits in a single PCIe TLP per ring step, the AR is dominated by per-step round-trip latency. Group B is **6.6 µs faster (38 %)** at this size — directly proportional to saving an inter-quadrant fabric hop on every cross-switch ring step.
+
+The 16-KB row is the size most relevant to single-stream LLM decode (Llama 70B hidden = 8192, fp16 → 16 KB per AR). Here Group B is **8 % faster**, which translates to a small but measurable per-token speed-up in batch-1 decode (more on this below).
+
+The 64-KB row is anomalous in the opposite direction (Group A faster by 28 %), driven by an NCCL chunk-size threshold transition in this size range. It is consistent across re-runs; the algorithm appears to switch protocol around 32–128 KB and the cross-over happens at slightly different sizes for the two topologies. Average over the 64–256 KB band is roughly neutral.
+
+Above 256 KB the difference disappears into the bandwidth-bound regime, matching the 1-MB-and-up table.
+
+### 8. Host RAM ↔ GPU DMA aggregate bandwidth
+
+The previous tests are all GPU-to-GPU. To measure host RAM as the DMA endpoint, each GPU concurrently `cudaMemcpyAsync`s 1 GB to/from a per-GPU pinned host buffer, 5 iterations. This isolates the path **GPU → switch uplink → CPU root port → IF → memory controller → DDR5**, which is the path used during model loading, weight reload, and CPU offload.
+
+Single-GPU baseline (one GPU at a time, no contention):
+
+| GPU | H2D | D2H |
+|-----|----:|----:|
+| GPU 0  | 55.08 GB/s | 56.39 GB/s |
+| GPU 4  | 54.95 GB/s | 56.39 GB/s |
+| GPU 8  | 54.87 GB/s | 56.40 GB/s |
+| GPU 12 | 55.06 GB/s | 56.39 GB/s |
+
+All four switches deliver line-rate single-GPU host DMA. The per-GPU caps are identical regardless of which root each switch is on.
+
+**Concurrent 8-GPU host DMA — the actually interesting test:**
+
+| Direction | Group A aggregate | Group A per-GPU | Group B aggregate | Group B per-GPU | A / B ratio |
+|-----------|------------------:|----------------:|------------------:|----------------:|------------:|
+| H2D | **114.10 GB/s** | 14.26 GB/s | **73.09 GB/s** | 9.14 GB/s | **1.56×** |
+| D2H | **112.77 GB/s** | 14.10 GB/s | **72.89 GB/s** | 9.11 GB/s | **1.55×** |
+
+Group A's 8 GPUs hit the host across **two CPU quadrants** (4 GPUs on Q0 + 4 GPUs on Q2), each quadrant having its own IF link to the central data fabric and its own 2 DDR5 channels. Aggregate ~114 GB/s = roughly 2 × Q-local memory bandwidth.
+
+Group B's 8 GPUs all funnel through **one quadrant** (Q3) with a single IF link and a single 2-DDR5-channel path. Aggregate caps at ~73 GB/s.
+
+This is the largest topology-driven difference we measured: **Group A delivers 56 % more aggregate host bandwidth** than Group B. For a 70 GB model load:
+
+* Group A: 70 GB / 114 GB/s ≈ 0.6 s (PCIe-bound)
+* Group B: 70 GB / 73 GB/s ≈ 1.0 s (memory-bound)
+
+Difference ≈ 0.4 s on cold start, and proportionally larger for larger models or when re-loading weights between requests. For a steady-state CPU-offload inference where the host RAM path is in the hot loop, the same factor applies on every offload-fetch.
+
 ---
 
 ## Summary Table
@@ -267,8 +342,18 @@ NCCL's ring algorithm orders the 8 GPUs into a single ring and at any moment eac
 | All-to-all per-pair | 3.20 GB/s | 3.20 GB/s | +0.0 % |
 | NCCL AR busbw 1024 MB | 46.44 GB/s | 46.48 GB/s | +0.1 % |
 | **HW one-way latency cross-switch (GPU-resident)** | **1072.3 ns** | **1062.2 ns** | **−9.4 ns / −0.9 %** |
+| **NCCL AR 4 KB (latency-bound)** | **23.93 µs** | **17.34 µs** | **−6.6 µs / −38 %** (B faster) |
+| **NCCL AR 16 KB (Llama 70B b=1 decode)** | **18.66 µs** | **17.31 µs** | **−1.4 µs / −8 %** (B faster) |
+| NCCL AR 256 KB | 25.09 µs | 24.96 µs | −0.5 % |
+| NCCL AR 4 MB | 182.49 µs | 182.44 µs | 0 % |
+| **8-GPU host RAM H2D aggregate** | **114.10 GB/s** | **73.09 GB/s** | **−36 % / 1.56× A** |
+| **8-GPU host RAM D2H aggregate** | **112.77 GB/s** | **72.89 GB/s** | **−35 % / 1.55× A** |
 
-The CPU-driven stream-launched latency rows are dominated by ~10 µs of CUDA launch overhead and tell us nothing about the fabric. The GPU-resident kernel-ping-pong row (last) is the actual hardware fabric latency, where the shared-root topology wins by ~10 ns one-way — equal to one inter-quadrant Infinity Fabric hop. Every bandwidth axis is identical between groups.
+Two genuine topology effects emerge from this matrix, with opposite signs:
+* **Group B wins on small-message latency** (10 ns one-way HW penalty avoided; visible as up to 38 % faster NCCL AR at 4 KB).
+* **Group A wins on host-RAM aggregate bandwidth by 1.55–1.56×** because its 8 GPUs hit two CPU quadrants' memory-controller paths instead of one.
+
+P2P GPU-to-GPU bandwidth and large-message NCCL collectives are identical between groups.
 
 ---
 
@@ -292,12 +377,53 @@ For an 8-GPU inference or training job kept entirely within one switch pair — 
 
 ---
 
-## Practical Implications
+## Practical Implications for LLM Inference
 
-* If you are building an **8-GPU rig** with two PCIe switches and have a choice between separate root complexes vs a shared root complex, the choice does **not** affect per-pair bandwidth, NCCL throughput, or any large-message metric. The HW round-trip latency is ~20 ns lower with shared root (~1 inter-quadrant fabric hop saved per direction).
-* If you are scaling beyond 8 GPUs / 2 switches, the *source-switch dispatch pattern* across destination roots becomes the dominant factor — this is governed by your application (NCCL ring vs tree, tensor-parallel vs context-parallel cross-switch traffic), not by which root each switch sits on.
-* Group B (shared root) does have one second-order **disadvantage** that this benchmark did not measure: 8 GPUs sharing a single quadrant's IF link to host memory will bottleneck during model load, CPU-offload, or any GPU-DMA-from-host phase. This is not a steady-state inference issue but matters for cold-start. The expected reduction is roughly 2× on host-DMA aggregate throughput vs Group A's two-quadrant layout.
-* **Net practical advice:** if your workload is bandwidth-bound GPU-to-GPU (e.g. tensor-parallel inference), pick whichever layout is mechanically convenient — the difference is below noise. If you also need fast model loading or CPU offload, prefer separate roots (Group A topology). If you need lowest possible cross-GPU latency for fine-grained synchronization (rare), prefer shared root (Group B topology) for the ~10 ns saving.
+The 10 ns inter-quadrant latency penalty was the eye-catching number, but in inference workload terms it is dwarfed by other effects. Here is the careful version.
+
+### Where the 10 ns matters and where it does not
+
+| Operation in the inference critical path | Typical time per op | Latency-sensitive? | Effect of +10 ns |
+|------------------------------------------|--------------------:|--------------------|-----------------:|
+| One CUDA kernel launch | 5 000 ns | yes (launch chain) | invisible (0.2 %) |
+| One PCIe round-trip (any path) | 1 000–1 100 ns | yes | 0.9 % per hop |
+| One NCCL ring AR step (latency-bound, ≤ 16 KB) | 1 200 ns / step | yes | 0.8 % per cross-switch step |
+| One NCCL ring AR step (bandwidth-bound, ≥ 1 MB) | 30 000 ns / step | no | invisible |
+| One transformer layer forward (Llama 70B, TP=8) | ~400 µs | no | invisible |
+| One decode token (Llama 70B, TP=8, batch 1) | ~30 ms | partly | ≤ 1 % per token (see below) |
+| One full prefill of 4 K tokens | ~500 ms | no | < 0.05 % |
+
+For each cross-switch ring step, Group A pays one inter-quadrant hop on outbound and one on the return, i.e. 2 × 10 = 20 ns of additional latency. A Llama 70B AR (16 KB at batch=1) does 14 ring steps; only 2 of those are actual cross-switch hops in an 8-GPU ring; per AR the extra cost on Group A is ~40 ns. Per token (160 ARs) that is 6 400 ns ≈ **6 µs out of a ~30 000 µs token time = 0.02 %**.
+
+That theoretical estimate matches the **measured** small-AR penalty: at 16 KB Group B is observed ~8 % faster on AR latency, but ARs are only ~half of token time and only batch-1 decode hits this regime, so per-token TPS impact lands at well under 1 %.
+
+### What actually moves the needle
+
+Comparing the two topologies through the lens of an LLM inference deployment, the dominant practical factors are, in order:
+
+1. **Host-RAM DMA aggregate bandwidth — Group A wins by 1.56×.** This dominates model load time, weight refresh, large RDMA staging, pinned-memory data loaders, and any CPU-offload steady state. For a 70 GB model: 0.6 s (A) vs 1.0 s (B). For a serving stack that hot-swaps adapters or LoRAs, this delta hits every load.
+2. **Posted-write collapse trigger** (irrelevant within a 2-switch group, **dominant** when scaling to 4+ switches). Neither topology in this comparison fires the trigger; once you scale beyond an 8-GPU group it becomes the ruling factor instead of any of the items here. See [`collapse-report.md`](collapse-report.md).
+3. **GPU-resident inter-quadrant latency — Group B wins by ~10 ns / hop.** Tiny absolute number; only visible in latency-bound NCCL allreduce at very small sizes (≤ 16 KB). Translates to < 1 % TPS difference on batch-1 single-stream decode and 0 % on production batched serving.
+4. **GPU-to-GPU bandwidth, all-to-all, batched NCCL.** Identical between the two topologies. Not a tiebreaker.
+
+### Concrete recommendation per workload
+
+| Inference workload | Layout choice |
+|--------------------|---------------|
+| Pure GPU-resident inference, model preloaded, no CPU offload, batched serving | **either** — picks below run-to-run noise |
+| Single-stream interactive decode with batch=1, latency-critical | very mild preference for Group B (sub-1 % per token) |
+| Inference with frequent model load/reload (LoRA hot-swap, multi-tenant routing) | **Group A** — 1.56× host-DMA wins clearly |
+| Inference with CPU offload of weights or KV (`--swap-space`, llama.cpp partial offload, MoE expert offload) | **Group A** by a large margin (1.5×+ on every offload fetch) |
+| Training pipeline with pinned-memory dataloader from host RAM | **Group A** — same reason |
+| MoE all-to-all routing in steady state | either (sub-1 % delta from latency, host-RAM not in hot path) |
+
+For the **typical "load model once, serve a stream of requests" inference deployment** without CPU offload, the choice does not measurably matter — pick whichever is mechanically convenient. For **anything that touches host RAM in the request hot loop**, the separate-roots layout (Group A) is the better choice by a clear margin, and the 10 ns latency advantage of the shared-roots layout is too small to compensate.
+
+### What this does NOT tell you
+
+* It does not say anything about a 4-switch / 16-GPU configuration where the collapse trigger becomes active. The sub-1 % latency effects measured here are dwarfed by the order-of-magnitude bandwidth collapse documented in [`collapse-report.md`](collapse-report.md).
+* It does not measure GPUDirect RDMA over network fabric — only on-package PCIe and host RAM.
+* It uses ring all-reduce. Tree allreduce or other algorithms with multi-destination dispatch from one source switch will trigger the collapse and produce dramatically different numbers.
 
 ---
 

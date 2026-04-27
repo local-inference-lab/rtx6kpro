@@ -1,0 +1,97 @@
+diff --git a/python/sglang/srt/models/deepseek_nextn.py b/python/sglang/srt/models/deepseek_nextn.py
+index f83db2d47..7db0147c6 100644
+--- a/python/sglang/srt/models/deepseek_nextn.py
++++ b/python/sglang/srt/models/deepseek_nextn.py
+@@ -16,0 +17 @@
++import json
+@@ -18,0 +20 @@ import os
++from pathlib import Path
+@@ -65,0 +68,44 @@ _is_npu = is_npu()
++def _has_modelopt_fp4_nextn_moe_scales(config: PretrainedConfig) -> bool:
++    """Return whether the appended NextN/MTP routed MoE is serialized as NVFP4.
++
++    DeepSeek/GLM ModelOpt FP4 checkpoints usually keep the NextN layer in BF16,
++    so SGLang historically disabled modelopt_fp4 for the whole NextN module.
++    Locally quantized checkpoints may only quantize the routed MTP experts; those
++    need the ModelOpt FP4 FusedMoE path while attention/shared experts stay BF16.
++    """
++    model_path = (
++        get_global_server_args().speculative_draft_model_path
++        or get_global_server_args().model_path
++    )
++    if not model_path:
++        return False
++
++    model_dir = Path(model_path)
++    index_path = model_dir / "model.safetensors.index.json"
++    if not index_path.is_file():
++        return False
++
++    try:
++        with index_path.open() as f:
++            weight_map = json.load(f).get("weight_map", {})
++    except Exception as exc:
++        logger.warning(
++            "Failed to inspect NextN checkpoint index %s for NVFP4 MoE scales: %s",
++            index_path,
++            exc,
++        )
++        return False
++
++    nextn_layer_id = getattr(config, "num_hidden_layers", None)
++    if nextn_layer_id is None:
++        return False
++
++    prefix = f"model.layers.{nextn_layer_id}.mlp.experts.0.gate_proj"
++    return (
++        f"{prefix}.weight" in weight_map
++        and f"{prefix}.weight_scale" in weight_map
++        and f"{prefix}.weight_scale_2" in weight_map
++        and f"{prefix}.input_scale" in weight_map
++    )
++
++
+@@ -74,0 +121 @@ class DeepseekModelNextN(nn.Module):
++        decoder_quant_config = quant_config
+@@ -80,0 +128,12 @@ class DeepseekModelNextN(nn.Module):
++            decoder_quant_config = None
++        elif (
++            quant_config is not None
++            and quant_config.get_name() == "modelopt_fp4"
++            and _has_modelopt_fp4_nextn_moe_scales(config)
++        ):
++            logger.info(
++                "Using ModelOpt FP4 only for NextN routed MoE; "
++                "NextN attention and shared experts remain unquantized."
++            )
++            moe_quant_config_override = quant_config
++            decoder_quant_config = None
+@@ -84 +143,4 @@ class DeepseekModelNextN(nn.Module):
+-        if quant_config is not None and quant_config.get_name() == "modelopt_fp4":
++        if (
++            decoder_quant_config is not None
++            and decoder_quant_config.get_name() == "modelopt_fp4"
++        ):
+@@ -88 +150 @@ class DeepseekModelNextN(nn.Module):
+-            quant_config = None
++            decoder_quant_config = None
+@@ -124 +186 @@ class DeepseekModelNextN(nn.Module):
+-        self.quant_config = quant_config
++        self.quant_config = decoder_quant_config
+@@ -128 +190 @@ class DeepseekModelNextN(nn.Module):
+-            quant_config=quant_config,
++            quant_config=decoder_quant_config,
+diff --git a/python/sglang/srt/models/deepseek_v2.py b/python/sglang/srt/models/deepseek_v2.py
+index 81697d86a..b810e01b2 100644
+--- a/python/sglang/srt/models/deepseek_v2.py
++++ b/python/sglang/srt/models/deepseek_v2.py
+@@ -152,0 +153 @@ from sglang.srt.utils import (
++    print_warning_once,
+@@ -1211,0 +1213,7 @@ class DeepseekV2AttentionMLA(
++                elif layer_id >= len(self.index_topk_pattern):
++                    print_warning_once(
++                        "index_topk_pattern is shorter than num_hidden_layers; "
++                        f"computing topk normally for layer {layer_id}."
++                    )
++                    self.skip_topk = False
++                    self.next_skip_topk = False

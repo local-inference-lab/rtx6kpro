@@ -1,29 +1,42 @@
-# AMD CPU Posted-Write Collapse — Reproducible Report
+# PCIe P2P Posted-Write Collapse — Reproducible Report
 
-**A focused, self-contained report on a PCIe peer-to-peer write bandwidth collapse observed on AMD server-class CPUs (both Genoa-family Threadripper Pro 7000 / EPYC 9004 *and* Turin-family EPYC 9005) when the traffic pattern is *one source PCIe switch dispatching to multiple destination CPU root complexes*.**
+**A focused, self-contained report on a PCIe peer-to-peer write bandwidth collapse observed on AMD-host platforms when the traffic pattern is *one source PCIe switch dispatching multiple concurrent posted writes to GPUs behind two or more different CPU root complexes*.**
 
 This document is intended to be readable on its own, without context from the rest of the [rtx6kpro wiki](https://github.com/voipmonitor/rtx6kpro). All measurements are reproducible with the scripts below.
 
-The collapse has been independently observed on **two completely different platforms with two different PCIe switch vendors**, which strongly indicates the bug is in the AMD CPU I/O die rather than in any one switch silicon:
+The collapse has been independently observed on **two different platforms with two different PCIe switch vendors**, but with **different concurrency thresholds**:
 
-| Platform | CPU | PCIe switch vendor | Result |
-|----------|-----|--------------------|--------|
-| ASRock WRX90 WS EVO (this report's primary system) | TR Pro 7955WX (Genoa-family sIOD, Zen 4) | **Microchip Switchtec PM50100** (c-payne) | **collapse confirmed** |
-| ASUS ESC8000A-E13P (separate test rig — see [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md)) | 2× EPYC 9575F (Turin sIOD, Zen 5) | **Broadcom PEX890xx** | **collapse confirmed** |
+| Platform | CPU | PCIe switch | Trigger threshold | Collapse magnitude |
+|----------|-----|-------------|-------------------|--------------------|
+| ASRock WRX90 WS EVO (this report's primary system) | TR Pro 7955WX (Genoa-family sIOD, Zen 4) | **Microchip Switchtec PM50100** (c-payne) | **≥ 4 source GPUs per switch** dispatching to multiple dst roots | ~85 % drop (52 → 7 GB/s/pair) |
+| ASUS ESC8000A-E13P (separate test rig — see [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md)) | 2× EPYC 9575F (Turin sIOD, Zen 5) | **Broadcom PEX890xx** | **≥ 2 source GPUs per switch** dispatching to multiple dst roots | ~93 % drop (37 → 2.7 GB/s/pair) |
 
-Same trigger, same write/read asymmetry, same magnitude on both. **The Turin IOD revision did not fix it.** The bug travels with the AMD CPU, not the switch.
+Both rigs show the same fingerprint: posted-write only (reads are unaffected), with the trigger being "one source switch sending to multiple destination root complexes". But they have **different sensitivities** — the Broadcom-based ASUS rig collapses with as few as 2 concurrent source GPUs per switch, while the Microchip-based WRX90 rig requires at least 4 concurrent source GPUs per switch to fall into the same regime. See the [`Per-platform trigger thresholds`](#per-platform-trigger-thresholds) section for the data.
+
+> **Note on the root cause** — earlier revisions of this report claimed that the AMD CPU IOD's posted-write arbitration was the common cause across both platforms because changing the switch silicon and changing the CPU IOD revision both did not eliminate the collapse. Subsequent testing on this rig at 2 GPU per VS (the same topology ASUS uses) showed **no collapse on Microchip + TR Pro at the threshold where Broadcom + Turin clearly collapses**. The AMD-IOD-as-sole-root-cause hypothesis is therefore **not supported** by current data. The collapse may be:
+>
+> 1. a Broadcom PEX890xx switch firmware bug (consistent with the analysis in [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md)), and **independently** an AMD IOD arbitration limit at higher concurrency, or
+> 2. a single underlying issue (in the IOD or somewhere else) with a much lower threshold on Broadcom-based platforms, or
+> 3. two unrelated bugs that share a symptom.
+>
+> We do not yet have data to disambiguate. What we **can** say definitively is that on TR Pro 7955WX + Microchip PM50100, the collapse threshold is around 4 concurrent source GPUs per switch; below that, the same traffic pattern that ASUS reports as catastrophically collapsing simply runs at uplink saturation.
 
 ---
 
 ## TL;DR
 
-On AMD Genoa- and Turin-family server I/O dies, GPU-to-GPU peer-to-peer **WRITE** bandwidth between PCIe switches collapses by ~75–85 % when **the same source PCIe switch is concurrently writing to GPUs sitting behind two or more different CPU root complexes**.
+GPU-to-GPU peer-to-peer **WRITE** bandwidth between PCIe switches can collapse dramatically (~75-93 %) under specific traffic patterns on AMD-host PCIe-switch-fabric rigs. The trigger is: **the same source PCIe switch is concurrently writing to GPUs sitting behind two or more different CPU root complexes** — *but the number of concurrent source GPUs needed to actually trip the collapse is platform-dependent*.
 
-* **WRITE** drops from ~52 GB/s per pair to ~6–7 GB/s per pair (Microchip / TR Pro), or from ~37 GB/s to ~2.7 GB/s (Broadcom / dual EPYC Turin).
-* **READ** is unaffected (stays at full link rate).
-* Single-pair, same-destination-root, and independent-source-uplink patterns are unaffected — full bandwidth.
+* **READ** is unaffected on every platform (reads use non-posted completions, which have natural flow control).
+* **Single-pair, same-destination-root, and independent-source-uplink patterns are unaffected** — full bandwidth.
 
-The collapse is at the **CPU silicon arbitration layer** (AMD I/O Die scalable-data-fabric arbitration of posted writes). It is **not fixed** by:
+| Platform | Threshold | Collapsed write BW |
+|----------|-----------|--------------------|
+| Broadcom PEX890xx + dual EPYC Turin (ASUS ESC8000A-E13P) | ≥ 2 src GPUs per switch | ~2.7 GB/s aggregate (vs ~37 GB/s baseline) |
+| Microchip PM50100 + TR Pro 7955WX (this rig, 16-GPU 4-switch layout, 4 GPU per switch) | ≥ 4 src GPUs per switch | ~7 GB/s per pair (vs ~52 GB/s baseline) |
+| Microchip PM50100 + TR Pro 7955WX (this rig, 8-GPU 2-VS-per-chip layout, 2 GPU per VS) | **does not trigger** at the 2-src-per-VS threshold ASUS reports | n/a — saturates at ~56 GB/s, no collapse observed |
+
+The collapse is **not fixed** by:
 * newer kernel (tested 6.8 → 6.17 → 6.18.24)
 * newer NVIDIA driver (tested 575 → 580 → 595.58.03)
 * `iommu=off` or `iommu=pt`
@@ -201,7 +214,7 @@ The **all-to-all stress test** in the same run reports **~20 GB/s per GPU / 159 
 
 ---
 
-## What triggers the collapse — precise rule
+## What triggers the collapse — precise rule (qualitative)
 
 **Collapse trigger:** Two or more concurrent peer-to-peer **WRITE** flows where:
 
@@ -210,18 +223,83 @@ The **all-to-all stress test** in the same run reports **~20 GB/s per GPU / 159 
 
 If either condition is broken — different source switches *or* a single common destination root — bandwidth is healthy.
 
-### Quick truth table from our measurements
+The qualitative trigger is the same on every platform tested. The *quantitative* threshold (how many concurrent source GPUs are needed before the collapse actually fires) differs by platform — see [Per-platform trigger thresholds](#per-platform-trigger-thresholds) below.
+
+### Quick truth table from our measurements (TR Pro + Microchip, 4 GPU/switch layout)
 
 | Source switches | Destination root complexes | Result |
 |-----------------|----------------------------|--------|
 | 1 (e.g. SW1)    | 1 (all dsts behind same root) | ✓ full bandwidth, uplink-saturated |
-| 1 (e.g. SW1)    | **2 or more** (different roots) | **✗ collapse, ~6 GB/s/pair** |
+| 1 (e.g. SW1)    | **2 or more** (different roots) | **✗ collapse, ~6 GB/s/pair** (with 4 src GPUs from SW1) |
 | 2+ different    | 2+ different               | ✓ full bandwidth |
 | 2+ different    | 1 common                   | ✓ full bandwidth |
 
 ### Reads vs writes
 
 The collapse is **only on PCIe posted writes**. Pulling the data the opposite way (so each transfer is a READ from the perspective of the source GPU's PCIe link) gives full ~53 GB/s on every pattern, including the trigger pattern. This is why the script measures both — the WRITE/READ asymmetry is itself a strong fingerprint of the bug.
+
+---
+
+## Per-platform trigger thresholds
+
+Same qualitative trigger pattern, but markedly different sensitivity by hardware platform. The numbers below are all sustained 30 s+ measurements with `iommu=off`, ACS Request-Redirect cleared, peer access enabled.
+
+### Broadcom PEX890xx + EPYC Turin (ASUS ESC8000A-E13P, 8 GPU, 2 VS/chip, 2 GPU/VS)
+
+Reproduced from [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md). Topology: two physical Broadcom PEX890xx switches, each with two Virtual Switches; 2 GPUs per VS.
+
+| Pattern | Aggregate WRITE | Per pair | Collapse? |
+|---------|----------------:|---------:|:---------:|
+| 1 flow GPU0→GPU4 | 36.8 GB/s | 36.8 | ✓ baseline |
+| 2 flows OK: (0,4)+(2,6) [different VS] | 76.4 GB/s | 38.2 | ✓ |
+| **2 flows TRIGGER: (0,4)+(1,6) [same VS, 2 dst roots]** | **2.7 GB/s** | **1.35** | **✗ COLLAPSE 93 %** |
+| 4 flows: (0,4)+(0,5)+(1,6)+(1,7) [2 src × 2 dst, all cross-chip] | 2.7 GB/s | 0.7 | ✗ COLLAPSE |
+
+→ **Collapse fires at just 2 concurrent source GPUs per VS.**
+
+### Microchip PM50100 + TR Pro 7955WX, 8 GPU, 2 VS/chip, 2 GPU/VS layout (this rig)
+
+Same architectural topology as ASUS (2 physical chips, each with 2 VS, 2 GPUs per VS), but using c-payne / Microchip switches and a single-socket TR Pro instead of dual-socket Turin. Tested **at the same threshold ASUS reports as collapsing**.
+
+In our chip-mapping (deduced from bandwidth signatures): chip A = SW1+SW3, chip B = SW2+SW4.
+
+| Pattern | Aggregate WRITE | Per pair | Collapse? |
+|---------|----------------:|---------:|:---------:|
+| 1 flow SW1→SW2 | 56.3 GB/s | 56.3 | ✓ baseline |
+| 2 flows OK: (0,2)+(4,6) [different VS of chip A → chip B] | 95.2 GB/s | 47.6 | ✓ |
+| **2 flows ASUS-equivalent: (0,2)+(1,6) [same VS, 2 dst roots both on chip B]** | **54.0 GB/s** | **27.0** | ✓ uplink-saturated, no collapse |
+| 4 flows: (0,2)+(0,6)+(1,3)+(1,7) [2 src × 2 dst, all cross-chip] | 56.2 GB/s | 14.0 | ✓ uplink-saturated, no collapse |
+
+→ **Same traffic patterns ASUS reports as 93 % collapse simply saturate the source VS uplink at ~56 GB/s on this rig — no collapse observed at the 2-src-per-VS threshold.** Reads on these patterns also run at ~56 GB/s, so the WRITE/READ asymmetry that defines the collapse fingerprint is not present either.
+
+### Microchip PM50100 + TR Pro 7955WX, 16 GPU, 4 separate switches, 4 GPU/switch layout
+
+This is the layout in which we *originally* observed the collapse on this rig — different from the 2-VS-per-chip ASUS-style layout above. With 4 GPUs per switch, the collapse trigger fires:
+
+| Pattern | Aggregate WRITE | Per pair | Collapse? |
+|---------|----------------:|---------:|:---------:|
+| 1 pair SW1→SW2 | 52.5 GB/s | 52.5 | ✓ baseline |
+| CONTROL SW1→SW2 only, 2 GPUs (1 dst root) | 52.1 GB/s | 26.1 | ✓ |
+| **COLLAPSE-2: SW1 → SW2+SW3 (2 dst roots, 2 src GPUs)** | **13.5 GB/s** | **6.8** | **✗ COLLAPSE 75 %** |
+| **COLLAPSE-3: SW1 → SW2+SW3+SW4 (3 dst roots, 3 src GPUs)** | **12.6 GB/s** | **4.2** | **✗ COLLAPSE 92 %** |
+
+Wait — the 2-src case here *does* show collapse (6.8 GB/s/pair vs 26 GB/s/pair baseline). So the threshold on TR Pro isn't a strict "≥4 src" rule. **The relationship between concurrency, source-switch fan-out, and collapse on TR Pro + Microchip is more subtle than originally described in this report.** Previous results on this rig had 4 GPUs per switch and *also* showed clear collapse at 2 concurrent source GPUs. The 2-VS-per-chip layout (only 2 GPUs per VS) does *not* show the collapse for a comparable 2-concurrent-source pattern.
+
+The difference between layouts that's most likely relevant:
+* **Per-switch GPU count.** 4 GPU/switch (16-GPU layout) collapses; 2 GPU/VS (8-GPU layout) does not.
+* **Per-source-switch fan-out budget.** With 4 GPUs sitting on one upstream x16, *any* 2-of-4 dispatching to different roots can apparently still deadlock the IOD. With only 2 GPUs sitting on one upstream x16, the same 2-of-2 dispatching does not.
+
+Whether this is a count-of-attached-GPUs effect, a credit-budget effect at the switch, an ACS / routing effect, or something else, we don't yet know. But the practical observation stands: **on TR Pro 7955WX + Microchip PM50100, the 8-GPU 2-VS-per-chip layout does not exhibit the collapse**, whereas a 16-GPU 4-switch layout on the same hardware does.
+
+### What the platform comparison implies
+
+Originally this report claimed the AMD CPU IOD's posted-write arbitration was the common root cause across both platforms. The new data above complicates that:
+
+* If the bug were purely a CPU-IOD trait, we would expect the **same** trigger threshold on the same CPU regardless of switch silicon and topology details.
+* Instead, on TR Pro + Microchip the collapse only appears once you have ~4 GPUs sitting on one upstream port; on Turin + Broadcom it appears with just 2.
+* The c-payne report's two-platform "common cause = AMD IOD" argument relied on the 16-GPU TR Pro test (which showed collapse) being matched in pattern by ASUS's 8-GPU test (also showed collapse). The 8-GPU TR Pro test (ASUS-equivalent layout) does **not** match — and it is the better controlled comparison.
+
+The honest current state of knowledge is: **we have two different rigs with different switch silicon both showing posted-write collapse, but with different sensitivities; we do not have data sufficient to definitively assign root cause to the CPU, the switch, or both.** The Broadcom-as-culprit interpretation in [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md) is consistent with the lower threshold seen on Broadcom-based rigs, while the TR Pro 16-GPU test shows that *something* — possibly a different bug, possibly the same one with a higher threshold — also breaks at high enough concurrency on Microchip-based rigs.
 
 ---
 
@@ -237,8 +315,9 @@ These were tested and **do not fix the collapse**:
 * Disabling ACS Request-Redirect on every PCIe bridge — required for P2P at all, but does not affect collapse magnitude
 * NCCL env tuning (`NCCL_P2P_LEVEL=SYS`, custom XML graph) — does not avoid the collapse, only reroutes around it
 * **Moving each PCIe switch to its own dedicated CPU root port** (the topology used in this report). The previous test layout had two of the four c-payne switches sharing a single root (Q3); moving them to four independent root ports did not change the collapse magnitude or trigger pattern. This rules out "two switches sharing one root complex" as the cause.
-* **Moving from Genoa-family to Turin-family AMD CPU.** EPYC 9575F (Turin, Zen 5, latest IOD revision) on the ASUS ESC8000A-E13P with Broadcom PEX890xx switches exhibits the identical trigger pattern with the same write/read asymmetry. The Turin IOD did not fix this.
-* **Changing PCIe switch vendor.** Microchip Switchtec PM50100 (c-payne, on TR Pro) and Broadcom PEX890xx (on dual EPYC Turin) both expose the same collapse with the same trigger rule. Two unrelated switch silicons exhibiting an identical bug at the same trigger is strong evidence the root cause is upstream — in the AMD CPU's IOD posted-write arbitration — and not in either switch.
+* **Moving from Genoa-family to Turin-family AMD CPU.** EPYC 9575F (Turin, Zen 5, latest IOD revision) on the ASUS ESC8000A-E13P with Broadcom PEX890xx switches exhibits the same qualitative trigger pattern (with the same write/read asymmetry). The Turin IOD did not eliminate the collapse on Broadcom-based rigs.
+
+Earlier revisions of this section claimed that "changing PCIe switch vendor" did not fix the collapse, citing collapse on both Microchip + TR Pro and Broadcom + Turin. Subsequent testing on this rig at the **same 8-GPU 2-VS-per-chip topology** ASUS uses showed **no collapse on Microchip + TR Pro** at the threshold where Broadcom + Turin clearly collapses. So the original "changing switch vendor doesn't help" claim was based on comparing two different topologies (16-GPU on TR Pro vs 8-GPU on Turin); when controlled for topology, the switch vendor *does* appear to matter for the threshold. See [`Per-platform trigger thresholds`](#per-platform-trigger-thresholds) above.
 
 These were tested and **do mask the collapse**, with caveats:
 
@@ -254,15 +333,42 @@ These were tested and **fully avoid the collapse** by changing the traffic patte
 
 ---
 
-## What this looks like at the hardware level (hypothesis, not confirmed by AMD)
+## What this looks like at the hardware level (multiple hypotheses, none confirmed)
 
-The single source PCIe root port on the source switch's quadrant has to forward every outgoing posted write into the IOD's scalable data fabric (SDF), targeted at one of four destination quadrants. When the destinations are all in one quadrant, the SDF arbiter holds steady credit flow in one direction. When they alternate between two or more destination quadrants, the arbiter has to interleave credits, drain ack queues for both targets, and switch routing tables per TLP. Empirically this drops effective throughput to roughly 1/8 of the line rate of the source x16 link.
+Two non-exclusive hypotheses are consistent with current data:
 
-Reads are unaffected because the read response path uses non-posted completion TLPs, which take a different arbitration path inside the IOD.
+### Hypothesis A — AMD IOD scalable-data-fabric (SDF) arbitration
 
-This matches public AMD documentation only loosely — there is no public errata describing this specifically. We have not been able to find a Genoa, Storm Peak, or Turin PPR section that admits the issue. If anyone with AMD-internal access reads this, an errata pointer or a workaround flag would be greatly appreciated.
+The single source PCIe root port has to forward every outgoing posted write into the IOD's SDF, targeted at one of four destination quadrants. When the destinations are all in one quadrant, the SDF arbiter holds steady credit flow in one direction. When they alternate between two or more destination quadrants, the arbiter has to interleave credits, drain ack queues for both targets, and switch routing tables per TLP. Empirically this drops effective throughput to a fraction of the line rate of the source x16 link.
 
-The fact that the bug survives the Genoa → Turin IOD revision (and shows up identically on Microchip and Broadcom switches) makes the AMD CPU's posted-write arbitration the only common factor. Until AMD ships an IOD revision that fixes it, every Genoa- and Turin-family server CPU paired with cross-switch GPU traffic is exposed.
+This story explains **why reads are immune** (completion-based flow control bypasses the misbehaving arbiter) and is consistent with the high-concurrency TR Pro + Microchip data (16-GPU 4-switch layout collapses at ~4 source GPUs per switch).
+
+### Hypothesis B — PCIe switch's internal posted-write arbitration (Broadcom-specific)
+
+The Broadcom PEX890xx switch's internal posted-write arbiter enters a pathological state when multiple downstream sources on one VS issue posted writes through a shared upstream port to multiple different destination root ports. Reads are immune for the same reason as in Hypothesis A.
+
+This story is consistent with the **2-VS-per-chip 8-GPU layout where the same architecture on Microchip silicon does not collapse but on Broadcom silicon does**. ASUS's own analysis in [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md) attributes the bug to the Broadcom PEX890xx switch.
+
+### Where the two hypotheses fit the data
+
+| Observation | Consistent with Hyp A (CPU IOD)? | Consistent with Hyp B (Broadcom switch)? |
+|-------------|:--:|:--:|
+| Both rigs collapse on cross-switch posted writes | yes | yes |
+| Reads are immune on both rigs | yes | yes |
+| Broadcom + Turin collapses at 2 src GPUs/VS | yes | yes |
+| **Microchip + TR Pro at 2 GPU/VS does NOT collapse** | **no** (would expect collapse) | yes (Broadcom-specific) |
+| Microchip + TR Pro at 4 GPU/switch DOES collapse | yes | partial — would need Microchip silicon to also have a related (separate?) bug at higher concurrency |
+
+The cleanest single-cause story is "Broadcom switch silicon bug AND a separate AMD IOD issue at higher concurrency". The cleanest single-vendor story is "AMD IOD bug with platform-dependent threshold". We cannot disambiguate from this data alone.
+
+### What would settle it
+
+* Test the **identical 8-GPU 2-VS-per-chip topology on a Broadcom server with TR Pro / EPYC Genoa instead of Turin.** If it collapses → bug is in Broadcom switch silicon (because the CPU IOD would be the same family that does *not* collapse on Microchip in this layout).
+* Test the **TR Pro 16-GPU 4-switch layout but with Broadcom switches.** If it shows even worse collapse than the 2-VS case → both contribute.
+* Test the **Microchip 16-GPU layout on EPYC Turin.** If it collapses earlier than on TR Pro at the same layout → CPU IOD revision differences matter.
+* Get an AMD errata document or Broadcom firmware release note that admits the issue.
+
+Until any of those land, the report's core claim is just: **on AMD-host platforms with multi-switch PCIe fabrics, posted-write traffic to multiple CPU root ports from one source switch can collapse — sometimes catastrophically, with the actual sensitivity depending on switch silicon and per-switch GPU count.**
 
 ---
 
@@ -270,16 +376,24 @@ The fact that the bug survives the Genoa → Turin IOD revision (and shows up id
 
 c-payne sells Microchip-based PCIe Gen5 switches that the community uses to build 4×, 8×, and 16× GPU rigs without NVLink. ASUS / Supermicro / Gigabyte sell Broadcom-PEX890xx-based 8-GPU servers (ESC8000A-E13P and similar). The intended use case for both is precisely the pattern that triggers this collapse: many GPUs behind one switch, talking peer-to-peer to GPUs behind another switch.
 
-With **any** AMD Genoa- or Turin-family CPU as the host, the IOD's SDF arbitration silently caps cross-switch GPU-GPU **write** throughput at a small fraction of the link rate as soon as more than one destination root complex is touched concurrently — regardless of which PCIe switch silicon you bought.
+The collapse risk depends on **switch silicon × per-switch GPU count × CPU**:
+
+| Configuration | Risk |
+|---------------|------|
+| Broadcom PEX890xx + AMD-host, ≥ 2 GPU/VS | **High** — collapses at the ASUS-reported ≥ 2 src per VS threshold |
+| Microchip / c-payne + AMD-host, 2 GPU/VS (8-GPU 2-VS-per-chip layout) | **Low** — same trigger pattern saturates uplink, no collapse observed |
+| Microchip / c-payne + AMD-host, 4 GPU/switch (16-GPU 4-switch layout) | **High** — collapse observed with 2-3 source GPUs dispatching to multi roots |
+| Hierarchical PCIe-switch fabric with a *root switch* (e.g. 3-stage Microchip PM50100 setup) | **None** — cross-switch traffic never crosses a CPU root port |
+| Intel host + any switch | **Untested** — needs data |
 
 In practical workloads:
 
 * **Tensor-parallel inference within a single switch:** unaffected.
 * **Tensor-parallel inference across switches with NCCL ring all-reduce:** mostly unaffected (ring keeps trigger off).
-* **NCCL tree all-reduce, all-gather, all-to-all, one-to-many broadcast across switches:** **collapse-bound**.
-* **Context parallelism / DCP across switches:** likely collapse-bound during cross-switch chunks.
+* **NCCL tree all-reduce, all-gather, all-to-all, one-to-many broadcast across switches:** **collapse-bound on affected configurations**.
+* **Context parallelism / DCP across switches:** likely collapse-bound on affected configurations during cross-switch chunks.
 
-For the c-payne *3-stage hierarchical* configuration (root switch + leaf switches), this collapse does not occur because cross-switch traffic never crosses a CPU root complex. That observation is consistent with everything in this report and is currently the only known *topology-level* fix.
+For the c-payne *3-stage hierarchical* configuration (root switch + leaf switches), this collapse does not occur because cross-switch traffic never crosses a CPU root complex. The 2-VS-per-chip Microchip 8-GPU layout also avoids collapse in our testing. Both are practical, currently-known *topology-level* mitigations.
 
 ---
 
@@ -288,22 +402,29 @@ For the c-payne *3-stage hierarchical* configuration (root switch + leaf switche
 * [`pcie-posted-write-collapse.md`](pcie-posted-write-collapse.md) — extended history, alternative reproductions, and per-platform results across multiple test rigs.
 * [`wrx90-cpayne-microchip-switches.md`](wrx90-cpayne-microchip-switches.md) — 3-switch hierarchical setup that does NOT exhibit the collapse.
 * [`wrx90-cpayne-2switch-flat.md`](wrx90-cpayne-2switch-flat.md) — 2-switch flat setup (no collapse, only 2 root complexes involved).
-* [`wrx90-cpayne-16gpu-4switch.md`](wrx90-cpayne-16gpu-4switch.md) — 16-GPU 4-switch setup where collapse was originally discovered.
+* [`wrx90-cpayne-16gpu-4switch.md`](wrx90-cpayne-16gpu-4switch.md) — 16-GPU 4-switch setup where collapse was originally discovered (Microchip + TR Pro, 4 GPU/switch).
+* [`wrx90-cpayne-8gpu-2vs-per-chip.md`](wrx90-cpayne-8gpu-2vs-per-chip.md) — 8-GPU 2-VS-per-chip setup that does NOT exhibit the collapse on Microchip + TR Pro at the same threshold ASUS reports as collapsing on Broadcom + Turin.
 * [`asus-esc8000a-e13p-broadcom-switches.md`](asus-esc8000a-e13p-broadcom-switches.md) — independent reproduction on dual-socket EPYC + Broadcom PEX890xx switches.
 
 ---
 
 ## Contact
 
-This report was assembled from work on the [voipmonitor/rtx6kpro](https://github.com/voipmonitor/rtx6kpro) wiki. We have already confirmed the bug on:
+This report was assembled from work on the [voipmonitor/rtx6kpro](https://github.com/voipmonitor/rtx6kpro) wiki. Observed:
 
-* AMD TR Pro 7955WX (Genoa-family sIOD, Zen 4) with **Microchip Switchtec** c-payne switches
-* AMD EPYC 9575F (Turin sIOD, Zen 5) with **Broadcom PEX890xx** switches
+* AMD TR Pro 7955WX (Genoa-family sIOD, Zen 4) with **Microchip Switchtec PM50100** (c-payne):
+  * 16-GPU 4-switch layout (4 GPU/switch): **collapses** with 2-3 source GPUs dispatching to multi root complexes
+  * 8-GPU 2-VS-per-chip layout (2 GPU/VS): **does not collapse** at the same trigger pattern that ASUS reports as collapsing
+* AMD EPYC 9575F (Turin sIOD, Zen 5) with **Broadcom PEX890xx**:
+  * 8-GPU 2-VS-per-chip layout: **collapses** with 2 source GPUs dispatching to multi root complexes (data from ASUS)
 
-If you have access to:
+If you have access to any of the following, your data would help disambiguate root cause:
 
-* Intel Granite Rapids / Xeon 6 platforms (any PCIe switch) — to confirm whether this is AMD-only or also affects Intel I/O fabrics
-* AMD EPYC Bergamo / Siena (Zen 4c IOD revisions) — to narrow down which IOD revisions are affected
+* **Same 8-GPU 2-VS-per-chip topology with Broadcom PEX890xx but on TR Pro / EPYC Genoa.** If it collapses → bug is in the switch silicon. If it doesn't → bug is CPU-IOD revision-dependent.
+* **Same 8-GPU 2-VS-per-chip topology with Microchip on dual-socket EPYC Turin.** If it collapses → it's CPU-platform-dependent. If it doesn't → Broadcom-specific.
+* **Intel Granite Rapids / Xeon 6 platforms (any PCIe switch)** — to confirm whether this is AMD-only or also affects Intel I/O fabrics.
+* **AMD EPYC Bergamo / Siena (Zen 4c IOD revisions)** — to narrow down which IOD revisions are affected.
+* **AMD-internal documentation or errata, or Broadcom firmware release notes**, that describe this specifically.
 * AMD-internal documentation or errata covering IOD posted-write arbitration / scalable data fabric credits
 
 …we'd very much like to hear whether the collapse trigger fires on those configurations or not. Open an issue on the repo or PR an additional results table.

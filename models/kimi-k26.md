@@ -19,6 +19,7 @@ vLLM on 8x RTX PRO 6000 Blackwell / sm120. It uses the Kimi MLA path:
 - [Launch: Maximum KV Cache, No MTP](#launch-maximum-kv-cache-no-mtp)
 - [Speed Vs Context Length](#speed-vs-context-length)
 - [Expected Decode Throughput](#expected-decode-throughput)
+- [8-GPU Topology Sanity Check](#8-gpu-topology-sanity-check)
 - [Historical Decode Throughput: Marlin FP8 Forcing](#historical-decode-throughput-marlin-fp8-forcing)
 - [Prefill Sanity Checks](#prefill-sanity-checks)
 - [NCCL XML Status](#nccl-xml-status)
@@ -305,6 +306,112 @@ Interpretation:
 - DCP=8 + MTP is the best public "large KV plus speculation enabled" profile.
 - `VLLM_SPECULATIVE_DISABLE_ABOVE_SEQ_LEN=7000` is obsolete for this image. Do
   not use it for the Kimi-K2.6 MTP path.
+
+## 8-GPU Topology Sanity Check
+
+This is a narrow hardware sanity check from 2026-04-28, not the main public
+throughput table above. It compares the same DCP=8 no-MTP recipe across two
+hosts and across the two independent 8-GPU slices on the 16-GPU host.
+
+Remote topology note: each tested 8-GPU slice is `8x RTX PRO 6000 Blackwell`
+behind `2x C-Payne PCIe switches` with one uplink path. The 16-GPU host exposes
+two such 8-GPU slices. The test keeps the 8-GPU NCCL XML enabled for these
+8-rank runs.
+
+Common settings:
+
+```text
+image:                  voipmonitor/vllm:kimi-k26-mtp-upstream-stack-pcie-env-test-20260424
+model:                  moonshotai/Kimi-K2.6
+TP / DCP:               8 / 8
+MTP:                    off
+attention backend:      TRITON_MLA
+KV cache dtype:         fp8
+max_model_len:          262144
+max_num_batched_tokens: 8192
+max_num_seqs:           128
+gpu_memory_utilization: 0.94
+NCCL graph file:        /mnt/nccl_graph_opt.xml
+custom allreduce:       VLLM_ENABLE_PCIE_ALLREDUCE=1
+benchmark:              llm_decode_bench.py --skip-prefill --duration 30
+```
+
+### Cross-Host 8-GPU No-MTP Check
+
+| cell | budgetserver local | 10.229.14.14 GPU 0-7 | local delta |
+|---|---:|---:|---:|
+| 0 / 1 | 75.2 | 72.7 | +3.4% |
+| 0 / 128 | 1245.9 | 1232.2 | +1.1% |
+| 64k / 1 | 67.0 | 65.4 | +2.4% |
+| 64k / 16 | 267.7 | 259.5 | +3.2% |
+
+Interpretation: without MTP, the two hosts are close. The local host is only
+about `+1%` to `+3%` faster on these targeted cells, so large MTP-only gaps
+should not be interpreted as raw target-model or generic PCIe throughput gaps.
+
+### 10.229.14.14 8-GPU Slice Check
+
+| cell | GPU 0-7 | GPU 8-15 | second-slice delta |
+|---|---:|---:|---:|
+| 0 / 1 | 72.7 | 72.2 | -0.7% |
+| 0 / 128 | 1232.2 | 1230.3 | -0.2% |
+| 64k / 1 | 65.4 | 65.0 | -0.6% |
+| 64k / 16 | 259.5 | 257.8 | -0.7% |
+
+Interpretation: the two 8-GPU slices on `10.229.14.14` are effectively the
+same for this no-MTP target path. Any large difference seen elsewhere is not
+explained by simply choosing the first or second 8-GPU slice.
+
+### 10.229.14.14 TP=16 / DCP=1 No-MTP Diagnostic
+
+This is a separate diagnostic run on the same 16-GPU host using all 16 GPUs at
+once. It does **not** use the 8-GPU XML file, because
+`/mnt/nccl_graph_opt.xml` is an 8-rank graph (`dev 0..7`). vLLM also disables
+the PCIe custom allreduce path for this run:
+
+```text
+Custom allreduce is disabled due to an unsupported world size: 16.
+Supported world sizes: [2, 4, 6, 8].
+```
+
+Common settings:
+
+```text
+image:                  voipmonitor/vllm:kimi-k26-mtp-upstream-stack-pcie-env-test-20260424
+model:                  moonshotai/Kimi-K2.6
+TP / DCP:               16 / 1
+MTP:                    off
+attention backend:      TRITON_MLA
+KV cache dtype:         fp8
+max_model_len:          262144
+max_num_batched_tokens: 8192
+max_num_seqs:           128
+gpu_memory_utilization: 0.94
+NCCL graph file:        not used
+allreduce path:         NCCL, because vLLM custom allreduce does not support world size 16
+GPU KV cache size:      1,507,120 tokens
+benchmark:              llm_decode_bench.py --standalone-prefill --duration 30
+```
+
+Prefill, C=1:
+
+| ctx | prompt tokens | TTFT s | prefill tok/s | samples |
+|---|---:|---:|---:|---:|
+| 8k | 8,187 | 1.01 | 8,102 | 5 |
+| 64k | 64,459 | 9.12 | 7,067 | 2 |
+| 128k | 128,766 | 20.84 | 6,178 | 1 |
+
+Decode, aggregate tok/s:
+
+| ctx \ conc | 1 | 16 | 128 |
+|---|---:|---:|---:|
+| 0 | 75.9 | 780.5 | 2582.5 |
+| 64k | 54.3 | 324.0 | does not fit |
+| 128k | 42.1 | does not fit | does not fit |
+
+The requested `128k / C=128` cell does not fit in the available KV cache. With
+`max_tokens=2048`, it would require roughly `17.0M` total KV tokens, while this
+TP16/DCP1 run has `1.51M` tokens available.
 
 ## Historical Decode Throughput: Marlin FP8 Forcing
 

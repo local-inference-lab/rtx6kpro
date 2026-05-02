@@ -38,6 +38,7 @@ Docker is the primary deployment method for inference engines on RTX PRO 6000 Bl
 |-------|--------|---------|-------|
 | **`voipmonitor/sglang:cu130`** | Festr | **SGLang with b12x 0.7.1 attention+MoE** | **Recommended for SGLang.** SM120 patches, FlashInfer from source, b12x 0.7.1 (full attn+MoE, all batch sizes, CUDA graphs to bs=64), PCIe oneshot allreduce, NCCL graph. |
 | **`voipmonitor/vllm:cu130`** | Festr | **vLLM with SM120 patches** | **Recommended for vLLM.** Cherry-picked PRs (#35675, #35936, #37132), FlashInfer from source. |
+| **`voipmonitor/vllm:glm51-mtp-pciebarrier-b12x0111-kv432k-20260502`** | Festr | **GLM-5.1 NVFP4-MTP vLLM + b12x NSA reference** | DCP=1 / TP=8 reference for `lukealonso/GLM-5.1-NVFP4-MTP`; includes b12x 0.11.1, B12X_MLA_SPARSE, MTP, FP8 KV, PCIe oneshot allreduce completion barrier, NCCL XML, and fixed-capacity/JIT prefill fixes. See [GLM-5.1 report](../models/glm5.1/vllm-b12x-nsa-mtp-port-2026-05-02.md). |
 | `voipmonitor/vllm-openai:cu130-nightly-patched` | Festr | vLLM with Kimi K2.5 patches | Includes FP8 KV + DCP fixes |
 | `voipmonitor/llm-pytorch-blackwell:nightly` | Festr | Full SGLang + vLLM for Blackwell | Recommended for GLM-5 |
 | `voipmonitor/llm-pytorch-blackwell:customallreduce` | Festr | SGLang with luke's custom allreduce | For PCIe switch topologies |

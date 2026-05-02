@@ -16,6 +16,7 @@ Community-sourced knowledge base for running large language models (Qwen3.5-397B
 | [Kimi-K2.5](models/kimi-k25.md) | 530B MoE | — | 8× | 101 tok/s (PCIe switch) | [→](models/kimi-k25.md) |
 | [Kimi-K2.6](models/kimi-k26.md) | MoE | — | 8× | Community image + MLA Eagle | [→](models/kimi-k26.md) |
 | [GLM-5](models/glm5.md) | 744B MoE | 40B | 8× | 105 tok/s (MTP) | [→](models/glm5.md) |
+| [GLM-5.1](models/glm5.1/README.md) | MoE | — | 8× | vLLM b12x NSA/MTP port | [→](models/glm5.1/README.md) |
 
 ### Hardware & Topology
 - [PCIe Topology](hardware/topology.md) — Switches, Turin vs Genoa, NUMA
@@ -39,6 +40,7 @@ Community-sourced knowledge base for running large language models (Qwen3.5-397B
 - [Speculative Decoding](optimization/speculative-decoding.md) — MTP configs, EAGLE
 - [Docker Images](optimization/docker-images.md) — Images, compose, custom builds
 - [I/O Tuning (md RAID5)](optimization/io-tuning.md) — stripe_cache, group_idle, Docker overlay2
+- [GLM-5.1 vLLM b12x NSA/MTP Port](models/glm5.1/vllm-b12x-nsa-mtp-port-2026-05-02.md) — fast prefill, PCIe barriers, KV cache limits, and upstream delta vs b12x/SGLang
 
 ### Community
 - [Daily Summaries](daily-summaries/) — Auto-generated daily digests of Discord activity

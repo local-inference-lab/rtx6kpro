@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-03](2026-05/2026-05-03.md) | GLM-5.1 OOV loop bug: token IDs ≥154870 unmapped in tokenizer → infinite decode loops at temp=0; |
 | [2026-05-02](2026-05/2026-05-02.md) | MiMo-V2.5 stream-race bug fixed: b12x/SGLang schedule/forward stream race on `req_to_token`; `jumper |
 | [2026-05-01](2026-05/2026-05-01.md) | MiMo-V2.5 NVFP4 now runnable on TP=2 via luke's b12x 0.11.0 + sglang fork; ~80 tok/s single-batch, f |
 | [2026-04-25](2026-04/2026-04-25.md) | DS V4/Flash blocked on SM120: DeepGEMM explicitly confirmed no SM120 support planned. Both DS V4 Pro |
@@ -73,6 +74,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-03](2026-05/2026-05-03.md) | GLM-5.1 OOV loop bug: token IDs ≥154870 unmapped in tokenizer → infinite decode loops at temp=0; |
 | [2026-05-02](2026-05/2026-05-02.md) | MiMo-V2.5 stream-race bug fixed: b12x/SGLang schedule/forward stream race on `req_to_token`; `jumper |
 | [2026-05-01](2026-05/2026-05-01.md) | MiMo-V2.5 NVFP4 now runnable on TP=2 via luke's b12x 0.11.0 + sglang fork; ~80 tok/s single-batch, f |
 | [2026-04-25](2026-04/2026-04-25.md) | DS V4/Flash blocked on SM120: DeepGEMM explicitly confirmed no SM120 support planned. Both DS V4 Pro |

@@ -169,6 +169,55 @@ SGLang steady `#running-req: 32` generation throughput samples after the initial
 834.93, 851.50, 841.02, 839.53, 877.47
 ```
 
+## MTP acceptance experiments
+
+The vLLM launcher used for this work has two relevant acceptance knobs:
+
+| Knob | Safe/default value used for this page | Aggressive experiment value |
+|---|---:|---:|
+| `SPEC_ACCEPT_THRESHOLD_ACC` | `1.0` | `0.00001` |
+| `SPEC_ACCEPT_THRESHOLD_SINGLE` | `1.0` | `1.0` |
+
+The safe/default setting is the quality-preserving reference for this page. It keeps vLLM close to normal target-model rejection sampling: a draft token is only accepted when the target model probability test accepts it. This is the mode that should be compared against no-MTP quality when the goal is "same output distribution as target sampling".
+
+The aggressive setting was tested as a throughput experiment. It makes vLLM accept many more MTP draft tokens, which can raise throughput substantially, but it is not distribution preserving. It changes the effective sampling process because tokens that would normally be rejected by the target-side acceptance test can be kept.
+
+Observed throughput effect during the session:
+
+| Setting | Observed effect |
+|---|---|
+| Safe/default `SPEC_ACCEPT_THRESHOLD_ACC=1.0` | Current `cc32` vLLM steady decode median `663.8 tok/s`; client wall `482.1 tok/s` on the final measured run. |
+| Aggressive `SPEC_ACCEPT_THRESHOLD_ACC=0.00001` | Earlier vLLM `cc32` measurements reached about `809 tok/s` on this stack. At `cc64`, the difference was even larger: approximately `885 tok/s` safe/default-like behavior vs `1227.7 tok/s` with aggressive acceptance. |
+
+Quality interpretation:
+
+- MTP itself can be lossless only if the speculative accept/reject procedure exactly preserves the target model sampling distribution.
+- Lowering the accumulated acceptance threshold toward `0.00001` is a deliberate speed/quality tradeoff, not a free optimization.
+- With `top_p=0.95`, the target distribution is already truncated by nucleus sampling; that does not make arbitrary draft acceptance equivalent to pure target sampling. The target-side accept/reject step still matters inside the truncated distribution.
+- For maximum faithfulness to non-MTP target sampling, keep `SPEC_ACCEPT_THRESHOLD_ACC=1.0`.
+- For throughput experiments or deployments that tolerate a shifted distribution, `SPEC_ACCEPT_THRESHOLD_ACC=0.00001` can be tested separately, but it should be labeled as non-default / non-distribution-preserving.
+
+Current hypothesis from comparing SGLang and vLLM:
+
+- SGLang's default run in this checkpoint shows much higher MTP acceptance than vLLM on the same prompt shape.
+- The remaining vLLM performance gap at `cc32` appears more related to acceptance behavior than raw b12x NSA/MoE kernel speed.
+- The next debugging step is to compare the exact target probability mask, top-p handling, and draft-token acceptance rule between vLLM and SGLang for the same request.
+
+### Experiment history
+
+This is the session history that led to the current acceptance conclusion. Some of the earlier numbers were observed interactively and were not saved as standalone JSON artifacts, so they are recorded here as session-observed values rather than fully reproducible benchmark artifacts.
+
+| Step | Engine / setting | What was tested | Observed result | Interpretation |
+|---|---|---|---|---|
+| 1 | vLLM MTP with the launcher default `SPEC_ACCEPT_THRESHOLD_ACC=0.00001` | Throughput-focused decode runs after the vLLM MTP path was repaired enough to run. | `cc32` improved from roughly `600 tok/s` to about `809 tok/s` in the session. | The speedup was real, but the threshold is aggressive and not a quality-preserving default. |
+| 2 | vLLM MTP with aggressive acceptance at higher concurrency | User-side `cc64` measurements during the same session. | About `1227.7 tok/s` with aggressive acceptance versus about `885 tok/s` with safe/default-like acceptance. | The benefit grows at high concurrency because more accepted draft positions reduce target decode iterations across a larger active batch. |
+| 3 | vLLM MTP quality discussion | Compared what `SPEC_ACCEPT_THRESHOLD_ACC=0.00001` means versus target-model sampling. | No single numeric quality score was produced in this checkpoint. | Lowering the threshold changes the accepted token distribution; it should be treated as a speed/quality tradeoff. |
+| 4 | vLLM safe/default MTP | Set `SPEC_ACCEPT_THRESHOLD_ACC=1.0` and `SPEC_ACCEPT_THRESHOLD_SINGLE=1.0` explicitly for the documented reference run. | `cc32` steady server-side decode median `663.8 tok/s`, client wall `482.1 tok/s`, draft-token acceptance median `56.95%`, mean accept length median `2.71`. | This is the vLLM reference state for quality-preserving comparisons. |
+| 5 | SGLang default MTP | SGLang was launched without `--speculative-accept-threshold-acc`, using its default MTP behavior. | `cc32` steady server-side decode around `835-877 tok/s`, median `841.0 tok/s`; accept length about `3.4`, accept rate `0.85-0.91`. | SGLang accepts more draft positions than vLLM in the default/safe comparison, explaining much of the current throughput gap. |
+| 6 | `temperature=0` GLM-5.1 MTP sanity checks | Repeated short `What is 2+2?` requests on both engines to look for the reported padding-vocab / repeated-token failure mode. | SGLang default MTP did not reproduce the max-token loop in `200/200` requests, but had a few reasoning/content separation anomalies. vLLM default MTP returned clean `2 + 2 = 4` for `200/200` requests in that run. | The padding-vocab issue was not reproduced locally in this checkpoint, but it remains separate from the throughput/acceptance issue. |
+
+The key lesson from the history is that the highest vLLM numbers came from a non-default acceptance relaxation. The current comparison deliberately backs off to `1.0` thresholds so the result is useful as a correctness-preserving baseline.
+
 ## Current conclusion
 
 At `cc32` with safe/default MTP acceptance, vLLM is not yet at SGLang speed. Based on steady server-side decode, vLLM is about `79%` of SGLang throughput on this workload, or roughly `21%` slower.

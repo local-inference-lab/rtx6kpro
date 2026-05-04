@@ -12,8 +12,8 @@ The same image was pushed under two tags:
 
 | Tag | DockerHub digest |
 |---|---|
-| `voipmonitor/vllm:glm51-dcp-nccl2127-noxml-b12x0111-20260504` | `sha256:71c16298577dd09a8e100a56325971490cc0d687180a99502a4ae28bd483196c` |
-| `voipmonitor/vllm:glm51-mtp-b12xsparse-ficutlass-dcpfix-nccl2127-b12x0111-cg256-20260504` | `sha256:71c16298577dd09a8e100a56325971490cc0d687180a99502a4ae28bd483196c` |
+| `voipmonitor/vllm:glm51-dcp-nccl2127-noxml-b12x0111-20260504` | `sha256:bd10fbacbe2b4cb7720f62d8c33791521f5d4e9995b867fd311e66f23cc48479` |
+| `voipmonitor/vllm:glm51-mtp-b12xsparse-ficutlass-dcpfix-nccl2127-b12x0111-cg256-20260504` | `sha256:bd10fbacbe2b4cb7720f62d8c33791521f5d4e9995b867fd311e66f23cc48479` |
 
 Image provenance:
 
@@ -23,6 +23,7 @@ Image provenance:
 | Patched NCCL PR | `https://github.com/NVIDIA/nccl/pull/2127` |
 | Patched NCCL source commit | `6b72eea218cc5bc6f1632dc0fd09000237bdb98b` |
 | Patched NCCL library in image | `/opt/libnccl-pr2127.so.2.30.3` |
+| vLLM PR #41654 | `https://github.com/vllm-project/vllm/pull/41654`, commit `2fd929ab3d15000f72d7bd980394dc76cb70841d` |
 | `ncclGetVersion()` | `23003` |
 | NCCL version string | `NCCL version 2.30.3 compiled with CUDA 13.2` |
 | NCCL library SHA256 | `4fc3b875b06c70921dbdb8a9aa5c88d99ddeadd09cefe1aea0827374bd76dca3` |

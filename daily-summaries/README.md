@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-06](2026-05/2026-05-06.md) | Gemma-4 MTP spec decode massive uplift: PR #41745 cherry-picked into vLLM nightly; single-stream 37  |
 | [2026-05-05](2026-05/2026-05-05.md) | GLM-5.1 MTP corruption fixed in new Docker image (`voipmonitor/vllm:glm51-mtp-b12xsparse-ficutlass-t |
 | [2026-05-04](2026-05/2026-05-04.md) | Luke cracked MiMo V2.5 MTP — root cause was TP tensors internally shuffled in a "dastardly rearran |
 | [2026-05-03](2026-05/2026-05-03.md) | GLM-5.1 OOV loop bug: token IDs ≥154870 unmapped in tokenizer → infinite decode loops at temp=0; |
@@ -76,6 +77,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-06](2026-05/2026-05-06.md) | Gemma-4 MTP spec decode massive uplift: PR #41745 cherry-picked into vLLM nightly; single-stream 37  |
 | [2026-05-05](2026-05/2026-05-05.md) | GLM-5.1 MTP corruption fixed in new Docker image (`voipmonitor/vllm:glm51-mtp-b12xsparse-ficutlass-t |
 | [2026-05-04](2026-05/2026-05-04.md) | Luke cracked MiMo V2.5 MTP — root cause was TP tensors internally shuffled in a "dastardly rearran |
 | [2026-05-03](2026-05/2026-05-03.md) | GLM-5.1 OOV loop bug: token IDs ≥154870 unmapped in tokenizer → infinite decode loops at temp=0; |

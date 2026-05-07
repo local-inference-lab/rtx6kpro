@@ -1,0 +1,248 @@
+# Kimi-K2.6 v2 on 8x RTX PRO 6000 Blackwell
+
+Measured on 2026-05-07 on the local 8-GPU RTX PRO 6000 Blackwell host.
+This page is a fresh local vLLM rerun of the main Kimi-K2.6 decode matrix from
+[`kimi-k26.md`](kimi-k26.md), using the newer shared GLM/Kimi vLLM image.
+
+## What Changed Versus The Previous Page
+
+- Image: `voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505`
+- vLLM reports `0.0.0+csrc-fullbuild`; FlashInfer in the image is `0.6.10rc1`.
+- NCCL PR2127 library is preloaded from `/opt/libnccl-pr2127.so.2.30.3`.
+- The launch explicitly unsets `NCCL_GRAPH_FILE`; no external XML mount is needed for this run.
+- PCIe custom allreduce uses the vLLM C++ backend: `VLLM_PCIE_ALLREDUCE_BACKEND=cpp`.
+- MTP runs require `--max-cudagraph-capture-size 512`. With `128`, high-concurrency MTP can crash with `forward_mqa: B=256 exceeds CG capture max 128`.
+- DCP4/DCP8 MTP need lower `--gpu-memory-utilization 0.90`; `0.94` OOMed after startup because MTP activation/CUDA graph headroom was too small.
+- Capacity-limited cells are shown as `∅`. The raw skip reason is kept in the JSON files.
+
+Historical remote-host, 16-GPU, Marlin-forcing, and FP8-draft comparison
+sections from the original page were not rerun here. This page is the current
+local 8-GPU reproducible vLLM baseline.
+
+## Launch
+
+Common variables:
+
+```bash
+export IMAGE=voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505
+export PORT=5002
+export DCP=1
+export MTP=1
+export GPU_MEM=0.94
+export MAX_MODEL_LEN=262144
+export MAX_NUM_BATCHED_TOKENS=8192
+export MAX_NUM_SEQS=128
+export MAX_CUDAGRAPH_CAPTURE_SIZE=512
+```
+
+Use these profile values:
+
+| Profile | `DCP` | `MTP` | `GPU_MEM` | Why |
+|---|---:|---:|---:|---|
+| DCP1 + MTP | 1 | 1 | 0.94 | fastest short-context MTP profile |
+| DCP1 no-MTP | 1 | 0 | 0.94 | baseline target-only decode |
+| DCP4 + MTP | 4 | 1 | 0.90 | leaves graph/activation headroom |
+| DCP4 no-MTP | 4 | 0 | 0.94 | larger KV cache, no MTP batch expansion |
+| DCP8 + MTP | 8 | 1 | 0.90 | largest stable MTP DCP profile |
+| DCP8 no-MTP | 8 | 0 | 0.94 | maximum KV cache |
+
+Start command:
+
+```bash
+SPEC_ARGS=()
+if [[ "${MTP}" == "1" ]]; then
+  SPEC_ARGS=(
+    --speculative-config '{"model":"lightseekorg/kimi-k2.5-eagle3-mla","method":"eagle3","num_speculative_tokens":3,"draft_attention_backend":"TRITON_MLA","draft_kv_cache_dtype":"fp8","rejection_sample_method":"probabilistic"}'
+  )
+fi
+
+docker run -d --gpus all --ipc=host --network host --privileged \
+  --name "kimi-k26-v2-dcp${DCP}-mtp${MTP}" \
+  --entrypoint /bin/bash \
+  -e CUDA_DEVICE_ORDER=PCI_BUS_ID \
+  -e CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
+  -e OMP_NUM_THREADS=16 \
+  -e CUTE_DSL_ARCH=sm_120a \
+  -e CUDA_DEVICE_MAX_CONNECTIONS=32 \
+  -e NCCL_IB_DISABLE=1 \
+  -e NCCL_P2P_LEVEL=SYS \
+  -e NCCL_PROTO=LL,LL128,Simple \
+  -e VLLM_NCCL_SO_PATH=/opt/libnccl-pr2127.so.2.30.3 \
+  -e LD_PRELOAD=/opt/libnccl-pr2127.so.2.30.3 \
+  -e VLLM_ENABLE_PCIE_ALLREDUCE=1 \
+  -e VLLM_PCIE_ALLREDUCE_BACKEND=cpp \
+  -e VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0 \
+  -e VLLM_LOG_STATS_INTERVAL=1 \
+  -e VLLM_DISABLED_KERNELS=MarlinFP8ScaledMMLinearKernel \
+  -e XDG_CACHE_HOME=/cache/jit \
+  -e CUDA_CACHE_PATH=/cache/jit \
+  -e VLLM_CACHE_DIR=/cache/jit/vllm \
+  -e TVM_FFI_CACHE_DIR=/cache/jit/tvm-ffi \
+  -e FLASHINFER_WORKSPACE_BASE=/cache/jit/flashinfer \
+  -e VLLM_CACHE_ROOT=/root/.cache/vllm \
+  -e TRITON_CACHE_DIR=/root/.cache/triton \
+  -e TORCHINDUCTOR_CACHE_DIR=/root/.cache/torchinductor \
+  -e TORCH_EXTENSIONS_DIR=/cache/jit/torch_extensions \
+  -e CUTE_DSL_CACHE_DIR=/root/.cache/cutlass_dsl \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -v ~/.cache/vllm-kimi-k26-v2/cutlass_dsl:/root/.cache/cutlass_dsl \
+  -v ~/.cache/vllm-kimi-k26-v2/jit:/cache/jit \
+  -v ~/.cache/vllm-kimi-k26-v2/triton:/root/.cache/triton \
+  -v ~/.cache/vllm-kimi-k26-v2/torchinductor:/root/.cache/torchinductor \
+  -v ~/.cache/vllm-kimi-k26-v2/vllm:/root/.cache/vllm \
+  "$IMAGE" \
+  -lc "unset NCCL_GRAPH_FILE; exec /opt/venv/bin/vllm serve moonshotai/Kimi-K2.6 \
+    --served-model-name Kimi-K2.6 \
+    --trust-remote-code \
+    --host 0.0.0.0 \
+    --port ${PORT} \
+    --tensor-parallel-size 8 \
+    --pipeline-parallel-size 1 \
+    --decode-context-parallel-size ${DCP} \
+    --enable-chunked-prefill \
+    --enable-prefix-caching \
+    --load-format fastsafetensors \
+    --async-scheduling \
+    --gpu-memory-utilization ${GPU_MEM} \
+    --max-model-len ${MAX_MODEL_LEN} \
+    --max-num-batched-tokens ${MAX_NUM_BATCHED_TOKENS} \
+    --max-num-seqs ${MAX_NUM_SEQS} \
+    --mm-processor-cache-gb 0 \
+    --mm-encoder-tp-mode weights \
+    --attention-backend TRITON_MLA \
+    --kv-cache-dtype fp8 \
+    --tool-call-parser kimi_k2 \
+    --enable-auto-tool-choice \
+    --reasoning-parser kimi_k2 \
+    --max-cudagraph-capture-size ${MAX_CUDAGRAPH_CAPTURE_SIZE} \
+    ${SPEC_ARGS[*]}"
+```
+
+## Benchmark Command
+
+Decode matrix:
+
+```bash
+python3 /mnt/llm_decode_bench.py \
+  --port ${PORT} \
+  --model Kimi-K2.6 \
+  --concurrency 1,2,4,8,16,32,64,128 \
+  --contexts 0,16k,32k,64k,128k \
+  --duration 10 \
+  --skip-prefill \
+  --display-mode plain \
+  --output /root/bench-results/kimi-k26-v2-20260507/<profile>.json
+```
+
+Prefill sanity:
+
+```bash
+python3 /mnt/llm_decode_bench.py \
+  --port ${PORT} \
+  --model Kimi-K2.6 \
+  --standalone-prefill \
+  --prefill-only \
+  --prefill-contexts 8k,16k,32k,64k,128k \
+  --prefill-duration 10 \
+  --display-mode plain \
+  --output /root/bench-results/kimi-k26-v2-20260507/prefill_dcp1_mtp3.json
+```
+
+## KV Cache
+
+| Config | GPU memory utilization | KV tokens | Max concurrency at 262144 |
+|---|---:|---:|---:|
+| DCP=1, MTP=3 | 0.94 | 442,192 | 1.69x |
+| DCP=1, no MTP | 0.94 | 491,200 | 1.87x |
+| DCP=4, MTP=3 | 0.90 | 1,311,936 | 5.00x |
+| DCP=4, no MTP | 0.94 | 1,964,992 | 7.50x |
+| DCP=8, MTP=3 | 0.90 | 2,623,872 | 10.01x |
+| DCP=8, no MTP | 0.94 | 3,929,600 | 14.99x |
+
+## Decode Throughput
+
+Aggregate decode tok/s from `llm_decode_bench.py --skip-prefill`.
+
+### DCP=1 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 117.1 | 174.7 | 241.4 | 434.9 | 727.8 | 1149.7 | 1658.4 | 2089.8 |
+| 16k | 102.6 | 161.8 | 206.9 | 338.2 | 449.5 | ∅ | ∅ | ∅ |
+| 32k | 96.3 | 127.5 | 178.8 | 256.8 | ∅ | ∅ | ∅ | ∅ |
+| 64k | 79.7 | 109.7 | 143.4 | ∅ | ∅ | ∅ | ∅ | ∅ |
+| 128k | 57.6 | 83.4 | ∅ | ∅ | ∅ | ∅ | ∅ | ∅ |
+
+### DCP=1, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 86.9 | 145.0 | 234.5 | 351.6 | 482.7 | 857.0 | 1365.7 | 2109.8 |
+| 16k | 78.0 | 131.5 | 201.9 | 296.4 | 387.8 | ∅ | ∅ | ∅ |
+| 32k | 70.9 | 120.9 | 179.9 | 262.2 | ∅ | ∅ | ∅ | ∅ |
+| 64k | 60.0 | 104.3 | 146.9 | ∅ | ∅ | ∅ | ∅ | ∅ |
+| 128k | 45.4 | 82.1 | ∅ | ∅ | ∅ | ∅ | ∅ | ∅ |
+
+### DCP=4 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 88.3 | 144.3 | 210.5 | 380.8 | 595.6 | 892.7 | 1258.9 | 1534.9 |
+| 16k | 89.9 | 144.1 | 176.4 | 286.9 | 399.4 | 522.5 | 657.1 | ∅ |
+| 32k | 80.4 | 116.4 | 167.7 | 238.9 | 291.4 | 374.8 | ∅ | ∅ |
+| 64k | 70.8 | 106.8 | 121.0 | 163.2 | 200.4 | ∅ | ∅ | ∅ |
+| 128k | 58.5 | 80.4 | 86.7 | 101.5 | ∅ | ∅ | ∅ | ∅ |
+
+### DCP=4, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 73.9 | 119.4 | 200.3 | 304.4 | 417.9 | 724.5 | 1131.2 | 1728.1 |
+| 16k | 70.4 | 111.2 | 180.8 | 264.5 | 346.3 | 540.3 | 762.8 | ∅ |
+| 32k | 68.0 | 106.2 | 168.0 | 235.9 | 298.7 | 435.4 | ∅ | ∅ |
+| 64k | 63.1 | 97.7 | 145.3 | 190.7 | 230.4 | ∅ | ∅ | ∅ |
+| 128k | 54.2 | 81.4 | 113.6 | 139.9 | ∅ | ∅ | ∅ | ∅ |
+
+### DCP=8 + MTP=3
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 81.9 | 133.0 | 189.8 | 320.8 | 495.6 | 659.3 | 890.2 | 1109.9 |
+| 16k | 101.6 | 131.8 | 180.4 | 282.0 | 419.4 | 536.5 | 760.4 | 961.8 |
+| 32k | 80.5 | 117.7 | 169.3 | 264.4 | 359.0 | 449.9 | 614.4 | ∅ |
+| 64k | 78.0 | 110.3 | 144.8 | 210.2 | 270.4 | 364.7 | ∅ | ∅ |
+| 128k | 66.0 | 88.7 | 115.6 | 161.3 | 204.0 | ∅ | ∅ | ∅ |
+
+### DCP=8, No MTP
+
+| ctx \ conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 72.7 | 111.9 | 183.6 | 277.3 | 356.1 | 616.7 | 965.9 | 1322.0 |
+| 16k | 70.8 | 105.3 | 172.0 | 254.2 | 329.0 | 546.7 | 824.3 | 1068.0 |
+| 32k | 69.6 | 103.3 | 167.2 | 240.0 | 306.6 | 492.8 | 692.8 | ∅ |
+| 64k | 66.5 | 98.5 | 152.9 | 211.3 | 270.3 | 400.2 | ∅ | ∅ |
+| 128k | 60.2 | 88.2 | 129.5 | 170.6 | 217.7 | ∅ | ∅ | ∅ |
+
+## Prefill Sanity
+
+DCP=1 + MTP=3, `GPU_MEM=0.94`, client-side prompt tokens divided by TTFT.
+
+| ctx | prompt tokens | TTFT s | prefill tok/s | samples |
+|---|---:|---:|---:|---:|
+| 8k | 8,190 | 1.11 | 7,357 | 7 |
+| 16k | 16,232 | 2.28 | 7,130 | 4 |
+| 32k | 32,310 | 4.83 | 6,688 | 2 |
+| 64k | 64,472 | 10.91 | 5,908 | 1 |
+| 128k | 128,790 | 26.54 | 4,852 | 1 |
+
+## Notes
+
+- `∅` means the benchmark skipped or hid the cell because the requested total
+  KV footprint does not fit the server-reported KV cache.
+- DCP8 gives the most useful long-context concurrency because it multiplies the
+  effective KV budget, but DCP1 remains fastest for short-context MTP.
+- At short context and very high concurrency, no-MTP can match or exceed MTP
+  because the target path is already saturated and speculative verification
+  adds work.
+- The generated JSON and logs for this run were stored locally under
+  `/root/bench-results/kimi-k26-v2-20260507/`.

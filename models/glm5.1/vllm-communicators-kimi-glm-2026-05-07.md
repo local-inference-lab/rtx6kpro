@@ -17,7 +17,7 @@ Current stable recommendation for GLM-5.1 DCP=1 MTP:
 
 | Item | Value |
 |---|---|
-| Image | `voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505` |
+| Image | `voipmonitor/vllm:glm51-kimi-comm-20260507` |
 | NCCL | Patched NCCL PR #2127, `/opt/libnccl-pr2127.so.2.30.3` |
 | XML | Not required; launch should `unset NCCL_GRAPH_FILE` |
 | NCCL env | `NCCL_P2P_LEVEL=SYS`, `NCCL_PROTO=LL,LL128,Simple` |
@@ -32,6 +32,12 @@ Best stable GLM DCP=1 MTP result from the final no-fused-add run:
 |---:|---:|---:|---|
 | 1 | `84.3`, `93.5` | `0.4608`, `0.5000` | `/tmp/glm51_final_no_fusedadd_c1.json`, `/tmp/glm51_final_no_fusedadd_c1_r2.json` |
 | 32 | `855.6`, `853.0` | `0.5443`, `0.6051` | `/tmp/glm51_final_no_fusedadd_c32.json`, `/tmp/glm51_final_no_fusedadd_c32_r2.json` |
+
+These GLM numbers were measured with
+`voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505` plus bind-mounted
+overlay files. `voipmonitor/vllm:glm51-kimi-comm-20260507` packages the same
+overlay files into the image; its contents were verified by SHA256, but this
+document does not claim a separate full model rerun after packaging.
 
 Best stable Kimi-K2.6 v2 result from the published Kimi v2 matrix:
 
@@ -88,6 +94,7 @@ CUTE_DSL_CACHE_DIR=/root/.cache/cutlass_dsl
 |---|---|
 | `voipmonitor/vllm:glm51-main-20260505` | Main GLM/Kimi vLLM rebased image. Labels show vLLM upstream commit `844df542694089045589ceaad52cba69ab58527a`, FlashInfer `0.6.10rc1`, NCCL PR #2127 library, and vLLM PR #41654. |
 | `voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505` | Current shared GLM/Kimi image with the PCIe allreduce selector work. Docker labels include NCCL PR #2127 and FlashInfer `0.6.10rc1`; `vllm.upstream.commit` label is `unknown` on this tag but it derives from the same main-port line. |
+| `voipmonitor/vllm:glm51-kimi-comm-20260507` | Follow-up packaged communicator image. It bakes the host overlay files for `custom_all_reduce.py`, `allreduce_rms_fusion.py`, and `/opt/rtx6k-pcie-fused-allreduce` into the image so GLM/Kimi can be launched without bind-mounting the local experiment tree. Digest: `sha256:ce62d09208adc31bf89a431376943ece7201df996edc4dd155684325f16eb9d4`. |
 | `voipmonitor/vllm:glm51-dcp-nccl2127-noxml-b12x0111-20260504` | Earlier GLM DCP image used to validate patched NCCL no-XML behavior for DCP1/2/4/8. |
 | `voipmonitor/vllm:kimi-k26-mtp-upstream-stack-pcie-env-test-20260424` | Older Kimi reference image from the first Kimi page; used as a historical comparison point. |
 
@@ -107,6 +114,27 @@ Docker labels verified on the current GLM/Kimi images:
 | `vllm.pr41654` | `https://github.com/vllm-project/vllm/pull/41654` |
 | `vllm.pr41654.commit` | `2fd929ab3d15000f72d7bd980394dc76cb70841d` |
 | `flashinfer.version` | `0.6.10rc1` on the current main/pciearselect images |
+
+Additional labels on `voipmonitor/vllm:glm51-kimi-comm-20260507`:
+
+| Label | Value |
+|---|---|
+| `voipmonitor.communicator.base` | `voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505` |
+| `voipmonitor.communicator.default` | `patched-nccl-pr2127+cpp-selector+fusedadd-off` |
+| `voipmonitor.communicator.custom_all_reduce_sha256` | `7154f2ce49b5bdb1e2028219d39f189eaf1d35fc520344b1376f593736f6c23e` |
+| `voipmonitor.communicator.allreduce_rms_fusion_sha256` | `44e8dbb86da1a68effe2577e4200933169b3958c127c58a3d276bb3b1cb60d7f` |
+| `voipmonitor.communicator.rtx6k_pcie_allreduce_cu_sha256` | `1126e00c8d401c14138fcfb9247e5ab6c726f59443bc5416816bd817ae9bfab9` |
+| `voipmonitor.communicator.rtx6k_pcie_allreduce_py_sha256` | `76cce6b2ca1adedd8d8ba875a7db911943278272d0c9f982b816c9102f3b9ed2` |
+
+The packaged image also includes helper launchers:
+
+```text
+/usr/local/bin/run-glm51-vllm
+/usr/local/bin/run-kimi26-vllm
+```
+
+These launchers unset `NCCL_GRAPH_FILE` by default, unless `USE_NCCL_XML=1` is
+explicitly set.
 
 ## Communicator types tested
 
@@ -445,7 +473,7 @@ Interpretation:
 This is the final safe no-fused-add variant used for the current GLM numbers:
 
 ```bash
-VLLM_IMAGE=voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505 \
+VLLM_IMAGE=voipmonitor/vllm:glm51-kimi-comm-20260507 \
 USE_NCCL_XML=0 \
 DCP_SIZE=1 \
 PORT=5261 \
@@ -467,6 +495,26 @@ VLLM_CPP_AR_1STAGE_NCCL_CUTOFF=56KB
 VLLM_RTX6K_FUSED_ALLREDUCE_ADD=0
 ```
 
+The same GLM server can also be started directly from the packaged image:
+
+```bash
+docker run -d --gpus all --ipc=host --network host --privileged \
+  --name glm51-comm-dcp1 \
+  --entrypoint /usr/local/bin/run-glm51-vllm \
+  -e CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -v ~/.cache/vllm-glm51-comm/jit:/cache/jit \
+  -v ~/.cache/vllm-glm51-comm/cutlass_dsl:/root/.cache/cutlass_dsl \
+  -v ~/.cache/vllm-glm51-comm/triton:/root/.cache/triton \
+  -v ~/.cache/vllm-glm51-comm/torchinductor:/root/.cache/torchinductor \
+  -v ~/.cache/vllm-glm51-comm/vllm:/root/.cache/vllm \
+  -e PORT=5261 \
+  -e DCP_SIZE=1 \
+  -e MAX_MODEL_LEN=202752 \
+  -e VLLM_RTX6K_FUSED_ALLREDUCE_ADD=0 \
+  voipmonitor/vllm:glm51-kimi-comm-20260507
+```
+
 ### Kimi v2 current communicator launch
 
 Use the Kimi v2 page as the full command:
@@ -485,6 +533,25 @@ LD_PRELOAD=/opt/libnccl-pr2127.so.2.30.3
 VLLM_ENABLE_PCIE_ALLREDUCE=1
 VLLM_PCIE_ALLREDUCE_BACKEND=cpp
 unset NCCL_GRAPH_FILE
+```
+
+The packaged image has an equivalent helper:
+
+```bash
+docker run -d --gpus all --ipc=host --network host --privileged \
+  --name kimi26-comm-dcp1 \
+  --entrypoint /usr/local/bin/run-kimi26-vllm \
+  -e CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  -v ~/.cache/vllm-kimi26-comm/jit:/cache/jit \
+  -v ~/.cache/vllm-kimi26-comm/cutlass_dsl:/root/.cache/cutlass_dsl \
+  -v ~/.cache/vllm-kimi26-comm/triton:/root/.cache/triton \
+  -v ~/.cache/vllm-kimi26-comm/torchinductor:/root/.cache/torchinductor \
+  -v ~/.cache/vllm-kimi26-comm/vllm:/root/.cache/vllm \
+  -e PORT=5002 \
+  -e DCP_SIZE=1 \
+  -e MAX_MODEL_LEN=262144 \
+  voipmonitor/vllm:glm51-kimi-comm-20260507
 ```
 
 ## Patch inventory
@@ -618,4 +685,3 @@ Local raw result directories:
 | `/tmp/glm51_final_no_fusedadd_*.json` | Final safe GLM no-fused-add MTP checks. |
 | `/tmp/glm51_regress_*.json` | GLM MTP corruption bisect for fused add/RMS variants. |
 | `/tmp/dcp*-nccl2127-*.json` | GLM DCP no-XML NCCL PR #2127 measurements. |
-

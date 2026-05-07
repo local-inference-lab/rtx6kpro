@@ -11,6 +11,14 @@ vLLM on 8x RTX PRO 6000 Blackwell / sm120. It uses the Kimi MLA path:
 - decode context parallelism: `DCP=1`, `DCP=4`, or `DCP=8`
 - runtime topology: PCIe P2P custom allreduce + NCCL XML graph file
 
+> **Erratum, 2026-05-07:** the historical decode tables below label the longest
+> context row as `128k`, but the benchmark run used by this page produced only
+> about `82k-83k` prompt tokens for that row. The old `DCP=1, No MTP, 128k/C1`
+> value `56.7 tok/s` is therefore an ~82k-context result. Re-measuring the old
+> image on a true ~128.8k-token prompt gives `46.1 tok/s`; the newer v2 image
+> gives `45.5 tok/s` on the same true 128k prompt. See
+> [`kimi-k26-v2.md`](kimi-k26-v2.md) for the corrected rerun.
+
 ## Contents
 
 - [Quick Start](#quick-start)

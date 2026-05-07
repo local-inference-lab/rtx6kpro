@@ -3,12 +3,14 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Current vLLM GLM-5.1 Status (2026-05-07)](#current-vllm-glm-51-status-2026-05-07)
 - [Hardware Requirements](#hardware-requirements)
 - [NVFP4 Quantization](#nvfp4-quantization)
-- [Why SGLang Only (vLLM Does Not Work)](#why-sglang-only-vllm-does-not-work)
-- [BF16 KV Cache Mandatory](#bf16-kv-cache-mandatory)
+- [Historical: Why SGLang Only (vLLM Did Not Work in March 2026)](#historical-why-sglang-only-vllm-did-not-work-in-march-2026)
+- [Historical BF16 KV Cache Mandatory](#historical-bf16-kv-cache-mandatory)
 - [NCCL Environment Variables](#nccl-environment-variables)
 - [Docker Images](#docker-images)
+- [vLLM Launch Commands](#vllm-launch-commands)
 - [SGLang Launch Commands](#sglang-launch-commands)
 - [MTP / Speculative Decoding](#mtp--speculative-decoding)
 - [FlashInfer CUTLASS Race Condition Fix](#flashinfer-cutlass-race-condition-fix)
@@ -33,10 +35,35 @@
 | Experts | 256 total, 8 activated per token |
 | MTP layer | Layer 78 (~19 GB in BF16 precision) |
 | SWE-bench Verified | 77.8 (vs Qwen 72.0) |
-| Inference engine | **SGLang only** (vLLM does not work on SM120) |
+| Inference engine | Historical GLM-5 baseline: SGLang. Current GLM-5.1 port: vLLM works with custom NSA/b12x patches. |
 | Minimum GPUs | **8x RTX PRO 6000** (768 GB VRAM) |
 
 GLM-5 is a 744B MoE model with DeepSeek Sparse Attention. On SM120 (RTX PRO 6000 Blackwell), SGLang bypasses all DSA backends and runs GLM-5 as if it were a DeepSeek V3.1 model -- using MLA kernels that ignore the sparsity mask. This is "backwards compatible" since the training-time indexer would have masked out irrelevant tokens, so computing full attention is slightly wasteful but not accuracy-degrading.
+
+## Current vLLM GLM-5.1 Status (2026-05-07)
+
+The old March 2026 conclusion that GLM does not run on vLLM is no longer true for the current GLM-5.1 port. The working vLLM profile tested here uses:
+
+| Parameter | Value |
+|---|---|
+| Model | `lukealonso/GLM-5.1-NVFP4-MTP` |
+| Served name | `GLM-5` |
+| Docker image | `voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505` |
+| vLLM | `0.0.0+local` / runtime logs `0.0.0+csrc-fullbuild` |
+| b12x | `0.11.1` |
+| FlashInfer | `0.6.10rc1` |
+| PyTorch | `2.11.0+cu130` |
+| Transformers | `5.3.0` |
+| Attention backend | `B12X_MLA_SPARSE` |
+| MoE backend | `flashinfer_cutlass` |
+| KV cache dtype | `fp8` |
+| TP / DCP | `TP=8`, `DCP=1` for the tables below |
+| Max model length | `202752` tokens from checkpoint config |
+| Measured KV cache | MTP3: `371,456` tokens, no-MTP: `396,288` tokens |
+| NCCL | patched PR2127 lib via `/opt/libnccl-pr2127.so.2.30.3`, no external XML |
+| Local overlay | RTX6K fused allreduce/RMS overlay mounted from `/root/benchmarks/vllm-dcp1-stage2-selector-20260506` |
+
+This is not vanilla upstream vLLM. The measured profile depends on the current voipmonitor image plus the local RTX6K communication overlay listed in the launch section.
 
 ---
 
@@ -84,9 +111,9 @@ GLM-5 is a 744B MoE model with DeepSeek Sparse Attention. On SM120 (RTX PRO 6000
 
 ---
 
-## Why SGLang Only (vLLM Does Not Work)
+## Historical: Why SGLang Only (vLLM Did Not Work in March 2026)
 
-**GLM-5 does NOT work on vLLM for SM120** as of 2026-03-08.
+**Historical note:** GLM-5 did not work on vLLM for SM120 as of 2026-03-08. This section is kept as the original failure analysis for the old GLM-5/SGLang work. It does not describe the current GLM-5.1 vLLM port above.
 
 The error:
 ```
@@ -111,7 +138,9 @@ Grimulkan has a plan to port GLM-5 to vLLM:
 
 ---
 
-## BF16 KV Cache Mandatory
+## Historical BF16 KV Cache Mandatory
+
+**Historical SGLang/GLM-5 note:** this was true for the March 2026 SGLang path. The current GLM-5.1 vLLM profile above uses `--kv-cache-dtype fp8` successfully with the b12x sparse MLA backend.
 
 **FP8 KV cache (`--kv-cache-dtype fp8_e4m3`) does NOT work on SM120.** It produces garbled output or emits 1 token and stops.
 
@@ -210,8 +239,104 @@ docker run --gpus all \
 | Image | Notes |
 |---|---|
 | `lmsysorg/sglang:dev-cu13` | Official SGLang nightly, CUDA 13.0. May need `pip install transformers>=5.3,<5.4`. |
+| `voipmonitor/vllm:glm51-kimi-main-pciearselect-20260505` | Current vLLM GLM-5.1/Kimi image used for the 2026-05-07 vLLM benchmark below. Requires the local RTX6K overlay for the exact measured command. |
 
 ---
+
+## vLLM Launch Commands
+
+### GLM-5.1 DCP1 with MTP3 (measured 2026-05-07)
+
+The benchmark tables below were launched through a local wrapper copied from `/root/benchmarks/vllm-dcp1-stage2-selector-20260506/run_glm_variant.sh` and modified only to set `MAX_MODEL_LEN=202752`. Exact wrapper hash:
+
+```bash
+sha256sum /root/benchmarks/glm5-vllm-20260507/run_glm_variant_used.sh
+# ef9a0703ff84811aff2debd4fca08061b94766527c0c02c3cdb9f89a9d7228d2
+```
+
+Overlay file hashes:
+
+```bash
+sha256sum \
+  /root/benchmarks/vllm-dcp1-stage2-selector-20260506/vllm/distributed/device_communicators/custom_all_reduce.py \
+  /root/benchmarks/vllm-dcp1-stage2-selector-20260506/vllm/compilation/passes/fusion/allreduce_rms_fusion.py \
+  /root/benchmarks/vllm-dcp1-stage2-selector-20260506/rtx6k-pcie-fused-allreduce/pcie_allreduce.py \
+  /root/benchmarks/vllm-dcp1-stage2-selector-20260506/rtx6k-pcie-fused-allreduce/pcie_allreduce.cu
+# 7154f2ce49b5bdb1e2028219d39f189eaf1d35fc520344b1376f593736f6c23e  custom_all_reduce.py
+# 44e8dbb86da1a68effe2577e4200933169b3958c127c58a3d276bb3b1cb60d7f  allreduce_rms_fusion.py
+# 76cce6b2ca1adedd8d8ba875a7db911943278272d0c9f982b816c9102f3b9ed2  pcie_allreduce.py
+# 1126e00c8d401c14138fcfb9247e5ab6c726f59443bc5416816bd817ae9bfab9  pcie_allreduce.cu
+```
+
+Launch:
+
+```bash
+USE_NCCL_XML=0 \
+DCP_SIZE=1 \
+PORT=5261 \
+MAX_MODEL_LEN=202752 \
+/root/benchmarks/glm5-vllm-20260507/run_glm_variant_used.sh glm5v2-dcp1-mtp3-202k
+```
+
+Key server arguments expanded from the wrapper:
+
+```bash
+/opt/venv/bin/vllm serve lukealonso/GLM-5.1-NVFP4-MTP \
+  --served-model-name GLM-5 \
+  --trust-remote-code \
+  --host 0.0.0.0 \
+  --port 5261 \
+  --tensor-parallel-size 8 \
+  --pipeline-parallel-size 1 \
+  --decode-context-parallel-size 1 \
+  --enable-chunked-prefill \
+  --enable-prefix-caching \
+  --load-format fastsafetensors \
+  --async-scheduling \
+  -cc.pass_config.fuse_allreduce_rms=True \
+  --gpu-memory-utilization 0.865 \
+  --max-model-len 202752 \
+  --max-num-batched-tokens 8192 \
+  --max-num-seqs 64 \
+  --max-cudagraph-capture-size 256 \
+  --quantization modelopt_fp4 \
+  --attention-backend B12X_MLA_SPARSE \
+  --moe-backend flashinfer_cutlass \
+  --kv-cache-dtype fp8 \
+  --tool-call-parser glm47 \
+  --enable-auto-tool-choice \
+  --reasoning-parser glm45 \
+  --speculative-config '{"model":"lukealonso/GLM-5.1-NVFP4-MTP","method":"mtp","num_speculative_tokens":3,"rejection_sample_method":"probabilistic","moe_backend":"flashinfer_cutlass","use_local_argmax_reduction":true}' \
+  --hf-overrides '{"index_topk_pattern":"FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSSF"}'
+```
+
+The wrapper also sets:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+OMP_NUM_THREADS=16
+CUTE_DSL_ARCH=sm_120a
+CUDA_DEVICE_MAX_CONNECTIONS=32
+NCCL_P2P_LEVEL=SYS
+NCCL_PROTO=LL,LL128,Simple
+VLLM_NCCL_SO_PATH=/opt/libnccl-pr2127.so.2.30.3
+LD_PRELOAD=/opt/libnccl-pr2127.so.2.30.3
+VLLM_USE_B12X_SPARSE_INDEXER=1
+VLLM_ENABLE_PCIE_ALLREDUCE=1
+VLLM_PCIE_ALLREDUCE_BACKEND=cpp
+VLLM_CPP_AR_1STAGE_NCCL_CUTOFF=56KB
+VLLM_RTX6K_FUSED_ALLREDUCE_ADD=1
+VLLM_RTX6K_FUSED_ALLREDUCE_ADD_1STAGE_MAX_SIZE=56KB
+VLLM_RTX6K_FUSED_ALLREDUCE_ADD_END_BARRIER=0
+VLLM_SPEC_ACCEPT_THRESHOLD_ACC=1.0
+VLLM_SPEC_ACCEPT_THRESHOLD_SINGLE=1.0
+```
+
+For no-MTP, use the same launch plus:
+
+```bash
+GLM51_DISABLE_MTP=1
+```
 
 ## SGLang Launch Commands
 
@@ -381,7 +506,100 @@ Plan cooling and PSU capacity accordingly. An 8-GPU setup draws up to **4,800W**
 
 ## Benchmark Results
 
-### Decode throughput — MTP ON, 8x RTX PRO 6000, TP=8 (March 2026)
+### Current vLLM GLM-5.1 DCP1, TP=8, MTP3 ON (2026-05-07)
+
+Benchmark command:
+
+```bash
+python3 /mnt/llm_decode_bench.py \
+  --port 5261 \
+  --model GLM-5 \
+  --concurrency 1,2,4,8,16,32,64 \
+  --contexts 0,16k,32k,64k,128k \
+  --duration 10 \
+  --decode-warmup-seconds 0 \
+  --skip-prefill \
+  --kv-budget 371456 \
+  --display-mode plain \
+  --output /root/bench-results/glm5-vllm-20260507/dcp1_mtp3_decode_202k.json
+```
+
+Aggregate decode tok/s:
+
+| ctx\conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 36.5 | 153.9 | 253.4 | 387.3 | 613.5 | 846.8 | 1170.5 |
+| 16k | 37.4 | 148.3 | 239.5 | 320.6 | 484.4 | ∅ | ∅ |
+| 32k | 35.6 | 141.7 | 212.5 | 311.0 | ∅ | ∅ | ∅ |
+| 64k | 34.6 | 138.6 | 194.1 | ∅ | ∅ | ∅ | ∅ |
+| 128k | 33.4 | 120.7 | ∅ | ∅ | ∅ | ∅ | ∅ |
+
+`∅` means the cell was skipped because it does not fit into the measured KV cache budget. MTP3 used strict/default acceptance thresholds:
+
+| Context | Concurrency | Draft acceptance rate |
+|---:|---:|---:|
+| 0 | 1 | 3.9% |
+| 64k | 1 | 4.3% |
+| 128k | 1 | 5.7% |
+| 0 | 32 | 54.1% |
+| 0 | 64 | 42.6% |
+
+With strict acceptance, MTP improves high concurrency throughput but hurts single-request throughput versus no-MTP. Relaxed acceptance threshold experiments are intentionally not used in this table because they do not preserve the closest target-sampling behavior.
+
+### Current vLLM GLM-5.1 DCP1, TP=8, MTP OFF (2026-05-07)
+
+Benchmark command:
+
+```bash
+python3 /mnt/llm_decode_bench.py \
+  --port 5261 \
+  --model GLM-5 \
+  --concurrency 1,2,4,8,16,32,64 \
+  --contexts 0,16k,32k,64k,128k \
+  --duration 10 \
+  --decode-warmup-seconds 0 \
+  --skip-prefill \
+  --kv-budget 396288 \
+  --display-mode plain \
+  --output /root/bench-results/glm5-vllm-20260507/dcp1_nomtp_decode_202k.json
+```
+
+Aggregate decode tok/s:
+
+| ctx\conc | 1 | 2 | 4 | 8 | 16 | 32 | 64 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 49.9 | 86.2 | 155.3 | 259.9 | 422.7 | 642.1 | 1067.7 |
+| 16k | 49.2 | 82.8 | 147.0 | 245.6 | 378.2 | ∅ | ∅ |
+| 32k | 48.8 | 81.0 | 144.2 | 235.2 | ∅ | ∅ | ∅ |
+| 64k | 47.7 | 79.8 | 139.4 | ∅ | ∅ | ∅ | ∅ |
+| 128k | 46.7 | 76.7 | ∅ | ∅ | ∅ | ∅ | ∅ |
+
+### Current vLLM GLM-5.1 standalone prefill (2026-05-07)
+
+Measured on the no-MTP server with the same vLLM image and `MAX_MODEL_LEN=202752`:
+
+```bash
+python3 /mnt/llm_decode_bench.py \
+  --port 5261 \
+  --model GLM-5 \
+  --standalone-prefill \
+  --prefill-only \
+  --prefill-contexts 8k,16k,32k,64k,128k \
+  --prefill-duration 10 \
+  --kv-budget 396288 \
+  --display-mode plain \
+  --output /root/bench-results/glm5-vllm-20260507/dcp1_prefill_nomtp_202k.json
+```
+
+| Context | Prompt tokens | TTFT s | Client prefill tok/s | Samples |
+|---:|---:|---:|---:|---:|
+| 8k | 8,197 | 1.80 | 4542 | 5 |
+| 16k | 16,232 | 3.64 | 4460 | 3 |
+| 32k | 32,341 | 7.61 | 4253 | 2 |
+| 64k | 64,552 | 16.80 | 3841 | 1 |
+| 128k | 128,967 | 39.43 | 3271 | 1 |
+
+### Historical SGLang decode throughput — MTP ON, 8x RTX PRO 6000, TP=8 (March 2026)
 
 **b12x** (`--moe-runner-backend b12x`):
 
@@ -418,7 +636,7 @@ ctx\conc     1      2      4      8     16     32      64   128
 
 > Both "cutlass" and "cutedsl" benchmarks above execute the same kernel (`cutlass_moe_fp4`). Minor differences are from different input scale computation and run-to-run variance.
 
-### Decode throughput — MTP OFF, 8x RTX PRO 6000, TP=8
+### Historical SGLang decode throughput — MTP OFF, 8x RTX PRO 6000, TP=8 (March 2026)
 
 **b12x:**
 
@@ -442,7 +660,7 @@ ctx\conc     1      2      4      8     16     32      64   128
  128k     30.6   skip   skip   skip   skip   skip    skip    -
 ```
 
-### Summary — best backend by scenario
+### Historical SGLang summary — best backend by scenario
 
 | Concurrency | MTP OFF | MTP ON |
 |-------------|---------|--------|
@@ -453,7 +671,7 @@ ctx\conc     1      2      4      8     16     32      64   128
 
 MTP doubles single-user throughput: 51→95 tok/s (+84%).
 
-### PCIe Oneshot AllReduce Impact (MTP OFF, b12x, TP=8, conc=1, context=0)
+### Historical SGLang PCIe Oneshot AllReduce Impact (MTP OFF, b12x, TP=8, conc=1, context=0)
 
 | Config | tok/s | Notes |
 |---|---|---|
@@ -462,11 +680,11 @@ MTP doubles single-user throughput: 51→95 tok/s (+84%).
 
 PCIe oneshot allreduce provides a consistent **+7% decode throughput** improvement, matching the gains seen on Qwen3.5 TP=4. Auto crossover: 48 KB on 8 GPUs.
 
-### Prefill throughput
+### Historical SGLang prefill throughput
 
 - Single batch prefill: **~4,000 tok/s**
 
-### Startup time
+### Historical SGLang startup time
 
 | Phase | Duration |
 |---|---|
@@ -480,6 +698,8 @@ PCIe oneshot allreduce provides a consistent **+7% decode throughput** improveme
 ---
 
 ## Memory Usage
+
+The following memory section is the historical March 2026 SGLang/GLM-5 profile. Current vLLM GLM-5.1 measurements are listed in [Current vLLM GLM-5.1 Status](#current-vllm-glm-51-status-2026-05-07): MTP3 reported `371,456` KV tokens and no-MTP reported `396,288` KV tokens with `--kv-cache-dtype fp8`, `--gpu-memory-utilization 0.865`, and `--max-model-len 202752`.
 
 ### Per-GPU breakdown (8x TP8, NVFP4 + MTP)
 
@@ -497,7 +717,7 @@ PCIe oneshot allreduce provides a consistent **+7% decode throughput** improveme
 | 0.92 | 314,304 | ~202,752 |
 | 0.85 | Slightly less | ~190,000 |
 
-BF16 KV cache limits practical context to ~200K tokens. FP8 KV cache would allow more but is broken on SM120.
+For the historical SGLang path, BF16 KV cache limited practical context to ~200K tokens and FP8 KV was broken. This does not apply to the current vLLM GLM-5.1 profile above.
 
 ---
 
@@ -538,6 +758,8 @@ SGLang bypasses all DSA backends and runs GLM-5 as a DeepSeek V3.1 model:
 2. XQA FP8 MLA kernel (SM120 specific)
 
 Neither is available in vLLM as of 2026-03-08.
+
+This was true for the old March 2026 vLLM stack. The current GLM-5.1 vLLM profile uses the custom `B12X_MLA_SPARSE` backend instead of these historical SGLang MLA kernels.
 
 ---
 
@@ -582,11 +804,11 @@ RuntimeError: Assertion error (attention.hpp:159): Unsupported architecture
 ValueError: No valid attention backend found for cuda with ... use_mla=True, use_sparse=True
 ```
 
-**Fix:** None. GLM-5 does not run on vLLM for SM120. Use SGLang.
+**Historical fix:** none for the March 2026 vLLM stack; use SGLang for that old GLM-5 path. Current GLM-5.1 vLLM uses the custom `B12X_MLA_SPARSE` backend and does not hit this error.
 
 ### Error 6: FP8 KV cache garbled / stops after 1 token
 
-**Fix:** Use `--kv-cache-dtype bf16`. FP8 KV is broken on SM120.
+**Historical fix:** use `--kv-cache-dtype bf16` for the old SGLang/GLM-5 path. Current GLM-5.1 vLLM measurements above use `--kv-cache-dtype fp8` successfully.
 
 ### Error 7: MTP missing from lukealonso/GLM-5-NVFP4
 

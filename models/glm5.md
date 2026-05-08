@@ -167,111 +167,73 @@ Result directory:
 
 ### Decode throughput, MTP on
 
-Columns are concurrency `1 / 2 / 4 / 8 / 16 / 32 / 64`.
-
-#### DCP1, MTP on, AR=1, mem=0.865
-
-| Context | tok/s |
-|---:|---|
-| 0 | 90.6 / 157.7 / 271.1 / 397.5 / 622.5 / 882.6 / 1165.1 |
-| 16k | 85.9 / 154.2 / 227.8 / 342.3 / 468.7 / skip / skip |
-| 32k | 83.9 / 143.8 / 216.7 / 289.2 / skip / skip / skip |
-| 64k | 79.1 / 131.9 / 197.1 / skip / skip / skip / skip |
-| 128k | 78.0 / 119.0 / skip / skip / skip / skip / skip |
-
-#### DCP2, MTP on, AR=0, mem=0.865
-
-| Context | tok/s |
-|---:|---|
-| 0 | 74.8 / 132.8 / 220.9 / 312.7 / 499.7 / 677.3 / 970.5 |
-| 16k | 67.8 / 126.9 / 203.7 / 285.4 / 442.1 / 632.5 / skip |
-| 32k | 75.3 / 121.6 / 182.6 / 266.1 / 418.5 / skip / skip |
-| 64k | 69.4 / 119.6 / 174.5 / 256.4 / skip / skip / skip |
-| 128k | 68.2 / 112.5 / 171.9 / skip / skip / skip / skip |
-
-#### DCP4, MTP on, AR=0, mem=0.865
-
-| Context | tok/s |
-|---:|---|
-| 0 | 71.3 / 122.6 / 195.4 / 280.1 / 396.1 / 549.9 / 753.2 |
-| 16k | 72.6 / 115.2 / 176.0 / 268.2 / 370.8 / 526.5 / 701.7 |
-| 32k | 72.1 / 122.5 / 166.2 / 243.8 / 369.2 / 526.3 / skip |
-| 64k | 68.6 / 105.1 / 166.8 / 235.6 / 352.4 / skip / skip |
-| 128k | 65.9 / 111.9 / 158.5 / 233.7 / skip / skip / skip |
-
-#### DCP8, MTP on, AR=0, mem=0.820
-
-| Context | tok/s |
-|---:|---|
-| 0 | 65.7 / 103.9 / 161.4 / 214.4 / 291.8 / 417.5 / 595.9 |
-| 16k | 62.8 / 98.2 / 149.5 / 199.7 / 287.4 / 365.6 / 455.4 |
-| 32k | 63.7 / 96.9 / 140.6 / 205.0 / 285.0 / 378.8 / 461.4 |
-| 64k | 62.5 / 98.6 / 148.5 / 211.8 / 281.9 / 367.2 / skip |
-| 128k | 56.9 / 95.8 / 156.8 / 200.6 / 273.4 / skip / skip |
+| DCP | AR | mem | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 0.865 | 0 | 90.6 | 157.7 | 271.1 | 397.5 | 622.5 | 882.6 | 1165.1 |
+| 1 | 1 | 0.865 | 16k | 85.9 | 154.2 | 227.8 | 342.3 | 468.7 | skip | skip |
+| 1 | 1 | 0.865 | 32k | 83.9 | 143.8 | 216.7 | 289.2 | skip | skip | skip |
+| 1 | 1 | 0.865 | 64k | 79.1 | 131.9 | 197.1 | skip | skip | skip | skip |
+| 1 | 1 | 0.865 | 128k | 78.0 | 119.0 | skip | skip | skip | skip | skip |
+| 2 | 0 | 0.865 | 0 | 74.8 | 132.8 | 220.9 | 312.7 | 499.7 | 677.3 | 970.5 |
+| 2 | 0 | 0.865 | 16k | 67.8 | 126.9 | 203.7 | 285.4 | 442.1 | 632.5 | skip |
+| 2 | 0 | 0.865 | 32k | 75.3 | 121.6 | 182.6 | 266.1 | 418.5 | skip | skip |
+| 2 | 0 | 0.865 | 64k | 69.4 | 119.6 | 174.5 | 256.4 | skip | skip | skip |
+| 2 | 0 | 0.865 | 128k | 68.2 | 112.5 | 171.9 | skip | skip | skip | skip |
+| 4 | 0 | 0.865 | 0 | 71.3 | 122.6 | 195.4 | 280.1 | 396.1 | 549.9 | 753.2 |
+| 4 | 0 | 0.865 | 16k | 72.6 | 115.2 | 176.0 | 268.2 | 370.8 | 526.5 | 701.7 |
+| 4 | 0 | 0.865 | 32k | 72.1 | 122.5 | 166.2 | 243.8 | 369.2 | 526.3 | skip |
+| 4 | 0 | 0.865 | 64k | 68.6 | 105.1 | 166.8 | 235.6 | 352.4 | skip | skip |
+| 4 | 0 | 0.865 | 128k | 65.9 | 111.9 | 158.5 | 233.7 | skip | skip | skip |
+| 8 | 0 | 0.820 | 0 | 65.7 | 103.9 | 161.4 | 214.4 | 291.8 | 417.5 | 595.9 |
+| 8 | 0 | 0.820 | 16k | 62.8 | 98.2 | 149.5 | 199.7 | 287.4 | 365.6 | 455.4 |
+| 8 | 0 | 0.820 | 32k | 63.7 | 96.9 | 140.6 | 205.0 | 285.0 | 378.8 | 461.4 |
+| 8 | 0 | 0.820 | 64k | 62.5 | 98.6 | 148.5 | 211.8 | 281.9 | 367.2 | skip |
+| 8 | 0 | 0.820 | 128k | 56.9 | 95.8 | 156.8 | 200.6 | 273.4 | skip | skip |
 
 ### Decode throughput, MTP off
 
-Columns are concurrency `1 / 2 / 4 / 8 / 16 / 32 / 64`.
+| DCP | AR | mem | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 1 | 0.865 | 0 | 50.0 | 84.7 | 153.4 | 260.9 | 426.2 | 649.0 | 1068.7 |
+| 1 | 1 | 0.865 | 16k | 48.1 | 81.4 | 145.5 | 244.0 | 378.5 | skip | skip |
+| 1 | 1 | 0.865 | 32k | 47.6 | 79.5 | 141.5 | 234.4 | skip | skip | skip |
+| 1 | 1 | 0.865 | 64k | 46.7 | 78.4 | 136.7 | skip | skip | skip | skip |
+| 1 | 1 | 0.865 | 128k | 45.6 | 75.5 | skip | skip | skip | skip | skip |
+| 2 | 0 | 0.865 | 0 | 42.3 | 72.9 | 136.7 | 230.4 | 367.3 | 546.6 | 896.4 |
+| 2 | 0 | 0.865 | 16k | 41.7 | 70.7 | 132.2 | 221.7 | 346.5 | 508.1 | skip |
+| 2 | 0 | 0.865 | 32k | 41.3 | 70.1 | 129.9 | 219.4 | 340.2 | skip | skip |
+| 2 | 0 | 0.865 | 64k | 40.9 | 68.5 | 127.1 | 209.8 | skip | skip | skip |
+| 2 | 0 | 0.865 | 128k | 40.2 | 67.9 | 123.5 | skip | skip | skip | skip |
+| 4 | 0 | 0.865 | 0 | 42.0 | 71.3 | 131.0 | 215.3 | 327.3 | 483.0 | 762.5 |
+| 4 | 0 | 0.865 | 16k | 41.3 | 69.1 | 126.8 | 206.6 | 309.7 | 464.0 | 705.2 |
+| 4 | 0 | 0.865 | 32k | 41.1 | 68.7 | 125.6 | 202.6 | 308.2 | 451.4 | skip |
+| 4 | 0 | 0.865 | 64k | 40.6 | 67.9 | 122.8 | 200.3 | 301.8 | skip | skip |
+| 4 | 0 | 0.865 | 128k | 40.0 | 66.5 | 120.7 | 195.4 | skip | skip | skip |
+| 8 | 0 | 0.865 | 0 | 40.2 | 66.7 | 117.5 | 184.3 | 278.0 | 403.5 | 584.8 |
+| 8 | 0 | 0.865 | 16k | 39.3 | 64.5 | 112.9 | 176.4 | 266.9 | 381.4 | invalid |
+| 8 | 0 | 0.865 | 32k | 39.1 | invalid | invalid | invalid | invalid | invalid | invalid |
+| 8 | 0 | 0.865 | 64k | 39.0 | invalid | invalid | invalid | invalid | invalid | skip |
+| 8 | 0 | 0.865 | 128k | 37.9 | invalid | invalid | invalid | invalid | skip | skip |
 
-#### DCP1, MTP off, AR=1, mem=0.865
-
-| Context | tok/s |
-|---:|---|
-| 0 | 50.0 / 84.7 / 153.4 / 260.9 / 426.2 / 649.0 / 1068.7 |
-| 16k | 48.1 / 81.4 / 145.5 / 244.0 / 378.5 / skip / skip |
-| 32k | 47.6 / 79.5 / 141.5 / 234.4 / skip / skip / skip |
-| 64k | 46.7 / 78.4 / 136.7 / skip / skip / skip / skip |
-| 128k | 45.6 / 75.5 / skip / skip / skip / skip / skip |
-
-#### DCP2, MTP off, AR=0, mem=0.865
-
-| Context | tok/s |
-|---:|---|
-| 0 | 42.3 / 72.9 / 136.7 / 230.4 / 367.3 / 546.6 / 896.4 |
-| 16k | 41.7 / 70.7 / 132.2 / 221.7 / 346.5 / 508.1 / skip |
-| 32k | 41.3 / 70.1 / 129.9 / 219.4 / 340.2 / skip / skip |
-| 64k | 40.9 / 68.5 / 127.1 / 209.8 / skip / skip / skip |
-| 128k | 40.2 / 67.9 / 123.5 / skip / skip / skip / skip |
-
-#### DCP4, MTP off, AR=0, mem=0.865
-
-| Context | tok/s |
-|---:|---|
-| 0 | 42.0 / 71.3 / 131.0 / 215.3 / 327.3 / 483.0 / 762.5 |
-| 16k | 41.3 / 69.1 / 126.8 / 206.6 / 309.7 / 464.0 / 705.2 |
-| 32k | 41.1 / 68.7 / 125.6 / 202.6 / 308.2 / 451.4 / skip |
-| 64k | 40.6 / 67.9 / 122.8 / 200.3 / 301.8 / skip / skip |
-| 128k | 40.0 / 66.5 / 120.7 / 195.4 / skip / skip / skip |
-
-#### DCP8, MTP off, AR=0, mem=0.865
-
-This run is not valid for long-context reporting. ctx0 completed, but long
-context cells produced benchmark errors/zero-token cells and the server refused
-connections immediately afterward, so cold prefill did not run.
-
-| Context | tok/s |
-|---:|---|
-| 0 | 40.2 / 66.7 / 117.5 / 184.3 / 278.0 / 403.5 / 584.8 |
-| 16k | 39.3 / 64.5 / 112.9 / 176.4 / 266.9 / 381.4 / invalid |
-| 32k | 39.1 / invalid / invalid / invalid / invalid / invalid / invalid |
-| 64k | 39.0 / invalid / invalid / invalid / invalid / invalid / skip |
-| 128k | 37.9 / invalid / invalid / invalid / invalid / skip / skip |
+The DCP8 MTP-off run is not valid for long-context reporting. ctx0 completed,
+but long-context cells produced benchmark errors/zero-token cells and the
+server refused connections immediately afterward, so cold prefill did not run.
 
 ### Cold prefill throughput
 
 Cold prefill sends unique prompts and reports prompt tokens per second. Columns
 are contexts `8k / 16k / 32k / 64k / 128k`.
 
-| DCP | MTP | AR | mem util | tok/s |
-|---:|:---:|---:|---:|---|
-| 1 | on | 1 | 0.865 | 4333 / 4296 / 3288 / 3711 / 3170 |
-| 1 | off | 1 | 0.865 | 4398 / 4354 / 4191 / 3800 / 3224 |
-| 2 | on | 0 | 0.865 | 3690 / 3637 / 3542 / 3396 / 3133 |
-| 2 | off | 0 | 0.865 | 3762 / 3701 / 3602 / 3455 / 3191 |
-| 4 | on | 0 | 0.865 | 2769 / 2570 / 2458 / 2382 / 2096 |
-| 4 | off | 0 | 0.865 | 2818 / 2612 / 2499 / 2423 / 2138 |
-| 8 | on | 0 | 0.820 | 1887 / 1678 / 1511 / 1435 / 1391 |
-| 8 | off | 0 | 0.865 | invalid: server crashed/refused connections |
+| DCP | MTP | AR | mem | 8k | 16k | 32k | 64k | 128k |
+|---:|:---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | on | 1 | 0.865 | 4333 | 4296 | 3288 | 3711 | 3170 |
+| 1 | off | 1 | 0.865 | 4398 | 4354 | 4191 | 3800 | 3224 |
+| 2 | on | 0 | 0.865 | 3690 | 3637 | 3542 | 3396 | 3133 |
+| 2 | off | 0 | 0.865 | 3762 | 3701 | 3602 | 3455 | 3191 |
+| 4 | on | 0 | 0.865 | 2769 | 2570 | 2458 | 2382 | 2096 |
+| 4 | off | 0 | 0.865 | 2818 | 2612 | 2499 | 2423 | 2138 |
+| 8 | on | 0 | 0.820 | 1887 | 1678 | 1511 | 1435 | 1391 |
+| 8 | off | 0 | 0.865 | invalid | invalid | invalid | invalid | invalid |
 
 ### DCP4 PCIe allreduce A/B
 
@@ -279,12 +241,12 @@ DCP4 was re-run with `VLLM_ENABLE_PCIE_ALLREDUCE=1` after the baseline matrix.
 It is not a clear global win. ctx0 single-stream improves, cc32 is mixed, and
 prefill is effectively unchanged.
 
-| Mode | AR | ctx0 cc1 | ctx0 cc32 | ctx0 cc64 | 128k cc1 | Prefill 8k/128k |
-|---|---:|---:|---:|---:|---:|---|
-| DCP4 MTP on | 0 | 71.3 | 549.9 | 753.2 | 65.9 | 2769 / 2096 |
-| DCP4 MTP on | 1 | 79.9 | 535.4 | 786.1 | 67.0 | 2766 / 2095 |
-| DCP4 MTP off | 0 | 42.0 | 483.0 | 762.5 | 40.0 | 2818 / 2138 |
-| DCP4 MTP off | 1 | 44.5 | 486.7 | 756.6 | 42.3 | 2814 / 2133 |
+| Mode | AR | ctx0 cc1 | ctx0 cc32 | ctx0 cc64 | 128k cc1 | prefill 8k | prefill 128k |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| DCP4 MTP on | 0 | 71.3 | 549.9 | 753.2 | 65.9 | 2769 | 2096 |
+| DCP4 MTP on | 1 | 79.9 | 535.4 | 786.1 | 67.0 | 2766 | 2095 |
+| DCP4 MTP off | 0 | 42.0 | 483.0 | 762.5 | 40.0 | 2818 | 2138 |
+| DCP4 MTP off | 1 | 44.5 | 486.7 | 756.6 | 42.3 | 2814 | 2133 |
 
 ### Current interpretation
 

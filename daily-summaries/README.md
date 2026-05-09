@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-09](2026-05/2026-05-09.md) | GLM-5.1 DCP=4 fixed: `voipmonitor/vllm:glm51-kimi-comm-20260508` eliminates garbage output at DCP=4; |
 | [2026-05-08](2026-05/2026-05-08.md) | MiMo-V2.5 looping fix found: `do_sample=false` in generation_config.json disabled sampling params; f |
 | [2026-05-07](2026-05/2026-05-07.md) | MiMo V2.5 thought loops confirmed as model-level bug: Luke ruled out quantization, kernels, and MTP  |
 | [2026-05-06](2026-05/2026-05-06.md) | Gemma-4 MTP spec decode massive uplift: PR #41745 cherry-picked into vLLM nightly; single-stream 37  |
@@ -79,6 +80,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-09](2026-05/2026-05-09.md) | GLM-5.1 DCP=4 fixed: `voipmonitor/vllm:glm51-kimi-comm-20260508` eliminates garbage output at DCP=4; |
 | [2026-05-08](2026-05/2026-05-08.md) | MiMo-V2.5 looping fix found: `do_sample=false` in generation_config.json disabled sampling params; f |
 | [2026-05-07](2026-05/2026-05-07.md) | MiMo V2.5 thought loops confirmed as model-level bug: Luke ruled out quantization, kernels, and MTP  |
 | [2026-05-06](2026-05/2026-05-06.md) | Gemma-4 MTP spec decode massive uplift: PR #41745 cherry-picked into vLLM nightly; single-stream 37  |

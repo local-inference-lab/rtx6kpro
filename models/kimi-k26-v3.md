@@ -7,7 +7,11 @@ file plus vLLM C++ PCIe allreduce only for small tensors.
 
 ## What Changed Versus v2
 
-- Image: `voipmonitor/vllm:kimi-k26-v3-cpp56-20260509`.
+- Image: `voipmonitor/vllm:glm51-kimi-20260509`.
+- The image is shared with the GLM-5.1 recipe. For Kimi, keep the Kimi-specific
+  runtime env below, especially `VLLM_USE_B12X_SPARSE_INDEXER=0` and
+  `VLLM_DISABLE_SHARED_EXPERTS_STREAM=0`; GLM-specific NSA/indexer behavior is
+  not baked into the image env.
 - NCCL PR2127 is used from `/opt/libnccl-pr2127.so.2.30.3` via `VLLM_NCCL_SO_PATH` and `LD_PRELOAD`.
 - No external NCCL XML topology is required: `USE_NCCL_XML=0` and `NCCL_GRAPH_FILE` is unset.
 - PCIe custom allreduce uses the vLLM C++ backend only below a 56 KiB cutoff: `VLLM_CPP_AR_1STAGE_NCCL_CUTOFF=56KB`.
@@ -22,7 +26,7 @@ A short DCP1 A/B check showed that patched NCCL/no-XML is effectively parity wit
 Common variables:
 
 ```bash
-export IMAGE=voipmonitor/vllm:kimi-k26-v3-cpp56-20260509
+export IMAGE=voipmonitor/vllm:glm51-kimi-20260509
 export PORT=5002
 export DCP=8
 export MTP=1

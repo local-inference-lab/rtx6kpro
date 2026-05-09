@@ -12,7 +12,7 @@
 Current pushed image:
 
 ```bash
-voipmonitor/vllm:glm51-kimi-comm-20260508
+voipmonitor/vllm:glm51-kimi-20260509
 ```
 
 The container entrypoint serves `lukealonso/GLM-5.1-NVFP4-MTP` as `GLM-5`.
@@ -21,6 +21,11 @@ This image includes the GLM-5.1 B12X sparse MLA port, DCP full-graph
 block-table coherence fix, inline split-decode LSE support, FlashInfer CUTLASS
 MoE backend, patched NCCL, and the communication selector used by the Kimi and
 GLM tests.
+
+The same image is also used by the Kimi-K2.6 v3 recipe. GLM-specific behavior is
+enabled by this launch recipe, not by global image env: the command below
+explicitly sets `VLLM_USE_B12X_SPARSE_INDEXER=1`,
+`VLLM_B12X_MLA_DECODE_INLINE_LSE=1`, and the GLM MTP/speculative settings.
 
 ### Recommended launch
 
@@ -32,7 +37,7 @@ cat >/tmp/glm <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE="${IMAGE:-voipmonitor/vllm:glm51-kimi-comm-20260508}"
+IMAGE="${IMAGE:-voipmonitor/vllm:glm51-kimi-20260509}"
 NAME="${NAME:-glm51-vllm}"
 PORT="${PORT:-5288}"
 DCP_SIZE="${DCP_SIZE:-1}"

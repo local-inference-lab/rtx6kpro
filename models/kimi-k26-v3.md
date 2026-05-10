@@ -1,20 +1,28 @@
 # Kimi-K2.6 v3 on 8x RTX PRO 6000 Blackwell
 
-Measured on 2026-05-09 on the local 8-GPU RTX PRO 6000 Blackwell host.
+Measured on 2026-05-09 and updated on 2026-05-10 on the local 8-GPU RTX PRO 6000 Blackwell host.
 This page reruns the Kimi-K2.6 decode matrix from [`kimi-k26-v2.md`](kimi-k26-v2.md)
 with the current communicator baseline: patched NCCL without an external XML topology
 file plus vLLM C++ PCIe allreduce only for small tensors.
 
 ## What Changed Versus v2
 
-- Image: `voipmonitor/vllm:glm51-kimi-20260509`.
+- Image: `voipmonitor/vllm:glm51-kimi-20260510`.
 - The image is shared with the GLM-5.1 recipe. For Kimi, keep the Kimi-specific
   runtime env below, especially `VLLM_USE_B12X_SPARSE_INDEXER=0` and
   `VLLM_DISABLE_SHARED_EXPERTS_STREAM=0`; GLM-specific NSA/indexer behavior is
   not baked into the image env.
+- `run-kimi26-vllm` now defaults to the Kimi 2.6 draft model:
+  `lightseekorg/kimi-k2.6-eagle3-mla`. Do not use the older Kimi 2.5 draft for
+  this page's numbers.
 - NCCL PR2127 is used from `/opt/libnccl-pr2127.so.2.30.3` via `VLLM_NCCL_SO_PATH` and `LD_PRELOAD`.
 - No external NCCL XML topology is required: `USE_NCCL_XML=0` and `NCCL_GRAPH_FILE` is unset.
 - PCIe custom allreduce uses the vLLM C++ backend only below a 56 KiB cutoff: `VLLM_CPP_AR_1STAGE_NCCL_CUTOFF=56KB`.
+- The 2026-05-10 image adds an optional row-aware override:
+  `VLLM_CPP_AR_IGNORE_CUTOFF_MAX_ROWS=8`. With this, tensors with 8 or fewer
+  rows can still use vLLM C++ custom allreduce even when they exceed the byte
+  cutoff. This is controlled entirely by env at launch and has no runtime
+  `os.getenv` in the hot path.
 - Larger reductions fall back to NCCL with `NCCL_PROTO=LL,LL128,Simple`.
 - Experimental RTX6K fused allreduce-add is disabled: `VLLM_RTX6K_FUSED_ALLREDUCE_ADD=0`.
 - `VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0` is set explicitly; leaving it enabled reduced the reported DCP8 MTP KV cache from about 2.62M tokens to about 1.74M tokens at the same `GPU_MEMORY_UTILIZATION`.
@@ -26,7 +34,7 @@ A short DCP1 A/B check showed that patched NCCL/no-XML is effectively parity wit
 Common variables:
 
 ```bash
-export IMAGE=voipmonitor/vllm:glm51-kimi-20260509
+export IMAGE=voipmonitor/vllm:glm51-kimi-20260510
 export PORT=5002
 export DCP=8
 export MTP=1
@@ -84,6 +92,7 @@ docker run -d --gpus all --ipc=host --network host --privileged \
   -e VLLM_ENABLE_PCIE_ALLREDUCE=1 \
   -e VLLM_PCIE_ALLREDUCE_BACKEND=cpp \
   -e VLLM_CPP_AR_1STAGE_NCCL_CUTOFF=56KB \
+  -e VLLM_CPP_AR_IGNORE_CUTOFF_MAX_ROWS=8 \
   -e VLLM_RTX6K_FUSED_ALLREDUCE_ADD=0 \
   -e VLLM_RTX6K_FUSED_ALLREDUCE_ADD_END_BARRIER=0 \
   -e VLLM_USE_B12X_SPARSE_INDEXER=0 \
@@ -127,6 +136,32 @@ vLLM is using nccl==2.30.3
 PCIe custom allreduce enabled via VLLM_ENABLE_PCIE_ALLREDUCE=1 (backend=cpp, using vLLM C++ custom allreduce).
 Application startup complete.
 ```
+
+## 2026-05-10 C++ Allreduce Cutoff Check
+
+This check used `moonshotai/Kimi-K2.6` with the Kimi 2.6 draft
+`lightseekorg/kimi-k2.6-eagle3-mla`, DCP8, MTP3, `GPU_MEMORY_UTILIZATION=0.90`,
+`MAX_CUDAGRAPH_CAPTURE_SIZE=512`, `--skip-prefill`, context 0, and 8 repeated
+runs per concurrency.
+
+| Policy | C | n | Mean tok/s | Median | Min | Max | Stddev | PCIe rx MB/s | PCIe tx MB/s |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `56KB + rows<=8` | 1 | 8 | 89.12 | 89.75 | 83.30 | 94.90 | 3.46 | 50,234 | 49,254 |
+| `56KB + rows<=8` | 64 | 8 | 950.73 | 948.40 | 938.90 | 967.00 | 8.77 | 187,481 | 187,029 |
+| `56KB` only | 1 | 8 | 89.59 | 88.65 | 87.00 | 94.50 | 2.39 | 49,933 | 49,192 |
+| `56KB` only | 64 | 8 | 943.21 | 941.95 | 935.10 | 950.00 | 5.13 | 187,031 | 186,208 |
+| no cutoff | 1 | 8 | 89.78 | 88.60 | 86.70 | 94.70 | 3.10 | 50,249 | 49,443 |
+| no cutoff | 64 | 8 | 902.01 | 899.85 | 892.70 | 916.80 | 8.14 | 182,586 | 182,689 |
+
+Conclusion:
+
+- C=1 is dominated by run-to-run variance; none of the three policies is a clear
+  statistical win.
+- Removing the cutoff is clearly worse at C=64.
+- The recommended Kimi DCP8 MTP launch keeps `VLLM_CPP_AR_1STAGE_NCCL_CUTOFF=56KB`.
+  `VLLM_CPP_AR_IGNORE_CUTOFF_MAX_ROWS=8` is safe in the measured setup and kept
+  in the recipe, but it should be treated as a small policy tweak, not as a
+  proven C=1 fix.
 
 ## Benchmark Command
 

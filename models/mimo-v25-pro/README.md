@@ -15,9 +15,10 @@ The validated artifact is a mixed ModelOpt checkpoint:
 |---|---|
 | Upstream source | `XiaomiMiMo/MiMo-V2.5-Pro` |
 | Public checkpoint | `festr2/MiMo-V2.5-Pro-NVFP4-MXFP8-attn-TP8` |
-| Runtime image | `voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510` |
-| Runtime digest | `sha256:614303e8c4fef826529b9aaa2faa71a5a501ee1119a91b9b2d0f830a22f3fbdf` |
+| Runtime image | `voipmonitor/sglang:mimo-v25-pro-tp8-b12x3917cb2-20260510` |
+| Runtime digest | `sha256:96aa5a10913cae3af6fe145e5c21238549971da271fc06b522ec4a6a9bd51c80` |
 | Base image | `docker.io/lukealonso/sglang-cuda13-b12x:w4a16` |
+| B12X source | `lukealonso/b12x@3917cb2fe5a2118eaab8b68f7710c71aad9e4b1c` |
 | Target TP | `8` |
 | TP=16 status | not validated |
 
@@ -53,6 +54,8 @@ Autotune-fix validation:
 |---|---|
 | short coherence prompt | `Paris` and `4`, HTTP 200, no request-time `AUTOTUNE mm` log lines |
 | long context run B | 50,712 prompt tokens, returned `VEGA-8431` and `Paris`, HTTP 200, no request-time `AUTOTUNE mm` log lines |
+| B12X 3917 A16 smoke | `Paris, 4`, HTTP 200 |
+| B12X 3917 long context | returned `VEGA-8431, Paris` and `ORION-9265, Paris`, HTTP 200, no request-time `AUTOTUNE mm` log lines |
 
 The warm soak had no CJK characters, Unicode replacement characters, or multi-character non-ASCII corruption runs. One local checker warning was only a normal ASCII separator line in a generated incident-report heading.
 
@@ -61,4 +64,4 @@ The warm soak had no CJK characters, Unicode replacement characters, or multi-ch
 - TP=8 is the validated target. TP=16 may be possible at the SGLang partitioning layer, but the source MiMo Pro fused QKV tensors were TP-packed for TP=8 and TP=16 has not been proven.
 - MiMo's tokenizer defaults to thinking mode. For normal chat smoke tests, pass `chat_template_kwargs: {"enable_thinking": false}`.
 - Startup CUDA graph capture still runs Torch Inductor autotune for small BF16 dense-linear shapes. The current image prevents new unquantized BF16 linear shapes from being compiled during live request handling, so request-time `AUTOTUNE mm(...)` log lines should not appear for normal short or long-context inference.
-- Earlier no-graph and no-MTP runs were useful gates, but the current validated image is the micro-MoE reciprocal-scale runtime described in this directory.
+- Earlier no-graph and no-MTP runs were useful gates. The current recommended runtime uses the upstream B12X 3917 image with `B12X_MOE_FORCE_A16=1`; the older micro-MoE reciprocal-scale image remains documented as the previous validation point.

@@ -7,16 +7,18 @@ This is the exact runbook for the validated MiMo-V2.5-Pro TP=8 runtime.
 Use the DockerHub image with the SGLang/B12X patch overlay baked in:
 
 ```bash
-voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510
+voipmonitor/sglang:mimo-v25-pro-tp8-b12x3917cb2-20260510
 ```
 
 Digest:
 
 ```text
-sha256:614303e8c4fef826529b9aaa2faa71a5a501ee1119a91b9b2d0f830a22f3fbdf
+sha256:96aa5a10913cae3af6fe145e5c21238549971da271fc06b522ec4a6a9bd51c80
 ```
 
-The `mimo-v25-pro-tp8-microrecip-latest` tag points to the same digest at the time this page was written, but the dated tag is preferred for reproducibility.
+The `mimo-v25-pro-tp8-b12x3917cb2-latest` tag points to the same digest at the time this page was written, but the dated tag is preferred for reproducibility.
+
+This image layers `lukealonso/b12x@3917cb2fe5a2118eaab8b68f7710c71aad9e4b1c` over the previously validated SGLang autotune-fix image. The validated launch below uses `B12X_MOE_FORCE_A16=1`.
 
 ## Required model directories
 
@@ -44,14 +46,14 @@ The MTP overlay directory is expected to contain the BF16 draft weights and syml
 This command runs TP=8 on GPUs 0-7 and serves the OpenAI-compatible API on port `30004`.
 
 ```bash
-docker run -d --name mimo-v25-pro-tp8-mtp-30004 \
+docker run -d --name mimo-v25-pro-tp8-b12x3917-a16-30004 \
   --gpus '"device=0,1,2,3,4,5,6,7"' \
   --ipc=host --network host --shm-size=32g \
   --ulimit memlock=-1 --ulimit stack=67108864 \
   -e SAFETENSORS_FAST_GPU=1 \
   -e CUTE_DSL_ARCH="sm_120a" \
   -e SGLANG_PREVENT_THOUGHT_LOOPS=1 \
-  -e B12X_MOE_FORCE_A16=0 \
+  -e B12X_MOE_FORCE_A16=1 \
   -e B12X_ENABLE_DYNAMIC_DOWN_SCALE=0 \
   -e B12X_MOE_EAGER_EXACT_DYNAMIC=0 \
   -e SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=1 \
@@ -69,7 +71,7 @@ docker run -d --name mimo-v25-pro-tp8-mtp-30004 \
   -v /models/.cache/huggingface:/root/.cache/huggingface \
   -v /models/.vllm_cache/triton:/root/.triton \
   -v /models/.vllm_cache/sglang-generated:/root/.cache/sglang-generated \
-  voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510 \
+  voipmonitor/sglang:mimo-v25-pro-tp8-b12x3917cb2-20260510 \
   python3 -m sglang.launch_server \
     --model-path /data/models/MiMo-V2.5-Pro-NVFP4-MXFP8-attn-BF16-MTP \
     --tokenizer-path /data/models/MiMo-V2.5-Pro-NVFP4-MXFP8-attn \
@@ -115,19 +117,19 @@ curl -sS http://127.0.0.1:30004/health
 Follow logs:
 
 ```bash
-docker logs -f mimo-v25-pro-tp8-mtp-30004
+docker logs -f mimo-v25-pro-tp8-b12x3917-a16-30004
 ```
 
 Last 200 lines:
 
 ```bash
-docker logs --tail 200 mimo-v25-pro-tp8-mtp-30004
+docker logs --tail 200 mimo-v25-pro-tp8-b12x3917-a16-30004
 ```
 
 Recent hard errors:
 
 ```bash
-docker logs --since 10m mimo-v25-pro-tp8-mtp-30004 2>&1 \
+docker logs --since 10m mimo-v25-pro-tp8-b12x3917-a16-30004 2>&1 \
   | rg -i 'traceback|device-side|scheduler hit|cuda error|exception|nan|\binf\b'
 ```
 
@@ -160,6 +162,8 @@ Expected properties:
 
 `--fp4-gemm-backend cutlass` was used in the validated image. Earlier runs with other FP4 paths were useful for isolation, but this is the current documented runtime.
 
+`B12X_MOE_FORCE_A16=1` is the current recommended setting for the B12X 3917 image. It keeps the routed MoE execution on the A16 path while retaining the mixed NVFP4/MXFP8 checkpoint and B12X attention. The previous `B12X_MOE_FORCE_A16=0` micro reciprocal-scale path remains a useful validation artifact, but it was not the path used for the B12X 3917 long-context checks below.
+
 `--disable-piecewise-cuda-graph` is intentional. The validated path uses normal CUDA graph target verify with `--cuda-graph-max-bs 8`; piecewise CUDA graph was disabled after earlier runtime recapture failures.
 
 `SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=1` is intentional in the autotune-fix image. The SGLang overlay now allows new unquantized BF16 dense-linear `torch.compile` keys only while CUDA graph warmup/capture is explicitly running. After startup, live requests can reuse already captured compiled keys, but unknown eager prefill shapes fall back to `F.linear` instead of triggering Torch Inductor autotune during inference.
@@ -171,7 +175,7 @@ Startup logs can still contain `AUTOTUNE mm(...)` during CUDA graph capture. The
 ```bash
 SINCE=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
 # run a request here
-docker logs --since "$SINCE" mimo-v25-pro-tp8-mtp-30004 2>&1 \
+docker logs --since "$SINCE" mimo-v25-pro-tp8-b12x3917-a16-30004 2>&1 \
   | rg 'AUTOTUNE mm|Prefill batch|Decode batch|HTTP/1.1'
 ```
 
@@ -180,7 +184,7 @@ docker logs --since "$SINCE" mimo-v25-pro-tp8-mtp-30004 2>&1 \
 The production-style container tested before publishing this page was:
 
 ```text
-mimo-v25-pro-tp8-mtp-autotunefix-30004
+mimo-v25-pro-tp8-b12x3917-a16-30004
 ```
 
 Results:
@@ -192,4 +196,7 @@ Results:
 | warm 8-way concurrent soak | 8/8 HTTP 200, 4,042 completion tokens, 31 s |
 | short autotune-fix request | coherent `Paris` + `4`, HTTP 200, no request-time `AUTOTUNE mm` |
 | long autotune-fix request | 50,712 prompt tokens, returned `VEGA-8431` + `Paris`, HTTP 200, no request-time `AUTOTUNE mm` |
+| B12X 3917 smoke | returned `Paris, 4`, HTTP 200 |
+| B12X 3917 long context A | returned `VEGA-8431, Paris`, HTTP 200, no request-time `AUTOTUNE mm` |
+| B12X 3917 long context B | returned `ORION-9265, Paris`, HTTP 200, no request-time `AUTOTUNE mm` |
 | health after soak | HTTP 200 |

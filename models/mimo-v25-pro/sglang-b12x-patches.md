@@ -15,11 +15,17 @@ docker.io/lukealonso/sglang-cuda13-b12x:w4a16
 The validated image with patches baked in:
 
 ```text
-voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510
-sha256:614303e8c4fef826529b9aaa2faa71a5a501ee1119a91b9b2d0f830a22f3fbdf
+voipmonitor/sglang:mimo-v25-pro-tp8-b12x3917cb2-20260510
+sha256:96aa5a10913cae3af6fe145e5c21238549971da271fc06b522ec4a6a9bd51c80
 ```
 
-The image is not a generic upstream SGLang image. It contains targeted SGLang and B12X overlays listed below.
+The image is not a generic upstream SGLang image. It contains the targeted SGLang overlays listed below, plus upstream B12X from:
+
+```text
+lukealonso/b12x@3917cb2fe5a2118eaab8b68f7710c71aad9e4b1c
+```
+
+That B12X commit has the newer reciprocal input-scale contract and the W4A16 tiny-decode path update. The validated launch for this image uses `B12X_MOE_FORCE_A16=1`.
 
 ## Patch inventory
 
@@ -37,8 +43,7 @@ The image is not a generic upstream SGLang image. It contains targeted SGLang an
 | `/opt/sglang/python/sglang/srt/layers/layernorm.py` | Native RMSNorm isolation switch used during graph/eager debugging. |
 | `/opt/sglang/python/sglang/srt/layers/sampler.py` | PyTorch sampler path used to avoid the earlier sampling corruption path. |
 | `/opt/sglang/python/sglang/srt/entrypoints/openai/serving_chat.py` | MiMo chat/serving behavior used by the OpenAI-compatible endpoint. |
-| `/opt/venv/lib/python3.12/site-packages/b12x/integration/tp_moe.py` | B12X MoE integration instrumentation and deterministic split-topk proof-of-cause path. |
-| `/opt/venv/lib/python3.12/site-packages/b12x/moe/fused/micro.py` | Production fix candidate: allow the direct micro MoE kernel with reciprocal scales and invert scales inside the kernel. |
+| `/opt/venv/lib/python3.12/site-packages/b12x/*` | Upstream B12X `3917cb2`, installed over the previous base image. This supersedes the older local B12X micro reciprocal-scale overlay for the current A16 validation path. |
 
 ## Required runtime settings
 
@@ -63,6 +68,7 @@ These settings were part of the validated runtime:
 | `--speculative-num-draft-tokens` | `4` |
 | `--cuda-graph-max-bs` | `8` |
 | `--disable-piecewise-cuda-graph` | enabled |
+| `B12X_MOE_FORCE_A16` | `1` |
 
 B12X attention requires `--page-size 64`. With page size 1, startup fails with:
 
@@ -186,6 +192,30 @@ With the micro reciprocal-scale patch only, target-verify graph/eager compare be
 | hidden | `max_abs=0.0` |
 | layer stats/residual/hidden | `all_match max_abs=0.0` |
 
+### 8. Upstream B12X 3917 rebase
+
+Luke's current B12X source was checked at:
+
+```text
+3917cb2fe5a2118eaab8b68f7710c71aad9e4b1c Speed up W4A16 tiny decode micro path
+```
+
+Compared to the older local B12X overlay, upstream B12X changed the input-scale contract:
+
+- `input_scales_are_reciprocal` is deprecated at the public API boundary
+- B12X now expects reciprocal input scales
+- `tp_moe.py` asserts that callers pass `None` or `True`
+- `micro.py` uses `nvfp4_scale_from_amax(...)` and divides by reciprocal scale values internally
+
+The rebased runtime image was built by layering upstream B12X `3917cb2` over the already validated SGLang autotune-fix image:
+
+```text
+voipmonitor/sglang:mimo-v25-pro-tp8-b12x3917cb2-20260510
+sha256:96aa5a10913cae3af6fe145e5c21238549971da271fc06b522ec4a6a9bd51c80
+```
+
+Validation used `B12X_MOE_FORCE_A16=1`. The pure NVFP4 MoE path with `B12X_MOE_FORCE_A16=0` should be treated as not revalidated for this B12X 3917 image until it gets its own smoke and long-context pass.
+
 ## Validated production-style result
 
 The patched production-style autotune-fix container was run on port `30004` with:
@@ -222,6 +252,18 @@ Long-context autotune-fix test:
 - no request-time `AUTOTUNE mm(...)` lines in the log window
 
 A separate 65,116 prompt-token request also completed HTTP 200 with no request-time `AUTOTUNE mm(...)` lines. That run used only `max_tokens=96`, so the model spent the budget in `reasoning_content` and produced no final `content`; it was used as an autotune/runtime check, not as the coherence pass.
+
+B12X 3917 A16 validation:
+
+- container: `mimo-v25-pro-tp8-b12x3917-a16-30004`
+- image: `voipmonitor/sglang:mimo-v25-pro-tp8-b12x3917cb2-20260510`
+- `B12X_MOE_FORCE_A16=1`
+- health returned HTTP 200
+- smoke returned `Paris, 4`
+- long-context run returned `VEGA-8431, Paris`
+- larger long-context run returned `ORION-9265, Paris`
+- request log windows had no new `AUTOTUNE mm(...)`, traceback, NaN, or Inf lines
+- decode used CUDA graph during the long-context run
 
 ## What not to confuse with real failures
 

@@ -7,13 +7,13 @@ This is the exact runbook for the validated MiMo-V2.5-Pro TP=8 runtime.
 Use the DockerHub image with the SGLang/B12X patch overlay baked in:
 
 ```bash
-voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-20260510
+voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510
 ```
 
 Digest:
 
 ```text
-sha256:b634da4afa79fb4bb8bb06c67938c8f3a816af96bb31d307605c2a56f35fa444
+sha256:614303e8c4fef826529b9aaa2faa71a5a501ee1119a91b9b2d0f830a22f3fbdf
 ```
 
 The `mimo-v25-pro-tp8-microrecip-latest` tag points to the same digest at the time this page was written, but the dated tag is preferred for reproducibility.
@@ -54,7 +54,8 @@ docker run -d --name mimo-v25-pro-tp8-mtp-30004 \
   -e B12X_MOE_FORCE_A16=0 \
   -e B12X_ENABLE_DYNAMIC_DOWN_SCALE=0 \
   -e B12X_MOE_EAGER_EXACT_DYNAMIC=0 \
-  -e SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=0 \
+  -e SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=1 \
+  -e SGLANG_UNQUANT_AUTOTUNED_LINEAR_MAX_TOKENS=128 \
   -e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
   -e NCCL_P2P_LEVEL=SYS \
   -e NCCL_IB_DISABLE=1 \
@@ -68,7 +69,7 @@ docker run -d --name mimo-v25-pro-tp8-mtp-30004 \
   -v /models/.cache/huggingface:/root/.cache/huggingface \
   -v /models/.vllm_cache/triton:/root/.triton \
   -v /models/.vllm_cache/sglang-generated:/root/.cache/sglang-generated \
-  voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-20260510 \
+  voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510 \
   python3 -m sglang.launch_server \
     --model-path /data/models/MiMo-V2.5-Pro-NVFP4-MXFP8-attn-BF16-MTP \
     --tokenizer-path /data/models/MiMo-V2.5-Pro-NVFP4-MXFP8-attn \
@@ -161,14 +162,25 @@ Expected properties:
 
 `--disable-piecewise-cuda-graph` is intentional. The validated path uses normal CUDA graph target verify with `--cuda-graph-max-bs 8`; piecewise CUDA graph was disabled after earlier runtime recapture failures.
 
-`SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=0` is intentional for graph/eager consistency, but it can produce Torch Inductor `AUTOTUNE mm(...)` output during novel large prefill shapes. If this appears during inference, it is usually dynamic BF16 dense-linear compilation for a new prefill shape, not B12X MoE or checkpoint corruption.
+`SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=1` is intentional in the autotune-fix image. The SGLang overlay now allows new unquantized BF16 dense-linear `torch.compile` keys only while CUDA graph warmup/capture is explicitly running. After startup, live requests can reuse already captured compiled keys, but unknown eager prefill shapes fall back to `F.linear` instead of triggering Torch Inductor autotune during inference.
+
+`SGLANG_UNQUANT_AUTOTUNED_LINEAR_MAX_TOKENS=128` is a secondary guard for the unquantized BF16 dense-linear fast path. It keeps graph/decode-size shapes eligible for the compiled path and keeps large dynamic prefill chunks off that path.
+
+Startup logs can still contain `AUTOTUNE mm(...)` during CUDA graph capture. The validated behavior is that request windows do not add new `AUTOTUNE mm(...)` lines. Check a request window with:
+
+```bash
+SINCE=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+# run a request here
+docker logs --since "$SINCE" mimo-v25-pro-tp8-mtp-30004 2>&1 \
+  | rg 'AUTOTUNE mm|Prefill batch|Decode batch|HTTP/1.1'
+```
 
 ## Validated result
 
 The production-style container tested before publishing this page was:
 
 ```text
-mimo-v25-pro-tp8-mtp-prod-microrecip-30004
+mimo-v25-pro-tp8-mtp-autotunefix-30004
 ```
 
 Results:
@@ -178,4 +190,6 @@ Results:
 | smoke | coherent Paris + checkpoint-integrity answer, HTTP 200 |
 | first 8-way concurrent soak | 8/8 HTTP 200, 2,985 completion tokens, 83 s |
 | warm 8-way concurrent soak | 8/8 HTTP 200, 4,042 completion tokens, 31 s |
+| short autotune-fix request | coherent `Paris` + `4`, HTTP 200, no request-time `AUTOTUNE mm` |
+| long autotune-fix request | 50,712 prompt tokens, returned `VEGA-8431` + `Paris`, HTTP 200, no request-time `AUTOTUNE mm` |
 | health after soak | HTTP 200 |

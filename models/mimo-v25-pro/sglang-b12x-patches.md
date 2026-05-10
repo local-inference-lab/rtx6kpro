@@ -15,8 +15,8 @@ docker.io/lukealonso/sglang-cuda13-b12x:w4a16
 The validated image with patches baked in:
 
 ```text
-voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-20260510
-sha256:b634da4afa79fb4bb8bb06c67938c8f3a816af96bb31d307605c2a56f35fa444
+voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510
+sha256:614303e8c4fef826529b9aaa2faa71a5a501ee1119a91b9b2d0f830a22f3fbdf
 ```
 
 The image is not a generic upstream SGLang image. It contains targeted SGLang and B12X overlays listed below.
@@ -29,8 +29,9 @@ The image is not a generic upstream SGLang image. It contains targeted SGLang an
 | `/opt/sglang/python/sglang/srt/speculative/multi_layer_eagle_worker.py` | MTP/EAGLE runtime adjustments used by the MiMo serving path. |
 | `/opt/sglang/python/sglang/srt/speculative/multi_layer_eagle_worker_v2.py` | Target-verify graph/eager comparison instrumentation and ordering controls used to isolate corruption. |
 | `/opt/sglang/python/sglang/srt/model_executor/cuda_graph_runner.py` | CUDA graph replay fixes, including restaging MiMo hybrid/SWA cache locations for target verify. |
+| `/opt/sglang/python/sglang/srt/model_executor/piecewise_cuda_graph_runner.py` | Mirrors the unquantized BF16 linear warmup guard for the piecewise CUDA graph runner, even though the validated launch disables piecewise CUDA graph. |
 | `/opt/sglang/python/sglang/srt/layers/attention/b12x_backend.py` | B12X attention metadata/workspace alignment for graph replay versus eager decode. |
-| `/opt/sglang/python/sglang/srt/layers/quantization/unquant.py` | BF16 unquantized linear path stabilization for graph/eager consistency. |
+| `/opt/sglang/python/sglang/srt/layers/quantization/unquant.py` | BF16 unquantized linear path stabilization for graph/eager consistency, plus the request-time autotune guard. |
 | `/opt/sglang/python/sglang/srt/layers/quantization/modelopt_quant.py` | ModelOpt mixed NVFP4/MXFP8 loading, B12X MoE output-buffer handling, and split-topk proof-of-cause hooks. |
 | `/opt/sglang/python/sglang/srt/layers/communicator.py` | Debug context propagation through communicator/allreduce boundaries. |
 | `/opt/sglang/python/sglang/srt/layers/layernorm.py` | Native RMSNorm isolation switch used during graph/eager debugging. |
@@ -91,17 +92,31 @@ Current runtime uses:
 --sampling-backend pytorch
 ```
 
-### 3. BF16 dense linear graph/eager mismatch
+### 3. BF16 dense linear graph/eager mismatch and autotune guard
 
 MiMo has unquantized BF16 dense paths in addition to the routed FP4 MoE paths. During CUDA graph capture, SGLang used a compiled/autotuned BF16 linear path. After warmup, eager target-verify could fall back to `F.linear`, meaning graph replay and eager comparison were not executing the same BF16 linear implementation.
 
-The runtime therefore sets:
+The first workaround kept that path enabled everywhere:
 
 ```bash
 SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=0
 ```
 
-This keeps the method stable across graph capture/replay/eager. The downside is that new large dynamic prefill shapes can trigger Torch Inductor autotune during inference. That is a performance caveat, not a checkpoint-integrity failure.
+That kept graph/eager target-verify stable, but it also allowed live requests to compile new BF16 dense-linear shapes. Large dynamic prefill chunks could then emit request-time logs like:
+
+```text
+AUTOTUNE mm(687x6144, 6144x3392)
+```
+
+The final fix is narrower:
+
+- add `allow_unquant_bf16_linear_torch_compile_warmup()` in `unquant.py`
+- wrap CUDA graph warmup/capture calls in `cuda_graph_runner.py`
+- mirror the same wrap in `piecewise_cuda_graph_runner.py`
+- set `SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=1`
+- set `SGLANG_UNQUANT_AUTOTUNED_LINEAR_MAX_TOKENS=128`
+
+With that combination, new compiled unquantized BF16 linear keys can be created during graph warmup/capture only. Live requests can reuse already compiled graph/decode-size keys, but unknown eager prefill shapes use `F.linear` instead of triggering Torch Inductor autotune.
 
 ### 4. B12X attention graph metadata alignment
 
@@ -173,7 +188,7 @@ With the micro reciprocal-scale patch only, target-verify graph/eager compare be
 
 ## Validated production-style result
 
-The patched production-style container was run on port `30004` with:
+The patched production-style autotune-fix container was run on port `30004` with:
 
 - TP=8
 - MTP/EAGLE enabled
@@ -189,6 +204,7 @@ Smoke:
 - exact sentence `The capital of France is Paris.`
 - coherent checkpoint-integrity paragraph
 - no CJK/replacement-token corruption
+- short autotune-fix prompt returned `Paris` and `4`
 
 Warm 8-way soak:
 
@@ -198,12 +214,21 @@ Warm 8-way soak:
 - 31 s wall time
 - health remained HTTP 200
 
+Long-context autotune-fix test:
+
+- 50,712 prompt tokens
+- returned the validation passphrase `VEGA-8431`
+- returned `Paris` for the capital of France
+- no request-time `AUTOTUNE mm(...)` lines in the log window
+
+A separate 65,116 prompt-token request also completed HTTP 200 with no request-time `AUTOTUNE mm(...)` lines. That run used only `max_tokens=96`, so the model spent the budget in `reasoning_content` and produced no final `content`; it was used as an autotune/runtime check, not as the coherence pass.
+
 ## What not to confuse with real failures
 
-During startup and new dynamic-shape prefill, Torch Inductor may log lines like:
+During startup CUDA graph capture, Torch Inductor may log lines like:
 
 ```text
 No valid triton configs. OutOfMemoryError: out of resource
 ```
 
-These are rejected autotune candidates, not necessarily fatal GPU OOMs. A real failure should be correlated with process exit, traceback, CUDA device-side assert, NaN/Inf detection, scheduler shutdown, or `/health` failure.
+These are rejected autotune candidates, not necessarily fatal GPU OOMs. In the autotune-fix image, similar `AUTOTUNE mm(...)` lines should not be added by live request windows. A real failure should be correlated with process exit, traceback, CUDA device-side assert, NaN/Inf detection, scheduler shutdown, or `/health` failure.

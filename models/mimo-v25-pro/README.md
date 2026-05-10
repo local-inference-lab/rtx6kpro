@@ -15,8 +15,8 @@ The validated artifact is a mixed ModelOpt checkpoint:
 |---|---|
 | Upstream source | `XiaomiMiMo/MiMo-V2.5-Pro` |
 | Public checkpoint | `festr2/MiMo-V2.5-Pro-NVFP4-MXFP8-attn-TP8` |
-| Runtime image | `voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-20260510` |
-| Runtime digest | `sha256:b634da4afa79fb4bb8bb06c67938c8f3a816af96bb31d307605c2a56f35fa444` |
+| Runtime image | `voipmonitor/sglang:mimo-v25-pro-tp8-microrecip-autotunefix-20260510` |
+| Runtime digest | `sha256:614303e8c4fef826529b9aaa2faa71a5a501ee1119a91b9b2d0f830a22f3fbdf` |
 | Base image | `docker.io/lukealonso/sglang-cuda13-b12x:w4a16` |
 | Target TP | `8` |
 | TP=16 status | not validated |
@@ -47,11 +47,18 @@ Concurrent soak:
 | first 8-way soak | 8/8 HTTP 200, 2,985 completion tokens, 83 s |
 | warm 8-way soak | 8/8 HTTP 200, 4,042 completion tokens, 31 s |
 
+Autotune-fix validation:
+
+| Run | Result |
+|---|---|
+| short coherence prompt | `Paris` and `4`, HTTP 200, no request-time `AUTOTUNE mm` log lines |
+| long context run B | 50,712 prompt tokens, returned `VEGA-8431` and `Paris`, HTTP 200, no request-time `AUTOTUNE mm` log lines |
+
 The warm soak had no CJK characters, Unicode replacement characters, or multi-character non-ASCII corruption runs. One local checker warning was only a normal ASCII separator line in a generated incident-report heading.
 
 ## Important caveats
 
 - TP=8 is the validated target. TP=16 may be possible at the SGLang partitioning layer, but the source MiMo Pro fused QKV tensors were TP-packed for TP=8 and TP=16 has not been proven.
 - MiMo's tokenizer defaults to thinking mode. For normal chat smoke tests, pass `chat_template_kwargs: {"enable_thinking": false}`.
-- The current runtime image preserves the compiled BF16 linear path after warmup with `SGLANG_DISABLE_AUTOTUNED_LINEAR_AFTER_WARMUP=0`. This was needed for graph/eager consistency during MTP target-verify debugging, but it can cause Torch Inductor autotune for new large prefill shapes. Treat that as a known runtime performance issue, not a checkpoint-quality issue.
+- Startup CUDA graph capture still runs Torch Inductor autotune for small BF16 dense-linear shapes. The current image prevents new unquantized BF16 linear shapes from being compiled during live request handling, so request-time `AUTOTUNE mm(...)` log lines should not appear for normal short or long-context inference.
 - Earlier no-graph and no-MTP runs were useful gates, but the current validated image is the micro-MoE reciprocal-scale runtime described in this directory.

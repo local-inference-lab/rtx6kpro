@@ -1,0 +1,104 @@
+╭─────────────────────────────────────────── NVIDIA P2P Override ───────────────────────────────────────────╮
+│ Effective: yes                                                                                            │
+│ Configured file: yes (/etc/modprobe.d/nvidia-p2p-override.conf)                                           │
+│ Runtime: ForceP2P=0x11; RMForceP2PType=1; RMPcieP2PType=2; GrdmaPciTopoCheckOverride=1;                   │
+│ EnableResizableBar=1; DmaRemapPeerMmio=1                                                                  │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭────────────────────────────────────────────── Configuration ──────────────────────────────────────────────╮
+│ LLM Inference Benchmark                                                                                   │
+│ Model: GLM-5 @ localhost:5264                                                                             │
+│ Decode concurrency: [1, 2, 4, 8, 16, 32, 64]                                                              │
+│ Decode contexts: ['0', '16k', '32k', '64k', '128k']                                                       │
+│ Duration: 30.0s per decode test | Max tokens: 2048                                                        │
+│ Prefill: skipped | Sustained decode: 35 cells                                                             │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+KV cache budget (manual): 488,064 tokens
+Engine: vLLM 0.20.2rc1.dev249+glmkimirebase20260514  Models: ['GLM-5']
+Model context length: 202,752 tokens
+Prefill tests: skipped
+Calibrating padding text (run=udkvdyaicjne, up to 128k)...
+  Token targeting: single-point estimate from 8k (use --token-targeting exact for /tokenize binary search)
+  Calibrated: 6.18 chars/token (cached, source=8k)
+  16k: 101,265 chars (~16,383 tokens)
+  32k: 202,530 chars (~32,767 tokens)
+  64k: 405,061 chars (~65,535 tokens)
+  128k: 810,122 chars (~131,071 tokens)
+Done.
+
+
+
+llm-decode-bench v0.4.17
+╭───────────────────────────────────────────────── Phase 2 ─────────────────────────────────────────────────╮
+│ Sustained Decode                                                                                          │
+│ Steady-state decode throughput after the engine has admitted the requested concurrency and passed warmup. │
+│ Use this as the main tuning/regression signal for kernels, NCCL, DCP, MTP, and scheduler changes.         │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Aggregate tok/s  + TTFT/ITL                                               
+╭────────────┬────────┬───────┬───────┬───────┬────────┬────────┬────────╮
+│ ctx \ conc │      1 │     2 │     4 │     8 │     16 │     32 │     64 │
+├────────────┼────────┼───────┼───────┼───────┼────────┼────────┼────────┤
+│ 0          │   66.0 │ 104.0 │ 162.2 │ 146.4 │  213.8 │  262.6 │  387.6 │
+│            │ 934/15 │ 2k/19 │ 2k/24 │ 1k/54 │  2k/70 │ 3k/114 │ 5k/156 │
+│ 16k        │   63.1 │  96.1 │ 151.0 │ 139.8 │  187.3 │      ∅ │      ∅ │
+│            │  2k/13 │ 3k/21 │ 5k/26 │ 6k/58 │ 14k/87 │        │        │
+│ 32k        │   65.2 │  96.2 │ 149.9 │ 132.9 │      ∅ │      ∅ │      ∅ │
+│            │  1k/14 │ 3k/20 │ 4k/26 │ 6k/57 │        │        │        │
+│ 64k        │   62.4 │  99.0 │ 149.0 │     ∅ │      ∅ │      ∅ │      ∅ │
+│            │  2k/14 │ 3k/20 │ 4k/26 │       │        │        │        │
+│ 128k       │   62.1 │  94.6 │     ∅ │     ∅ │      ∅ │      ∅ │      ∅ │
+│            │  3k/16 │ 4k/21 │       │       │        │        │        │
+╰────────────┴────────┴───────┴───────┴───────┴────────┴────────┴────────╯
+Sustained Decode: aggregate tok/s uses OpenAI stream usage by default (continuous completion_tokens when the 
+server supports it). Prometheus is kept as validation/scheduler data.
+Aggregate source(s): openai_continuous_usage
+∅ = skipped/hidden because the cell does not fit in KV cache; exact deficit is kept in JSON timeout_reason
+Per-Request tok/s                                            
+╭────────────┬──────┬──────┬──────┬──────┬──────┬─────┬─────╮
+│ ctx \ conc │    1 │    2 │    4 │    8 │   16 │  32 │  64 │
+├────────────┼──────┼──────┼──────┼──────┼──────┼─────┼─────┤
+│ 0          │ 66.0 │ 52.0 │ 40.5 │ 18.3 │ 13.4 │ 8.2 │ 6.1 │
+│ 16k        │ 63.1 │ 48.0 │ 37.7 │ 17.5 │ 11.7 │   ∅ │   ∅ │
+│ 32k        │ 65.2 │ 48.1 │ 37.5 │ 16.6 │    ∅ │   ∅ │   ∅ │
+│ 64k        │ 62.4 │ 49.5 │ 37.2 │    ∅ │    ∅ │   ∅ │   ∅ │
+│ 128k       │ 62.1 │ 47.3 │    ∅ │    ∅ │    ∅ │   ∅ │   ∅ │
+╰────────────┴──────┴──────┴──────┴──────┴──────┴─────┴─────╯
+Client request latency: p50 / p90 ms                            
+╭────────────┬─────────────┬─────┬─────┬─────┬─────┬─────┬─────╮
+│ ctx \ conc │           1 │   2 │   4 │   8 │  16 │  32 │  64 │
+├────────────┼─────────────┼─────┼─────┼─────┼─────┼─────┼─────┤
+│ 0          │ 32.4k/32.4k │ —/— │ —/— │ —/— │ —/— │ —/— │ —/— │
+│ 16k        │ 34.3k/34.3k │ —/— │ —/— │ —/— │ —/— │   ∅ │   ∅ │
+│ 32k        │ 33.0k/33.0k │ —/— │ —/— │ —/— │   ∅ │   ∅ │   ∅ │
+│ 64k        │ 33.8k/33.8k │ —/— │ —/— │   ∅ │   ∅ │   ∅ │   ∅ │
+│ 128k       │ 35.6k/35.6k │ —/— │   ∅ │   ∅ │   ∅ │   ∅ │   ∅ │
+╰────────────┴─────────────┴─────┴─────┴─────┴─────┴─────┴─────╯
+Aggregate cells show dim detail as TTFT ms / ITL ms for the same ctx/conc coordinate. ITL is computed from 
+observed generated tokens, including streams stopped at the measurement boundary; a missing ITL means no 
+stream produced at least two measured output tokens. Per-request tok/s and request latency are shown in 
+separate per-cell matrices. Completion/sample counts and full request-level distributions remain in JSON 
+under request_samples.
+Sustained mode: client latency metrics explain request UX variance; aggregate tok/s remains the primary 
+throughput signal. ITL=(last_token_time-first_token_time)/(output_tokens-1), user tok/s=1/ITL.
+
+╭───────────────────────────────────────────────── Phase 3 ─────────────────────────────────────────────────╮
+│ Burst / E2E Decode                                                                                        │
+│ Not run. Re-run with --run-burst to append a finite client-facing request burst after Sustained Decode.   │
+│ This is intentionally disabled by default because it adds another full decode matrix.                     │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+╭───────────────────────────────────────────── Primary Summary ─────────────────────────────────────────────╮
+│ Primary matrices repeated last so the important numbers are visible without scrolling back through        │
+│ diagnostics.                                                                                              │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+Aggregate decode tok/s                                               
+╭────────────┬──────┬───────┬───────┬───────┬───────┬───────┬───────╮
+│ ctx \ conc │    1 │     2 │     4 │     8 │    16 │    32 │    64 │
+├────────────┼──────┼───────┼───────┼───────┼───────┼───────┼───────┤
+│ 0          │ 66.0 │ 104.0 │ 162.2 │ 146.4 │ 213.8 │ 262.6 │ 387.6 │
+│ 16k        │ 63.1 │  96.1 │ 151.0 │ 139.8 │ 187.3 │     ∅ │     ∅ │
+│ 32k        │ 65.2 │  96.2 │ 149.9 │ 132.9 │     ∅ │     ∅ │     ∅ │
+│ 64k        │ 62.4 │  99.0 │ 149.0 │     ∅ │     ∅ │     ∅ │     ∅ │
+│ 128k       │ 62.1 │  94.6 │     ∅ │     ∅ │     ∅ │     ∅ │     ∅ │
+╰────────────┴──────┴───────┴───────┴───────┴───────┴───────┴───────╯
+
+Results saved to /root/bench-results/glm51-v2-full-68b3569f-20260514/glm-dcp8-mtp1/decode-matrix.json

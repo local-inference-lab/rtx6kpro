@@ -197,16 +197,38 @@ python3 /root/llm-inference-bench/llm_decode_bench.py \
   --no-hw-monitor
 ```
 
-Standalone prefill was not run for this v2 matrix. The saved JSON files only
-contain TTFT-derived prompt-ingestion data from the 128k warmup/decode requests,
-so those numbers are documented separately below and should not be compared as a
-dedicated prefill-only benchmark.
+Standalone prefill was not run for this v2 matrix. TTFT-derived prompt/token
+rates are intentionally not reported here because prefix-cache state and request
+admission can skew them heavily.
 
 Result directory:
 
 ```bash
 /root/bench-results/glm51-v2-full-68b3569f-20260514
 ```
+
+Raw benchmark artifacts are checked into this repository:
+
+```text
+models/glm5.1/benchmarks/glm51-v2-full-68b3569f-20260514/
+```
+
+## PCIe / Communication State
+
+The saved JSON and startup logs confirm the communication path used for every
+profile. They do not contain per-profile measured PCIe GB/s counters; `p2pmark`
+was not run in this matrix.
+
+| Profile | DCP | MTP | KV budget | P2P override | NCCL | PCIe allreduce path | C++ AR cutoff | PCIe GB/s |
+| --- | ---: | ---: | ---: | --- | --- | --- | --- | --- |
+| DCP1 + MTP | 1 | 1 | 79,808 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP1 no-MTP | 1 | 0 | 85,376 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP2 + MTP | 2 | 1 | 158,880 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP2 no-MTP | 2 | 0 | 170,048 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP4 + MTP | 4 | 1 | 317,760 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP4 no-MTP | 4 | 0 | 340,096 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP8 + MTP | 8 | 1 | 488,064 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP8 no-MTP | 8 | 0 | 680,192 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
 
 ## Results
 
@@ -347,34 +369,6 @@ KV cache budget: `680,192` tokens; 128k cc1 warmup: `45.9` tok/s.
 | 64k | 46.6 | 70.3 | 116.6 | 164.8 | skip | skip | skip |
 | 128k | 45.9 | 69.3 | 114.1 | skip | skip | skip | skip |
 <!-- GLM_RESULTS_END -->
-
-## TTFT-Derived Prompt Ingestion
-
-The v2 run used `--skip-prefill`, so there is no standalone prefill-only result
-for this image. The table below is computed from the saved 128k warmup JSON
-files as `input_seq_len_avg / ttft_avg`. It is useful as a client-visible
-prompt-ingestion proxy, but it includes request admission and first-token path.
-
-Source files:
-
-```bash
-/root/bench-results/glm51-v2-full-68b3569f-20260514/glm-dcp*/warmup-128k-cc1.json
-```
-
-| Profile | 128k input tokens | TTFT | Prompt / TTFT | Decode tok/s |
-| --- | ---: | ---: | ---: | ---: |
-| DCP1 + MTP | not measured | not measured | not measured | not measured |
-| DCP1 no-MTP | not measured | not measured | not measured | not measured |
-| DCP2 + MTP | 128,964 | 1.262 s | 102,185 tok/s | 71.6 |
-| DCP2 no-MTP | 128,966 | 1.915 s | 67,358 tok/s | 49.3 |
-| DCP4 + MTP | 128,966 | 1.467 s | 87,911 tok/s | 68.5 |
-| DCP4 no-MTP | 128,965 | 2.058 s | 62,674 tok/s | 48.2 |
-| DCP8 + MTP | 128,964 | 1.993 s | 64,699 tok/s | 60.0 |
-| DCP8 no-MTP | 128,964 | 2.290 s | 56,321 tok/s | 45.9 |
-
-DCP1 does not have a valid 128k warmup entry in this run because the recorded KV
-budgets were below the 128k prompt requirement (`79,808` tokens with MTP and
-`85,376` tokens without MTP).
 
 ## GLM Draft Acceptance Notes
 

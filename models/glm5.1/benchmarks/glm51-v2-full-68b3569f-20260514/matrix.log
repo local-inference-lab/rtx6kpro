@@ -1,0 +1,24 @@
+[2026-05-15T03:14:48Z] START glm-dcp1-mtp1 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T03:21:45Z] READY glm-dcp1-mtp1 kv_budget=79808
+[2026-05-15T03:30:42Z] DONE glm-dcp1-mtp1
+[2026-05-15T03:30:42Z] START glm-dcp1-mtp0 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T03:34:43Z] READY glm-dcp1-mtp0 kv_budget=85376
+[2026-05-15T03:44:13Z] DONE glm-dcp1-mtp0
+[2026-05-15T03:44:13Z] START glm-dcp2-mtp1 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T03:49:10Z] READY glm-dcp2-mtp1 kv_budget=158880
+[2026-05-15T04:04:04Z] DONE glm-dcp2-mtp1
+[2026-05-15T04:04:04Z] START glm-dcp2-mtp0 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T04:08:05Z] READY glm-dcp2-mtp0 kv_budget=170048
+[2026-05-15T04:23:03Z] DONE glm-dcp2-mtp0
+[2026-05-15T04:23:03Z] START glm-dcp4-mtp1 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T04:28:05Z] READY glm-dcp4-mtp1 kv_budget=317760
+[2026-05-15T04:46:14Z] DONE glm-dcp4-mtp1
+[2026-05-15T04:46:14Z] START glm-dcp4-mtp0 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T04:50:26Z] READY glm-dcp4-mtp0 kv_budget=340096
+[2026-05-15T05:08:24Z] DONE glm-dcp4-mtp0
+[2026-05-15T05:08:25Z] START glm-dcp8-mtp1 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.82
+[2026-05-15T05:13:26Z] READY glm-dcp8-mtp1 kv_budget=488064
+[2026-05-15T05:33:29Z] DONE glm-dcp8-mtp1
+[2026-05-15T05:33:29Z] START glm-dcp8-mtp0 image=voipmonitor/vllm:glm-kimi-canonical-rebase-layered-vllm68b3569f-b12xc929144-flashinfergit1a60071-cutedsl45-20260514 gpu_mem=0.865
+[2026-05-15T05:37:35Z] READY glm-dcp8-mtp0 kv_budget=680192
+[2026-05-15T05:59:52Z] DONE glm-dcp8-mtp0

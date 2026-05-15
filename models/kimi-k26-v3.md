@@ -5,9 +5,17 @@ This page reruns the Kimi-K2.6 decode matrix from [`kimi-k26-v2.md`](kimi-k26-v2
 with the current communicator baseline: patched NCCL without an external XML topology
 file plus vLLM C++ PCIe allreduce only for small tensors.
 
+2026-05-10 update: `voipmonitor/vllm:glm51-kimi-b12x013-20260510` is the
+current shared GLM/Kimi image. It is based on `voipmonitor/vllm:glm51-kimi-20260510`
+and updates b12x to upstream commit `3917cb2fe5a2118eaab8b68f7710c71aad9e4b1c`
+with small vLLM compatibility patches. For Kimi this should be behaviorally
+equivalent to the 20260510 image because Kimi keeps `VLLM_USE_B12X_SPARSE_INDEXER=0`
+and does not use GLM's B12X sparse MLA path.
+
 ## What Changed Versus v2
 
-- Image: `voipmonitor/vllm:glm51-kimi-20260510`.
+- Image: `voipmonitor/vllm:glm51-kimi-b12x013-20260510`.
+- Previous stable baseline: `voipmonitor/vllm:glm51-kimi-20260510`.
 - The image is shared with the GLM-5.1 recipe. For Kimi, keep the Kimi-specific
   runtime env below, especially `VLLM_USE_B12X_SPARSE_INDEXER=0` and
   `VLLM_DISABLE_SHARED_EXPERTS_STREAM=0`; GLM-specific NSA/indexer behavior is
@@ -34,7 +42,7 @@ A short DCP1 A/B check showed that patched NCCL/no-XML is effectively parity wit
 Common variables:
 
 ```bash
-export IMAGE=voipmonitor/vllm:glm51-kimi-20260510
+export IMAGE=voipmonitor/vllm:glm51-kimi-b12x013-20260510
 export PORT=5002
 export DCP=8
 export MTP=1
@@ -44,6 +52,12 @@ export MAX_NUM_BATCHED_TOKENS=8192
 export MAX_NUM_SEQS=128
 export MAX_CUDAGRAPH_CAPTURE_SIZE=512
 export CACHE_ROOT=~/.cache/vllm-kimi-k26-v3
+```
+
+To compare against the previous stable baseline, use:
+
+```bash
+export IMAGE=voipmonitor/vllm:glm51-kimi-20260510
 ```
 
 Use these profile values:
@@ -162,6 +176,22 @@ Conclusion:
   `VLLM_CPP_AR_IGNORE_CUTOFF_MAX_ROWS=8` is safe in the measured setup and kept
   in the recipe, but it should be treated as a small policy tweak, not as a
   proven C=1 fix.
+
+## 2026-05-10 b12x 0.13 Image Sanity Check
+
+This quick check used `voipmonitor/vllm:glm51-kimi-b12x013-20260510`,
+`DCP=8`, `MTP=1`, `GPU_MEM=0.90`, `MAX_CUDAGRAPH_CAPTURE_SIZE=512`, patched
+NCCL/no-XML, and the same Kimi-specific launch env as above.
+
+| C | Runs | tok/s values | Mean | Median | PCIe rx/tx MB/s |
+|---:|---:|---|---:|---:|---:|
+| 1 | 3 | 81.9, 92.3, 88.3 | 87.5 | 88.3 | about 50k/50k |
+| 64 | 3 | 967.5, 982.8, 970.1 | 973.5 | 970.1 | about 192k/191k |
+
+Interpretation: no Kimi-specific regression was observed in this smoke check.
+The full decode matrix below was collected before the b12x 0.13 image was
+pushed, so use the table as the communicator baseline and the sanity check above
+as the b12x 0.13 validation.
 
 ## Benchmark Command
 

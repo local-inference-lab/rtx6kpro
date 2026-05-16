@@ -23,7 +23,7 @@ Each `glm-dcp*-mtp*` directory contains:
 | `startup.log` | vLLM startup log, including NCCL, DCP, CUDA graph, and allreduce path. |
 | `final.log` | Full server log captured after the benchmark run. |
 | `docker-run.env` | Minimal launch metadata captured by the driver. |
-| `kv-budget.txt` | Reported KV cache token budget for that profile. |
+| `kv-budget.txt` | Manual `llm_decode_bench.py --kv-budget` value used by the archived driver. In this run it is `GPU KV cache size / 4`, not the vLLM KV capacity. |
 | `container.id` | Docker container ID used for that profile. |
 
 Top-level files:
@@ -39,6 +39,11 @@ Important caveat: this run used `--skip-prefill`. Standalone prefill-only
 throughput was not measured. TTFT-derived prompt/token rates from these JSON
 files should not be treated as prefill throughput because prefix-cache state and
 request admission can skew them heavily.
+
+KV capacity caveat: use `startup.log` / `final.log` line `GPU KV cache size:
+<N> tokens` as the authoritative vLLM KV cache capacity. The archived
+`kv-budget.txt` values were conservative benchmark fit/skip gates and are not
+directly comparable to vLLM startup logs.
 
 PCIe caveat: the JSON startup diagnostics record that NVIDIA P2P override was
 effective, patched NCCL PR2127 was used, and vLLM C++ PCIe custom allreduce was

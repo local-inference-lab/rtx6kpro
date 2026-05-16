@@ -197,6 +197,17 @@ python3 /root/llm-inference-bench/llm_decode_bench.py \
   --no-hw-monitor
 ```
 
+Use the raw vLLM startup value from:
+
+```text
+GPU KV cache size: <N> tokens
+```
+
+Do not use the archived `kv-budget.txt` value as KV capacity. In this archived
+run the benchmark driver used a conservative manual budget equal to
+`GPU KV cache size / 4`; that value only affected benchmark fit/skip gating and
+was previously mislabeled in this page.
+
 Standalone prefill was not run for this v2 matrix. TTFT-derived prompt/token
 rates are intentionally not reported here because prefix-cache state and request
 admission can skew them heavily.
@@ -219,16 +230,16 @@ The saved JSON and startup logs confirm the communication path used for every
 profile. They do not contain per-profile measured PCIe GB/s counters; `p2pmark`
 was not run in this matrix.
 
-| Profile | DCP | MTP | KV budget | P2P override | NCCL | PCIe allreduce path | C++ AR cutoff | PCIe GB/s |
-| --- | ---: | ---: | ---: | --- | --- | --- | --- | --- |
-| DCP1 + MTP | 1 | 1 | 79,808 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP1 no-MTP | 1 | 0 | 85,376 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP2 + MTP | 2 | 1 | 158,880 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP2 no-MTP | 2 | 0 | 170,048 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP4 + MTP | 4 | 1 | 317,760 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP4 no-MTP | 4 | 0 | 340,096 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP8 + MTP | 8 | 1 | 488,064 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
-| DCP8 no-MTP | 8 | 0 | 680,192 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| Profile | DCP | MTP | GPU KV cache size | Archived `--kv-budget` used | P2P override | NCCL | PCIe allreduce path | C++ AR cutoff | PCIe GB/s |
+| --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- |
+| DCP1 + MTP | 1 | 1 | 319,232 | 79,808 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP1 no-MTP | 1 | 0 | 341,504 | 85,376 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP2 + MTP | 2 | 1 | 635,520 | 158,880 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP2 no-MTP | 2 | 0 | 680,192 | 170,048 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP4 + MTP | 4 | 1 | 1,271,040 | 317,760 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP4 no-MTP | 4 | 0 | 1,360,384 | 340,096 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP8 + MTP | 8 | 1 | 1,952,256 | 488,064 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
+| DCP8 no-MTP | 8 | 0 | 2,720,768 | 680,192 | effective | 2.30.3 PR2127 | vLLM C++ custom AR | 56KB, rows<=8 | not measured |
 
 ## Results
 
@@ -238,7 +249,8 @@ finishes.
 <!-- GLM_RESULTS_START -->
 ### GLM DCP1 MTP on
 
-KV cache budget: `79,808` tokens.
+GPU KV cache size: `319,232` tokens. Archived benchmark `--kv-budget` used:
+`79,808` tokens.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -258,7 +270,8 @@ Spec acceptance rate:
 
 ### GLM DCP1 MTP off
 
-KV cache budget: `85,376` tokens.
+GPU KV cache size: `341,504` tokens. Archived benchmark `--kv-budget` used:
+`85,376` tokens.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -269,7 +282,8 @@ KV cache budget: `85,376` tokens.
 
 ### GLM DCP2 MTP on
 
-KV cache budget: `158,880` tokens; 128k cc1 warmup: `71.5` tok/s.
+GPU KV cache size: `635,520` tokens. Archived benchmark `--kv-budget` used:
+`158,880` tokens; 128k cc1 warmup: `71.5` tok/s.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -291,7 +305,8 @@ Spec acceptance rate:
 
 ### GLM DCP2 MTP off
 
-KV cache budget: `170,048` tokens; 128k cc1 warmup: `49.3` tok/s.
+GPU KV cache size: `680,192` tokens. Archived benchmark `--kv-budget` used:
+`170,048` tokens; 128k cc1 warmup: `49.3` tok/s.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -303,7 +318,8 @@ KV cache budget: `170,048` tokens; 128k cc1 warmup: `49.3` tok/s.
 
 ### GLM DCP4 MTP on
 
-KV cache budget: `317,760` tokens; 128k cc1 warmup: `68.5` tok/s.
+GPU KV cache size: `1,271,040` tokens. Archived benchmark `--kv-budget` used:
+`317,760` tokens; 128k cc1 warmup: `68.5` tok/s.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -325,7 +341,8 @@ Spec acceptance rate:
 
 ### GLM DCP4 MTP off
 
-KV cache budget: `340,096` tokens; 128k cc1 warmup: `48.2` tok/s.
+GPU KV cache size: `1,360,384` tokens. Archived benchmark `--kv-budget` used:
+`340,096` tokens; 128k cc1 warmup: `48.2` tok/s.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -337,7 +354,8 @@ KV cache budget: `340,096` tokens; 128k cc1 warmup: `48.2` tok/s.
 
 ### GLM DCP8 MTP on
 
-KV cache budget: `488,064` tokens; 128k cc1 warmup: `60.0` tok/s.
+GPU KV cache size: `1,952,256` tokens. Archived benchmark `--kv-budget` used:
+`488,064` tokens; 128k cc1 warmup: `60.0` tok/s.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -359,7 +377,8 @@ Spec acceptance rate:
 
 ### GLM DCP8 MTP off
 
-KV cache budget: `680,192` tokens; 128k cc1 warmup: `45.9` tok/s.
+GPU KV cache size: `2,720,768` tokens. Archived benchmark `--kv-budget` used:
+`680,192` tokens; 128k cc1 warmup: `45.9` tok/s.
 
 | Context | cc1 | cc2 | cc4 | cc8 | cc16 | cc32 | cc64 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |

@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-16](2026-05/2026-05-16.md) | DSV4 Flash: 120 tok/s on TP=2; new `lavd/vllm:jasl-dsv4-5-15-26` image fixes cpasync import error fr |
 | [2026-05-15](2026-05/2026-05-15.md) | Qwen 27B runaway thinking discovery: unbounded thinking on GPQA Diamond gives only 40.4% accuracy be |
 | [2026-05-14](2026-05/2026-05-14.md) | infernix's GPT-5.5 autoresearch branch for DSv4 Flash on SM120 claims 4.8k prefill/s and 27/30 Eston |
 | [2026-05-13](2026-05/2026-05-13.md) | DSV4 Flash MTP2: 35→120 tok/s after jasl vllm fixes; new image `lavd/vllm:jasl-dsv4-5-12-26` hits  |
@@ -86,6 +87,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-16](2026-05/2026-05-16.md) | DSV4 Flash: 120 tok/s on TP=2; new `lavd/vllm:jasl-dsv4-5-15-26` image fixes cpasync import error fr |
 | [2026-05-15](2026-05/2026-05-15.md) | Qwen 27B runaway thinking discovery: unbounded thinking on GPQA Diamond gives only 40.4% accuracy be |
 | [2026-05-14](2026-05/2026-05-14.md) | infernix's GPT-5.5 autoresearch branch for DSv4 Flash on SM120 claims 4.8k prefill/s and 27/30 Eston |
 | [2026-05-13](2026-05/2026-05-13.md) | DSV4 Flash MTP2: 35→120 tok/s after jasl vllm fixes; new image `lavd/vllm:jasl-dsv4-5-12-26` hits  |

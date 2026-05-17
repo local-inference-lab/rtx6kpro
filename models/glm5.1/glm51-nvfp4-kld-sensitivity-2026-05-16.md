@@ -158,7 +158,7 @@ Checkpoint builder used for the local experiment:
 
 Best current quality-target mixed checkpoint:
 
-`/root/kld/checkpoints/GLM-5.1-NVFP4-mixed-fp8pbwo-L42-47-L51-62-20260517`
+`/root/kld/checkpoints/GLM-5.1-NVFP4-mixed-fp8pbwo-L42-62-20260517`
 
 Important implementation details:
 
@@ -186,11 +186,13 @@ Measured results:
 | FP8_PB_WO layers 51-62 | FP8 | 8 | 0.049443 | 16376 | cheaper tradeoff |
 | FP8_PB_WO layers 45-47,51-62 | FP8 | 8 | 0.044499 | 16376 | robust short validation |
 | FP8_PB_WO layers 42-47,51-62 | FP8 | 8 | 0.043555 | 16376 | best W8, heavier quality target |
+| FP8_PB_WO layers 42-62 | FP8 | 8 | 0.040911 | 16376 | best W8, heavy quality target |
 | Luke NVFP4 W4A16 | FP8 | 42 | 0.068724 | 85974 | baseline |
 | FP8_PB_WO layers 51-62 | FP8 | 42 | 0.056918 | 85974 | cheaper tradeoff |
 | FP8_PB_WO layers 45-47,51-53,57-62 | FP8 | 42 | 0.057432 | 85974 | worse than 51-62 at same runtime size |
 | FP8_PB_WO layers 45-47,51-62 | FP8 | 42 | 0.054121 | 85974 | robust validation |
 | FP8_PB_WO layers 42-47,51-62 | FP8 | 42 | 0.051939 | 85974 | best robust KLD so far |
+| FP8_PB_WO layers 42-62 | FP8 | 42 | 0.049504 | 85974 | best robust KLD, heavy |
 
 Runtime footprint:
 
@@ -201,14 +203,17 @@ Runtime footprint:
 | 45-47,51-53,57-62 | 128 GB | 45.30 GiB | 679872 | 165.98x |
 | 45-47,51-62 | 150 GB | 46.77 GiB | 654080 | 159.69x |
 | 42-47,51-62 | 177 GB | 48.25 GiB | 628224 | 153.38x |
+| 42-62 | 198 GB | 49.73 GiB | 602432 | 147.08x |
 
 Interpretation: this is the first production-shaped result that matches the
 BF16 oracle direction. The quality gap is primarily from selected expert weight
 precision. Full-model A16 activation handling alone is not the high-leverage
 fix. The `51-62` candidate is the better memory/KV tradeoff. Adding `45-47`
-gives a strong middle quality target. Adding `42-47` gives the best measured
-KLD so far, at the cost of about 1.48 GiB/rank more model memory versus
-`45-47,51-62` and about 4.95 GiB/rank more than `51-62`.
+gives a strong middle quality target. Adding `42-47` improves quality further.
+The current best robust KLD is the heavy `42-62` checkpoint: `0.049504` W42,
+about 28% lower than the NVFP4 W4A16 W42 baseline `0.068724`, but it costs
+about 2.96 GiB/rank more model memory than `45-47,51-62` and about 4.43 GiB/rank
+more than `51-62`.
 
 Two smaller variants were tested as quality/size probes. `51-53,57-62` saves
 memory but gives up too much KLD. `45-47,51-53,57-62` looked better on W8, but
@@ -296,11 +301,11 @@ Recommended next steps:
    kept unquantized.
 3. Treat the new amax checkpoint as a reproducibility/W4A4 check first. For
    W4A16, Luke indicated calibration should not be the primary factor.
-4. Keep `42-47,51-62` as the current best quality-target FP8_PB_WO candidate.
+4. Keep `42-62` as the current best quality-target FP8_PB_WO candidate.
 5. Keep `51-62` as the main lower-memory tradeoff candidate. The smaller
    `51-53,57-62` and `45-47,51-53,57-62` probes did not beat it.
-6. Keep `45-47,51-62` as the middle tradeoff if the extra `42-44` layers cost
-   too much memory/KV in serving.
+6. Keep `45-47,51-62` and `42-47,51-62` as middle tradeoffs if the full `42-62`
+   set costs too much memory/KV in serving.
 7. If MXFP8 export/runtime support becomes available, repeat the same selected
    layer sets with MXFP8 and compare KLD and memory footprint.
 

@@ -154,7 +154,7 @@ vLLM. Canonical vLLM commit:
 
 Checkpoint builder used for the local experiment:
 
-`/root/kld/tools/make_glm51_mixed_fp8pbwo_moe.py`
+`models/glm5.1/tools/make_glm51_mixed_fp8pbwo_moe.py`
 
 Best current quality-target mixed checkpoint:
 

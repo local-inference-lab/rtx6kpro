@@ -181,17 +181,22 @@ Measured results:
 | FP8_PB_WO layer 51 only | BF16 | 1 | 0.050617 | 2047 | small but real gain |
 | FP8_PB_WO layers 45-47,51-62 | BF16 | 1 | 0.038153 | 2047 | strong screening result |
 | Luke NVFP4 W4A16 | FP8 | 8 | 0.065626 | 16376 | baseline |
+| FP8_PB_WO layers 51-53,57-62 | FP8 | 8 | 0.051694 | 16376 | too much quality loss |
+| FP8_PB_WO layers 45-47,51-53,57-62 | FP8 | 8 | 0.047075 | 16376 | short validation looked promising |
 | FP8_PB_WO layers 51-62 | FP8 | 8 | 0.049443 | 16376 | cheaper tradeoff |
 | FP8_PB_WO layers 45-47,51-62 | FP8 | 8 | 0.044499 | 16376 | robust short validation |
 | Luke NVFP4 W4A16 | FP8 | 42 | 0.068724 | 85974 | baseline |
 | FP8_PB_WO layers 51-62 | FP8 | 42 | 0.056918 | 85974 | cheaper tradeoff |
+| FP8_PB_WO layers 45-47,51-53,57-62 | FP8 | 42 | 0.057432 | 85974 | worse than 51-62 at same runtime size |
 | FP8_PB_WO layers 45-47,51-62 | FP8 | 42 | 0.054121 | 85974 | robust validation |
 
 Runtime footprint:
 
 | selected FP8_PB_WO layers | local dir size | model memory / rank | KV cache tokens | max 4096-token concurrency |
 |---|---:|---:|---:|---:|
+| 51-53,57-62 | 96 GB | 43.82 GiB | 705728 | 172.30x |
 | 51-62 | 118 GB | 45.30 GiB | 679872 | 165.98x |
+| 45-47,51-53,57-62 | 128 GB | 45.30 GiB | 679872 | 165.98x |
 | 45-47,51-62 | 150 GB | 46.77 GiB | 654080 | 159.69x |
 
 Interpretation: this is the first production-shaped result that matches the
@@ -199,6 +204,11 @@ BF16 oracle direction. The quality gap is primarily from selected expert weight
 precision. Full-model A16 activation handling alone is not the high-leverage
 fix. The `51-62` candidate is the better memory/KV tradeoff, while adding
 `45-47` gives the best measured KLD so far.
+
+Two smaller variants were tested as quality/size probes. `51-53,57-62` saves
+memory but gives up too much KLD. `45-47,51-53,57-62` looked better on W8, but
+the robust W42 run was slightly worse than `51-62` while using the same runtime
+memory/KV footprint. It is therefore not a preferred candidate.
 
 ## Best BF16 Oracle Results
 
@@ -283,9 +293,8 @@ Recommended next steps:
    W4A16, Luke indicated calibration should not be the primary factor.
 4. Keep the current FP8_PB_WO `45-47,51-62` result as the first strong
    production-shaped candidate.
-5. Next quality/size tradeoff experiments should test smaller FP8_PB_WO sets:
-   `51-53,57-62` and `45-47,51-53,57-62`. The `51-62` tradeoff is already
-   measured above.
+5. Keep `51-62` as the main lower-memory tradeoff candidate. The smaller
+   `51-53,57-62` and `45-47,51-53,57-62` probes did not beat it.
 6. If MXFP8 export/runtime support becomes available, repeat the same selected
    layer sets with MXFP8 and compare KLD and memory footprint.
 

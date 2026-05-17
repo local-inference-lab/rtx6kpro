@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-17](2026-05/2026-05-17.md) | DeepSeek V4 Flash on 2× RTX PRO 6000: pangfather shared full vLLM config (TP=2, 393K ctx, MTP=2, FP |
 | [2026-05-16](2026-05/2026-05-16.md) | DSV4 Flash: 120 tok/s on TP=2; new `lavd/vllm:jasl-dsv4-5-15-26` image fixes cpasync import error fr |
 | [2026-05-15](2026-05/2026-05-15.md) | Qwen 27B runaway thinking discovery: unbounded thinking on GPQA Diamond gives only 40.4% accuracy be |
 | [2026-05-14](2026-05/2026-05-14.md) | infernix's GPT-5.5 autoresearch branch for DSv4 Flash on SM120 claims 4.8k prefill/s and 27/30 Eston |
@@ -87,6 +88,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-05-17](2026-05/2026-05-17.md) | DeepSeek V4 Flash on 2× RTX PRO 6000: pangfather shared full vLLM config (TP=2, 393K ctx, MTP=2, FP |
 | [2026-05-16](2026-05/2026-05-16.md) | DSV4 Flash: 120 tok/s on TP=2; new `lavd/vllm:jasl-dsv4-5-15-26` image fixes cpasync import error fr |
 | [2026-05-15](2026-05/2026-05-15.md) | Qwen 27B runaway thinking discovery: unbounded thinking on GPQA Diamond gives only 40.4% accuracy be |
 | [2026-05-14](2026-05/2026-05-14.md) | infernix's GPT-5.5 autoresearch branch for DSv4 Flash on SM120 claims 4.8k prefill/s and 27/30 Eston |

@@ -5,9 +5,14 @@
 Find which GLM-5.1 MoE expert layers are most responsible for NVFP4 KLD loss
 against the FP8 reference, before attempting a new quantized checkpoint.
 
-This was not a production checkpoint build. It was a BF16 oracle sweep: selected
-expert layers were dequantized from the FP8 reference to BF16 and left
+This was not a production checkpoint build. It started as a BF16 oracle sweep:
+selected expert layers were dequantized from the FP8 reference to BF16 and left
 unquantized, while the rest of the model stayed NVFP4.
+
+Later validation repeated the best candidates with true BF16 expert weights
+copied from the original `zai-org/GLM-5.1` checkpoint. Those BF16-direct results
+are the cleaner signal and should be preferred over the older FP8-dequant
+oracle when deciding which layers matter.
 
 ## Test Setup
 
@@ -54,8 +59,86 @@ VLLM_B12X_PAD_M_TO_POW2=1
 | NVFP4 W4A4 | 8 | 0.101372 |
 | NVFP4 W4A16 | 8 | 0.065626 |
 | NVFP4 W4A16 | 42 | 0.068724 |
+| NVFP4 + `B12X_MOE_FORCE_A16=1`, BF16 reference | 1 | 0.053622 |
+| config-only full-model `W4A16_NVFP4`, BF16 reference | 1 | 0.052546 |
 
 W4A16 is the relevant production baseline here. W4A4 is diagnostic only.
+The BF16-reference W1 numbers are not directly comparable to the FP8-reference
+W8/W42 numbers, but they show that changing activation quantization alone is a
+small effect: full-model W4A16 improved only about 2% versus the MoE-only A16
+baseline.
+
+## 2026-05-17 Local Re-Quant Export Fix
+
+A local amax smoke re-quant initially looked worse than Luke's checkpoint. The
+root cause was an export bug in quant-toolkit, not evidence that amax itself was
+bad:
+
+- `export_hf.py` tied GLM gate/up expert `weight_quantizer` amax values before
+  export, but the old global pass only reached `17945` of `19200` expert pairs
+  when layers were streamed/offloaded.
+- The post-export metadata pass then tied all `weight_scale_2` pairs. For the
+  missing pairs this made the checkpoint internally inconsistent: the packed
+  FP4 weights were produced with one scale, while final `weight_scale_2` was
+  overwritten to another scale.
+- The fix ties GLM gate/up amax immediately before FP4 packing for each
+  materialized streamed subtree. If ModelOpt has no calibrated weight amax, the
+  exporter computes it from the materialized CPU weight and sets both gate/up
+  quantizers before packing.
+
+Quant-toolkit commits:
+
+- `dd8ab31` - Fix GLM streaming gate-up FP4 scale tying
+- `9f33cc9` - Compute GLM gate-up amax before FP4 export
+- `dfbbc1c` - Avoid GPU amax recompute in GLM pre-export tie
+
+Fixed smoke checkpoint:
+
+`/root/kld/checkpoints/GLM-5.1-NVFP4-amax-smoke-prepacktie-modeloptf9d9a71-20260517`
+
+This checkpoint is still only a small smoke-calibration export. It is useful to
+prove the exporter is no longer corrupting GLM W13 scale metadata, but it is not
+a production replacement for Luke's checkpoint.
+
+| checkpoint / mode | reference | windows | KLD | positions |
+|---|---|---:|---:|---:|
+| Luke NVFP4 W4A16 | BF16 | 1 | 0.053622 | 2047 |
+| local smoke before export fix | BF16 | 1 | 0.065833 | 2047 |
+| local smoke after export fix | BF16 | 1 | 0.052286 | 2047 |
+| Luke NVFP4 W4A16 | FP8 | 8 | 0.065626 | 16376 |
+| local smoke after export fix | FP8 | 8 | 0.065739 | 16376 |
+| Luke NVFP4 W4A16 | FP8 | 42 | 0.068724 | 85974 |
+| local smoke after export fix | FP8 | 42 | 0.069499 | 85974 |
+
+Interpretation: the exporter bug is fixed, and the bad local smoke regression is
+gone. However, robust W8/W42 tests do not show a material gain over Luke's
+current checkpoint. The next quality work should therefore focus on sensitive
+expert layer precision, not on another blind full-model amax smoke run.
+
+## BF16-Direct Validation
+
+Selected expert layers were copied directly from the original BF16 checkpoint:
+
+`/root/.cache/huggingface/hub/models--zai-org--GLM-5.1/snapshots/26e1bd6e011feb778d25ae34b09b07074139d92d`
+
+The rest of the checkpoint remained Luke's NVFP4 checkpoint. Runtime was still
+`modelopt_mixed`; NVFP4 experts used B12X, while BF16 expert overrides used the
+unquantized MoE path.
+
+| selected BF16 expert layers | reference | windows | KLD | BF16 override size | note |
+|---|---|---:|---:|---:|---|
+| none, original NVFP4 + `B12X_MOE_FORCE_A16=1` | BF16 | 1 | 0.053622 | 0 GB | production-like baseline |
+| config-only full-model `W4A16_NVFP4` | BF16 | 1 | 0.052546 | 0 GB | small activation-only gain |
+| 51-62 | BF16 | 1 | 0.042128 | 216 GB | strong quality/size compromise |
+| 45-47,51-62 | BF16 | 1 | 0.036973 | 270 GB | best BF16-direct result so far |
+| 45-47,51-62 | FP8 | 8 | 0.046237 | 270 GB | robust W8 cross-check |
+
+Direct BF16 experts `45-47,51-62` improved KLD by about 31% versus the
+BF16-reference NVFP4 baseline. The same layer set also held up on the robust W8
+FP8-reference test with KLD `0.046237`.
+
+This points at expert weight precision as the main quality lever. It does not
+look like an activation-calibration-only problem.
 
 ## Best BF16 Oracle Results
 
@@ -122,23 +205,27 @@ global scale tweaks. The high-leverage path is a mixed-precision checkpoint:
 
 BF16 oracle is too large for production, but it is a clean sensitivity probe.
 Final production should be FP8 or a better NVFP4 re-quant for the sensitive
-layers.
+layers. MXFP8 should also be considered if the runtime/export path is available,
+because Luke indicated it is more accurate than NVFP4.
 
 ## Next Quantization Plan
 
 Recommended next steps:
 
-1. Reproduce Luke's GLM-5.1 quant flow locally with real LFS calibration data.
-   The LFS data is now present under `/root/quant-toolkit/data/text`.
+1. Reproduce Luke's GLM-5.1 quant flow locally with real LFS calibration data,
+   using `max`/amax calibration as requested by Luke. The LFS data is now
+   present under `/root/quant-toolkit/data/text`.
 2. Create a new quant config that preserves the current known-good exclusions:
    attention disabled, shared experts disabled, dense layers 0-2 disabled, MTP
    kept unquantized.
-3. Build a mixed checkpoint candidate:
+3. Treat the new amax checkpoint as a reproducibility/W4A4 check first. For
+   W4A16, Luke indicated calibration should not be the primary factor.
+4. Build a mixed checkpoint candidate:
    candidate A: layers `51-62` higher precision.
    candidate B: layers `45-47,51-62` higher precision.
-4. If direct FP8 mixed export is blocked by ModelOpt format mismatch, add a
+5. If direct FP8 mixed export is blocked by ModelOpt format mismatch, add a
    conversion/export path for FP8 block-scaled expert weights instead of BF16.
-5. Validate each candidate with KLD W8 first, then W42 only for the best one.
+6. Validate each candidate with KLD W8 first, then W42 only for the best one.
 
 Do not spend more time on blind `input_scale` or `weight_scale_2` multipliers
 unless used as a short diagnostic. The measured gain is layer-precision driven.

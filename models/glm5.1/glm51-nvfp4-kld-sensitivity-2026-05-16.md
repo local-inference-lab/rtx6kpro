@@ -140,6 +140,65 @@ FP8-reference test with KLD `0.046237`.
 This points at expert weight precision as the main quality lever. It does not
 look like an activation-calibration-only problem.
 
+## 2026-05-17 FP8_PB_WO Mixed Checkpoint
+
+The BF16 oracle result was converted into a production-shaped experiment:
+selected expert layers are replaced with FP8 blockwise weight-only
+(`FP8_PB_WO`) tensors from the official FP8 checkpoint, while the rest remains
+Luke's NVFP4 W4A16 checkpoint.
+
+This required adding ModelOpt mixed-precision MoE support for `FP8_PB_WO` in
+vLLM. Canonical vLLM commit:
+
+`61eac2779 Support ModelOpt mixed FP8_PB_WO MoE`
+
+Checkpoint builder used for the local experiment:
+
+`/root/kld/tools/make_glm51_mixed_fp8pbwo_moe.py`
+
+Best current mixed checkpoint:
+
+`/root/kld/checkpoints/GLM-5.1-NVFP4-mixed-fp8pbwo-L45-47-L51-62-20260517`
+
+Important implementation details:
+
+- Old NVFP4 tensors for selected layers are physically removed from filtered
+  safetensors shards. Updating `model.safetensors.index.json` alone is not
+  enough because vLLM iterates safetensors files and would otherwise see
+  duplicate tensor names.
+- FP8 checkpoint `weight_scale_inv` keys are converted to ModelOpt
+  `weight_scale` keys for the selected layers.
+- NVFP4 layers still use B12X MoE. The FP8_PB_WO layers use the normal FP8 MoE
+  backend selected by vLLM because B12X is an NVFP4 backend.
+- The checkpoint has 100 safetensors files and 0 duplicate keys after
+  validation.
+
+Measured results:
+
+| checkpoint / mode | reference | windows | KLD | positions | note |
+|---|---|---:|---:|---:|---|
+| Luke NVFP4 W4A16 | BF16 | 1 | 0.053622 | 2047 | baseline |
+| FP8_PB_WO layer 51 only | BF16 | 1 | 0.050617 | 2047 | small but real gain |
+| FP8_PB_WO layers 45-47,51-62 | BF16 | 1 | 0.038153 | 2047 | strong screening result |
+| Luke NVFP4 W4A16 | FP8 | 8 | 0.065626 | 16376 | baseline |
+| FP8_PB_WO layers 45-47,51-62 | FP8 | 8 | 0.044499 | 16376 | robust short validation |
+| Luke NVFP4 W4A16 | FP8 | 42 | 0.068724 | 85974 | baseline |
+| FP8_PB_WO layers 45-47,51-62 | FP8 | 42 | 0.054121 | 85974 | robust validation |
+
+Runtime footprint for the 15-layer FP8_PB_WO checkpoint:
+
+- Disk size of local mixed checkpoint directory: about 150 GB because unchanged
+  NVFP4 shards are symlinked and only affected shards/layers are materialized.
+- vLLM reported checkpoint size: 492.99 GiB.
+- vLLM model memory per rank: 46.77 GiB.
+- Available KV cache: 37.44 GiB, 654080 tokens, about 159x concurrency at
+  4096 tokens/request.
+
+Interpretation: this is the first production-shaped result that matches the
+BF16 oracle direction. The quality gap is primarily from selected expert weight
+precision. Full-model A16 activation handling alone is not the high-leverage
+fix.
+
 ## Best BF16 Oracle Results
 
 | selected BF16 expert layers | layers | BF16 override size | W8 KLD |
@@ -189,9 +248,9 @@ centered mainly on layers `51-62`, with `45-47` providing additional gain.
 - Blind global scale tuning is not a good primary path.
 - Some BF16 replacements make KLD worse or barely move it.
 - Single-window W1 results are noisy and should only be used for screening.
-- Directly mixing the current FP8 checkpoint into `modelopt_mixed` failed because
-  the FP8 reference uses block-scale `weight_scale_inv`, while the current
-  ModelOpt FP8 loader path expected a different FP8 scale format.
+- Directly mixing the current FP8 checkpoint into `modelopt_mixed` used to be
+  blocked because the FP8 reference uses block-scale `weight_scale_inv`. This is
+  now handled for MoE layers through the `FP8_PB_WO` conversion path above.
 
 ## Practical Interpretation
 
@@ -203,10 +262,11 @@ global scale tweaks. The high-leverage path is a mixed-precision checkpoint:
 3. Add `45-47` if memory budget allows.
 4. Test `45-47,51-62` first as the quality target.
 
-BF16 oracle is too large for production, but it is a clean sensitivity probe.
-Final production should be FP8 or a better NVFP4 re-quant for the sensitive
-layers. MXFP8 should also be considered if the runtime/export path is available,
-because Luke indicated it is more accurate than NVFP4.
+BF16 oracle is too large for production, but it was a clean sensitivity probe.
+The current production-shaped direction is mixed NVFP4 W4A16 plus FP8_PB_WO
+expert layers for `45-47,51-62`. MXFP8 should still be considered if the
+runtime/export path is available, because Luke indicated it is more accurate
+than NVFP4.
 
 ## Next Quantization Plan
 
@@ -220,12 +280,12 @@ Recommended next steps:
    kept unquantized.
 3. Treat the new amax checkpoint as a reproducibility/W4A4 check first. For
    W4A16, Luke indicated calibration should not be the primary factor.
-4. Build a mixed checkpoint candidate:
-   candidate A: layers `51-62` higher precision.
-   candidate B: layers `45-47,51-62` higher precision.
-5. If direct FP8 mixed export is blocked by ModelOpt format mismatch, add a
-   conversion/export path for FP8 block-scaled expert weights instead of BF16.
-6. Validate each candidate with KLD W8 first, then W42 only for the best one.
+4. Keep the current FP8_PB_WO `45-47,51-62` result as the first strong
+   production-shaped candidate.
+5. Next quality/size tradeoff experiments should test smaller FP8_PB_WO sets:
+   `51-62`, `51-53,57-62`, and `45-47,51-53,57-62`.
+6. If MXFP8 export/runtime support becomes available, repeat the same selected
+   layer sets with MXFP8 and compare KLD and memory footprint.
 
 Do not spend more time on blind `input_scale` or `weight_scale_2` multipliers
 unless used as a short diagnostic. The measured gain is layer-precision driven.

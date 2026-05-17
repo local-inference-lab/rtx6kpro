@@ -1,5 +1,35 @@
 # GLM-5.1 NVFP4 KLD Sensitivity Resume - 2026-05-16
 
+## TL;DR
+
+The GLM-5.1 quality loss is primarily localized in MoE expert weights, not in a
+global activation-scale bug. Luke's NVFP4 checkpoint in W4A16 mode is a solid
+baseline, but selected expert layers are substantially more sensitive than the
+rest of the model.
+
+The best current production-shaped fix is a mixed checkpoint: keep Luke's
+`GLM-5.1-NVFP4` as the base, keep most experts NVFP4/W4A16 with B12X, and
+replace only selected sensitive expert layers with FP8 blockwise weight-only
+(`FP8_PB_WO`) tensors from `zai-org/GLM-5.1-FP8`.
+
+Current candidates:
+
+| variant | FP8_PB_WO expert layers | W8 KLD | W42 KLD | model memory / rank | KV tokens |
+|---|---|---:|---:|---:|---:|
+| lower-memory | `51-62` | 0.049443 | 0.056918 | 45.30 GiB | 679872 |
+| middle | `45-47,51-62` | 0.044499 | 0.054121 | 46.77 GiB | 654080 |
+| middle+ | `42-47,51-62` | 0.043555 | 0.051939 | 48.25 GiB | 628224 |
+| quality target | `42-62` | 0.040911 | 0.049504 | 49.73 GiB | 602432 |
+
+For comparison, Luke NVFP4 W4A16 baseline was `0.065626` W8 and `0.068724`
+W42. The heavy `42-62` variant improves robust W42 KLD by about 28%, but costs
+about 4.43 GiB/rank more model memory than the `51-62` tradeoff.
+
+The serving code requirement is vLLM support for `modelopt` mixed precision
+MoE with `FP8_PB_WO` layer overrides. The original implementation commit was
+`61eac2779 Support ModelOpt mixed FP8_PB_WO MoE`; it was ported to the active
+canonical rebase branch as `166ea888a Support ModelOpt mixed FP8_PB_WO MoE`.
+
 ## Goal
 
 Find which GLM-5.1 MoE expert layers are most responsible for NVFP4 KLD loss
@@ -311,3 +341,260 @@ Recommended next steps:
 
 Do not spend more time on blind `input_scale` or `weight_scale_2` multipliers
 unless used as a short diagnostic. The measured gain is layer-precision driven.
+
+## Reproduction Map
+
+Use these locations to reconstruct the work:
+
+| artifact | path / repo | purpose |
+|---|---|---|
+| canonical vLLM git | `/root/vllm/src/vllm` | source for KLD runner and mixed `FP8_PB_WO` runtime support |
+| vLLM support commit | `166ea888a Support ModelOpt mixed FP8_PB_WO MoE` on `codex/glm51-kimi-canonical-rebase-test-20260514` | adds ModelOpt mixed MoE `FP8_PB_WO` loading/runtime |
+| mixed checkpoint builder | `models/glm5.1/tools/make_glm51_mixed_fp8pbwo_moe.py` | local materialized checkpoint builder |
+| HF streaming uploader | `/root/kld/upload_glm51_mixed_fp8pbwo_to_hf.py` | public HF uploader that chains server-side repo duplicates and uploads only changed shards |
+| KLD runner | `examples/offline_inference/score_mode_kld.py` in vLLM | two-phase reference-logit and KLD scoring runner |
+| KLD work dir | `/root/kld` | logs, reference logits, local variants |
+| FP8 reference logits W8 | `/root/kld/current_cf2070d_b12xc929144_fp8_ref_wikitext_ctx2048_s512_w8_b12xmlasparse` | reference logits for W8 KLD |
+| FP8 reference logits W42 | `/root/kld/current_cf2070d_b12xc929144_fp8_ref_wikitext_ctx2048_s512_w42_b12xmlasparse` | reference logits for W42 KLD |
+| BF16 reference logits W1 | `/root/kld/glm51_bf16_ref_vllm_wikitext_ctx2048_s512_w1_b12xmlasparse_20260516` | BF16 W1 screening reference |
+| oracle sweep results | `/root/kld/oracle_sweep_results.tsv` | BF16/BF16-direct layer sensitivity sweep index |
+| oracle sweep logs | `/root/kld/oracle_sweep_logs/` | per-run BF16 oracle logs |
+| quant-toolkit patch repo | `/root/quant-toolkit` | local export fixes for GLM gate/up FP4 scale tying |
+
+Source checkpoints used:
+
+| role | checkpoint |
+|---|---|
+| NVFP4 base | `/root/.cache/huggingface/hub/models--lukealonso--GLM-5.1-NVFP4/snapshots/18175c33fa74faa199b5d462e02d12b9d3399295` |
+| FP8 reference/source | `/root/.cache/huggingface/hub/models--zai-org--GLM-5.1-FP8/snapshots/a92f8155fe8574288534d41a6dbc1d72888ab2da` |
+| BF16 source | `/root/.cache/huggingface/hub/models--zai-org--GLM-5.1/snapshots/26e1bd6e011feb778d25ae34b09b07074139d92d` |
+
+## Exact KLD Method
+
+All robust KLD numbers in this document use the vLLM score-mode KLD runner with
+WikiText text, `context_length=2048`, `stride=512`, TP=8, eager mode, FP8 KV
+cache, B12X sparse MLA attention, and one sequence per batch. The window count
+is the number of sliding windows scored:
+
+| window count | positions | purpose |
+|---:|---:|---|
+| 1 | 2047 | quick smoke/screening |
+| 8 | 16376 | short robust check |
+| 42 | 85974 | robust comparison used for final candidates |
+
+Common runtime environment:
+
+```bash
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7,8
+export SAFETENSORS_FAST_GPU=1
+export B12X_MOE_FORCE_A16=1
+export MOE_BACKEND=b12x
+export ATTENTION_BACKEND=B12X_MLA_SPARSE
+export GLM51_PATTERN='FFSFSSSFSSFFFSSSFFFSFSSSSSSFFSFFSFFSSFFFFFFSFFFFFSFFSSSSSSFSFFFSFSSSFSFFSFFSSS'
+```
+
+Generate FP8 reference logits once:
+
+```bash
+cd /root/vllm/src/vllm
+python3 examples/offline_inference/score_mode_kld.py \
+  --reference-only \
+  --reference-model /root/.cache/huggingface/hub/models--zai-org--GLM-5.1-FP8/snapshots/a92f8155fe8574288534d41a6dbc1d72888ab2da \
+  --reference-logits /root/kld/current_cf2070d_b12xc929144_fp8_ref_wikitext_ctx2048_s512_w42_b12xmlasparse \
+  --dataset wikitext \
+  --dataset-config wikitext-2-raw-v1 \
+  --context-length 2048 \
+  --stride 512 \
+  --max-windows 42 \
+  --tensor-parallel-size 8 \
+  --gpu-memory-utilization 0.9 \
+  --cpu-offload-gb 16 \
+  --kv-cache-dtype fp8 \
+  --max-model-len 4096 \
+  --max-num-batched-tokens 2048 \
+  --max-num-seqs 1 \
+  --attention-backend B12X_MLA_SPARSE \
+  --hf-overrides "{\"index_topk_pattern\":\"${GLM51_PATTERN}\"}" \
+  --trust-remote-code \
+  --enforce-eager \
+  --disable-custom-all-reduce
+```
+
+Measure Luke NVFP4 W4A16 against saved FP8 reference logits:
+
+```bash
+cd /root/vllm/src/vllm
+python3 examples/offline_inference/score_mode_kld.py \
+  --model /root/.cache/huggingface/hub/models--lukealonso--GLM-5.1-NVFP4/snapshots/18175c33fa74faa199b5d462e02d12b9d3399295 \
+  --reference-logits /root/kld/current_cf2070d_b12xc929144_fp8_ref_wikitext_ctx2048_s512_w42_b12xmlasparse \
+  --dataset wikitext \
+  --dataset-config wikitext-2-raw-v1 \
+  --context-length 2048 \
+  --stride 512 \
+  --max-windows 42 \
+  --tensor-parallel-size 8 \
+  --gpu-memory-utilization 0.9 \
+  --cpu-offload-gb 16 \
+  --kv-cache-dtype fp8 \
+  --max-model-len 4096 \
+  --max-num-batched-tokens 2048 \
+  --max-num-seqs 1 \
+  --quantization modelopt_fp4 \
+  --moe-backend b12x \
+  --attention-backend B12X_MLA_SPARSE \
+  --hf-overrides "{\"index_topk_pattern\":\"${GLM51_PATTERN}\"}" \
+  --trust-remote-code \
+  --enforce-eager \
+  --disable-custom-all-reduce
+```
+
+Measure a mixed `FP8_PB_WO` variant:
+
+```bash
+cd /root/vllm/src/vllm
+python3 examples/offline_inference/score_mode_kld.py \
+  --model /root/kld/checkpoints/GLM-5.1-NVFP4-mixed-fp8pbwo-L42-62-20260517 \
+  --reference-logits /root/kld/current_cf2070d_b12xc929144_fp8_ref_wikitext_ctx2048_s512_w42_b12xmlasparse \
+  --dataset wikitext \
+  --dataset-config wikitext-2-raw-v1 \
+  --context-length 2048 \
+  --stride 512 \
+  --max-windows 42 \
+  --tensor-parallel-size 8 \
+  --gpu-memory-utilization 0.9 \
+  --cpu-offload-gb 16 \
+  --kv-cache-dtype fp8 \
+  --max-model-len 4096 \
+  --max-num-batched-tokens 2048 \
+  --max-num-seqs 1 \
+  --quantization modelopt_mixed \
+  --moe-backend b12x \
+  --attention-backend B12X_MLA_SPARSE \
+  --hf-overrides "{\"index_topk_pattern\":\"${GLM51_PATTERN}\"}" \
+  --trust-remote-code \
+  --enforce-eager \
+  --disable-custom-all-reduce
+```
+
+Notes:
+
+- `modelopt_fp4` is used for Luke's pure NVFP4 checkpoint.
+- `modelopt_mixed` is used for mixed NVFP4 plus `FP8_PB_WO`.
+- MTP is intentionally off for KLD. This isolates base model logits from draft
+  model behavior.
+- `--enforce-eager` was used to make the score-mode tests reproducible and to
+  avoid unrelated CUDA graph/capture effects during quality measurement.
+
+## Mixed FP8_PB_WO Checkpoint Build
+
+The local materialized builder is:
+
+`models/glm5.1/tools/make_glm51_mixed_fp8pbwo_moe.py`
+
+Example:
+
+```bash
+python3 /root/rtx6kpro/models/glm5.1/tools/make_glm51_mixed_fp8pbwo_moe.py \
+  --nvfp4-source /root/.cache/huggingface/hub/models--lukealonso--GLM-5.1-NVFP4/snapshots/18175c33fa74faa199b5d462e02d12b9d3399295 \
+  --fp8-source /root/.cache/huggingface/hub/models--zai-org--GLM-5.1-FP8/snapshots/a92f8155fe8574288534d41a6dbc1d72888ab2da \
+  --dest /root/kld/checkpoints/GLM-5.1-NVFP4-mixed-fp8pbwo-L42-62-20260517 \
+  --layers 42-62
+```
+
+What the builder does:
+
+- Symlinks unchanged non-safetensors metadata from Luke's NVFP4 base.
+- Rewrites every NVFP4 safetensors shard that contains selected expert tensors,
+  dropping only the selected expert keys.
+- Writes one new `model-mixed-fp8pbwo-layerXX.safetensors` file per selected
+  layer.
+- Converts FP8 source `weight_scale_inv` keys into ModelOpt `weight_scale`
+  keys for the mixed checkpoint.
+- Writes `config.json` with `quantization_config.quant_algo=MIXED_PRECISION`
+  and per-layer `quantized_layers` entries.
+- Writes a new `model.safetensors.index.json` so every tensor has exactly one
+  owner file.
+
+Do not only edit the index. The original NVFP4 keys must be physically removed
+from changed shards, because vLLM can iterate actual safetensors keys and would
+otherwise see duplicate tensor names.
+
+## Public HF Upload Procedure
+
+The upload is intentionally not a simple `upload_folder`, because unchanged
+base files are too large. The current uploader is:
+
+`/root/kld/upload_glm51_mixed_fp8pbwo_to_hf.py`
+
+It creates public repos by server-side duplicating the previous repo, then
+uploads only files that changed:
+
+1. `l51-62` duplicates `lukealonso/GLM-5.1-NVFP4`.
+2. `l45-47-l51-62` duplicates `l51-62` and adds layers `45-47`.
+3. `l42-47-l51-62` duplicates `l45-47-l51-62` and adds layers `42-44`.
+4. `l42-62` duplicates `l42-47-l51-62` and adds layers `48-50`.
+
+Run:
+
+```bash
+HF_HUB_DISABLE_PROGRESS_BARS=1 \
+HF_HUB_ENABLE_HF_TRANSFER=1 \
+python3 /root/kld/upload_glm51_mixed_fp8pbwo_to_hf.py
+```
+
+The script uses the cached Hugging Face token if `HF_TOKEN` is not set. It is
+restartable at file-commit granularity: already committed remote files are
+skipped, while metadata files are force-updated.
+
+Target public repos:
+
+| variant | repo |
+|---|---|
+| `51-62` | `festr2/glm51-nvfp4-w4a16-fp8pbwo-l51-62-20260517` |
+| `45-47,51-62` | `festr2/glm51-nvfp4-w4a16-fp8pbwo-l45-47-l51-62-20260517` |
+| `42-47,51-62` | `festr2/glm51-nvfp4-w4a16-fp8pbwo-l42-47-l51-62-20260517` |
+| `42-62` | `festr2/glm51-nvfp4-w4a16-fp8pbwo-l42-62-20260517` |
+
+## Source Code State
+
+vLLM:
+
+- Original mixed `FP8_PB_WO` support was implemented in
+  `/root/vllm/src/vllm` on branch
+  `codex/glm51-kimi-canonical-a16-upstream-20260511`.
+- The key commit is `61eac2779 Support ModelOpt mixed FP8_PB_WO MoE`.
+- This commit was cherry-picked onto the current canonical rebase branch as
+  `166ea888a Support ModelOpt mixed FP8_PB_WO MoE`.
+- Pushed branch:
+  `https://github.com/voipmonitor/vllm/commits/codex/glm51-kimi-canonical-rebase-test-20260514/`
+- Do not merge the whole old `codex/glm51-kimi-canonical-a16-upstream-20260511`
+  branch into the rebase branch. It diverges from the rebase branch and
+  contains older runtime state.
+
+quant-toolkit:
+
+- Local repo: `/root/quant-toolkit`
+- Pushed branch:
+  `https://github.com/local-inference-lab/quant-toolkit/tree/codex/glm51-nvfp4-export-fixes-20260517`
+- Relevant commits:
+  - `dd8ab31 Fix GLM streaming gate-up FP4 scale tying`
+  - `9f33cc9 Compute GLM gate-up amax before FP4 export`
+  - `dfbbc1c Avoid GPU amax recompute in GLM pre-export tie`
+- These commits fixed local export reproducibility, but did not produce a
+  better full-model NVFP4 checkpoint than Luke's current checkpoint on robust
+  W8/W42 tests.
+
+## Operational Recommendations
+
+- Use `51-62` first if KV capacity matters more than absolute KLD.
+- Use `45-47,51-62` or `42-47,51-62` as the practical quality middle ground.
+- Use `42-62` as the current best quality target when the extra model memory is
+  acceptable.
+- Keep W4A16 for NVFP4 serving (`B12X_MOE_FORCE_A16=1`) when evaluating these
+  checkpoints. W4A4 remains useful as a diagnostic baseline but is not the
+  quality target.
+- Do not treat FP8 reference logits as perfect BF16 truth. They are practical
+  enough for robust comparisons on these GPUs, but BF16 W1 was used as a
+  separate cross-check where possible.
+- If MXFP8 support becomes available in the runtime/export path, repeat the
+  same layer sets. Luke indicated MXFP8 should be more accurate than NVFP4.

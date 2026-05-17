@@ -181,23 +181,24 @@ Measured results:
 | FP8_PB_WO layer 51 only | BF16 | 1 | 0.050617 | 2047 | small but real gain |
 | FP8_PB_WO layers 45-47,51-62 | BF16 | 1 | 0.038153 | 2047 | strong screening result |
 | Luke NVFP4 W4A16 | FP8 | 8 | 0.065626 | 16376 | baseline |
+| FP8_PB_WO layers 51-62 | FP8 | 8 | 0.049443 | 16376 | cheaper tradeoff |
 | FP8_PB_WO layers 45-47,51-62 | FP8 | 8 | 0.044499 | 16376 | robust short validation |
 | Luke NVFP4 W4A16 | FP8 | 42 | 0.068724 | 85974 | baseline |
+| FP8_PB_WO layers 51-62 | FP8 | 42 | 0.056918 | 85974 | cheaper tradeoff |
 | FP8_PB_WO layers 45-47,51-62 | FP8 | 42 | 0.054121 | 85974 | robust validation |
 
-Runtime footprint for the 15-layer FP8_PB_WO checkpoint:
+Runtime footprint:
 
-- Disk size of local mixed checkpoint directory: about 150 GB because unchanged
-  NVFP4 shards are symlinked and only affected shards/layers are materialized.
-- vLLM reported checkpoint size: 492.99 GiB.
-- vLLM model memory per rank: 46.77 GiB.
-- Available KV cache: 37.44 GiB, 654080 tokens, about 159x concurrency at
-  4096 tokens/request.
+| selected FP8_PB_WO layers | local dir size | model memory / rank | KV cache tokens | max 4096-token concurrency |
+|---|---:|---:|---:|---:|
+| 51-62 | 118 GB | 45.30 GiB | 679872 | 165.98x |
+| 45-47,51-62 | 150 GB | 46.77 GiB | 654080 | 159.69x |
 
 Interpretation: this is the first production-shaped result that matches the
 BF16 oracle direction. The quality gap is primarily from selected expert weight
 precision. Full-model A16 activation handling alone is not the high-leverage
-fix.
+fix. The `51-62` candidate is the better memory/KV tradeoff, while adding
+`45-47` gives the best measured KLD so far.
 
 ## Best BF16 Oracle Results
 
@@ -283,7 +284,8 @@ Recommended next steps:
 4. Keep the current FP8_PB_WO `45-47,51-62` result as the first strong
    production-shaped candidate.
 5. Next quality/size tradeoff experiments should test smaller FP8_PB_WO sets:
-   `51-62`, `51-53,57-62`, and `45-47,51-53,57-62`.
+   `51-53,57-62` and `45-47,51-53,57-62`. The `51-62` tradeoff is already
+   measured above.
 6. If MXFP8 export/runtime support becomes available, repeat the same selected
    layer sets with MXFP8 and compare KLD and memory footprint.
 

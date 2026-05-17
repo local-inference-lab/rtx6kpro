@@ -555,6 +555,20 @@ Target public repos:
 | `42-47,51-62` | `festr2/glm51-nvfp4-w4a16-fp8pbwo-l42-47-l51-62-20260517` |
 | `42-62` | `festr2/glm51-nvfp4-w4a16-fp8pbwo-l42-62-20260517` |
 
+Upload verification on 2026-05-17:
+
+| variant | files | expected layer shards | missing layer shards | extra layer shards | config/index check |
+|---|---:|---:|---:|---:|---|
+| `51-62` | 105 | 12 | 0 | 0 | pass |
+| `45-47,51-62` | 108 | 15 | 0 | 0 | pass |
+| `42-47,51-62` | 111 | 18 | 0 | 0 | pass |
+| `42-62` | 114 | 21 | 0 | 0 | pass |
+
+The verification checked `config.json` for `MIXED_PRECISION`, checked every
+selected layer's `quantized_layers` entry for `FP8_PB_WO`, checked all other
+expert layers for `NVFP4`, and sampled expert `0` and `255` weight/scale index
+entries for every selected layer.
+
 ## Source Code State
 
 vLLM:

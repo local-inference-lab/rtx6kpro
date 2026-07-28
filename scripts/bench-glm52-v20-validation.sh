@@ -3,8 +3,8 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-export IMAGE='voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5'
-export EXPECTED_IMAGE_ID='sha256:178fe7439b3a83f6dc78259dc36bfbedfa9f85f1d79ef1b5551eb4940cf32e42'
+export IMAGE='voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r6'
+export EXPECTED_IMAGE_ID='sha256:d4bcd6185a368b1207a2c85290522ddabf9b6fa2eb5ca398b30b29addbec291d'
 export RESULT_ROOT="${RESULT_ROOT:-/root/bench-results/glm52-v20-validation-$(date -u +%Y%m%dT%H%M%SZ)}"
 export CACHE_A="${CACHE_A:-/root/.cache/vllm-glm52-release/slot-a}"
 export CACHE_B="${CACHE_B:-/root/.cache/vllm-glm52-release/slot-b}"

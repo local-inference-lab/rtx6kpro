@@ -18,7 +18,9 @@ measured DCP prefill topology:
   Compose leaves `GPUS` empty, allows 600 seconds for a cold probe, and
   terminates the complete probe process group if calibration times out;
 - the optional `glm52-exl3` profile builds the EXL3 extension from its pinned
-  public source and exposes the Trellis MoE path without a binary ABI shim.
+  public source and exposes the Trellis MoE path without a binary ABI shim;
+- r6 adds an opt-in, DCP-aware LMCache 0.5.2 prefix-offload path with RAM-only
+  and buffered-filesystem modes while leaving ordinary serving unchanged.
 
 Historical comparison data remains on [v18](glm5.2_v18.md), while the DCP
 optimization background remains on [v19](glm5.2_v19.md). This page is
@@ -34,13 +36,13 @@ stated GG and SparkInfer base commits.
 ## Release Image
 
 ```text
-voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
-Docker manifest: sha256:473e4c5a6a3795ee48a8f50493f9628f7c53f449d5a512f5cc04add77693044c
-Local image ID: sha256:178fe7439b3a83f6dc78259dc36bfbedfa9f85f1d79ef1b5551eb4940cf32e42
+voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r6
+Docker manifest: sha256:3000c2c917ba402ae7784a6549fb458722b0f689d715ca9e5f22d18e0fa9e1bd
+Local image ID: sha256:d4bcd6185a368b1207a2c85290522ddabf9b6fa2eb5ca398b30b29addbec291d
 ```
 
 This supersedes all earlier v20 candidates. The registry manifest is the exact
-24,930,661,390-byte local image used for the final helper and runtime-contract
+25,200,908,897-byte local image used for the final helper and runtime-contract
 gates below; there was no rebuild between those gates and push. Both source trees were
 composed from clean public bases plus exact public PR heads. The generated
 integration patches and lockfiles are public, immutable release artifacts;
@@ -61,13 +63,14 @@ Pinned source stack:
 | FlashInfer | `801d57a08958c13d375ddbb6be3be4808f48a708` |
 | CUTLASS C++ / DSL | `e6233cbac5d7c7a865c19c91cd684ceece19513c` / `4.6.0` |
 | InstantTensor | `85e7c5f5539d9c006ee0c26bc1b5233c65251b6b` |
+| LMCache | upstream `v0.5.2` @ `cd2c0d6a6a982ec5e334bae7704e1029c06d3c97`, wheel `0.5.2+glm52dcp.2` |
 | DeepGEMM | `a6b593d2826719dcf4892609af7b84ee23aaf32a` |
 | NCCL | local-inference `2.30.4` |
 | PyTorch / CUDA / loaded cuDNN | `2.12.0+cu132` / `13.2.1` / `9.20.0.48` |
 | CUDA system-base cuDNN packages | `9.22.0.52` |
-| Launcher source | `local-inference-lab/blackwell-llm-docker` @ `a2129e983b07fbfaa5b872a1a0b25a07c3f01876` |
-| Validated build execution | `local-inference-lab/blackwell-llm-docker` @ `f1abd5c3ab38832b52625be9fe112801906e51ca` |
-| Immutable reproduction recipe | `local-inference-lab/blackwell-llm-docker` @ `1e4d0c7e7981046f65926235f02824d795691e57` |
+| Launcher source | `local-inference-lab/blackwell-llm-docker` @ `467e41ac408ac0a37719ffdae0f7b1707f8939b5` |
+| Validated build-equivalent tree | `local-inference-lab/blackwell-llm-docker` @ `3382b26d13017112cc6c52753dddd1d0f1d07955` |
+| Immutable reproduction recipe | `local-inference-lab/blackwell-llm-docker` @ `fdca0230e5860cce0cef65a85de0737ab22f34bd` |
 
 The image uses no `VLLM_PATCH_URL`, private source overlay, or source bind
 mount. It does contain generated `VLLM_PATCH_FILE` and SparkInfer patch
@@ -78,7 +81,7 @@ cache fingerprint derived from the pinned sources.
 ## Build It Exactly
 
 The canonical build entry point is
-[`build-gilded-gnosis-v20-final-cu132.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/1e4d0c7e7981046f65926235f02824d795691e57/build-gilded-gnosis-v20-final-cu132.sh).
+[`build-gilded-gnosis-v20-final-cu132.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/fdca0230e5860cce0cef65a85de0737ab22f34bd/build-gilded-gnosis-v20-final-cu132.sh).
 The explicit reproduction mode uses archived, hash-verified locks and patches,
 then verifies that applying them to the pinned bases produces the exact trees
 above. It validates runtime symbols, helper contracts, and image labels before
@@ -87,16 +90,18 @@ allowing an optional push.
 ```bash
 git clone https://github.com/local-inference-lab/blackwell-llm-docker.git
 cd blackwell-llm-docker
-git checkout 1e4d0c7e7981046f65926235f02824d795691e57
-VLLM_RELEASE_COMPOSITION=reproduce-r5 \
+git checkout fdca0230e5860cce0cef65a85de0737ab22f34bd
+VLLM_RELEASE_COMPOSITION=reproduce-r6 \
   ./build-gilded-gnosis-v20-final-cu132.sh
 ```
 
 For a new release candidate, omit `VLLM_RELEASE_COMPOSITION`. The default
 always resolves the current clean GG and SparkInfer bases, composes the exact
 versioned PR manifests, and fails if either base or any PR head moves during
-the build. The review for this composer, archived r5 source artifacts, and
-their tests is [blackwell-llm-docker #7](https://github.com/local-inference-lab/blackwell-llm-docker/pull/7).
+the build. The clean composer and archived source artifacts are reviewed in
+[blackwell-llm-docker #7](https://github.com/local-inference-lab/blackwell-llm-docker/pull/7);
+the r6 LMCache build, helper, tests, and reproduction mode are reviewed in
+[blackwell-llm-docker #8](https://github.com/local-inference-lab/blackwell-llm-docker/pull/8).
 
 The build deliberately excludes the separate weight-lifetime experiments in
 vLLM PR #154, vLLM PR #157, and SparkInfer PR #62. It also excludes the
@@ -124,11 +129,13 @@ on top of those bases:
 | vLLM | [#190](https://github.com/local-inference-lab/vllm/pull/190) | Add the EXL3 rank-sliced MoE integration and prefill planner. |
 | SparkInfer | [#81](https://github.com/local-inference-lab/sparkinfer/pull/81) | Measure lossless collective/overlap crossovers and derive a cached serving policy. |
 | SparkInfer | [#49](https://github.com/local-inference-lab/sparkinfer/pull/49) | Add the planned Trellis execution path used by EXL3. |
+| LMCache | [local fork #1](https://github.com/local-inference-lab/LMCache/pull/1) | Add exact MLA+DCP object geometry, reader locking, physical block expansion, and chunked-store event lifetime to v0.5.2. |
 
 The release build itself does not merge canonical branches and does not consume
 a precomposed integration branch. It generates both build-time patches from
 the clean bases and manifests, verifies their result trees, and archives the
-exact r5 artifacts. SparkInfer #76 is closed and is not an additional release
+exact r5 compute-stack artifacts. r6 additionally builds the hash-pinned
+LMCache source diff above into a CUDA-enabled wheel. SparkInfer #76 is closed and is not an additional release
 delta: the resulting PCIe output-lifetime implementation matches the pinned
 master. There is no runtime source patching or source bind mount.
 
@@ -160,7 +167,7 @@ script. Docker with NVIDIA Container Toolkit, host IPC, and at least four
 Blackwell GPUs is required. Pull the immutable image first:
 
 ```bash
-docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
+docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r6
 ```
 
 Save the following as `compose.yml`. Bare environment entries pass a host
@@ -173,7 +180,7 @@ limit.
 ```yaml
 services:
   glm52:
-    image: voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
+    image: voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r6
     entrypoint: ["/usr/local/bin/serve-gilded-gnosis.sh"]
     network_mode: host
     ipc: host
@@ -232,6 +239,18 @@ services:
       - NF3_GRID188
       - LOAD_FORMAT
       - INSTANTTENSOR_BACKEND
+      - LMCACHE_MODE
+      - LMCACHE_L1_GB
+      - LMCACHE_L1_INIT_GB
+      - LMCACHE_L2_PATH
+      - LMCACHE_L2_GB
+      - LMCACHE_L2_WORKERS
+      - LMCACHE_CHUNK_SIZE
+      - LMCACHE_MAX_GPU_WORKERS
+      - LMCACHE_MAX_CPU_WORKERS
+      - LMCACHE_PORT
+      - LMCACHE_HTTP_PORT
+      - LMCACHE_PROMETHEUS_PORT
       - PYTORCH_CUDA_ALLOC_CONF
       - DRY_RUN
     volumes:
@@ -320,6 +339,16 @@ MODEL=/root/models/GLM-5.2-BF16-AMDMXFP4experts \
 MOE_MODE=a16 TP=8 DCP=4 MTP=0 MAX_NUM_SEQS=32 GRAPH=128 \
   MAX_BATCHED_TOKENS=8192 docker compose up -d
 
+# Add a 24 GiB host-RAM prefix cache. Ordinary GPU KV remains managed by vLLM.
+LMCACHE_MODE=ram LMCACHE_L1_GB=24 MOE_MODE=a16 TP=8 DCP=4 \
+  MTP=0 docker compose up -d
+
+# RAM front tier plus persistent buffered filesystem/NVMe tier. The default
+# path is already covered by the Compose /cache volume.
+LMCACHE_MODE=disk LMCACHE_L1_GB=8 LMCACHE_L2_GB=512 \
+  LMCACHE_L2_PATH=/cache/lmcache/8000 MOE_MODE=a16 TP=8 DCP=4 \
+  MTP=0 docker compose up -d
+
 # NF3 hybrid. MODEL_FAMILY selects its TP4/A16/NVFP4-KV defaults.
 MODEL_FAMILY=glm52-hybrid DCP=4 MTP=3 docker compose up -d
 
@@ -363,6 +392,11 @@ revision `8a1f4a13204acf2b7ac840375efaed64c231c522`.
 | `PCIE_DMA_MIN_BYTES` | `auto`, `off`, or an explicit byte/KiB/MiB threshold for lossless BF16 PCIe DMA dispatch. |
 | `DCP_QUERY_SPLIT_MIN_CONTEXT_TOKENS` | `auto` uses the measured crossover; an integer is an explicit minimum context. |
 | `DCP_CKV_GATHER_MAX_TOKENS` | `140000`; maximum pure-prefill size eligible for transient full-CKV gather. Raise explicitly for longer prefills, accepting the documented workspace cost. |
+| `LMCACHE_MODE` | `off`; `ram` enables host-RAM prefix offload and `disk` adds a buffered filesystem tier. Supported by the `glm52` and `glm52-hybrid` helpers, not DS4 or EXL3. |
+| `LMCACHE_L1_GB` / `LMCACHE_L1_INIT_GB` | RAM-cache maximum and initial allocation, both `24` GiB by default when LMCache is enabled. |
+| `LMCACHE_L2_PATH` / `LMCACHE_L2_GB` | Disk mode defaults to `/cache/lmcache/<PORT>` and `256` GiB. Keep `/cache` on persistent storage. |
+| `LMCACHE_CHUNK_SIZE` | Auto: `384` for DCP3/DCP6 and `512` otherwise. Override only with a value aligned to every effective cache block. |
+| `LMCACHE_MAX_GPU_WORKERS` | Defaults to `TP`; every TP rank is a GPU transfer client even when DCP is 1. |
 
 Advanced A/B controls are `DCP_QUERY_SPLIT`, `DCP_CKV_GATHER`,
 `DCP_TOPK_OWNER_MERGE`, `DCP_INDEXER_SHARDS`, `DCP_CKV_PREFETCH_DEPTH`,
@@ -389,6 +423,36 @@ reported 641,088 KV tokens, but the same 240k request OOMed when an unprofiled
 Inductor buffer requested another 64 MiB with only 66.38 MiB physically free.
 This is why successful startup and reported KV capacity alone are insufficient
 for selecting the serving memory budget.
+
+### LMCache Prefix Offload
+
+LMCache is opt-in. With `LMCACHE_MODE=off`, the helper executes the same model
+command as r5 and does not start an LMCache process or change allocator
+settings. `ram` starts one in-container LMCache MP server backed by host RAM.
+`disk` adds the native filesystem adapter with `use_odirect=false`, so reads can
+come from the Linux page cache when resident and from the underlying NVMe when
+not resident.
+
+The r6 patch is required because MLA+DCP does not have TP-only cache geometry.
+For example, TP8/DCP4 stores four sequence-shard objects, each consumed by two
+query-parallel ranks. The connector now carries that exact reader count,
+mirrors replicated and partially replicated KV groups, expands manager block
+IDs into physical kernel blocks where required, and retains every asynchronous
+chunk-store future and CUDA IPC event until completion. No FP8/I8 compression
+is applied to LMCache data by this feature.
+
+When enabled, the wrapper sets `PYTORCH_CUDA_ALLOC_CONF` to
+`expandable_segments:False`: LMCache registers KV storage by virtual address,
+and expandable segments are incompatible with that contract. Other allocator
+options are preserved. Recheck the desired long-context memory budget when
+enabling LMCache rather than assuming the ordinary-serving KV number is
+unchanged.
+
+Startup must print `LMCache ready` before vLLM begins loading. A repeated exact
+prompt reports the restored token count under
+`usage.prompt_tokens_details.cached_tokens`. For multiple services, give each
+one unique model, LMCache, HTTP, and Prometheus ports; services on standard
+ports `8000+N` derive non-conflicting defaults automatically.
 
 ### Checkpoint And Quantization Modes
 
@@ -825,6 +889,27 @@ no benchmark overlapped another model load. The 2026-07-27 gate adds MTP3 and
 batched correctness coverage for the final runtime-stride image. The retained
 2026-07-26 comparison immediately below it is MTP0.
 
+### Final 2026-07-28 r6 LMCache gates
+
+The clean pushed r6 image was started through the embedded helper on both GPU
+groups. DCP1 used GPUs 0-7 and DCP4 used GPUs 8-15; both servers were healthy
+before either client ran. Cold and hit responses were greedy and produced the
+same SHA-256 output hash.
+
+| Gate | Cold result | Cache-hit result |
+|---|---|---|
+| TP8/DCP1 RAM, 8,192-token prompt | `0` cached, `2.287 s` | `8,192` cached, `0.144 s` |
+| TP8/DCP4 RAM, 8,192-token prompt | `0` cached, `2.433 s` | `8,192` cached, `0.156 s` |
+| TP8/DCP1 buffered disk, cold restart | stored 12,800 tokens | restored all 12,800 tokens; identical output |
+| TP8/DCP4 buffered disk, cold restart | four DCP writers stored 12,800 tokens | restored all 12,800 tokens; identical output |
+
+Additional overlay-before-clean-image gates covered TP6/DCP3 and TP6/DCP6 at
+12,288 tokens with the 384-token chunk geometry. TP8/DCP1/MTP3 also passed
+4+4 and 8+8 concurrent cold/hit requests without malformed output. Build-time
+tests ran against the installed CUDA wheel, not an unbuilt source checkout.
+The vLLM and SparkInfer result trees are unchanged from r5, so the retained
+compute-performance tables below remain the relevant speed baseline.
+
 ### Final 2026-07-27 candidate
 
 | Gate | Configuration | Result |
@@ -1050,7 +1135,7 @@ resumable v18/v19 runner. Install the benchmark client at
 ```bash
 git clone https://github.com/local-inference-lab/rtx6kpro.git
 cd rtx6kpro
-docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
+docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r6
 
 # Complete 40-case historical-compatible campaign. Existing completed cases
 # under RESULT_ROOT are skipped only when both summary.json and complete exist.

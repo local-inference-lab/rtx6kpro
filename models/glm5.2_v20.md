@@ -32,15 +32,17 @@ stated GG and SparkInfer base commits.
 ## Release Image
 
 ```text
-voipmonitor/vllm:gilded-gnosis-v20-vllm0c79e41-sic3828fd-fi801d57a-cu132-20260727-r4
-Docker manifest: sha256:000d803130fe0e9ee45568835868c051ad9764a9c8650fec0e31885c8fc364bc
-Local image ID: sha256:6d42148768818bb5919ad7c960a18d13ba2e9508636c0d4f413d6aa2323e941f
+voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
+Docker manifest: sha256:006e293e9e16dbe4416f259b43132a29e1078c62b0956886eb12c3186bcb433b
+Local image ID: sha256:5913c05c5f8ce3053852a8d6b02607d70425bec9386a40c72b75710d0ee3c6bf
 ```
 
 This supersedes all earlier v20 candidates. The registry manifest is the exact
-24,834,261,803-byte local image used for the serialized release gates below;
-there was no rebuild between testing and push. The final source tree is a
-conflict-free merge of the public PR heads and contains no private patch.
+24,834,713,882-byte local image used for the serialized release gates below;
+there was no rebuild between testing and push. Both final source trees were
+composed from clean public bases plus exact public PR heads. The generated
+integration patches and lockfiles are public, immutable release artifacts;
+there is no private overlay or source bind mount.
 
 `si` identifies SparkInfer, the renamed B12X project. Legacy B12X environment
 variable names remain accepted for compatibility.
@@ -49,10 +51,10 @@ Pinned source stack:
 
 | Component | Ref / commit |
 |---|---|
-| Canonical GG base | `local-inference-lab/vllm dev/gilded-gnosis` @ `89b4a98d1ffebb2dda1e1ac5e55238e3a9cfbd58` |
-| vLLM release source | `voipmonitor/vllm build/gilded-gnosis-v20-pcie-auto-20260726` @ `0c79e41db41f250ccdfc4be92d171960a5787f73` |
-| SparkInfer base | `local-inference-lab/sparkinfer master` @ `f06881a22154e9573d0627b7b1d8b1014b351690` |
-| SparkInfer release source | `local-inference-lab/sparkinfer build/sparkinfer-v20-runtime-stride-20260727` @ `c3828fd7f807ce237a9ac36ef033659e6f6b6dd3` |
+| Canonical GG base | `local-inference-lab/vllm dev/gilded-gnosis` @ `4247d6765398fd42de3c108a8d991b2634fe88d1` |
+| Composed vLLM tree | `99287e8898587f536b5710e25d1b65229f1d6d78` |
+| SparkInfer base | `local-inference-lab/sparkinfer master` @ `f9be2724953a5b412d19c20482aeb0a64fbd5d2a` |
+| Composed SparkInfer tree | `4ecc87fbe51090b7932e3ba8fa06d9649296ba38` |
 | FlashInfer | `801d57a08958c13d375ddbb6be3be4808f48a708` |
 | CUTLASS C++ / DSL | `e6233cbac5d7c7a865c19c91cd684ceece19513c` / `4.6.0` |
 | InstantTensor | `85e7c5f5539d9c006ee0c26bc1b5233c65251b6b` |
@@ -60,29 +62,38 @@ Pinned source stack:
 | NCCL | local-inference `2.30.4` |
 | PyTorch / CUDA / loaded cuDNN | `2.12.0+cu132` / `13.2.1` / `9.20.0.48` |
 | CUDA system-base cuDNN packages | `9.22.0.52` |
-| Launcher source | `local-inference-lab/blackwell-llm-docker` @ `5a73c6790ba0aea041c1fe43144fcba28a606021` |
-| Build recipe | `local-inference-lab/blackwell-llm-docker` @ `a6211fa7992f2b4b7f1478e600e92c3d4ddbad4c` |
+| Launcher source | `local-inference-lab/blackwell-llm-docker` @ `211141bc7ccb27f4753bf86f78e6686e07c6faa4` |
+| Validated build execution | `local-inference-lab/blackwell-llm-docker` @ `078987c8dee97dabc7d18b3ad298b77322b7a6af` |
+| Immutable reproduction recipe | `local-inference-lab/blackwell-llm-docker` @ `1c5f885220b897096745f97c98ad35adaae96e44` |
 
-The image contains no `VLLM_PATCH_URL`, `VLLM_PATCH_FILE`, source bind mount,
-or private source overlay. Image labels expose every source pin and a cache
-fingerprint derived from the vLLM and SparkInfer commits.
+The image uses no `VLLM_PATCH_URL`, private source overlay, or source bind
+mount. It does contain generated `VLLM_PATCH_FILE` and SparkInfer patch
+artifacts derived solely from the public manifests. Image labels expose both
+base commits, every PR head, both result trees, patch and lock hashes, and a
+cache fingerprint derived from the pinned sources.
 
 ## Build It Exactly
 
 The canonical build entry point is
-[`build-gilded-gnosis-v20-final-cu132.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/a6211fa7992f2b4b7f1478e600e92c3d4ddbad4c/build-gilded-gnosis-v20-final-cu132.sh).
-It builds with the exact commits above, validates runtime symbols and source
-contracts, verifies the image labels, and only then allows an optional push.
+[`build-gilded-gnosis-v20-final-cu132.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/1c5f885220b897096745f97c98ad35adaae96e44/build-gilded-gnosis-v20-final-cu132.sh).
+The explicit reproduction mode uses archived, hash-verified locks and patches,
+then verifies that applying them to the pinned bases produces the exact trees
+above. It validates runtime symbols, helper contracts, and image labels before
+allowing an optional push.
 
 ```bash
 git clone https://github.com/local-inference-lab/blackwell-llm-docker.git
 cd blackwell-llm-docker
-git checkout a6211fa7992f2b4b7f1478e600e92c3d4ddbad4c
-PUSH_IMAGE=1 ./build-gilded-gnosis-v20-final-cu132.sh
+git checkout 1c5f885220b897096745f97c98ad35adaae96e44
+VLLM_RELEASE_COMPOSITION=reproduce-r5 \
+  ./build-gilded-gnosis-v20-final-cu132.sh
 ```
 
-The review for the build, embedded helper, calibrator, and their tests is
-[blackwell-llm-docker #6](https://github.com/local-inference-lab/blackwell-llm-docker/pull/6).
+For a new release candidate, omit `VLLM_RELEASE_COMPOSITION`. The default
+always resolves the current clean GG and SparkInfer bases, composes the exact
+versioned PR manifests, and fails if either base or any PR head moves during
+the build. The review for this composer, archived r5 source artifacts, and
+their tests is [blackwell-llm-docker #7](https://github.com/local-inference-lab/blackwell-llm-docker/pull/7).
 
 The build deliberately excludes the separate weight-lifetime experiments in
 vLLM PR #154, vLLM PR #157, and SparkInfer PR #62. It also excludes the
@@ -95,37 +106,32 @@ that selector policy was not part of this candidate or its validation.
 The cuBLAS/Xid correction is already in the pinned GG base through
 [vLLM PR #147](https://github.com/local-inference-lab/vllm/pull/147) and
 [SparkInfer PR #54](https://github.com/local-inference-lab/sparkinfer/pull/54).
-The release source adds these independently reviewable deltas:
+The pinned bases also already contain vLLM #177, #178, and #180 and
+SparkInfer #79 and #85. The clean r5 manifests apply only these exact PR heads
+on top of those bases:
 
 | Project | Review | Purpose |
 |---|---|---|
 | vLLM | [#145](https://github.com/local-inference-lab/vllm/pull/145) | Calibrated NVFP4 MLA KV outer-scale wiring. |
 | vLLM | [#172](https://github.com/local-inference-lab/vllm/pull/172) | Profile persistent kernel resources before allocating KV cache. |
 | vLLM | [#175](https://github.com/local-inference-lab/vllm/pull/175) | Split sparse prefill queries and reduce gathered result traffic. |
-| vLLM | [#177](https://github.com/local-inference-lab/vllm/pull/177) | Preallocate a bounded, memory-profiled CKV prefetch workspace. |
-| vLLM | [#178](https://github.com/local-inference-lab/vllm/pull/178) | Merge exact FP32 sparse top-k candidates by query-row owner. |
 | vLLM | [#179](https://github.com/local-inference-lab/vllm/pull/179) | Add partial replicated-indexer topology and mixed target/draft grouping. |
-| vLLM | [#180](https://github.com/local-inference-lab/vllm/pull/180) | Isolate the profiled MRV2 CUDA graph-pool lifecycle. |
 | vLLM | [#184](https://github.com/local-inference-lab/vllm/pull/184) | Dispatch lossless BF16 PCIe DMA above a measured byte crossover. |
 | vLLM | [#185](https://github.com/local-inference-lab/vllm/pull/185) | Gate DCP query split by a measured context crossover. |
-| SparkInfer | [#79](https://github.com/local-inference-lab/sparkinfer/pull/79) | Exchange exact FP32 DCP top-k candidates by owner without the generic staging path. |
 | SparkInfer | [#81](https://github.com/local-inference-lab/sparkinfer/pull/81) | Measure lossless collective/overlap crossovers and derive a cached serving policy. |
-| SparkInfer | [#85](https://github.com/local-inference-lab/sparkinfer/pull/85) | Pass the runtime page-table row stride to sparse-indexer kernels and use 64-bit offsets. |
 
-The release build itself does not merge canonical branches. Its exact
-integration branches contain only the GG/SparkInfer bases and the reviews
-listed above. SparkInfer #76 is closed and is not an additional release delta:
-the resulting PCIe output-lifetime implementation matches current master.
-There is no runtime patch file or source bind mount.
+The release build itself does not merge canonical branches and does not consume
+a precomposed integration branch. It generates both build-time patches from
+the clean bases and manifests, verifies their result trees, and archives the
+exact r5 artifacts. SparkInfer #76 is closed and is not an additional release
+delta: the resulting PCIe output-lifetime implementation matches the pinned
+master. There is no runtime source patching or source bind mount.
 
 ### Canonical Merge Status
 
 [Issue #33](https://github.com/local-inference-lab/rtx6kpro/issues/33) is the
-authoritative ordered merge checklist. As of 2026-07-27, all listed reviews are
-non-draft. vLLM #177, #178, and #180 plus SparkInfer #79 and #85 are already
-merged into their canonical bases; the remaining deltas stay independently
-reviewable. The image still pins the tested integration commits rather than
-moving source heads.
+authoritative ordered merge checklist. The image pins the exact base commits
+and additional PR heads above rather than following moving source refs.
 
 PR #145 is intentionally present in the image but is not requested for merge
 yet. The exact SparkInfer candidate-owner transport in
@@ -149,7 +155,7 @@ script. Docker with NVIDIA Container Toolkit, host IPC, and at least four
 Blackwell GPUs is required. Pull the immutable image first:
 
 ```bash
-docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm0c79e41-sic3828fd-fi801d57a-cu132-20260727-r4
+docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
 ```
 
 Save the following as `compose.yml`. Bare environment entries pass a host
@@ -162,7 +168,7 @@ limit.
 ```yaml
 services:
   glm52:
-    image: voipmonitor/vllm:gilded-gnosis-v20-vllm0c79e41-sic3828fd-fi801d57a-cu132-20260727-r4
+    image: voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
     entrypoint: ["/usr/local/bin/serve-gilded-gnosis.sh"]
     network_mode: host
     ipc: host
@@ -526,10 +532,11 @@ and `{3,7}` to adjacent physical pairs `(0,1)`, `(2,3)`, `(4,5)`, and `(6,7)`.
 Replacing it with natural rank order makes those same logical pairs cross root
 complexes and invalidates the calibration result.
 
-A cold probe may compile kernels. v20 `r4` therefore raises the default timeout
-from 180 to 600 seconds. If it still expires, the helper terminates the complete
-`torchrun` process group before falling back; probe workers cannot remain on the
-GPUs and contend with the vLLM NCCL initialization that follows.
+A cold probe may compile kernels. v20 r4 raised the default timeout from 180
+to 600 seconds, and r5 retains that behavior. If it still expires, the helper
+terminates the complete `torchrun` process group before falling back; probe
+workers cannot remain on the GPUs and contend with the vLLM NCCL initialization
+that follows.
 
 Audit an intentionally ordered placement without loading model weights:
 
@@ -796,6 +803,32 @@ Raw final artifacts are under:
 /root/bench-results/glm52-v20-release-auto-gate-20260727/
 ```
 
+### Clean r5 release gates
+
+The exact pushed r5 image was started through the embedded helper on GPUs
+0-7. Model loading and graph capture completed before any client started.
+
+| Gate | Configuration | Result |
+|---|---|---:|
+| Decode run 1 | Luke NVFP4, TP8/DCP1/MTP0, A16, seq=1, graph=6 | `87.909` aggregate / `88.580` active tok/s |
+| Decode run 2 | Luke NVFP4, TP8/DCP1/MTP0, A16, seq=1, graph=6 | `87.845` aggregate / `88.548` active tok/s |
+| MTP decode | Luke NVFP4, TP8/DCP1/MTP3, A16, online MXFP8, seq=32, graph=128 | `162.933` aggregate / `163.397` active tok/s; acceptance `63.793%` |
+
+The MTP3 service then ran a deterministic 195-token ASCII correctness oracle
+with thinking disabled. C1, C4, C6, C8, C16, and C32 produced respectively
+`2/2`, `12/12`, `18/18`, `24/24`, `16/16`, and `32/32` byte-identical
+responses, with one unique output and no HTTP errors at every concurrency.
+This directly covers the earlier failure mode where output diverged above four
+parallel requests.
+
+Reported KV capacity was 682,816 tokens for the seq=1 MTP0 gate and 641,792
+tokens for the seq=32 MTP3 gate at `GPU_MEMORY_UTILIZATION=0.96`. Raw release
+artifacts are under:
+
+```text
+/root/bench-results/glm52-v20-r5-clean-20260728/
+```
+
 ### Retained 2026-07-26 MTP0 gate
 
 | Gate | Configuration | Result |
@@ -943,7 +976,7 @@ resumable v18/v19 runner. Install the benchmark client at
 ```bash
 git clone https://github.com/local-inference-lab/rtx6kpro.git
 cd rtx6kpro
-docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm0c79e41-sic3828fd-fi801d57a-cu132-20260727-r4
+docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
 
 # Complete 40-case historical-compatible campaign. Existing completed cases
 # under RESULT_ROOT are skipped only when both summary.json and complete exist.
@@ -999,6 +1032,7 @@ backend markers needed to audit an outlier.
 The final validation artifacts on the release host are under:
 
 ```text
+/root/bench-results/glm52-v20-r5-clean-20260728
 /root/bench-results/glm52-v20-final-20260726/final-vllm0c79e41-sie603f74
 /root/bench-results/glm52-v20-dcp8-query-owner-matrix-20260727
 /root/bench-results/glm52-v20-release-auto-gate-20260727

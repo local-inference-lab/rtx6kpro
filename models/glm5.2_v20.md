@@ -16,7 +16,9 @@ measured DCP prefill topology:
   that the development host's overlap policy is portable;
 - the launcher preserves an intentional `CUDA_VISIBLE_DEVICES` order when
   Compose leaves `GPUS` empty, allows 600 seconds for a cold probe, and
-  terminates the complete probe process group if calibration times out.
+  terminates the complete probe process group if calibration times out;
+- the optional `glm52-exl3` profile builds the EXL3 extension from its pinned
+  public source and exposes the Trellis MoE path without a binary ABI shim.
 
 Historical comparison data remains on [v18](glm5.2_v18.md), while the DCP
 optimization background remains on [v19](glm5.2_v19.md). This page is
@@ -32,14 +34,14 @@ stated GG and SparkInfer base commits.
 ## Release Image
 
 ```text
-voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
-Docker manifest: sha256:006e293e9e16dbe4416f259b43132a29e1078c62b0956886eb12c3186bcb433b
-Local image ID: sha256:5913c05c5f8ce3053852a8d6b02607d70425bec9386a40c72b75710d0ee3c6bf
+voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
+Docker manifest: sha256:473e4c5a6a3795ee48a8f50493f9628f7c53f449d5a512f5cc04add77693044c
+Local image ID: sha256:178fe7439b3a83f6dc78259dc36bfbedfa9f85f1d79ef1b5551eb4940cf32e42
 ```
 
 This supersedes all earlier v20 candidates. The registry manifest is the exact
-24,834,713,882-byte local image used for the serialized release gates below;
-there was no rebuild between testing and push. Both final source trees were
+24,930,661,390-byte local image used for the final helper and runtime-contract
+gates below; there was no rebuild between those gates and push. Both source trees were
 composed from clean public bases plus exact public PR heads. The generated
 integration patches and lockfiles are public, immutable release artifacts;
 there is no private overlay or source bind mount.
@@ -52,9 +54,10 @@ Pinned source stack:
 | Component | Ref / commit |
 |---|---|
 | Canonical GG base | `local-inference-lab/vllm dev/gilded-gnosis` @ `4247d6765398fd42de3c108a8d991b2634fe88d1` |
-| Composed vLLM tree | `99287e8898587f536b5710e25d1b65229f1d6d78` |
+| Composed vLLM tree | `936ed4829ed6b6a34b9052a7a2614333ee3b2623` |
 | SparkInfer base | `local-inference-lab/sparkinfer master` @ `f9be2724953a5b412d19c20482aeb0a64fbd5d2a` |
-| Composed SparkInfer tree | `4ecc87fbe51090b7932e3ba8fa06d9649296ba38` |
+| Composed SparkInfer tree | `f532ec965a70b710ba45e6f751fe5d7135001108` |
+| EXL3 extension | `brandonmmusic-max/exllamav3 a1-retile-sm120` @ `704aefd743b390af4bd0fb429d1906f9b964c7d8` |
 | FlashInfer | `801d57a08958c13d375ddbb6be3be4808f48a708` |
 | CUTLASS C++ / DSL | `e6233cbac5d7c7a865c19c91cd684ceece19513c` / `4.6.0` |
 | InstantTensor | `85e7c5f5539d9c006ee0c26bc1b5233c65251b6b` |
@@ -62,9 +65,9 @@ Pinned source stack:
 | NCCL | local-inference `2.30.4` |
 | PyTorch / CUDA / loaded cuDNN | `2.12.0+cu132` / `13.2.1` / `9.20.0.48` |
 | CUDA system-base cuDNN packages | `9.22.0.52` |
-| Launcher source | `local-inference-lab/blackwell-llm-docker` @ `211141bc7ccb27f4753bf86f78e6686e07c6faa4` |
-| Validated build execution | `local-inference-lab/blackwell-llm-docker` @ `078987c8dee97dabc7d18b3ad298b77322b7a6af` |
-| Immutable reproduction recipe | `local-inference-lab/blackwell-llm-docker` @ `1c5f885220b897096745f97c98ad35adaae96e44` |
+| Launcher source | `local-inference-lab/blackwell-llm-docker` @ `a2129e983b07fbfaa5b872a1a0b25a07c3f01876` |
+| Validated build execution | `local-inference-lab/blackwell-llm-docker` @ `f1abd5c3ab38832b52625be9fe112801906e51ca` |
+| Immutable reproduction recipe | `local-inference-lab/blackwell-llm-docker` @ `1e4d0c7e7981046f65926235f02824d795691e57` |
 
 The image uses no `VLLM_PATCH_URL`, private source overlay, or source bind
 mount. It does contain generated `VLLM_PATCH_FILE` and SparkInfer patch
@@ -75,7 +78,7 @@ cache fingerprint derived from the pinned sources.
 ## Build It Exactly
 
 The canonical build entry point is
-[`build-gilded-gnosis-v20-final-cu132.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/1c5f885220b897096745f97c98ad35adaae96e44/build-gilded-gnosis-v20-final-cu132.sh).
+[`build-gilded-gnosis-v20-final-cu132.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/1e4d0c7e7981046f65926235f02824d795691e57/build-gilded-gnosis-v20-final-cu132.sh).
 The explicit reproduction mode uses archived, hash-verified locks and patches,
 then verifies that applying them to the pinned bases produces the exact trees
 above. It validates runtime symbols, helper contracts, and image labels before
@@ -84,7 +87,7 @@ allowing an optional push.
 ```bash
 git clone https://github.com/local-inference-lab/blackwell-llm-docker.git
 cd blackwell-llm-docker
-git checkout 1c5f885220b897096745f97c98ad35adaae96e44
+git checkout 1e4d0c7e7981046f65926235f02824d795691e57
 VLLM_RELEASE_COMPOSITION=reproduce-r5 \
   ./build-gilded-gnosis-v20-final-cu132.sh
 ```
@@ -118,7 +121,9 @@ on top of those bases:
 | vLLM | [#179](https://github.com/local-inference-lab/vllm/pull/179) | Add partial replicated-indexer topology and mixed target/draft grouping. |
 | vLLM | [#184](https://github.com/local-inference-lab/vllm/pull/184) | Dispatch lossless BF16 PCIe DMA above a measured byte crossover. |
 | vLLM | [#185](https://github.com/local-inference-lab/vllm/pull/185) | Gate DCP query split by a measured context crossover. |
+| vLLM | [#190](https://github.com/local-inference-lab/vllm/pull/190) | Add the EXL3 rank-sliced MoE integration and prefill planner. |
 | SparkInfer | [#81](https://github.com/local-inference-lab/sparkinfer/pull/81) | Measure lossless collective/overlap crossovers and derive a cached serving policy. |
+| SparkInfer | [#49](https://github.com/local-inference-lab/sparkinfer/pull/49) | Add the planned Trellis execution path used by EXL3. |
 
 The release build itself does not merge canonical branches and does not consume
 a precomposed integration branch. It generates both build-time patches from
@@ -155,7 +160,7 @@ script. Docker with NVIDIA Container Toolkit, host IPC, and at least four
 Blackwell GPUs is required. Pull the immutable image first:
 
 ```bash
-docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
+docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
 ```
 
 Save the following as `compose.yml`. Bare environment entries pass a host
@@ -168,7 +173,7 @@ limit.
 ```yaml
 services:
   glm52:
-    image: voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
+    image: voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
     entrypoint: ["/usr/local/bin/serve-gilded-gnosis.sh"]
     network_mode: host
     ipc: host
@@ -317,6 +322,10 @@ MOE_MODE=a16 TP=8 DCP=4 MTP=0 MAX_NUM_SEQS=32 GRAPH=128 \
 
 # NF3 hybrid. MODEL_FAMILY selects its TP4/A16/NVFP4-KV defaults.
 MODEL_FAMILY=glm52-hybrid DCP=4 MTP=3 docker compose up -d
+
+# Community EXL3 profile. The helper pins its tested checkpoint revision and
+# TP4/DCP4 defaults; full model performance validation remains community-run.
+MODEL_FAMILY=glm52-exl3 docker compose up -d
 ```
 
 For a local checkpoint, `MODEL` must use its in-container path below
@@ -328,13 +337,13 @@ revision `8a1f4a13204acf2b7ac840375efaed64c231c522`.
 
 | Variable | Default and meaning |
 |---|---|
-| `MODEL_FAMILY` | `glm52`; use `glm52-hybrid` for the TP4 NF3 preset. The unified image also accepts `ds4`. |
-| `MODEL` | Luke NVFP4 for `glm52`; the madeby561 NF3 checkpoint for `glm52-hybrid`; local paths are supported. |
+| `MODEL_FAMILY` | `glm52`; use `glm52-hybrid` for TP4 NF3 or `glm52-exl3` for the source-built EXL3/Trellis profile. The unified image also accepts `ds4`. |
+| `MODEL` | Luke NVFP4 for `glm52`; the madeby561 NF3 checkpoint for `glm52-hybrid`; the pinned Brandon EXL3 checkpoint for `glm52-exl3`; local paths are supported. |
 | `MODEL_REVISION` | Immutable tested Hugging Face revision. Set the correct revision when changing a remote `MODEL`. |
 | `SERVED_MODEL_NAME` | API model name; defaults to the selected checkpoint preset. |
-| `GPUS` | Ordered physical GPU list. Resolution is explicit `GPUS`, then existing `CUDA_VISIBLE_DEVICES`, then the preset default. Standard default is `0,1,2,3,4,5,6,7`; NF3 default is `0,1,2,3`. |
+| `GPUS` | Ordered physical GPU list. Resolution is explicit `GPUS`, then existing `CUDA_VISIBLE_DEVICES`, then the preset default. Standard default is `0,1,2,3,4,5,6,7`; NF3 and EXL3 default to `0,1,2,3`. |
 | `PORT` | `8000`. Host networking exposes it directly. |
-| `TP` | Standard `8`, virtual-sharded `6`, or NF3 `4`. |
+| `TP` | Standard `8`, virtual-sharded `6`, or NF3/EXL3 `4`. |
 | `DCP` | Decode context parallel size. `1` disables DCP communication; validated values are topology-dependent. |
 | `MTP` | `0` disables speculation. `3` is the principal validated speculative mode; the helper accepts an integer token count. |
 | `MAX_NUM_SEQS` | Standard `64`; scheduler concurrency and the input to automatic graph sizing. |
@@ -353,6 +362,7 @@ revision `8a1f4a13204acf2b7ac840375efaed64c231c522`.
 | `PCIE_CALIBRATION_CACHE_DIR` | Defaults below the active fingerprinted XDG cache, normally `/cache/jit/<fingerprint>/pcie-calibration`. |
 | `PCIE_DMA_MIN_BYTES` | `auto`, `off`, or an explicit byte/KiB/MiB threshold for lossless BF16 PCIe DMA dispatch. |
 | `DCP_QUERY_SPLIT_MIN_CONTEXT_TOKENS` | `auto` uses the measured crossover; an integer is an explicit minimum context. |
+| `DCP_CKV_GATHER_MAX_TOKENS` | `140000`; maximum pure-prefill size eligible for transient full-CKV gather. Raise explicitly for longer prefills, accepting the documented workspace cost. |
 
 Advanced A/B controls are `DCP_QUERY_SPLIT`, `DCP_CKV_GATHER`,
 `DCP_TOPK_OWNER_MERGE`, `DCP_INDEXER_SHARDS`, `DCP_CKV_PREFETCH_DEPTH`,
@@ -387,6 +397,7 @@ for selecting the serving memory budget.
 | `lukealonso/GLM-5.2-NVFP4` | `modelopt_fp4` | `a4` or `a16` | `none` or `mxfp8` |
 | `festr2/GLM-5.2-BF16-AMDMXFP4experts` | `mxfp4` | `force-a8-experimental` | `none`, `mxfp8`, or `fp8` |
 | `madeby561/GLM-5.2-MXFP8-NVFP4-NF3-Hybrid` | `nvfp4_nf3_hybrid` | `a16` | `nf3-mxfp8` |
+| `brandonmusic/GLM-5.2-EXL3-TR3-3.0bpw` | `exl3` | `a16` / Trellis | none |
 
 For Luke NVFP4, A4 and A16 select the routed-expert activation path; they do
 not rewrite the NVFP4 checkpoint weights. A16 uses BF16 expert activations and
@@ -417,6 +428,8 @@ DCP_QUERY_SPLIT  -> VLLM_DCP_QUERY_SPLIT
 DCP_QUERY_SPLIT_MIN_CONTEXT_TOKENS
                  -> VLLM_DCP_QUERY_SPLIT_MIN_CONTEXT_TOKENS
 DCP_CKV_GATHER   -> VLLM_B12X_MLA_CKV_GATHER
+DCP_CKV_GATHER_MAX_TOKENS
+                 -> VLLM_B12X_MLA_CKV_GATHER_MAX_TOKENS
 DCP_TOPK_OWNER_MERGE -> VLLM_DCP_TOPK_OWNER_MERGE
 DCP_INDEXER_SHARDS   -> VLLM_DCP_INDEXER_SHARDS
 DCP_CKV_PREFETCH_DEPTH -> VLLM_B12X_MLA_CKV_PREFETCH_DEPTH
@@ -442,6 +455,47 @@ integers. The static eligibility mapping is:
 `2` creates a measured partial `2x2` topology; at TP8/DCP8, `4` creates `2x4`.
 The CKV cache remains sharded by the full DCP size. The query-split flag at
 DCP1 does not create inter-rank DCP traffic.
+
+#### Full-CKV gather capacity
+
+Full-CKV gather is a pure-prefill optimization. It gathers each layer's
+compressed CKV once so every DCP rank can run its local attention heads over
+the complete context. It replaces the more communication-heavy fallback chain
+for that prefill. It does not affect DCP1, decode, mixed prefill/decode batches,
+CUDA graph capture, or virtual TP6. The validated automatic geometries are
+TP4/DCP2,4 and TP8/DCP2,4,8.
+
+The source default is 524,288 tokens. An older external EXL3 recipe overrode
+it to 16,384, which silently forced 64k and 128k prefills onto the fallback.
+The release helper now sets and prints an explicit balanced default of 140,000:
+large enough for the published 8k/64k/128k matrix while reserving much less
+workspace than the source default. This preserves the historical correctly
+configured v20 throughput; it is not a new 40-90% gain over that baseline.
+
+Matched TP8/MTP0/A4/FP8-KV A/B runs on the r5 source stack demonstrate the
+regression prevented by the explicit policy. Values are client prefill tok/s:
+
+| DCP | Capacity | 8k | 64k | 128k | Global KV budget |
+|---:|---:|---:|---:|---:|---:|
+| 2 | 16,384 | 5,874 | 5,275 | 5,182 | 1,250,176 |
+| 2 | 140,000 | 5,878 | 5,828 | 5,561 | 1,245,696 |
+| 4 | 16,384 | 5,884 | 4,045 | 4,170 | 2,377,984 |
+| 4 | 140,000 | 5,875 | 5,891 | 5,654 | 2,370,816 |
+| 8 | 16,384 | 5,607 | 3,066 | 2,877 | 4,699,136 |
+| 8 | 140,000 | 5,614 | 5,644 | 5,463 | 4,686,336 |
+
+The 16,384 rows are deliberately forced negative controls, not the historical
+v20 baseline. Correctly configured TP8/DCP4 had already measured about
+5.6-5.85k tok/s before r5; the explicit 140k helper default prevents an old
+external override from silently losing that established fast path.
+
+At prefetch depth 0 and one execution lane, the 140k FP8-KV workspace is
+approximately 131.4 MiB/GPU for DCP2, 109.5 MiB for DCP4, and 98.7 MiB for
+DCP8. MTP and CKV prefetch may require additional lanes, so the startup log is
+the authoritative reservation. To retain full gather for a 400k campaign,
+set `DCP_CKV_GATHER_MAX_TOKENS` above that exact prompt size and re-check the
+reported KV budget. Setting only the low-level `VLLM_*` alias is also accepted,
+but the helper-facing name is preferred.
 
 #### Lossless calibration
 
@@ -671,7 +725,7 @@ indistinguishable from ignoring none: the mean changes by only `-0.0000312`
 (`-0.05%`, `p` approximately `0.97`) while consuming about `1.22 GiB/GPU`.
 Therefore the current helper source no longer excludes `kv_b_proj` by default.
 The corrected launcher is
-[`serve-glm52-v16.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/2993b2c02f4f00d562451105de740130d90da4a0/launchers/serve-glm52-v16.sh).
+[`serve-glm52-v19.sh`](https://github.com/local-inference-lab/blackwell-llm-docker/blob/a2129e983b07fbfaa5b872a1a0b25a07c3f01876/launchers/serve-glm52-v19.sh).
 
 Keeping only the fused q/kv-a pair in BF16 is an optional quality experiment.
 Its aggregate mean was 1.87% lower than the old `kv_b_proj`-only preset;
@@ -805,8 +859,28 @@ Raw final artifacts are under:
 
 ### Clean r5 release gates
 
-The exact pushed r5 image was started through the embedded helper on GPUs
-0-7. Model loading and graph capture completed before any client started.
+The broad concurrency gates below were run through the embedded helper on the
+immediately preceding clean r5 candidate. Model loading and graph capture
+completed before any client started. The final image adds the isolated EXL3
+integration and explicit 140k full-CKV policy; its standard GLM path is gated
+separately below rather than silently attributing the older measurements to a
+different image ID.
+
+The exact pushed digest was then started on GPUs 8-15, the slightly slower GPU
+group on this host. Both DCP1 runs completed without request errors, and the
+DCP4 log confirmed query split, partial `2x2` indexer replication, owner merge,
+native CKV prefetch depth 1, and transient full-CKV gather at the printed 140k
+capacity.
+
+| Final-image gate | Result |
+|---|---:|
+| TP8/DCP1/MTP0 A16 decode, run 1 | `86.656` aggregate / `87.352` active tok/s |
+| TP8/DCP1/MTP0 A16 decode, run 2 | `86.553` aggregate / `87.268` active tok/s |
+| TP8/DCP4/MTP0 A16 exact 64k prefill | `5,685 tok/s`; `11.528 s` TTFT |
+| Reported global KV budget | DCP1 `682,816`; DCP4 `2,379,520` tokens |
+
+These values validate the final image on that GPU group; use the retained
+GPU0-7 tables below for like-for-like historical performance comparisons.
 
 | Gate | Configuration | Result |
 |---|---|---:|
@@ -976,7 +1050,7 @@ resumable v18/v19 runner. Install the benchmark client at
 ```bash
 git clone https://github.com/local-inference-lab/rtx6kpro.git
 cd rtx6kpro
-docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm99287e8-si4ecc87f-fi801d57a-cu132-20260728-r5
+docker pull voipmonitor/vllm:gilded-gnosis-v20-vllm936ed48-sif532ec9-fi801d57a-cu132-20260728-r5
 
 # Complete 40-case historical-compatible campaign. Existing completed cases
 # under RESULT_ROOT are skipped only when both summary.json and complete exist.

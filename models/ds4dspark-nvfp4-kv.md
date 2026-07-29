@@ -128,7 +128,7 @@ Same build, same config, fp8 vs nvfp4 A/B (TP2, DSpark, cudagraphs, util 0.96,
 | DSpark acceptance | 3.55 / 4 | 3.67 / 4 |
 
 Decode gain tracks the KV byte reduction — sparse-MLA decode gathers are
-bandwidth-bound, and nvfp4 moves 1.6× fewer KV bytes.
+bandwidth-bound, and nvfp4 moves 1.47× fewer KV bytes.
 
 ## Quality
 

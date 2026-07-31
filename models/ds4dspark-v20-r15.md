@@ -120,6 +120,124 @@ activations, 0.70 GiB for non-Torch allocations, and 0.18 GiB for captured
 graphs. At GMU 0.975, 7.59 GiB of KV cache was provisioned within an 8.34 GiB
 target budget, so the 131,072-token launch completed without a memory override.
 
+## Workstation-1 TP4 Production Validation
+
+The four-GPU workstation deployment was validated separately from the TP2
+release canary. It uses the same pinned r15 image and 0731 model revision, with
+the following overrides to the published Compose file:
+
+```bash
+NAME=d4f-r15-tp4 \
+GPUS=0,1,2,3 \
+MODE=dspark \
+BACKEND=b12x-a8 \
+TP_SIZE=4 \
+DCP_SIZE=1 \
+DSPARK_DEPTH_MODE=fixed \
+DSPARK_TOKENS=7 \
+MAX_NUM_SEQS=64 \
+MAX_MODEL_LEN=262144 \
+MAX_NUM_BATCHED_TOKENS=8192 \
+GPU_MEMORY_UTILIZATION=0.975 \
+docker compose -f examples/docker-compose-ds4-v20-r15.yml up -d
+```
+
+The launcher default is probabilistic draft sampling with standard rejection.
+That default was retained after a direct comparison with the model-card greedy
+draft setting. The resulting engine uses TP4, DCP1, native DSpark K7, B12X
+sparse MLA, B12X MoE and linear kernels, FP8 KV cache, chunked prefill, prefix
+caching, and asynchronous scheduling.
+
+The server exposed 1,525,313 logical KV-cache tokens. That is enough for 5.82
+simultaneous requests at the full served length of 262,144 tokens; capacity is
+large but not unlimited. CUDA graph profiling reported that GMU 0.975 is
+equivalent to 0.9518 under the earlier accounting. The suggested 0.9982 target
+was not adopted because the existing setting was stable and left a deliberate
+memory margin.
+
+### Sampling And Accuracy
+
+The final model card recommends `temperature=1.0`, with `top_p=1.0` for general
+requests and `top_p=0.95` for agentic scenarios. The accuracy reruns below use
+`temperature=1.0`, `top_p=1.0`, fixed concurrency, and
+`llm-inference-bench` v0.4.29.
+
+| Benchmark | Earlier temperature-0 result | Recommended sampling | Change |
+|---|---:|---:|---:|
+| Estonia | 28/30 (93.33%), C8 | 29/30 (96.67%), C30 | +3.33 points |
+| GPQA Diamond | 174/198 (87.88%), C64 | 180/198 (90.91%), C64 | +3.03 points |
+| MMLU-Pro | 870/1000 (87.00%), C64 | 865/1000 (86.50%), C64 | -0.50 points |
+
+The GPQA paired comparison had 5 baseline-only and 11 candidate-only correct
+answers (`p=0.2101`). MMLU-Pro had 28 baseline-only and 23 candidate-only
+correct answers (`p=0.57585`). Neither change was statistically significant in
+these runs. The recommended-sampling GPQA and MMLU-Pro runs had no errors, no
+token-cap hits, and no truncated no-answer responses. Their mean output lengths
+fell from 8,874 to 6,351 tokens and from 3,156 to 1,719 tokens, respectively.
+
+Estonia at C30 produced 29/30 correct answers with no errors, truncations, or
+40,000-token cap hits. Mean completion length was 2,318 tokens, maximum length
+was 6,990, and aggregate generation was 59.4 tok/s.
+
+### Prefill And Decode Envelope
+
+Standalone prefill used the same live server and the benchmark's server-side
+prompt-token metric:
+
+| Prompt | Time to first token (TTFT) | Server prefill |
+|---:|---:|---:|
+| 8K | 0.676 s | 12,569 tok/s |
+| 16K | 1.358 s | 12,353 tok/s |
+| 32K | 2.685 s | 12,390 tok/s |
+| 64K | 5.383 s | 12,316 tok/s |
+| 128K | 11.667 s | 11,336 tok/s |
+
+The sustained decode sweep used 30-second cells, `max_tokens=8192`, ignored EOS
+to hold steady-state load, and manually supplied the logical KV budget. Cells
+that could not fit in KV cache were skipped rather than reported as failed or
+zero-throughput measurements.
+
+| Context | Best valid concurrency | Aggregate decode |
+|---:|---:|---:|
+| 0 | 64 | 2,125.8 tok/s |
+| 16K | 32 | 1,470.7 tok/s |
+| 32K | 32 | 1,435.5 tok/s |
+| 64K | 16 | 887.9 tok/s |
+| 128K | 8 | 582.6 tok/s |
+
+Across the full prefill/decode characterization, GPU utilization averaged
+90.7% and reached 100%. Aggregate GPU power averaged 751 W and peaked at 1,091
+W against a combined 1,100 W limit. The saturated four-GPU cells drew roughly
+214-228 W per GPU, showing that lower-power observations were workload and
+concurrency effects rather than a stopped or unhealthy engine.
+
+### Greedy Draft A/B
+
+The model card's greedy DSpark draft method was also run with standard rejection
+and otherwise identical serving settings. It retained the Estonia score at
+29/30, but mean completion length rose to 2,925 tokens, aggregate generation
+fell to 54.6 tok/s, and one wrong response wandered to 16,413 tokens.
+
+Greedy drafting lost 17.2% at C1 and 7.8% at C64 in the zero-context synthetic
+decode test. It improved the 128K C4 and C8 cells by 22.8% and 9.0%,
+respectively. Probabilistic drafting is therefore the validated general-purpose
+default for this TP4 Peripheral Component Interconnect Express (PCIe)
+workstation; greedy remains a useful workload-specific candidate for sustained
+high-context concurrency.
+
+### Known Follow-Ups
+
+- The engine warns that K7 plus MNS64 leaves 7,808 scheduled target tokens from
+  `MAX_NUM_BATCHED_TOKENS=8192`. A 16,384-token scheduler budget is a reasonable
+  future A/B, but is not part of this validated configuration.
+- The r15 tokenizer applies an effort prefix only for `reasoning_effort=max`;
+  `high` tokenizes like the default/low setting. Its max prefix also predates the
+  final 0731 card's revised high/max wording. Exact card-compatible agentic
+  maximum effort requires a tokenizer update or explicit prompt injection.
+- The current 262,144-token server limit cannot provide the model card's
+  recommended 384K output allowance for high/max reasoning. Raise the served
+  context only after a separate KV-capacity and startup validation.
+
 ## v10 Regression Check
 
 A direct 0731 K7 versus v10 K5 comparison mixes a new checkpoint with a new

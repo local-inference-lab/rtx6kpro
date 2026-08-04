@@ -748,6 +748,29 @@ rename; an incomplete or invalid entry is ignored and rebuilt. The Compose
 `JIT_CACHE` volume mounts `/cache`, so reuse that same host directory to avoid
 re-encoding approximately 11.90 GB of artifacts on each cold start.
 
+**Direct `vllm serve` launches (helper bypassed):** `ONLINE_QUANT` is read
+only by the embedded helper; vLLM itself never reads it, so setting
+`ONLINE_QUANT=exl3-b6` as a plain environment variable in a Compose file
+whose entrypoint execs `vllm serve` directly is inert. Several community
+reference composes currently carry it that way. For a direct launch the
+activation contract is:
+
+```bash
+VLLM_EXL3_ONLINE_TRELLIS_BITS=6          # the actual MXFP8-vs-K6 switch (3-8)
+VLLM_EXL3_ENCODER_SOURCE=/opt/exllamav3-python/exllamav3  # REQUIRED: no baked default in vLLM
+VLLM_EXL3_ONLINE_CACHE_DIR=/cache/exl3-online              # optional (default VLLM_CACHE_ROOT/exl3_online)
+VLLM_EXL3_ONLINE_CACHE_MODE=readwrite                      # optional (already the default)
+```
+
+together with `--quantization-config` selecting `mxfp8` for `linear` (and
+optionally `shared_experts`) — that flag is the eligibility gate; the env
+var upgrades eligible tensors from MXFP8 to K6. There is no `exl3-b6`
+weight type in `--quantization-config`. Two related behaviors worth
+knowing when comparing published KLD numbers: `lm_head` is excluded from
+the online overlay in code regardless of the ignore list, and the ignore
+list filters only the `linear` spec — a `shared_experts` spec is always
+converted when present.
+
 With `MTP>0`, the helper creates a same-checkpoint MTP draft using the same MoE
 backend and probabilistic draft sampling. The target and draft share the
 virtual 66-head layout at TP6. Acceptance must be read from the server log for

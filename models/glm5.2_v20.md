@@ -83,6 +83,16 @@ measured DCP prefill topology:
   state, so one cached kernel is correct for both partitions. The exact r25
   image passed TP4/DCP4/MTP3 startup, correctness, CUDA graphs, CC1/CC8
   decode, 8k/64k prefill, and source/runtime-contract gates.
+- **Compatibility floor for shared-H + mixed checkpoints:** artifacts that
+  combine `rotation_layout: shared_h_v1` with mixed K3/K4 tiers (the 3.42 bpw
+  and newer shared-H releases) hard-require **r28**. r26 verified the shared-H
+  one-physical-row path and the mixed loader as separate contracts; their
+  combination fails on r26 during load with
+  `mixed Trellis gate SUH must be contiguous fp16 ... elements` (the mixed
+  kernel expects per-expert SUH tables). Field note from the same campaign:
+  on shared-H mixed checkpoints the SM120 decode split heuristic under-splits —
+  pinning `SPARKINFER_MLA_SM120_NUM_SPLITS=8` measured +2.5% C1 on a quad
+  RTX PRO 6000 host (monotonic across 0/4/8).
 - r26 corrects the automatic TP4/DCP4 prefill policy. Because TP4/DCP4 has
   only one query partition, exact owner exchange adds transport without
   removing duplicate work. Auto mode now uses query split, full CKV gather,

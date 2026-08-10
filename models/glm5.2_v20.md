@@ -82,6 +82,13 @@ measured DCP prefill topology:
   state, so one cached kernel is correct for both partitions. The exact r25
   image passed TP4/DCP4/MTP3 startup, correctness, CUDA graphs, CC1/CC8
   decode, 8k/64k prefill, and source/runtime-contract gates.
+  **Compatibility floor:** checkpoints whose tier bitmaps rely on
+  runtime-dynamic partitions (the 3.40 bpw and newer mixed builds)
+  hard-require r25. Older images (r22 and earlier) fail during the
+  memory-profiling forward with a CUDA illegal-memory-access — a crash,
+  not a clean rejection — because the static mixed-K kernel indexes
+  per-layer tier tables the checkpoint no longer matches. Field report:
+  4x RTX PRO 6000 Workstation, r22 + willfalco 3.40 bpw, 2026-08-04.
 - r26 corrects the automatic TP4/DCP4 prefill policy. Because TP4/DCP4 has
   only one query partition, exact owner exchange adds transport without
   removing duplicate work. Auto mode now uses query split, full CKV gather,
@@ -877,6 +884,11 @@ The 16,384 rows are deliberately forced negative controls, not the historical
 v20 baseline. Correctly configured TP8/DCP4 had already measured about
 5.6-5.85k tok/s before r5; the explicit 140k helper default prevents an old
 external override from silently losing that established fast path.
+Field note (2026-08-04): several community model-card composes circulate
+`VLLM_B12X_MLA_CKV_GATHER_MAX_TOKENS=16384` as if it were a tuning value;
+on a 4x RTX PRO 6000 host that setting halved 64k pure prefill
+(1,478 vs 2,895 tok/s) against the documented 140k default on the same
+boot. Audit external composes for this override before benchmarking.
 
 At prefetch depth 0 and one execution lane, the 140k FP8-KV workspace is
 approximately 131.4 MiB/GPU for DCP2, 109.5 MiB for DCP4, and 98.7 MiB for

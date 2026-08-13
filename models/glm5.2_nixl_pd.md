@@ -47,7 +47,7 @@ ARG NIXL_VERSION=1.3.2
 RUN /opt/venv/bin/python -m pip install --no-cache-dir --no-deps \
       "nixl==${NIXL_VERSION}" \
     && /opt/venv/bin/python -c \
-      "import importlib.util as u; assert u.find_spec('nixl')"
+      "import nixl; print(nixl.__file__)"
 ```
 
 The locally validated image also carried Mooncake compatibility packages for
@@ -178,11 +178,14 @@ transfer should fail visibly instead of silently changing the request path.
 
 ## Validation
 
-Before model startup, confirm that connector discovery succeeds:
+The image build imports `nixl` so missing Python extensions or shared-library
+dependencies fail immediately. Before model startup, validate backend
+initialization from a runtime container with the deployment's GPU and RDMA
+devices available:
 
 ```bash
 /opt/venv/bin/python -c \
-  "import importlib.util as u; assert u.find_spec('nixl')"
+  "import nixl; agent = nixl.nixl_agent('validation')"
 ```
 
 After both workers and the P/D router are healthy, send an end-to-end request

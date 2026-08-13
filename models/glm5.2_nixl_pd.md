@@ -43,21 +43,18 @@ FROM ${BASE_IMAGE}
 USER root
 
 ARG NIXL_VERSION=1.3.2
-ARG MOONCAKE_VERSION=0.3.12.post1
-ARG CUDA12_RUNTIME_VERSION=12.9.79
 
 RUN /opt/venv/bin/python -m pip install --no-cache-dir --no-deps \
       "nixl==${NIXL_VERSION}" \
-      "mooncake-transfer-engine==${MOONCAKE_VERSION}" \
-      "nvidia-cuda-runtime-cu12==${CUDA12_RUNTIME_VERSION}" \
     && /opt/venv/bin/python -c \
-      "import importlib.util as u; assert u.find_spec('nixl'); assert u.find_spec('mooncake')"
-
-ENV LD_LIBRARY_PATH="/opt/venv/lib/python3.12/site-packages/nvidia/cuda_runtime/lib:${LD_LIBRARY_PATH}"
+      "import importlib.util as u; assert u.find_spec('nixl')"
 ```
 
-The Mooncake packages preserve the image's alternative KV-transfer connector.
-They are not selected by the NIXL launch configuration on this page.
+The locally validated image also carried Mooncake compatibility packages for
+an alternative connector, but they are not required by the NIXL configuration
+on this page and are intentionally omitted from the minimal overlay above. If
+Mooncake is added to a CUDA 13 image, use `mooncake-transfer-engine-cuda13`
+rather than adding a CUDA 12 runtime compatibility path.
 
 ## Mandatory runtime contract
 
@@ -109,6 +106,20 @@ The validated UCX transport selection was:
 ```bash
 -e UCX_TLS=rc,cuda_copy
 ```
+
+## Container privilege
+
+The templates retain `--privileged` because that is the exact container mode
+used by the validated deployment. It gives the container access to all host
+devices and capabilities, so it is **not** a least-privilege recommendation.
+Use it only with a trusted image on a controlled inference node.
+
+For a hardened deployment, replace `--privileged` with explicit mappings for
+the required `/dev/infiniband` devices and only the capabilities required by
+the local RDMA, GPUDirect, and container-runtime configuration. Device nodes
+vary by host, and that reduced-privilege profile was not validated by this
+receipt; re-run RDMA registration and end-to-end KV-transfer validation after
+changing the security boundary.
 
 ## Prefill template
 
@@ -192,7 +203,7 @@ Two-stage processing completed successfully
 | `NixlConnector` is unavailable or `import nixl` fails | Confirm that the small `nixl==1.3.2` namespace package is present in addition to `nixl-cu13`. |
 | Startup or registration fails after copying another allocator recipe | Confirm `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:False` on **both** services. |
 | DCP4 indexer or KV geometry differs between P and D | Confirm `DCP=4` and `DCP_INDEXER_SHARDS=4` on **both** services. |
-| Prefill and Decode use the same execution-mode flags | Restore `--enforce-eager` on Prefill and `FULL_DECODE_ONLY` on Decode; the profiles are intentionally different. |
+| Prefill and Decode use the same execution-mode flags | Restore `--enforce-eager` on Prefill and `--compilation-config '{"cudagraph_mode":"FULL_DECODE_ONLY"}'` on Decode; the profiles are intentionally different. |
 | UCX selects the wrong interface or cannot reach the peer | Check each node's local `UCX_NET_DEVICES`, RoCE address, GID, MTU, routing, and firewall. |
 | Requests succeed without evidence of KV transfer | Require producer/consumer selection in the router and verify the NIXL/UCX registration and transfer logs. |
 

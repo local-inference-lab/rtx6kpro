@@ -53,7 +53,7 @@ measurement.
   `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:False` on every service. When
   DCP is 4, also set `DCP_INDEXER_SHARDS=4` on both Prefill and Decode.
 - Keep the P/D execution modes asymmetric: Prefill uses `--enforce-eager` and
-  Decode uses `FULL_DECODE_ONLY` CUDA graphs.
+  Decode uses `--compilation-config '{"cudagraph_mode":"FULL_DECODE_ONLY"}'`.
 - Do not compare throughput across pages unless the image, DCP mode, MTP mode,
   graph capture size, batch tokens, and GPU placement match.
 - KLD is a regression and quantization sanity check, not a full task-quality

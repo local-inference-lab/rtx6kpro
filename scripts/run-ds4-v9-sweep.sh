@@ -36,6 +36,8 @@ ENABLE_TOPO_PIN=${ENABLE_TOPO_PIN:-1}
 POST_READY_SETTLE_SECONDS=${POST_READY_SETTLE_SECONDS:-30}
 RUNTIME_WARMUP=${RUNTIME_WARMUP:-1}
 RUNTIME_WARMUP_DECODE_DURATION=${RUNTIME_WARMUP_DECODE_DURATION:-3}
+RUNTIME_WARMUP_SPARSE_CONTEXT=${RUNTIME_WARMUP_SPARSE_CONTEXT:-}
+RUNTIME_WARMUP_SPARSE_DURATION=${RUNTIME_WARMUP_SPARSE_DURATION:-2}
 RUNTIME_WARMUP_PREFILL_DURATION=${RUNTIME_WARMUP_PREFILL_DURATION:-1}
 POST_WARMUP_SETTLE_SECONDS=${POST_WARMUP_SETTLE_SECONDS:-30}
 RESUME=${RESUME:-1}
@@ -66,6 +68,11 @@ record_repro_artifacts() {
     cp "$SCRIPT_DIR/validate-ds4-sweep-case.py" \
       "$OUT/repro/validate-ds4-sweep-case.py"
     script_hash_inputs+=("$SCRIPT_DIR/validate-ds4-sweep-case.py")
+  fi
+  if [[ -f "$SCRIPT_DIR/validate-ds4-runtime-log.py" ]]; then
+    cp "$SCRIPT_DIR/validate-ds4-runtime-log.py" \
+      "$OUT/repro/validate-ds4-runtime-log.py"
+    script_hash_inputs+=("$SCRIPT_DIR/validate-ds4-runtime-log.py")
   fi
   if [[ -f "$LAYOUT_PLANNER" ]]; then
     cp "$LAYOUT_PLANNER" "$OUT/repro/$(basename "$LAYOUT_PLANNER")"
@@ -226,34 +233,30 @@ validate_case_results() {
   )
   [[ "$RUN_DECODE" == "1" ]] && args+=(--run-decode)
   [[ "$RUN_PREFILL" == "1" ]] && args+=(--run-prefill)
+  if [[ "$RUN_DECODE" == "1" && -n "$RUNTIME_WARMUP_SPARSE_CONTEXT" ]]; then
+    args+=(--sparse-warmup-context "$RUNTIME_WARMUP_SPARSE_CONTEXT")
+  fi
   python3 "${args[@]}"
 }
 
 validate_runtime_log() {
   local server_log=$1
-  local start_line=${2:-0}
-  local first_measured_line=$((start_line + 1))
-  if tail -n "+${first_measured_line}" "$server_log" | rg -q \
-    'JIT compilation during inference|reason=post-engine-start.*status=disk-cache-miss'; then
-    echo "invalid benchmark runtime: JIT cache miss occurred during inference" >&2
-    tail -n "+${first_measured_line}" "$server_log" | rg -n \
-      'JIT compilation during inference|reason=post-engine-start.*status=disk-cache-miss' \
-      >&2 || true
-    return 1
-  fi
+  local measurement_start_utc=$2
+  python3 "$SCRIPT_DIR/validate-ds4-runtime-log.py" \
+    "$server_log" "$measurement_start_utc"
 }
 
 validate_reusable_case() {
   local case_dir=$1
   local server_log="$case_dir/${QUALIFICATION_ROLE}-server.log"
-  local start_file="$case_dir/${QUALIFICATION_ROLE}-runtime-log-start-line.txt"
+  local start_file="$case_dir/${QUALIFICATION_ROLE}-measurement-start-utc.txt"
   if [[ "$QUALIFICATION_ROLE" == "combined" ]]; then
     server_log="$case_dir/server.log"
-    start_file="$case_dir/runtime-log-start-line.txt"
+    start_file="$case_dir/measurement-start-utc.txt"
   fi
   [[ -f "$server_log" && -f "$start_file" ]] || return 1
   validate_case_results "$case_dir" >/dev/null 2>&1 || return 1
-  validate_runtime_log "$server_log" "$(<"$start_file")" \
+  validate_runtime_log "$server_log" "$start_file" \
     >/dev/null 2>&1
 }
 
@@ -271,6 +274,25 @@ warm_runtime_case() {
   fi
 
   if [[ "$RUN_DECODE" == "1" ]]; then
+    if [[ -n "$RUNTIME_WARMUP_SPARSE_CONTEXT" ]]; then
+      echo "==> runtime warmup sparse decode context=${RUNTIME_WARMUP_SPARSE_CONTEXT}"
+      python3 "$BENCH" \
+        --host localhost \
+        --port "$port" \
+        --model "$model_name" \
+        --concurrency "$DECODE_CONCURRENCY" \
+        --contexts "$RUNTIME_WARMUP_SPARSE_CONTEXT" \
+        --duration "$RUNTIME_WARMUP_SPARSE_DURATION" \
+        --decode-warmup-seconds 0 \
+        --max-tokens 64 \
+        --max-total-tokens "$DECODE_TOKEN_BUDGET" \
+        --skip-prefill \
+        --display-mode plain \
+        --no-hw-monitor \
+        --output "$case_dir/warmup-sparse-decode.json" \
+        > "$case_dir/warmup-sparse-decode.log" 2>&1
+    fi
+
     echo "==> runtime warmup decode ${DECODE_CONCURRENCY}"
     python3 "$BENCH" \
       --host localhost \
@@ -360,16 +382,16 @@ bench_case() {
 
   local server_log="$case_dir/${QUALIFICATION_ROLE}-server.log"
   local warmup_server_log="$case_dir/${QUALIFICATION_ROLE}-warmup-server.log"
-  local runtime_start_file="$case_dir/${QUALIFICATION_ROLE}-runtime-log-start-line.txt"
+  local runtime_start_file="$case_dir/${QUALIFICATION_ROLE}-measurement-start-utc.txt"
   if [[ "$QUALIFICATION_ROLE" == "combined" ]]; then
     server_log="$case_dir/server.log"
     warmup_server_log="$case_dir/warmup-server.log"
-    runtime_start_file="$case_dir/runtime-log-start-line.txt"
+    runtime_start_file="$case_dir/measurement-start-utc.txt"
   fi
 
   warm_runtime_case "$port" "$model_name" "$case_dir" || return 1
   docker logs "$name" > "$warmup_server_log" 2>&1 || true
-  wc -l < "$warmup_server_log" > "$runtime_start_file"
+  date -u +%Y-%m-%dT%H:%M:%SZ > "$runtime_start_file"
 
   if [[ "$RUN_DECODE" == "1" ]]; then
     echo "==> decode $label"
@@ -420,7 +442,7 @@ bench_case() {
   validate_case_results "$case_dir" || return 1
   validate_runtime_log \
     "$server_log" \
-    "$(<"$runtime_start_file")" || return 1
+    "$runtime_start_file" || return 1
   docker rm -f "$name" >/dev/null 2>&1 || true
   append_case_summary DONE "$label" "$case_dir"
 }
@@ -559,6 +581,8 @@ record_repro_artifacts
   printf 'post_ready_settle_seconds=%s\n' "$POST_READY_SETTLE_SECONDS"
   printf 'runtime_warmup=%s\nruntime_warmup_decode_duration=%s\n' \
     "$RUNTIME_WARMUP" "$RUNTIME_WARMUP_DECODE_DURATION"
+  printf 'runtime_warmup_sparse_context=%s\nruntime_warmup_sparse_duration=%s\n' \
+    "${RUNTIME_WARMUP_SPARSE_CONTEXT:-disabled}" "$RUNTIME_WARMUP_SPARSE_DURATION"
   printf 'runtime_warmup_prefill_duration=%s\npost_warmup_settle_seconds=%s\n' \
     "$RUNTIME_WARMUP_PREFILL_DURATION" "$POST_WARMUP_SETTLE_SECONDS"
   printf 'decode_concurrency=%s\ndecode_contexts=%s\ndecode_duration=%s\n' \

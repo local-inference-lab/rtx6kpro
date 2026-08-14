@@ -49,7 +49,7 @@ Need the complete map of every Markdown page?
 |---|---|---|
 | GLM-5.2 serving stack | [GLM-5.2 v20](models/glm5.2_v20.md) | Gilded Gnosis/B12X image, source pins, TP6 fixes, Xid validation, and release gate. |
 | GLM-5.2 MXFP4 | [GLM-5.2 FP8 + MXFP4 Experts](models/glm5.2_mxfp4.md) | Native MXFP4 expert checkpoint path and A8 serving notes. |
-| DS4 serving profile | [DS4 DSpark Infernal Invocation r4](models/ds4dspark-infernal-invocation-r4.md) | 0731 checkpoint, request-state-safe FULL graph dispatch, fixed and confidence-controlled DSpark, LMCache, and native tiered KV offload. |
+| DS4 serving profile | [DS4 DSpark Infernal Invocation r10](models/ds4dspark-infernal-invocation-r10.md) | 0731 checkpoint, fixed K5, FULL graph dispatch, and race-free native filesystem KV publication. |
 | DS4 full reference | [DS4 DSpark v9](models/ds4dspark-v9.md) | Full DSpark and standard MTP sweep reference. |
 | Kimi-K2.7-Code | [Kimi-K2.7-Code v3](models/kimi-k27-code_v3.md) | Fathomless Kimi DFlash validation. |
 | MiMo FP4-DFlash | [MiMo FP4-DFlash v3](models/xiaomi-mimo-v2.5-pro-fp4-dflash_v3.md) | MiMo DFlash validation and fix notes. |

@@ -30,39 +30,54 @@ def _load(case_dir: Path, name: str) -> dict[str, Any]:
         return json.load(stream)
 
 
-def validate_decode(data: dict[str, Any], concurrency: list[int]) -> None:
-    """Require a successful, nonempty context-zero row for every load level."""
+def _decode_rows(
+    data: dict[str, Any], concurrency: list[int], context: int
+) -> dict[int, dict[str, Any]]:
+    """Return successful decode rows for one requested context class."""
     rows: dict[int, dict[str, Any]] = {}
     for row in data.get("results", []):
         try:
-            context = int(row.get("context_tokens", -1))
+            row_context = int(row.get("context_tokens", -1))
             row_concurrency = int(row.get("concurrency", 0))
         except (TypeError, ValueError):
             continue
-        if context == 0:
+        if abs(row_context - context) <= (0 if context == 0 else 256):
             rows[row_concurrency] = row
 
     missing = [value for value in concurrency if value not in rows]
     if missing:
-        raise ValidationError(f"missing decode result for concurrency {missing}")
+        raise ValidationError(
+            f"missing decode result near context {context} for concurrency {missing}"
+        )
 
     for value in concurrency:
         row = rows[value]
         throughput = row.get("aggregate_tps")
         if not _finite(throughput) or float(throughput) <= 0:
             raise ValidationError(
-                f"decode concurrency {value} has nonpositive aggregate_tps"
+                f"decode context {context} concurrency {value} has "
+                "nonpositive aggregate_tps"
             )
         if int(row.get("request_count", 0)) <= 0:
-            raise ValidationError(f"decode concurrency {value} has no request samples")
+            raise ValidationError(
+                f"decode context {context} concurrency {value} has no request samples"
+            )
         if int(row.get("num_completed", 0)) <= 0:
             raise ValidationError(
-                f"decode concurrency {value} has no successful streams"
+                f"decode context {context} concurrency {value} has no successful streams"
             )
         if int(row.get("num_errors", 0)) != 0:
             raise ValidationError(
-                f"decode concurrency {value} has {row.get('num_errors')} error(s)"
+                f"decode context {context} concurrency {value} has "
+                f"{row.get('num_errors')} error(s)"
             )
+
+    return rows
+
+
+def validate_decode(data: dict[str, Any], concurrency: list[int]) -> None:
+    """Require a successful, nonempty context-zero row for every load level."""
+    _decode_rows(data, concurrency, context=0)
 
     coding = data.get("coding_peak", {})
     summary = coding.get("summary", {})
@@ -77,6 +92,15 @@ def validate_decode(data: dict[str, Any], concurrency: list[int]) -> None:
         raise ValidationError(
             f"coding peak produced CJK in {summary.get('cjk_runs')} run(s)"
         )
+
+
+def validate_sparse_decode_warmup(
+    data: dict[str, Any], concurrency: list[int], context: int
+) -> None:
+    """Require sparse-attention warmup to execute at every measured load."""
+    if context <= 0:
+        raise ValidationError("sparse decode warmup context must be positive")
+    _decode_rows(data, concurrency, context)
 
 
 def _valid_prefill(row: Any) -> bool:
@@ -94,7 +118,7 @@ def _valid_prefill(row: Any) -> bool:
 
 
 def validate_prefill(data: dict[str, Any], contexts: list[int]) -> None:
-    """Require a valid sample within 256 tokens below each requested length."""
+    """Require a measured prompt within the requested benchmark class."""
     rows = data.get("prefill", {})
 
     def matching_row(target: int) -> tuple[int, dict[str, Any]] | None:
@@ -104,7 +128,11 @@ def validate_prefill(data: dict[str, Any], contexts: list[int]) -> None:
                 actual = int(key)
             except (TypeError, ValueError):
                 continue
-            if 0 <= target - actual <= 256 and _valid_prefill(row):
+            prompt_tokens = row.get("prompt_tokens") if isinstance(row, dict) else None
+            prompt_matches = _finite(prompt_tokens) and abs(
+                int(prompt_tokens) - target
+            ) <= max(64, int(target * 0.05))
+            if 0 <= target - actual <= 256 and _valid_prefill(row) and prompt_matches:
                 candidates.append((actual, row))
         return max(candidates) if candidates else None
 
@@ -126,9 +154,16 @@ def validate_case(
     prefill_contexts: list[int],
     run_decode: bool,
     run_prefill: bool,
+    sparse_warmup_context: int | None = None,
 ) -> None:
     if run_decode:
         validate_decode(_load(case_dir, "decode.json"), decode_concurrency)
+        if sparse_warmup_context is not None:
+            validate_sparse_decode_warmup(
+                _load(case_dir, "warmup-sparse-decode.json"),
+                decode_concurrency,
+                sparse_warmup_context,
+            )
     if run_prefill:
         validate_prefill(_load(case_dir, "prefill.json"), prefill_contexts)
 
@@ -140,6 +175,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--prefill-contexts", default="8k,64k,128k")
     parser.add_argument("--run-decode", action="store_true")
     parser.add_argument("--run-prefill", action="store_true")
+    parser.add_argument("--sparse-warmup-context", type=int)
     return parser.parse_args()
 
 
@@ -159,6 +195,7 @@ def main() -> int:
             prefill_contexts,
             args.run_decode,
             args.run_prefill,
+            args.sparse_warmup_context,
         )
     except ValidationError as error:
         print(f"invalid benchmark results: {error}", file=sys.stderr)

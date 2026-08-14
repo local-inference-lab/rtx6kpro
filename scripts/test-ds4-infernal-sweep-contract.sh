@@ -11,9 +11,10 @@ trap 'rm -rf "${tmp}"' EXIT
 cat > "${tmp}/generic-sweep" <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
-printf '%s|%s|%s|%s|%s|%s\n' \
+printf '%s|%s|%s|%s|%s|%s|%s|%s\n' \
   "${QUALIFICATION_ROLE}" "${RUN_DECODE}" "${RUN_PREFILL}" \
-  "${MAX_NUM_SEQS}" "${MAX_MODEL_LEN}" "${OUT}" >> "${CALL_LOG}"
+  "${MAX_NUM_SEQS}" "${MAX_MODEL_LEN}" "${GPU_MEM}" \
+  "${PREFILL_CONTEXTS}" "${OUT}" >> "${CALL_LOG}"
 SH
 
 cat > "${tmp}/renderer" <<'PY'
@@ -89,8 +90,8 @@ OUT="${out}" \
 "${SCRIPT_DIR}/run-ds4-infernal-sweep.sh"
 
 expected=$(cat <<EOF
-decode|1|0|64|10240|${out}
-prefill|0|1|16|131072|${out}
+decode|1|0|1|10240|0.975|8k,64k,131008|${out}
+prefill|0|1|16|131072|0.98|8k,64k,131008|${out}
 EOF
 )
 
@@ -111,13 +112,31 @@ grep -Fq 'KV_OFFLOADING_SIZE NATIVE_L2_GB NATIVE_L2_PATH' \
   "${SCRIPT_DIR}/run-ds4-infernal-server.sh"
 grep -Fq 'LMCACHE_MODE LMCACHE_L1_GB LMCACHE_L1_INIT_GB LMCACHE_L2_GB' \
   "${SCRIPT_DIR}/run-ds4-infernal-server.sh"
+grep -Fq 'VLLM_SERVER_DEV_MODE EXTRA_VLLM_ARGS DRY_RUN' \
+  "${SCRIPT_DIR}/run-ds4-infernal-server.sh"
+grep -Fq 'RUNTIME_WARMUP_SPARSE_CONTEXT:-4096' \
+  "${SCRIPT_DIR}/run-ds4-infernal-sweep.sh"
+grep -Fq 'DECODE_CONCURRENCY:-1}' \
+  "${SCRIPT_DIR}/run-ds4-infernal-sweep.sh"
+grep -Fq -- '--output "$case_dir/warmup-sparse-decode.json"' \
+  "${SCRIPT_DIR}/run-ds4-v9-sweep.sh"
+grep -Fq -- '--concurrency "$DECODE_CONCURRENCY"' \
+  "${SCRIPT_DIR}/run-ds4-v9-sweep.sh"
+grep -Fq -- '--max-total-tokens "$DECODE_TOKEN_BUDGET"' \
+  "${SCRIPT_DIR}/run-ds4-v9-sweep.sh"
+grep -Fq -- '--sparse-warmup-context "$RUNTIME_WARMUP_SPARSE_CONTEXT"' \
+  "${SCRIPT_DIR}/run-ds4-v9-sweep.sh"
+grep -Fq 'measurement-start-utc.txt' \
+  "${SCRIPT_DIR}/run-ds4-v9-sweep.sh"
+grep -Fq 'validate-ds4-runtime-log.py' \
+  "${SCRIPT_DIR}/run-ds4-v9-sweep.sh"
 grep -Fq -- '--shm-size "${SHM_SIZE}"' \
   "${SCRIPT_DIR}/run-ds4-infernal-server.sh"
 grep -Fq '/usr/local/bin/serve-ds4-flash.sh' \
   "${SCRIPT_DIR}/run-ds4-infernal-server.sh"
-grep -Fq 'infernal-invocation-vllm3226eb7-b12x1584743-fi1ac6942-cu133-torch213-20260812-r4' \
+grep -Fq 'infernal-invocation-vllm7ed814e-b12x5d648d9-fi1ac6942-cu133-torch213-20260813-r7' \
   "${SCRIPT_DIR}/run-ds4-infernal-server.sh"
-grep -Fq 'ds4-infernal-invocation-r4-' \
+grep -Fq 'ds4-infernal-invocation-r7-' \
   "${SCRIPT_DIR}/run-ds4-infernal-sweep.sh"
 
 PYTHONDONTWRITEBYTECODE=1 python3 - "${SCRIPT_DIR}" <<'PY'
@@ -142,4 +161,45 @@ except SystemExit:
     pass
 else:
     raise AssertionError("out-of-contract prefill target was accepted")
+PY
+
+PYTHONDONTWRITEBYTECODE=1 python3 - "${SCRIPT_DIR}" <<'PY'
+import importlib.util
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1]) / "validate-ds4-sweep-case.py"
+spec = importlib.util.spec_from_file_location("ds4_validator", path)
+module = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(module)
+
+valid = {
+    "prefill": {
+        "131008": {
+            "prompt_tokens": 127696,
+            "tok_per_sec": 12000.0,
+            "ttft_seconds": 10.0,
+            "samples": 1,
+        }
+    }
+}
+module.validate_prefill(valid, [131008])
+
+invalid = {
+    "prefill": {
+        "131008": {
+            "prompt_tokens": 120000,
+            "tok_per_sec": 12000.0,
+            "ttft_seconds": 10.0,
+            "samples": 1,
+        }
+    }
+}
+try:
+    module.validate_prefill(invalid, [131008])
+except module.ValidationError:
+    pass
+else:
+    raise AssertionError("miscalibrated prefill prompt was accepted")
 PY

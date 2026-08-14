@@ -54,6 +54,18 @@ class DecodeValidationTest(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.ValidationError, "1 error"):
             MODULE.validate_decode(decode_data(num_errors=1), [1])
 
+    def test_accepts_sparse_warmup_at_all_measured_loads(self):
+        data = decode_data(context_tokens=4094)
+        data["results"] = [
+            {**data["results"][0], "concurrency": concurrency}
+            for concurrency in (1, 16, 32, 64)
+        ]
+        MODULE.validate_sparse_decode_warmup(data, [1, 16, 32, 64], 4096)
+
+    def test_rejects_empty_sparse_warmup(self):
+        with self.assertRaisesRegex(MODULE.ValidationError, "near context 4096"):
+            MODULE.validate_sparse_decode_warmup({"results": []}, [1], 4096)
+
 
 class PrefillValidationTest(unittest.TestCase):
     def test_accepts_tokenizer_length_tolerance(self):
@@ -61,6 +73,7 @@ class PrefillValidationTest(unittest.TestCase):
             {
                 "prefill": {
                     "65472": {
+                        "prompt_tokens": 65472,
                         "tok_per_sec": 5000.0,
                         "ttft_seconds": 13.0,
                         "samples": 1,

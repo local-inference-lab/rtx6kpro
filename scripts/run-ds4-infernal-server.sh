@@ -5,7 +5,7 @@ set -euo pipefail
 # the public benchmark identity; MODE, DSpark depth, and draft count are the
 # corresponding serve-ds4-flash.sh interfaces.
 
-IMAGE=${IMAGE:-voipmonitor/vllm:infernal-invocation-vllm3226eb7-b12x1584743-fi1ac6942-cu133-torch213-20260812-r4}
+IMAGE=${IMAGE:-voipmonitor/vllm:infernal-invocation-vllm7ed814e-b12x5d648d9-fi1ac6942-cu133-torch213-20260813-r7}
 NAME=${NAME:-ds4-infernal-benchmark}
 PORT=${PORT:-5000}
 GPUS=${GPUS:-0,1}
@@ -101,7 +101,7 @@ optional_env=(
   LMCACHE_L2_PATH LMCACHE_L2_WORKERS LMCACHE_CHUNK_SIZE
   LMCACHE_MAX_GPU_WORKERS LMCACHE_MAX_CPU_WORKERS LMCACHE_PORT
   LMCACHE_HTTP_PORT LMCACHE_PROMETHEUS_PORT LMCACHE_START_TIMEOUT
-  EXTRA_VLLM_ARGS DRY_RUN
+  VLLM_SERVER_DEV_MODE EXTRA_VLLM_ARGS DRY_RUN
 )
 for key in "${optional_env[@]}"; do
   if [[ -n "${!key+x}" ]]; then helper_env+=(-e "${key}=${!key}"); fi

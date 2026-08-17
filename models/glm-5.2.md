@@ -10,6 +10,7 @@ benchmark evidence.
 |---|---|
 | Serve the GLM-5.2 SQG W4A8 checkpoint on four SM120 GPUs | [GLM-5.2 SQG W4A8 on Infernal Invocation r13](glm5.2-infernal-invocation-r13-sqg.md) |
 | Serve NVFP4 or projection-mixed EXL3 on CUDA 13.3 | [GLM-5.2 Infernal Invocation r11](glm5.2-infernal-invocation-r11.md) |
+| Configure NIXL Prefill/Decode disaggregation | [GLM-5.2 NIXL P/D Disaggregation](glm5.2_nixl_pd.md) |
 | Run the MXFP4 expert checkpoint | [GLM-5.2 FP8 + MXFP4 Experts](glm5.2_mxfp4.md) |
 | Compare KLD and quant quality | [GLM-5.2 KLD Evaluation](../benchmarks/glm52-kld-evaluation.md) |
 | Reproduce GGUF/BF16 dequant KLD | [GGUF to BF16 Dequant KLD Audit](glm5.2/glm52-gguf-bf16-dequant-kld-2026-07-08.md) |
@@ -49,6 +50,11 @@ benchmark evidence.
 - Keep the exact `index_topk_pattern` from the selected runbook. A truncated
   pattern can silently degrade GLM output.
 - For DCP runs, use the DCP policy documented by the selected image runbook.
+- For NIXL P/D runs, set
+  `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:False` on every service. When
+  DCP is 4, also set `DCP_INDEXER_SHARDS=4` on both Prefill and Decode.
+- Keep the P/D execution modes asymmetric: Prefill uses `--enforce-eager` and
+  Decode uses `--compilation-config '{"cudagraph_mode":"FULL_DECODE_ONLY"}'`.
 - Do not compare throughput across pages unless the image, DCP mode, MTP mode,
   graph capture size, batch tokens, and GPU placement match.
 - KLD is a regression and quantization sanity check, not a full task-quality

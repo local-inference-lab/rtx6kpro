@@ -56,6 +56,17 @@ workload-dependent: observed effective output per verification step ranged
 from 2.50 on two coding/operations prompts to 2.84-2.96 on synthetic load;
 an earlier Rust sample on the experimental lineage reached 3.37.
 
+Two stock-clock tuning probes establish the current safe defaults:
+
+- CKV prefetch depth 1 reserved 1,190.3 MiB/GPU for two MTP execution lanes,
+  reduced usable KV to 13,456,725 tokens, and measured
+  7,376/8,228/8,174 tok/s prefill. The noise-level gain does not justify the
+  memory and startup-pressure cost, so the default remains depth 0.
+- Raising `--max-num-batched-tokens` to 8,192 increased estimated graph memory
+  to 16.95 GiB/GPU, reduced usable KV to 9,464,070 tokens, and failed during
+  Humming graph capture with a TMA illegal-memory-access error. The qualified
+  ceiling remains 4,096 for this image.
+
 The exact published image is
 `ghcr.io/jackzampolin/glm53-flash-nvfp4-jovian:dcp4-prefix-mtp5-e7a2a9a-b12x903667d`
 with digest

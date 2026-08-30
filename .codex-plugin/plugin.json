@@ -1,0 +1,6 @@
+{
+  "name": "local-inference-lab-community-skills",
+  "version": "1.5.0",
+  "description": "Community workflows for sharing changes, publishing Docker images, benchmarking inference, reconciling integrations, and reporting reproducible problems.",
+  "skills": "./skills/"
+}

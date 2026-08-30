@@ -1,0 +1,22 @@
+# Pre-publication verification checklist
+
+- [ ] Final image uses an immutable `sha256` digest
+- [ ] Base image uses an immutable `sha256` digest
+- [ ] Current `rtx6kpro` model runbook is identified by repository-relative path and commit-pinned URL
+- [ ] Dockerfile or build script is public and linked
+- [ ] Build command is complete and reproducible
+- [ ] vLLM or SGLang revision is an exact commit SHA or verified release reference
+- [ ] B12X revision is an exact commit SHA or verified release reference
+- [ ] All PRs, patches, overlays, package changes, flags, defaults, and entrypoint changes are listed
+- [ ] Every difference from the base image is documented
+- [ ] Tested GPU hardware, topology, drivers, and runtime versions are recorded
+- [ ] Validation claims identify the actual test or command used
+- [ ] A `qualified` status is backed by `qualification-evidence` for the exact advertised profile and every required gate
+- [ ] Performance claims include a digest-pinned baseline and exact benchmark commands
+- [ ] Performance claims record the experimental unit, independent repetitions, run order, stopping rule, exclusions, changed and nuisance variables, rivals, falsification condition, repeated-control variation, effects, uncertainty, and raw evidence
+- [ ] Limitations and untested configurations are explicit
+- [ ] Dedicated support-thread link is included for a custom image
+- [ ] No secrets, access tokens, private hostnames, personal paths, or identifying logs are included
+- [ ] Unknown information is `UNKNOWN — needs verification`, never guessed
+- [ ] Unperformed tests are `Not tested`, never passed
+- [ ] Non-applicable fields are `N/A`, never omitted

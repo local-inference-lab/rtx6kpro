@@ -1,0 +1,4 @@
+interface:
+  display_name: "LIL Reconciling Changes"
+  short_description: "Resolve integrations without losing intent"
+  default_prompt: "Use $local-inference-lab-reconciling-changes to reconcile this integration by recovering both intents, resolving every conflict, preserving attribution, and running repository checks."

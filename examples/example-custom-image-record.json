@@ -1,0 +1,244 @@
+{
+  "schema_version": 4,
+  "record_id": "example-glm-custom-r1",
+  "title": "GLM example scheduler experiment",
+  "summary": "Fictional custom image that tests one scheduler-bound change against the recommended community image.",
+  "model_family": "GLM example family",
+  "release_class": "community-derivative",
+  "distribution_role": "custom",
+  "qualification_status": "qualified",
+  "maintenance_status": "author-supported",
+  "image": {
+    "repository": "registry.example.org/community/vllm",
+    "tag": "glm-example-scheduler-r1",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "reference": "registry.example.org/community/vllm:glm-example-scheduler-r1@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "base_image": {
+    "repository": "registry.example.org/community/vllm",
+    "tag": "glm-example-recommended-r4",
+    "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "reference": "registry.example.org/community/vllm:glm-example-recommended-r4@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "credit": "Fictional Local Inference Lab maintainers and contributors"
+  },
+  "recommended_image": {
+    "reference": "registry.example.org/community/vllm:glm-example-recommended-r4@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "relationship": "Recommended support and comparison control for the GLM example family"
+  },
+  "community_wiki": {
+    "repository": "https://github.com/local-inference-lab/rtx6kpro",
+    "commit": "4126fc06692c6ab042b0cd37d5062893fa402f47",
+    "runbook_path": "README.md",
+    "runbook_url": "https://github.com/local-inference-lab/rtx6kpro/blob/4126fc06692c6ab042b0cd37d5062893fa402f47/README.md",
+    "relationship": "Community wiki landing page used to locate current model-family guidance; this record remains a fictional format example."
+  },
+  "build": {
+    "recipe_url": "https://example.org/lil-images/glm-example-scheduler/Dockerfile",
+    "recipe_commit": "1111111111111111111111111111111111111111",
+    "build_command": "docker build --pull=false -f Dockerfile -t registry.example.org/community/vllm:glm-example-scheduler-r1 .",
+    "components": [
+      {
+        "name": "vllm",
+        "repository": "https://github.com/example/vllm",
+        "commit": "2222222222222222222222222222222222222222",
+        "release_reference": "N/A",
+        "pull_requests": [
+          {
+            "url": "https://github.com/example/vllm/pull/42",
+            "head_commit": "3333333333333333333333333333333333333333",
+            "title": "Bound the fictional scheduler diagnostic queue",
+            "authors": [
+              "Example Contributor"
+            ]
+          }
+        ],
+        "patches": [],
+        "overlays": []
+      },
+      {
+        "name": "b12x",
+        "repository": "https://github.com/example/b12x",
+        "commit": "4444444444444444444444444444444444444444",
+        "release_reference": "N/A",
+        "pull_requests": [],
+        "patches": [],
+        "overlays": []
+      }
+    ],
+    "package_changes": [
+      "N/A"
+    ],
+    "build_arguments": [
+      "VLLM_SOURCE_COMMIT=2222222222222222222222222222222222222222",
+      "B12X_SOURCE_COMMIT=4444444444444444444444444444444444444444"
+    ],
+    "environment_defaults": [
+      "MAX_NUM_SEQS=30",
+      "CUDAGRAPH_MODE=FULL"
+    ],
+    "entrypoint_changes": [
+      "N/A"
+    ],
+    "result_tree": "5555555555555555555555555555555555555555",
+    "integration_patch_sha256": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "changes": {
+    "inherited": [
+      "The recommended base supplies the fictional GLM serving profile, B12X kernels, and target-only launcher."
+    ],
+    "introduced": [
+      "The scheduler diagnostic snapshot is capped at 1,024 entries."
+    ],
+    "compatibility_impact": [
+      "Diagnostic clients receive no more than 1,024 pending entries; serving admission behavior is unchanged."
+    ]
+  },
+  "tested_configurations": [
+    {
+      "name": "Four fictional Blackwell GPUs, target-only",
+      "hardware": "4 x fictional SM120 GPUs with 96 GiB each",
+      "topology": "Single-socket PCIe topology; peer access enabled",
+      "power_and_clocks": "300 W per GPU; stock clocks",
+      "driver": "Example driver 999.1",
+      "cuda_runtime": "13.2",
+      "pytorch": "2.12.0",
+      "nccl": "2.30.0",
+      "engine_source": "example/vllm@2222222222222222222222222222222222222222 with example/b12x@4444444444444444444444444444444444444444",
+      "model_revision": "example/glm-model@6666666666666666666666666666666666666666",
+      "quantization": "NVFP4 weights; BF16 activations",
+      "parallelism": "TP4, DCP1, EP1, DP1",
+      "kv_cache": "FP8 target KV; 262,144-token model limit",
+      "speculative_mode": "Disabled; no MTP, external draft, or n-gram speculation",
+      "graph_mode": "FULL CUDA graph",
+      "scheduler_limits": "max_num_seqs=30; max_num_batched_tokens=4096",
+      "cache_policy": "Fresh dedicated JIT volume for candidate and a separate fresh volume for baseline",
+      "launch_command": "docker run --rm --gpus all --network host -e TP=4 -e MAX_NUM_SEQS=30 -e CUDAGRAPH_MODE=FULL registry.example.org/community/vllm:glm-example-scheduler-r1@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ],
+  "validation": {
+    "commands": [
+      "python -m pytest tests/test_scheduler.py -q",
+      "python3 llm_decode_bench.py --port 8000 --skip-prefill --contexts 0,8k,32k --concurrency 1,4,16,30 --duration 30 --output candidate.json",
+      "python3 llm_decode_bench.py --port 8001 --skip-prefill --contexts 0,8k,32k --concurrency 1,4,16,30 --duration 30 --output baseline.json"
+    ],
+    "results": [
+      {
+        "name": "Image startup",
+        "category": "smoke",
+        "status": "passed",
+        "conditions": "Fresh container and dedicated JIT volume.",
+        "measurement": "Health request after server readiness.",
+        "result": "Server reached healthy state and completed one request.",
+        "conclusion": "The tested image starts under the listed configuration.",
+        "evidence_url": "https://example.org/evidence/custom-r1-startup.txt",
+        "evidence_sha256": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      {
+        "name": "Scheduler regression checks",
+        "category": "correctness",
+        "status": "passed",
+        "conditions": "Clean source tree at the listed result tree.",
+        "measurement": "Three deterministic scheduler unit tests.",
+        "result": "3 passed.",
+        "conclusion": "The diagnostic bound preserves tested short-queue behavior.",
+        "evidence_url": "https://example.org/evidence/custom-r1-correctness.txt",
+        "evidence_sha256": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+      },
+      {
+        "name": "Thirty-request stability run",
+        "category": "stability",
+        "status": "passed",
+        "conditions": "Target-only profile with max_num_seqs=30.",
+        "measurement": "Thirty concurrent requests repeated three times.",
+        "result": "90 of 90 requests completed; zero restarts.",
+        "conclusion": "No instability was observed in the tested stress configuration.",
+        "evidence_url": "https://example.org/evidence/custom-r1-stability.json",
+        "evidence_sha256": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      },
+      {
+        "name": "Target-only decode regression",
+        "category": "performance",
+        "status": "passed",
+        "conditions": "Candidate and recommended control on the same hardware with separate fresh JIT volumes.",
+        "measurement": "Five independent 30-second runs at concurrency 1, 4, 16, and 30.",
+        "result": "Candidate aggregate decode remained within 1.2% of the recommended control across tested cells.",
+        "conclusion": "No material target-only decode regression was observed under the listed configuration.",
+        "evidence_url": "https://example.org/evidence/custom-r1-performance.json",
+        "evidence_sha256": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+      }
+    ],
+    "performance_claims": [
+      {
+        "name": "Target-only decode parity",
+        "candidate_image": "registry.example.org/community/vllm:glm-example-scheduler-r1@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "baseline_image": "registry.example.org/community/vllm:glm-example-recommended-r4@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "benchmark_repository": "https://github.com/local-inference-lab/llm-inference-bench",
+        "benchmark_commit": "7777777777777777777777777777777777777777",
+        "candidate_command": "python3 llm_decode_bench.py --port 8000 --skip-prefill --contexts 0,8k,32k --concurrency 1,4,16,30 --duration 30 --output candidate.json",
+        "baseline_command": "python3 llm_decode_bench.py --port 8001 --skip-prefill --contexts 0,8k,32k --concurrency 1,4,16,30 --duration 30 --output baseline.json",
+        "hardware": "4 x fictional SM120 GPUs; identical power and clocks",
+        "model_revision": "example/glm-model@6666666666666666666666666666666666666666",
+        "concurrency": "1,4,16,30",
+        "input_lengths": "0,8k,32k tokens",
+        "output_length_or_duration": "30 seconds per cell",
+        "evidence_class": "qualification-evidence",
+        "experimental_unit": "One independently started and warmed server process on the fixed four-GPU host",
+        "runs": 5,
+        "run_order": "Predeclared randomized ten-run order with five candidate and five control server starts",
+        "stopping_rule": "Five independently started server runs per image",
+        "exclusions": "None; failed runs would remain in the raw evidence",
+        "aggregation": "Median aggregate tokens/second per cell; every run retained",
+        "changed_variables": [
+          "Scheduler diagnostic snapshot bound"
+        ],
+        "nuisance_variables": [
+          "Server warmup and cache state",
+          "Thermal and clock drift",
+          "Request scheduling variation"
+        ],
+        "rival_explanations": [
+          "Ordinary control run variation",
+          "Run-order drift",
+          "An unintended launch difference"
+        ],
+        "falsification_condition": "A reproducible per-cell regression outside repeated-control variation",
+        "repeated_control_variation": "Per-cell repeated-control ranges were 0.7% to 1.4%",
+        "absolute_effect": "Candidate minus control ranged from -14 to +9 aggregate tokens/second across tested cells",
+        "relative_effect": "Candidate minus control ranged from -1.2% to +0.7%; every tested cell was within 1.2% of control",
+        "uncertainty": "Across five independent runs per image, per-cell median absolute deviation was 0.3% to 0.8%; no population-level interval was claimed",
+        "raw_results_url": "https://example.org/evidence/custom-r1-performance.json",
+        "raw_results_sha256": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "result": "All tested cells were within 1.2% of the control.",
+        "conclusion": "The diagnostic-only change did not materially affect target-only decode on the tested system."
+      }
+    ]
+  },
+  "limitations": {
+    "known": [
+      "This is a fictional documentation example and is not a runnable image."
+    ],
+    "untested": [
+      "Other GPU counts, SGLang, speculative decoding, and models outside the example family were Not tested."
+    ],
+    "unsupported": [
+      "Production use of this fictional image is unsupported."
+    ]
+  },
+  "support": {
+    "owner": "Example Image Maintainer",
+    "contact": "https://example.org/community/example-image-maintainer",
+    "issue_tracker": "https://example.org/issues/glm-example-scheduler",
+    "support_thread": "https://discord.com/channels/111111111111111111/222222222222222222/333333333333333333",
+    "thread_status": "active",
+    "support_commitment": "maintained",
+    "triage_policy": "Keep reports in this thread. Escalate upstream only after reproduction on the current recommended image under an equivalent configuration or a minimal reproducer identifies the responsible source change.",
+    "superseded_by": "N/A"
+  },
+  "publication": {
+    "record_url": "https://example.org/records/example-glm-custom-r1.json",
+    "main_channel_link": "https://discord.com/channels/111111111111111111/444444444444444444/555555555555555555",
+    "main_channel_link_count": 1,
+    "bot_listing": "not-applicable",
+    "maintainer_approval_url": "N/A"
+  }
+}

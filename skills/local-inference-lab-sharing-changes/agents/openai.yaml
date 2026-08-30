@@ -1,0 +1,4 @@
+interface:
+  display_name: "Share Local Inference Lab Changes"
+  short_description: "Package patches and evidence for Discord sharing"
+  default_prompt: "Use $local-inference-lab-sharing-changes to package these changes as a traceable, validated contribution for Discord without creating GitHub work."

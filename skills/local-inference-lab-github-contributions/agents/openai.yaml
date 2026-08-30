@@ -1,0 +1,4 @@
+interface:
+  display_name: "LIL GitHub Contributions"
+  short_description: "Prepare focused issues and pull requests"
+  default_prompt: "Use $local-inference-lab-github-contributions to prepare this explicitly requested issue or pull request as a focused, stand-alone contribution with exact identities, attribution, and validation."

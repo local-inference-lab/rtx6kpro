@@ -1,0 +1,27 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "groupings": [
+    {
+      "title": "Sharing and Publishing",
+      "skills": [
+        "local-inference-lab-sharing-changes",
+        "local-inference-lab-publishing-docker"
+      ]
+    },
+    {
+      "title": "Testing and Evaluation",
+      "skills": [
+        "local-inference-lab-running-benchmarks",
+        "local-inference-lab-evaluating-prompts"
+      ]
+    },
+    {
+      "title": "Collaboration and Support",
+      "skills": [
+        "local-inference-lab-reconciling-changes",
+        "local-inference-lab-reporting-bugs",
+        "local-inference-lab-github-contributions"
+      ]
+    }
+  ]
+}

@@ -13,11 +13,17 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 ## Landing Pages And Hubs
 
 - [Glossary And Acronym Guide](GLOSSARY.md) - `GLOSSARY.md`
-- [INDEX](INDEX.md) - `INDEX.md`
+- [RTX PRO 6000 Blackwell Wiki Index](INDEX.md) - `INDEX.md`
 - [RTX PRO 6000 Blackwell LLM Wiki](README.md) - `README.md`
 
 ## Contributor And Onboarding Guides
 
+- [Changelog](docs/community-skills/CHANGELOG.md) - `docs/community-skills/CHANGELOG.md`
+- [Local Inference Lab Contribution Playbook](docs/community-skills/COMMUNITY-PLAYBOOK.md) - `docs/community-skills/COMMUNITY-PLAYBOOK.md`
+- [Local Inference Lab Community Skills](docs/community-skills/README.md) - `docs/community-skills/README.md`
+- [rtx6kpro Source Map for the Community Skills](docs/community-skills/RTX6KPRO-SOURCE-MAP.md) - `docs/community-skills/RTX6KPRO-SOURCE-MAP.md`
+- [Design Sources](docs/community-skills/SOURCES.md) - `docs/community-skills/SOURCES.md`
+- [Community Skills Validation](docs/community-skills/VALIDATION.md) - `docs/community-skills/VALIDATION.md`
 - [Newcomer Onboarding Without Lowering The Signal](docs/newcomer-onboarding.md) - `docs/newcomer-onboarding.md`
 - [ML Primitive Glossary](docs/wiki/ML-Primitive-Glossary.md) - `docs/wiki/ML-Primitive-Glossary.md`
 
@@ -409,4 +415,56 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 
 ## Other Documents
 
+- [Bound scheduler queue diagnostics](examples/example-change-package/README.md) - `examples/example-change-package/README.md`
+- [Validation Record](examples/example-change-package/TESTING.md) - `examples/example-change-package/TESTING.md`
+- [example-custom-image-link](examples/example-custom-image-link.md) - `examples/example-custom-image-link.md`
+- [GLM example scheduler experiment](examples/example-custom-image-thread.md) - `examples/example-custom-image-thread.md`
+- [Recommended Community Image: GLM example family](examples/example-recommended-image-release.md) - `examples/example-recommended-image-release.md`
+- [GLM example recommended image r5](examples/example-recommended-image-thread.md) - `examples/example-recommended-image-thread.md`
 - [KLD Evaluation Skill](scripts/kld-eval-skill.md) - `scripts/kld-eval-skill.md`
+- [Evaluating Models with Qualitative Prompts](skills/local-inference-lab-evaluating-prompts/SKILL.md) - `skills/local-inference-lab-evaluating-prompts/SKILL.md`
+- [Qualitative Prompt Run](skills/local-inference-lab-evaluating-prompts/assets/qualitative-prompt-run.template.md) - `skills/local-inference-lab-evaluating-prompts/assets/qualitative-prompt-run.template.md`
+- [Controlled Qualitative Comparisons](skills/local-inference-lab-evaluating-prompts/references/comparison-method.md) - `skills/local-inference-lab-evaluating-prompts/references/comparison-method.md`
+- [Flamingo Qualitative Prompt](skills/local-inference-lab-evaluating-prompts/references/flamingo.md) - `skills/local-inference-lab-evaluating-prompts/references/flamingo.md`
+- [Single-Page Platformer One-Shot Prompt](skills/local-inference-lab-evaluating-prompts/references/platformer.md) - `skills/local-inference-lab-evaluating-prompts/references/platformer.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-evaluating-prompts/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-evaluating-prompts/references/rtx6kpro-wiki.md`
+- [Tetris One-Shot Prompt](skills/local-inference-lab-evaluating-prompts/references/tetris.md) - `skills/local-inference-lab-evaluating-prompts/references/tetris.md`
+- [Preparing Local Inference Lab GitHub Contributions](skills/local-inference-lab-github-contributions/SKILL.md) - `skills/local-inference-lab-github-contributions/SKILL.md`
+- [Coordination Note: <semantic title>](skills/local-inference-lab-github-contributions/assets/coordination-note.template.md) - `skills/local-inference-lab-github-contributions/assets/coordination-note.template.md`
+- [<Resulting behavior: concise imperative title>](skills/local-inference-lab-github-contributions/assets/pull-request-description.template.md) - `skills/local-inference-lab-github-contributions/assets/pull-request-description.template.md`
+- [Focused GitHub Workflow](skills/local-inference-lab-github-contributions/references/github-workflow.md) - `skills/local-inference-lab-github-contributions/references/github-workflow.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-github-contributions/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-github-contributions/references/rtx6kpro-wiki.md`
+- [Publishing Local Inference Lab Docker Images](skills/local-inference-lab-publishing-docker/SKILL.md) - `skills/local-inference-lab-publishing-docker/SKILL.md`
+- [main-channel-link.template](skills/local-inference-lab-publishing-docker/assets/main-channel-link.template.md) - `skills/local-inference-lab-publishing-docker/assets/main-channel-link.template.md`
+- [Pre-publication verification checklist](skills/local-inference-lab-publishing-docker/assets/pre-publication-checklist.md) - `skills/local-inference-lab-publishing-docker/assets/pre-publication-checklist.md`
+- [Recommended Community Image: UNKNOWN — needs verification](skills/local-inference-lab-publishing-docker/assets/recommended-image-release.template.md) - `skills/local-inference-lab-publishing-docker/assets/recommended-image-release.template.md`
+- [Required Image Support Thread: UNKNOWN — needs verification](skills/local-inference-lab-publishing-docker/assets/required-image-thread.template.md) - `skills/local-inference-lab-publishing-docker/assets/required-image-thread.template.md`
+- [Docker Image Publishing Policy](skills/local-inference-lab-publishing-docker/references/image-policy.md) - `skills/local-inference-lab-publishing-docker/references/image-policy.md`
+- [Image Provenance and Reproducibility](skills/local-inference-lab-publishing-docker/references/provenance.md) - `skills/local-inference-lab-publishing-docker/references/provenance.md`
+- [Image Qualification and Performance Claims](skills/local-inference-lab-publishing-docker/references/qualification.md) - `skills/local-inference-lab-publishing-docker/references/qualification.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-publishing-docker/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-publishing-docker/references/rtx6kpro-wiki.md`
+- [Support, Escalation, and Supersession](skills/local-inference-lab-publishing-docker/references/support-lifecycle.md) - `skills/local-inference-lab-publishing-docker/references/support-lifecycle.md`
+- [Reconciling Local Inference Lab Changes](skills/local-inference-lab-reconciling-changes/SKILL.md) - `skills/local-inference-lab-reconciling-changes/SKILL.md`
+- [Merge Resolution Record: <side A> × <side B>](skills/local-inference-lab-reconciling-changes/assets/merge-resolution-record.template.md) - `skills/local-inference-lab-reconciling-changes/assets/merge-resolution-record.template.md`
+- [Merge Reconciliation](skills/local-inference-lab-reconciling-changes/references/reconciliation-method.md) - `skills/local-inference-lab-reconciling-changes/references/reconciliation-method.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-reconciling-changes/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-reconciling-changes/references/rtx6kpro-wiki.md`
+- [Reporting Local Inference Lab Bugs](skills/local-inference-lab-reporting-bugs/SKILL.md) - `skills/local-inference-lab-reporting-bugs/SKILL.md`
+- [[<engine/component>][<artifact identity>] <stand-alone symptom>](skills/local-inference-lab-reporting-bugs/assets/bug-report.template.md) - `skills/local-inference-lab-reporting-bugs/assets/bug-report.template.md`
+- [Evidence-Bounded Diagnosis](skills/local-inference-lab-reporting-bugs/references/diagnostic-method.md) - `skills/local-inference-lab-reporting-bugs/references/diagnostic-method.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-reporting-bugs/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-reporting-bugs/references/rtx6kpro-wiki.md`
+- [Support and Upstream Routing](skills/local-inference-lab-reporting-bugs/references/support-routing.md) - `skills/local-inference-lab-reporting-bugs/references/support-routing.md`
+- [Running Local Inference Lab Benchmarks](skills/local-inference-lab-running-benchmarks/SKILL.md) - `skills/local-inference-lab-running-benchmarks/SKILL.md`
+- [Benchmark Report: UNKNOWN — needs verification](skills/local-inference-lab-running-benchmarks/assets/benchmark-report.template.md) - `skills/local-inference-lab-running-benchmarks/assets/benchmark-report.template.md`
+- [Benchmark Run Record](skills/local-inference-lab-running-benchmarks/assets/benchmark-run-record.template.md) - `skills/local-inference-lab-running-benchmarks/assets/benchmark-run-record.template.md`
+- [Baseline Suite Selection](skills/local-inference-lab-running-benchmarks/references/baseline-suites.md) - `skills/local-inference-lab-running-benchmarks/references/baseline-suites.md`
+- [Experimental Method for Inference Benchmarks](skills/local-inference-lab-running-benchmarks/references/experimental-method.md) - `skills/local-inference-lab-running-benchmarks/references/experimental-method.md`
+- [Running `local-inference-lab/llm-inference-bench`](skills/local-inference-lab-running-benchmarks/references/llm-inference-bench.md) - `skills/local-inference-lab-running-benchmarks/references/llm-inference-bench.md`
+- [Benchmark Reporting](skills/local-inference-lab-running-benchmarks/references/reporting.md) - `skills/local-inference-lab-running-benchmarks/references/reporting.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-running-benchmarks/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-running-benchmarks/references/rtx6kpro-wiki.md`
+- [Statistical Comparison for Inference Results](skills/local-inference-lab-running-benchmarks/references/statistical-comparison.md) - `skills/local-inference-lab-running-benchmarks/references/statistical-comparison.md`
+- [Sharing Local Inference Lab Changes](skills/local-inference-lab-sharing-changes/SKILL.md) - `skills/local-inference-lab-sharing-changes/SKILL.md`
+- [UNKNOWN — needs verification](skills/local-inference-lab-sharing-changes/assets/package/README.template.md) - `skills/local-inference-lab-sharing-changes/assets/package/README.template.md`
+- [Validation Record](skills/local-inference-lab-sharing-changes/assets/package/TESTING.template.md) - `skills/local-inference-lab-sharing-changes/assets/package/TESTING.template.md`
+- [Community Writing and Evidence Rules](skills/local-inference-lab-sharing-changes/references/community-writing.md) - `skills/local-inference-lab-sharing-changes/references/community-writing.md`
+- [Portable Change Package](skills/local-inference-lab-sharing-changes/references/package-format.md) - `skills/local-inference-lab-sharing-changes/references/package-format.md`
+- [RTX PRO 6000 Blackwell Wiki Sources](skills/local-inference-lab-sharing-changes/references/rtx6kpro-wiki.md) - `skills/local-inference-lab-sharing-changes/references/rtx6kpro-wiki.md`

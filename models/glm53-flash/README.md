@@ -37,7 +37,7 @@ The runtime contract is:
 ## Image and source recipe
 
 The final qualified image ID is
-`sha256:1d43855573a38e90215b785fb158498bb3654d75c45cef258c512e08c0036ffb`.
+`sha256:67967ddac438bec8393a2822d00c532f1417fc34eb7652c46ec9a2040559a05a`.
 It is a fleet-qualified local artifact, not a published public-registry
 digest. The launcher therefore requires `IMAGE` and rejects any local tag
 that does not resolve to that exact ID. Do not invent or substitute a registry
@@ -46,7 +46,7 @@ location.
 The qualified r10 source recipe consists of:
 
 - LMCache
-  [`c43866fa9aecd18a7c9f49fa791fdad0655506da`](https://github.com/local-inference-lab/LMCache/commit/c43866fa9aecd18a7c9f49fa791fdad0655506da);
+  [`fb167fed58b5f3b4d3e050efcffcea9b5b70f715`](https://github.com/local-inference-lab/LMCache/commit/fb167fed58b5f3b4d3e050efcffcea9b5b70f715);
 - vLLM transfer-mode validator
   [`b39d501b26`](https://github.com/local-inference-lab/vllm/commit/b39d501b26cbc2acd449b00188ee6321aecc407e)
   ([PR #553](https://github.com/local-inference-lab/vllm/pull/553));
@@ -71,7 +71,7 @@ export CACHE_DIR=/path/to/writable-glm53-cache
 Render without starting services:
 
 ```bash
-IMAGE=sha256:1d43855573a38e90215b785fb158498bb3654d75c45cef258c512e08c0036ffb \
+IMAGE=sha256:67967ddac438bec8393a2822d00c532f1417fc34eb7652c46ec9a2040559a05a \
 MODEL_DIR=/path/to/glm-5.3-flash \
 CACHE_DIR=/path/to/writable-glm53-cache \
 ./scripts/run-glm53-flash-jovian-cumem-compose.sh config

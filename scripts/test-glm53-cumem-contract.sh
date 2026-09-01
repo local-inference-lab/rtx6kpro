@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COMPOSE_FILE="${ROOT_DIR}/compose/glm53-flash-nvfp4-jovian-cumem.yml"
 LAUNCHER="${ROOT_DIR}/scripts/run-glm53-flash-jovian-cumem-compose.sh"
 README="${ROOT_DIR}/models/glm53-flash/README.md"
-IMAGE_ID="sha256:1d43855573a38e90215b785fb158498bb3654d75c45cef258c512e08c0036ffb"
+IMAGE_ID="sha256:67967ddac438bec8393a2822d00c532f1417fc34eb7652c46ec9a2040559a05a"
 
 for path in "${COMPOSE_FILE}" "${LAUNCHER}" "${README}"; do
   [[ -f "${path}" ]] || {
@@ -75,7 +75,7 @@ grep -Fq -- "${IMAGE_ID}" "${LAUNCHER}"
 grep -Fq -- '--profile cumem' "${LAUNCHER}"
 grep -Fq -- 'stop -t 90 server' "${LAUNCHER}"
 grep -Fq -- 'stop -t 90 lmcache' "${LAUNCHER}"
-grep -Fq -- 'c43866fa9aecd18a7c9f49fa791fdad0655506da' "${README}"
+grep -Fq -- 'fb167fed58b5f3b4d3e050efcffcea9b5b70f715' "${README}"
 grep -Fq -- 'b39d501b26' "${README}"
 grep -Fq -- '88cff3d5a9' "${README}"
 grep -Fq -- '129/129' "${README}"

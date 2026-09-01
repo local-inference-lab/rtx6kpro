@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 COMPOSE_FILE="${COMPOSE_FILE:-${ROOT_DIR}/compose/glm53-flash-nvfp4-jovian-cumem.yml}"
-EXPECTED_IMAGE_ID="sha256:1d43855573a38e90215b785fb158498bb3654d75c45cef258c512e08c0036ffb"
+EXPECTED_IMAGE_ID="sha256:67967ddac438bec8393a2822d00c532f1417fc34eb7652c46ec9a2040559a05a"
 
 IMAGE="${IMAGE:?set IMAGE to a local tag or ID for the fleet-qualified image}"
 MODEL_DIR="${MODEL_DIR:?set MODEL_DIR to the downloaded GLM-5.3 checkpoint}"

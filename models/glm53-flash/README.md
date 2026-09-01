@@ -54,8 +54,7 @@ The qualified r10 source recipe consists of:
 - graceful worker shutdown
   [`88cff3d5a9`](https://github.com/local-inference-lab/vllm/commit/88cff3d5a98b95df9ceeff77aa676ef2f18a03b6)
   ([PR #554](https://github.com/local-inference-lab/vllm/pull/554)); and
-- the
-  [fleet qualification receipt](https://github.com/Apple-Federal-Credit-Union/fleet-infra/pull/310).
+- the runtime qualification evidence recorded in this profile.
 
 Because the KV-only allocator PR is pending and the final image is not
 published, these pins document provenance but are not presented as a

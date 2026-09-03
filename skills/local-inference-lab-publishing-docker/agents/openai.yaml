@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Local Inference Lab Docker"
+  short_description: "Publish and support traceable Docker images"
+  default_prompt: "Use $local-inference-lab-publishing-docker to prepare this image under the recommended/custom policy with immutable provenance, qualification evidence, and its required support route."

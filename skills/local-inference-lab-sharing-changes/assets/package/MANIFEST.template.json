@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "package_id": "UNKNOWN — needs verification",
+  "title": "UNKNOWN — needs verification",
+  "summary": "UNKNOWN — needs verification",
+  "kind": "patch-set",
+  "qualification_status": "implemented",
+  "delivery_route": "shareable-package",
+  "community_wiki": {
+    "repository": "https://github.com/local-inference-lab/rtx6kpro",
+    "commit": "UNKNOWN — needs verification",
+    "runbook_path": "UNKNOWN — needs verification",
+    "runbook_url": "UNKNOWN — needs verification",
+    "relationship": "UNKNOWN — needs verification"
+  },
+  "authors": [
+    {
+      "name": "UNKNOWN — needs verification",
+      "contact": "N/A"
+    }
+  ],
+  "base": {
+    "type": "git",
+    "description": "UNKNOWN — needs verification",
+    "repository": "UNKNOWN — needs verification",
+    "commit": "UNKNOWN — needs verification",
+    "image": "N/A",
+    "digest": "N/A",
+    "archive_sha256": "N/A"
+  },
+  "changes": {
+    "inherited": [
+      "UNKNOWN — needs verification"
+    ],
+    "introduced": [
+      "UNKNOWN — needs verification"
+    ],
+    "compatibility_impact": [
+      "UNKNOWN — needs verification"
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "patches/0001-contribution.patch",
+      "kind": "git-format-patch",
+      "sha256": "UNKNOWN — needs verification",
+      "purpose": "UNKNOWN — needs verification",
+      "apply_command": "git am patches/0001-contribution.patch",
+      "revert_command": "UNKNOWN — needs verification"
+    }
+  ],
+  "validation": {
+    "commands": [
+      "Not tested"
+    ],
+    "results": [
+      {
+        "name": "Validation status",
+        "conditions": "Not tested",
+        "measurement": "Not tested",
+        "result": "Not tested",
+        "conclusion": "Not tested",
+        "evidence": [
+          "N/A"
+        ]
+      }
+    ]
+  },
+  "limitations": {
+    "known": [
+      "UNKNOWN — needs verification"
+    ],
+    "untested": [
+      "Not tested"
+    ],
+    "unsupported": [
+      "UNKNOWN — needs verification"
+    ]
+  },
+  "support": {
+    "statement": "UNKNOWN — needs verification",
+    "contact": "N/A"
+  }
+}

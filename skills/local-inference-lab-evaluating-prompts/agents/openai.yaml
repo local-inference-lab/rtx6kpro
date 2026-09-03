@@ -1,0 +1,4 @@
+interface:
+  display_name: "LIL Evaluating Prompts"
+  short_description: "Run repeatable one-shot coding comparisons"
+  default_prompt: "Use $local-inference-lab-evaluating-prompts to run a controlled one-shot coding comparison, preserve the exact prompt and generated files, and separate the original result from repairs."

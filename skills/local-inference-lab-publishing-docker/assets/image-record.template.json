@@ -1,0 +1,220 @@
+{
+  "schema_version": 4,
+  "record_id": "UNKNOWN — needs verification",
+  "title": "UNKNOWN — needs verification",
+  "summary": "UNKNOWN — needs verification",
+  "model_family": "UNKNOWN — needs verification",
+  "release_class": "experimental",
+  "distribution_role": "custom",
+  "qualification_status": "implemented",
+  "maintenance_status": "ephemeral",
+  "image": {
+    "repository": "UNKNOWN — needs verification",
+    "tag": "UNKNOWN — needs verification",
+    "digest": "UNKNOWN — needs verification",
+    "reference": "UNKNOWN — needs verification"
+  },
+  "base_image": {
+    "repository": "UNKNOWN — needs verification",
+    "tag": "UNKNOWN — needs verification",
+    "digest": "UNKNOWN — needs verification",
+    "reference": "UNKNOWN — needs verification",
+    "credit": "UNKNOWN — needs verification"
+  },
+  "recommended_image": {
+    "reference": "UNKNOWN — needs verification",
+    "relationship": "Comparison and upstream support control for this model family"
+  },
+  "community_wiki": {
+    "repository": "https://github.com/local-inference-lab/rtx6kpro",
+    "commit": "UNKNOWN — needs verification",
+    "runbook_path": "UNKNOWN — needs verification",
+    "runbook_url": "UNKNOWN — needs verification",
+    "relationship": "UNKNOWN — needs verification"
+  },
+  "build": {
+    "recipe_url": "UNKNOWN — needs verification",
+    "recipe_commit": "UNKNOWN — needs verification",
+    "build_command": "UNKNOWN — needs verification",
+    "components": [
+      {
+        "name": "vllm-or-sglang",
+        "repository": "UNKNOWN — needs verification",
+        "commit": "UNKNOWN — needs verification",
+        "release_reference": "N/A",
+        "pull_requests": [
+          {
+            "url": "N/A",
+            "head_commit": "N/A",
+            "title": "N/A",
+            "authors": [
+              "N/A"
+            ]
+          }
+        ],
+        "patches": [
+          {
+            "path_or_url": "N/A",
+            "sha256": "N/A",
+            "purpose": "N/A",
+            "authors": [
+              "N/A"
+            ]
+          }
+        ],
+        "overlays": [
+          {
+            "source": "N/A",
+            "destination": "N/A",
+            "old_sha256": "N/A",
+            "new_sha256": "N/A",
+            "purpose": "N/A"
+          }
+        ]
+      },
+      {
+        "name": "b12x",
+        "repository": "UNKNOWN — needs verification",
+        "commit": "UNKNOWN — needs verification",
+        "release_reference": "N/A",
+        "pull_requests": [],
+        "patches": [],
+        "overlays": []
+      }
+    ],
+    "package_changes": [
+      "N/A"
+    ],
+    "build_arguments": [
+      "N/A"
+    ],
+    "environment_defaults": [
+      "N/A"
+    ],
+    "entrypoint_changes": [
+      "N/A"
+    ],
+    "result_tree": "N/A",
+    "integration_patch_sha256": "N/A"
+  },
+  "changes": {
+    "inherited": [
+      "UNKNOWN — needs verification"
+    ],
+    "introduced": [
+      "UNKNOWN — needs verification"
+    ],
+    "compatibility_impact": [
+      "UNKNOWN — needs verification"
+    ]
+  },
+  "tested_configurations": [
+    {
+      "name": "UNKNOWN — needs verification",
+      "hardware": "UNKNOWN — needs verification",
+      "topology": "UNKNOWN — needs verification",
+      "power_and_clocks": "UNKNOWN — needs verification",
+      "driver": "UNKNOWN — needs verification",
+      "cuda_runtime": "UNKNOWN — needs verification",
+      "pytorch": "UNKNOWN — needs verification",
+      "nccl": "UNKNOWN — needs verification",
+      "engine_source": "UNKNOWN — needs verification",
+      "model_revision": "UNKNOWN — needs verification",
+      "quantization": "UNKNOWN — needs verification",
+      "parallelism": "UNKNOWN — needs verification",
+      "kv_cache": "UNKNOWN — needs verification",
+      "speculative_mode": "UNKNOWN — needs verification",
+      "graph_mode": "UNKNOWN — needs verification",
+      "scheduler_limits": "UNKNOWN — needs verification",
+      "cache_policy": "UNKNOWN — needs verification",
+      "launch_command": "UNKNOWN — needs verification"
+    }
+  ],
+  "validation": {
+    "commands": [
+      "Not tested"
+    ],
+    "results": [
+      {
+        "name": "Startup and focused regression checks",
+        "status": "not-tested",
+        "conditions": "Not tested",
+        "measurement": "Not tested",
+        "result": "Not tested",
+        "conclusion": "Not tested",
+        "evidence_url": "N/A",
+        "evidence_sha256": "N/A",
+        "category": "smoke"
+      }
+    ],
+    "performance_claims": [
+      {
+        "name": "N/A",
+        "candidate_image": "N/A",
+        "baseline_image": "N/A",
+        "benchmark_repository": "N/A",
+        "benchmark_commit": "N/A",
+        "candidate_command": "N/A",
+        "baseline_command": "N/A",
+        "hardware": "N/A",
+        "model_revision": "N/A",
+        "concurrency": "N/A",
+        "input_lengths": "N/A",
+        "output_length_or_duration": "N/A",
+        "evidence_class": "N/A",
+        "experimental_unit": "N/A",
+        "runs": "N/A",
+        "run_order": "N/A",
+        "stopping_rule": "N/A",
+        "exclusions": "N/A",
+        "aggregation": "N/A",
+        "changed_variables": [
+          "N/A"
+        ],
+        "nuisance_variables": [
+          "N/A"
+        ],
+        "rival_explanations": [
+          "N/A"
+        ],
+        "falsification_condition": "N/A",
+        "repeated_control_variation": "Not tested",
+        "absolute_effect": "N/A",
+        "relative_effect": "N/A",
+        "uncertainty": "N/A",
+        "raw_results_url": "N/A",
+        "raw_results_sha256": "N/A",
+        "result": "N/A",
+        "conclusion": "N/A"
+      }
+    ]
+  },
+  "limitations": {
+    "known": [
+      "UNKNOWN — needs verification"
+    ],
+    "untested": [
+      "Not tested"
+    ],
+    "unsupported": [
+      "UNKNOWN — needs verification"
+    ]
+  },
+  "support": {
+    "owner": "UNKNOWN — needs verification",
+    "contact": "UNKNOWN — needs verification",
+    "issue_tracker": "N/A",
+    "support_thread": "UNKNOWN — needs verification",
+    "thread_status": "active",
+    "support_commitment": "ephemeral",
+    "triage_policy": "Keep reports in this thread. Escalate upstream only after reproduction on the recommended image or a minimal reproducer identifies the responsible source change.",
+    "superseded_by": "N/A"
+  },
+  "publication": {
+    "record_url": "UNKNOWN — needs verification",
+    "main_channel_link": "N/A",
+    "main_channel_link_count": 0,
+    "bot_listing": "not-applicable",
+    "maintainer_approval_url": "N/A"
+  }
+}

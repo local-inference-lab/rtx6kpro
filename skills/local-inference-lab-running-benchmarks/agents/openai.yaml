@@ -1,0 +1,4 @@
+interface:
+  display_name: "LIL Running Benchmarks"
+  short_description: "Run controlled model and quant benchmarks"
+  default_prompt: "Use $local-inference-lab-running-benchmarks to compare this model, quant, image, or runtime change against a pinned control with exact commands, raw evidence, and a bounded conclusion."

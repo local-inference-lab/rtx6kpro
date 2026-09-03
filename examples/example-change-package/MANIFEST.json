@@ -1,0 +1,84 @@
+{
+  "schema_version": 2,
+  "package_id": "example-bound-scheduler-diagnostics",
+  "title": "Bound scheduler queue diagnostics",
+  "summary": "Limit the diagnostic pending-queue snapshot to 1,024 entries without changing scheduler admission behavior.",
+  "kind": "patch-set",
+  "qualification_status": "implemented",
+  "delivery_route": "shareable-package",
+  "community_wiki": {
+    "repository": "https://github.com/local-inference-lab/rtx6kpro",
+    "commit": "4126fc06692c6ab042b0cd37d5062893fa402f47",
+    "runbook_path": "README.md",
+    "runbook_url": "https://github.com/local-inference-lab/rtx6kpro/blob/4126fc06692c6ab042b0cd37d5062893fa402f47/README.md",
+    "relationship": "Public field-wiki landing page included as a format reference; this source package is a fictional example."
+  },
+  "authors": [
+    {
+      "name": "Example Contributor",
+      "contact": "N/A"
+    }
+  ],
+  "base": {
+    "type": "git",
+    "description": "Source tree before the diagnostic snapshot bound",
+    "repository": "https://github.com/example/local-runtime",
+    "commit": "1111111111111111111111111111111111111111",
+    "image": "N/A",
+    "digest": "N/A",
+    "archive_sha256": "N/A"
+  },
+  "changes": {
+    "inherited": [
+      "The base materializes pending scheduler entries for diagnostics."
+    ],
+    "introduced": [
+      "The diagnostic snapshot is capped at 1,024 entries."
+    ],
+    "compatibility_impact": [
+      "Debug consumers receive at most 1,024 pending entries per snapshot."
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "patches/0001-bound-scheduler-queue.patch",
+      "kind": "git-format-patch",
+      "sha256": "sha256:4a395fb53017512cab043a5a3f9afcb3ac107f24f014ce3c1a00606b75911751",
+      "purpose": "Apply the bounded diagnostic snapshot while preserving commit metadata.",
+      "apply_command": "git am patches/0001-bound-scheduler-queue.patch",
+      "revert_command": "git revert 2222222222222222222222222222222222222222"
+    }
+  ],
+  "validation": {
+    "commands": [
+      "python -m pytest tests/test_scheduler.py -q"
+    ],
+    "results": [
+      {
+        "name": "Scheduler diagnostic unit tests",
+        "conditions": "Clean base plus the included patch; 2,048-entry queue fixture.",
+        "measurement": "Three deterministic unit tests.",
+        "result": "3 passed in 0.18s.",
+        "conclusion": "The diagnostic snapshot is bounded without changing empty and short-queue behavior.",
+        "evidence": [
+          "evidence/test-output.txt"
+        ]
+      }
+    ]
+  },
+  "limitations": {
+    "known": [
+      "No latency benchmark for queues larger than 1,024 entries."
+    ],
+    "untested": [
+      "End-to-end server behavior was Not tested in this fictional example."
+    ],
+    "unsupported": [
+      "N/A"
+    ]
+  },
+  "support": {
+    "statement": "One-off fictional example; no ongoing support promised.",
+    "contact": "N/A"
+  }
+}

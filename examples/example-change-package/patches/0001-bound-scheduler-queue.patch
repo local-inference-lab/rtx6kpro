@@ -1,0 +1,18 @@
+From 2222222222222222222222222222222222222222 Mon Sep 17 00:00:00 2001
+From: Example Contributor <example.invalid@example.invalid>
+Date: Fri, 28 Aug 2026 20:00:00 +0000
+Subject: [PATCH] Bound scheduler queue diagnostics
+
+---
+ scheduler.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scheduler.py b/scheduler.py
+index 1111111..2222222 100644
+--- a/scheduler.py
++++ b/scheduler.py
+@@ -10,7 +10,7 @@ def pending_requests(queue):
+-    return list(queue)
++    return list(queue)[:1024]
+-- 
+2.50.0

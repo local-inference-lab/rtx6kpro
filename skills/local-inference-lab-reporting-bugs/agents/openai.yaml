@@ -1,0 +1,4 @@
+interface:
+  display_name: "LIL Reporting Bugs"
+  short_description: "Build reproducible reports and route ownership"
+  default_prompt: "Use $local-inference-lab-reporting-bugs to reduce this failure to a reproducible package, compare the applicable control, and route it only when evidence identifies the owner."

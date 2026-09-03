@@ -32,6 +32,22 @@ Need the complete map of every Markdown page?
 | [Glossary And Acronym Guide](GLOSSARY.md) | Acronym expansions and writing rules for newcomer-friendly docs. |
 | [Newcomer Onboarding](docs/newcomer-onboarding.md) | How to ask useful questions without lowering the technical signal. |
 
+## Community Inference Skills
+
+Seven repository-native Agent Skills provide evidence-bounded workflows for Local Inference Lab contributions:
+
+| Skill | Use |
+|---|---|
+| [Sharing changes](skills/local-inference-lab-sharing-changes/SKILL.md) | Package patches, files, reproducers, and evidence without requiring GitHub. |
+| [Publishing Docker images](skills/local-inference-lab-publishing-docker/SKILL.md) | Publish immutable image provenance, qualification evidence, and support routing. |
+| [Running benchmarks](skills/local-inference-lab-running-benchmarks/SKILL.md) | Run controlled, repeatable performance and quality comparisons. |
+| [Evaluating prompts](skills/local-inference-lab-evaluating-prompts/SKILL.md) | Preserve prompts, outputs, rubrics, and qualitative observations. |
+| [Reconciling changes](skills/local-inference-lab-reconciling-changes/SKILL.md) | Integrate overlapping implementations without losing intent or attribution. |
+| [Reporting bugs](skills/local-inference-lab-reporting-bugs/SKILL.md) | Produce minimal reproducers and evidence-based owner routing. |
+| [GitHub contributions](skills/local-inference-lab-github-contributions/SKILL.md) | Prepare focused issues or pull requests when GitHub is explicitly selected. |
+
+See the [community-skills overview and installation guide](docs/community-skills/README.md), [contribution playbook](docs/community-skills/COMMUNITY-PLAYBOOK.md), [source map](docs/community-skills/RTX6KPRO-SOURCE-MAP.md), and [release notes](docs/community-skills/CHANGELOG.md).
+
 ## What Is In This Repository?
 
 | Need | Where |

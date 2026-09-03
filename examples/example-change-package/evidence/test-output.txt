@@ -1,0 +1,2 @@
+$ python -m pytest tests/test_scheduler.py -q
+3 passed in 0.18s

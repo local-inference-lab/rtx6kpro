@@ -43,6 +43,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [DeepSeek-V4-Flash-0731 Infernal Invocation r4](models/ds4dspark-infernal-invocation-r4.md) - `models/ds4dspark-infernal-invocation-r4.md`
 - [DeepSeek-V4-Flash-0731 Infernal Invocation r7](models/ds4dspark-infernal-invocation-r7.md) - `models/ds4dspark-infernal-invocation-r7.md`
 - [DeepSeek-V4-Flash-0731 Infernal Invocation r9](models/ds4dspark-infernal-invocation-r9.md) - `models/ds4dspark-infernal-invocation-r9.md`
+- [DeepSeek-V4-Flash DSpark — True 4-bit (NVFP4) KV Cache on 2× GPUs](models/ds4dspark-nvfp4-kv.md) - `models/ds4dspark-nvfp4-kv.md`
 - [DeepSeek-V4-Flash and DSpark v10](models/ds4dspark-v10.md) - `models/ds4dspark-v10.md`
 - [DeepSeek-V4-Flash-0731 DSpark on Gilded Gnosis r15](models/ds4dspark-v20-r15.md) - `models/ds4dspark-v20-r15.md`
 - [DeepSeek-V4-Flash-0731 DSpark: Gilded Gnosis r16](models/ds4dspark-v20-r16.md) - `models/ds4dspark-v20-r16.md`
@@ -85,7 +86,6 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [GLM-5.1 v8 DCP Graph Fix on 8x RTX PRO 6000 Blackwell](models/glm5.1_v8.md) - `models/glm5.1_v8.md`
 - [GLM-5.1 v9 BF16 TP16 DCP8 on 16x RTX PRO 6000 Blackwell](models/glm5.1_v9.md) - `models/glm5.1_v9.md`
 - [CUTLASS DSL 4.6 SM120 W4A16 Prefill Regression](models/glm5.2/cutlass-dsl-46-w4a16-regression-2026-07-18.md) - `models/glm5.2/cutlass-dsl-46-w4a16-regression-2026-07-18.md`
-- [GLM-5.2 BF16 to EXL3-TR3 3.0 bpw: Calibrated-LDLQ Conversion Recipe (incl. MTP layer 78)](models/glm5.2/glm52-exl3-tr3-quantization-2026-07-26.md) - `models/glm5.2/glm52-exl3-tr3-quantization-2026-07-26.md`
 - [GLM-5.2 GGUF to BF16 Dequant KLD Audit](models/glm5.2/glm52-gguf-bf16-dequant-kld-2026-07-08.md) - `models/glm5.2/glm52-gguf-bf16-dequant-kld-2026-07-08.md`
 - [GLM-5.2 Unsloth-Style Prefill KLD Reproduction](models/glm5.2/glm52-unsloth-style-prefill-kld-2026-07-07.md) - `models/glm5.2/glm52-unsloth-style-prefill-kld-2026-07-07.md`
 - [GLM-5.2 Infernal Invocation r11](models/glm5.2-infernal-invocation-r11.md) - `models/glm5.2-infernal-invocation-r11.md`

@@ -196,6 +196,14 @@ Checkpoints without calibrated KV scales default to BF16 KV cache:
 
 **Kimi K2.5 (SGLang):** FP8 KV on the original INT4 checkpoint drops to 16 tok/s. The NVFP4 checkpoint supports FP8 KV at 55 tok/s.
 
+### True 4-bit KV Cache (nvfp4_ds_mla) — DeepSeek-V4-Flash DSpark
+
+DeepSeek-V4-Flash sparse-MLA on 2× GPUs supports a true 4-bit E2M1 KV cache via
+a community patch series on the DSpark stack: 1.47× more KV tokens per GiB than
+fp8_ds_mla, +25–34% decode (bandwidth-bound gathers move fewer bytes), needle
+recall verified past 1M real tokens, and a zero-diff fp8 path on the same build.
+See [DS4-Flash DSpark NVFP4-KV](../models/ds4dspark-nvfp4-kv.md).
+
 ---
 
 ## CARVE: Unlocked/Abliterated Models

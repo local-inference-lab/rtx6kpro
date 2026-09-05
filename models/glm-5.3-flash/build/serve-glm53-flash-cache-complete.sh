@@ -141,8 +141,8 @@ if [[ ${mamba_block_size} != auto ]]; then
   ((mamba_block_size % 64 == 0)) ||
     fail "GLM53_MAMBA_BLOCK_SIZE must be a multiple of 64; got ${mamba_block_size}"
   if [[ ${target_block_size} != auto ]] &&
-    ((mamba_block_size % target_block_size != 0)); then
-    fail "GLM53_MAMBA_BLOCK_SIZE must be a multiple of GLM53_TARGET_BLOCK_SIZE"
+    ((mamba_block_size % target_block_size != 0 && target_block_size % mamba_block_size != 0)); then
+    fail "GLM53_MAMBA_BLOCK_SIZE must be a multiple or divisor of GLM53_TARGET_BLOCK_SIZE"
   fi
 fi
 

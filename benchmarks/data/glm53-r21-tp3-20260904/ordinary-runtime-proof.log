@@ -1,0 +1,16 @@
+Qualification image: sha256:dbdc64cb31b0c2bc1a0bbd5eaa4e5a91a1539333123547cc6de9b08c426bf6c1 (local, unpublished), runtime 01c67936a364009ff6b42e8bd10a01628d1e7078.
+Clean-run precondition: the existing inference service was stopped; no containers or GPU compute processes remained before launch.
+(Worker pid=532) INFO 09-04 22:05:41 [b12x_pcie_all_reduce.py:244] Using B12X PCIe all-reduce (algorithm=oneshot, one-shot max=86016, fused max=86016, two-shot bf16 max=off, DMA min=6291456).
+(Worker pid=532) INFO 09-04 22:05:41 [cuda_communicator.py:318] Using ['B12X_PCIE', 'PYNCCL'] all-reduce backends (in dispatch order) for group 'tp:0'.
+(Worker pid=532) INFO 09-04 22:05:41 [cuda_communicator.py:318] Using ['PYNCCL'] all-reduce backends (in dispatch order) for group 'ep:0'.
+(Worker_TP0_EP0 pid=532) INFO 09-04 22:05:43 [nvfp4.py:304] Using 'FLASHINFER_CUTLASS' NvFp4 MoE backend.
+(Worker_TP1_EP1 pid=533) INFO 09-04 22:16:17 [model_runner.py:410] Model loading took 60.88 GiB memory and 635.670212 seconds.
+(Worker_TP2_EP2 pid=534) INFO 09-04 22:16:17 [model_runner.py:410] Model loading took 60.88 GiB memory and 635.677503 seconds.
+(Worker_TP0_EP0 pid=532) INFO 09-04 22:16:17 [model_runner.py:410] Model loading took 60.88 GiB memory and 635.693214 seconds.
+(Worker_TP0_EP0 pid=532) INFO 09-04 22:16:17 [utils.py:118] GLM53_R17_TP3_RUNTIME_PROOF {"collective_backend":"b12x_pcie_oneshot","expert_parallel_size":3,"kda_decode_backend":"b12x","kda_prefill_backend":"flashkda","mm_encoder_tp_mode":"weights"}.
+(Worker_TP0_EP0 pid=532) INFO 09-04 22:16:43 [model_runner.py:993] Graph capturing finished in 5 secs, took 0.24 GiB.
+(EngineCore pid=515) INFO 09-04 22:16:44 [kv_cache_utils.py:2205] GPU KV cache size: 3,074,098 tokens, Maximum concurrency for 1,048,576 tokens per request: 2.93x.
+(Worker_TP0_EP0 pid=532) INFO 09-04 22:16:51 [model_runner.py:993] Graph capturing finished in 7 secs, took 0.18 GiB.
+(APIServer pid=1) INFO: Application startup complete.
+Text smoke: response content was exactly `TP3 ordinary release works`; finish reason `stop`.
+Cleanup: the qualification container exited with status 0 and was removed.

@@ -7,19 +7,23 @@
 <p align="center"><em>Jovian Judgement branch logo, published by Luke for
 Local Inference Lab.</em></p>
 
-This page specifies the qualified GLM-5.3-Flash deployment for four NVIDIA RTX
-PRO 6000 Blackwell Workstation Edition GPUs. The runtime serves the
+This page specifies GLM-5.3-Flash deployments for NVIDIA RTX PRO 6000
+Blackwell Workstation Edition GPUs. The main published R25 image is qualified
+at TP4. A separate published, pull-ready R21 source-overlay child is
+hardware-qualified at TP3 for the
 `local-inference-lab/GLM-5.3-Flash-NVFP4` target checkpoint without
-speculation, with three-token Multi-Token Prediction (MTP), or with the
+speculation, with three-token Multi-Token Prediction (MTP), and with the
 `local-inference-lab/GLM-5.3-Flash-DFlash2` draft checkpoint.
 
-The commands use Hugging Face repository names and named Docker volumes. They
-do not require checkpoint paths or source-code bind mounts.
+The published-artifact commands use Hugging Face repository names and named
+Docker volumes. The TP3 evidence remains locked to its three R21 review heads
+and the R21 child; it does not qualify the main published R25 image at TP3.
 
 ## Status
 
 | Capability | Status |
 |---|---|
+| Tensor parallelism of three with expert parallelism of three | **qualified and published** as the pull-ready R21 child for no speculation, MTP depth 3, and DFlash2 depth 7; exact heads and evidence are linked below |
 | Tensor parallelism of four with one decode-context rank | **qualified** for no speculation, MTP depth 3, and DFlash2 depth 7 |
 | Tensor parallelism of four with four decode-context ranks | **qualified** for the same three serving modes, including complete-KV prefill |
 | Two decode-context ranks | **implemented**; not independently performance-qualified for this artifact |
@@ -77,22 +81,74 @@ The vLLM and B12X packages are byte-identical to the qualified R24 package
 trees. The R25 package replaces the LMCache Python control plane with the
 retrieve fast path specified below; native extensions are unchanged.
 
+### R21 TP3 qualification overlay
+
+The published R21 parent is
+`voipmonitor/vllm@sha256:f096012c508f9bc12e8c4e617b8ed19da3a2cecb525e9479904e848730f0c8ac`.
+It has embedded source-lock SHA-256
+`e7adbbb9833b5cb1716bfc673a343b538b96672bad94d78753d1fd3c87940026`.
+That parent does not contain the TP3 launcher or ported sources. The published
+child was built from `Dockerfile.glm53-r21-tp3-overlay` at runtime commit
+`01c67936a364009ff6b42e8bd10a01628d1e7078`. The child hard-pins the parent
+digest, vLLM commit `e96b18dbb8c19230591e79e0ed056b12947b2ea1`, B12X commit
+`6d47b10eddf408799796650baf3e802bd56bf844`, and exact target and DFlash2
+revisions. Its canonical source-lock SHA-256 is
+`21fd2d6ffa3e842ee656f780a8530cce0ffb6601dfa47a5138409247ec4df0d4`.
+
+The pull-ready child is published with the immutable digest first and the
+convenience tag second:
+
+```text
+infernix/vllm@sha256:e81f9399aa9fe800593cc8f646d8a2c7958e1938da50c5ae65effbe47d8604eb
+infernix/vllm:glm53-r21-tp3-qualified-vllme96b18dbb8c1-b12x6d47b10eddf4-recipe01c67936a364
+```
+
+The convenience tag is not immutable; use the digest for reproducible pulls.
+The qualified image config ID is
+`sha256:dbdc64cb31b0c2bc1a0bbd5eaa4e5a91a1539333123547cc6de9b08c426bf6c1`.
+It is the config ID, not the manifest digest or a pull reference.
+
+That exact child passed startup and inference in ordinary, MTP3, and DFlash2
+K7 modes. DFlash2 additionally passed an eight-request concurrent text smoke,
+a red-image vision smoke, and exact 1,000,031-prompt-token natural-context retrieval
+of `ORCHID-7319`. The same child passed a four-accelerator TP4 MTP3 regression
+against the pinned target revision.
+The packaged B12X profile suites passed 122 tests with one skip, and the exact
+SM120 source gates passed all 11 regressions.
+
+The fail-closed TP3 launcher policy in
+[PR local-inference-lab/blackwell-llm-docker#30](https://github.com/local-inference-lab/blackwell-llm-docker/pull/30)
+accepts only dense `CACHE_MODE=vram` under TP=3 and rejects `CACHE_MODE`
+values `native` and `lmcache` with exit status 2 before service startup. TP3
+accepts no caller CLI arguments: mode selection is environment-based, and
+every qualified geometry, scheduler, backend, cache-layout, speculation,
+collective, and B12X policy selector is either locked or required unset. The
+qualified envelope includes TP3/EP3/DCP1, an 8,192-token scheduler budget,
+eight sequences, full CUDA graphs at capture sizes 1/2/4/8/16, FP8 KV cache,
+B12X PCIe tensor-parallel collectives, PyNCCL expert-parallel collectives,
+and weights-sharded multimodal encoding. See the
+[qualification receipt](../benchmarks/data/glm53-r21-tp3-20260904/qualification-receipt.json),
+its three TP3 runtime proofs, and the adjacent TP4 regression proof. The
+`GLM53_R17_TP3_RUNTIME_PROOF` label in the TP3 logs is a legacy marker API
+retained by the R21 source overlay; its payload describes the R21 qualification.
+
 ## Runtime backends
 
 | Operation | Selected implementation |
 |---|---|
 | Target sparse attention and C4 index selection | B12X |
-| Target gated-delta-network prefill | FlashKDA by default; B12X KDA is explicitly selectable |
-| Target gated-delta-network decode | B12X when eligible, with Triton fallback |
-| Target routed experts | B12X NVFP4 W4A4 |
+| Target gated-delta-network prefill | FlashKDA by default; B12X KDA is explicitly selectable; the R21 TP3 overlay locks FlashKDA |
+| Target gated-delta-network decode | B12X when eligible, with Triton fallback; the R21 TP3 overlay requires B12X |
+| Target routed experts | B12X NVFP4 W4A4 for the published R25 TP4 image; the R21 TP3 child's automatic selection chose FlashInfer CUTLASS with EP3 |
 | Target linear layers | B12X |
-| Tensor-parallel all-reduce | B12X PCIe one-shot/two-shot first; PyNCCL outside the qualified B12X ranges |
+| Tensor-parallel all-reduce | B12X PCIe one-shot/two-shot first; PyNCCL outside the qualified B12X ranges; the R21 TP3 proof selected B12X PCIe one-shot |
+| Expert-parallel collectives | PyNCCL for TP3 |
 | MTP attention | B12X |
-| MTP experts | Marlin |
+| MTP experts | Marlin for the published R25 TP4 image; Humming for the R21 TP3 child |
 | DFlash2 MXFP8 linear and fused key/value projections | B12X |
 | DFlash2 local attention | Graph-safe split-KV FlashAttention |
 | Sampling | FlashInfer |
-| External cache | LMCache DRAM L1 and native-filesystem L2 through asynchronous engine-driven pinned shared memory when selected |
+| External cache | LMCache DRAM L1 and native-filesystem L2 through asynchronous engine-driven pinned shared memory when selected; unsupported by the R21 TP3 overlay |
 
 DeepGEMM and TileLang are installed dependencies but are not selected for the
 target, MTP, or DFlash2 hot paths.
@@ -261,6 +317,46 @@ To test the qualified B12X gated-delta-network prefill backend, add:
 The default `GLM53_KDA_PREFILL_BACKEND=flashkda` is faster or equal in the
 qualified configurations.
 
+### R21 TP3 no-build deployment
+
+The pull-ready R21 child needs exactly three visible GPUs. Its strict launcher
+locks the qualified runtime policy and accepts no caller CLI arguments. The
+target and DFlash2 revisions below match the
+[qualification receipt](../benchmarks/data/glm53-r21-tp3-20260904/qualification-receipt.json).
+This copy-paste path starts ordinary serving by default:
+
+```bash
+IMAGE=infernix/vllm@sha256:e81f9399aa9fe800593cc8f646d8a2c7958e1938da50c5ae65effbe47d8604eb
+GPU_DEVICES=0,1,2
+PORT=8000
+NAME=jovian-judgement-r21-tp3
+MODE_ARGS=()
+
+docker pull "$IMAGE"
+docker run -d \
+  --name "$NAME" \
+  --init \
+  --gpus "\"device=${GPU_DEVICES}\"" \
+  --network host \
+  --ipc host \
+  --shm-size 32g \
+  -v jovian-judgement-runtime-cache:/cache \
+  -v jovian-judgement-huggingface-cache:/root/.cache/huggingface \
+  -e MODEL=local-inference-lab/GLM-5.3-Flash-NVFP4 \
+  -e MODEL_REVISION=378ca54585c46542bad1f3cb3ed0d73ae51cdb62 \
+  -e DFLASH_MODEL=local-inference-lab/GLM-5.3-Flash-DFlash2 \
+  -e DFLASH_MODEL_REVISION=aea0ac8a05624512ca9e106c09c16087da998426 \
+  -e TP=3 \
+  -e PORT="$PORT" \
+  "${MODE_ARGS[@]}" \
+  "$IMAGE"
+```
+
+For MTP3, set `MODE_ARGS=(-e MTP_DEPTH=3)`. For DFlash2 K7, set
+`MODE_ARGS=(-e SPECULATOR=dflash2 -e DFLASH_DEPTH=7)`. The immutable digest
+above is the release locator; the convenience tag in the R21 overlay section
+can move.
+
 ### Cache page geometry
 
 The launcher owns cache page geometry; normal deployments should not pass a
@@ -360,7 +456,16 @@ a cache execution cost.
 | B12X | [R24 integration source](https://github.com/local-inference-lab/b12x/tree/integration/glm53-r23-lmcache-parser-20260904); commit `e3d0ae067f607538e3709ac3c30c7042276c6f88`; tree `d93cd222b027ed1df7f7df221007196994c80354`; package tree `fc977aa2b732935cd0f70c365d7f767b449d21da` |
 | LMCache | [PR 43](https://github.com/local-inference-lab/LMCache/pull/43) preserves complete DFlash pages; [PR 45](https://github.com/local-inference-lab/LMCache/pull/45) adds stride-correct asynchronous engine-driven hybrid stores; [PR 47](https://github.com/local-inference-lab/LMCache/pull/47) reuses retrieve tensor views; [PR 48](https://github.com/local-inference-lab/LMCache/pull/48) adds validated lookup-session references; [source mirror](https://github.com/local-inference-lab/LMCache/tree/artifact/jovian-judgement-community-20260904-r25-lmcache-source); commit `cf52fc51418c6b0146e1fcea0690c25ef4e947a0`; tree `f1f38f35c3e4975810d1e1c03d4fb8f845bf5cb3`; package tree `9cf07ca20e1dc7d11bb14e460662faa563f1c10d` |
 
+### R21 TP3 qualification source lock
+
+| Component | Published R21 source | Hardware-qualified TP3 review head |
+|---|---|---|
+| vLLM | branch `artifact/jovian-judgement-community-20260904-r21-source`; commit `f2d77086163e899f87f54a59af216d18ffa3a2b7`; tree `95bff0df5f40df443884c282de6fbda1b1fdb8d6`; package tree `4fbb1c257ac59e5e68450655ad4061d2c8a05e5c` | commit `e96b18dbb8c19230591e79e0ed056b12947b2ea1`; tree `31e73a43eb8a03e932f03c51341df2c73c60f3d4` |
+| B12X | commit `1e59a1fd09f782d302b1068b15c8a0bd66103894`; tree `f322c804eec1c58a63bd4fe6e7901a95a678a575`; package tree `aaa5f189acae0206d886553421f6e9044f4c458a` | commit `6d47b10eddf408799796650baf3e802bd56bf844`; tree `afdd4b4cc589fddb079f1661d91e932f9d99b8c5` |
+| Runtime policy | image recipe label `10901bcc31e7596d9b75c976b460778ac4bbe62f` | commit `01c67936a364009ff6b42e8bd10a01628d1e7078`; tree `36fbabcbf2f16603341787e7e7c9a58cbf24783b` |
+| LMCache | commit `aefe3ab701ab7a835532e701be89f5055b13ec0f`; tree `683ab2c165a9aa0e2d1a1ab757af4a8b193688c5`; package tree `976a97f22c0497f34db089dc5f02a713dd0b5888` | unchanged |
+
 The [vLLM merge checklist](https://github.com/local-inference-lab/vllm/issues/590)
 lists each open pull request, dependency, resulting behavior, attribution, and
-qualification result. The image embeds the same source contract at
+qualification result. The published R24 image embeds its source contract at
 `/opt/glm53-flash/source.lock`.

@@ -1,0 +1,171 @@
+{
+  "hardware": {
+    "accelerator_model": "NVIDIA RTX PRO 6000 Blackwell Workstation Edition",
+    "accelerators_available": 4,
+    "memory_per_accelerator_mib": 97887
+  },
+  "hardware_runs": {
+    "dflash2_k7": {
+      "accelerators_used": 3,
+      "answer": "TP3 DFlash2 release works",
+      "concurrency_8": "pass: 8/8 exact tokens",
+      "gpu_kv_cache_tokens": 2082512,
+      "health": "pass",
+      "model_memory_gib_per_rank": 61.74,
+      "natural_context_retrieval": {
+        "completion": "ORCHID-7319",
+        "elapsed_seconds": 198.2,
+        "prompt_tokens": 1000031,
+        "status": "pass",
+        "tokenized_tokens": 1000019
+      },
+      "speculative": {
+        "architecture": "DFlash2DraftModel",
+        "method": "dflash",
+        "num_speculative_tokens": 7
+      },
+      "startup": "pass",
+      "text": "pass",
+      "vision": "pass: red"
+    },
+    "mtp3": {
+      "accelerators_used": 3,
+      "answer": "TP3 MTP3 release works",
+      "gpu_kv_cache_tokens": 2292781,
+      "health": "pass",
+      "model_memory_gib_per_rank": 63.48,
+      "speculative": {
+        "attention_backend": "B12X",
+        "method": "mtp",
+        "moe_backend": "humming",
+        "num_speculative_tokens": 3
+      },
+      "startup": "pass",
+      "text": "pass"
+    },
+    "ordinary": {
+      "accelerators_used": 3,
+      "answer": "TP3 ordinary release works",
+      "gpu_kv_cache_tokens": 3074098,
+      "health": "pass",
+      "model_memory_gib_per_rank": 60.88,
+      "runtime_proof": {
+        "collective_backend": "b12x_pcie_oneshot",
+        "expert_parallel_size": 3,
+        "kda_decode_backend": "b12x",
+        "kda_prefill_backend": "flashkda",
+        "mm_encoder_tp_mode": "weights"
+      },
+      "startup": "pass",
+      "text": "pass"
+    }
+  },
+  "models": {
+    "dflash2": {
+      "id": "local-inference-lab/GLM-5.3-Flash-DFlash2",
+      "revision": "aea0ac8a05624512ca9e106c09c16087da998426"
+    },
+    "target": {
+      "id": "local-inference-lab/GLM-5.3-Flash-NVFP4",
+      "revision": "378ca54585c46542bad1f3cb3ed0d73ae51cdb62"
+    }
+  },
+  "parent_image": {
+    "digest": "sha256:f096012c508f9bc12e8c4e617b8ed19da3a2cecb525e9479904e848730f0c8ac",
+    "reference": "voipmonitor/vllm:jovian-judgement-community-20260904-r21"
+  },
+  "policy": {
+    "cache_mode": "vram",
+    "cudagraph_capture_sizes": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "cudagraph_mode": "FULL",
+    "dcp": 1,
+    "ep": 3,
+    "expert_parallel_collectives": [
+      "PYNCCL"
+    ],
+    "gpu_memory_utilization": 0.91,
+    "max_model_len": 1048576,
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 8,
+    "mtp_attention_backend": "B12X",
+    "mtp_moe_backend": "humming",
+    "prefill_schedule_interval": 8,
+    "target_attention_backend": "B12X",
+    "target_moe_backend": "auto",
+    "tensor_parallel_collectives": [
+      "B12X_PCIE",
+      "PYNCCL"
+    ],
+    "tp": 3
+  },
+  "qualification_image": {
+    "id": "sha256:dbdc64cb31b0c2bc1a0bbd5eaa4e5a91a1539333123547cc6de9b08c426bf6c1",
+    "published": true,
+    "reference": "infernix/vllm@sha256:e81f9399aa9fe800593cc8f646d8a2c7958e1938da50c5ae65effbe47d8604eb",
+    "source_lock_sha256": "21fd2d6ffa3e842ee656f780a8530cce0ffb6601dfa47a5138409247ec4df0d4"
+  },
+  "qualified_at_utc": "2026-09-04T23:05:37+00:00",
+  "runtime_proof_files": [
+    "ordinary-runtime-proof.log",
+    "mtp3-runtime-proof.log",
+    "dflash2-runtime-proof.log",
+    "tp4-mtp3-regression-proof.log"
+  ],
+  "runtime_proof_marker": {
+    "name": "GLM53_R17_TP3_RUNTIME_PROOF",
+    "note": "Legacy marker API retained by the R21 source overlay; each payload records the R21 qualification result."
+  },
+  "schema_version": 1,
+  "scope": "GLM-5.3-Flash TP3 on the R21 generic runtime with exact source overlays",
+  "source_gates": {
+    "b12x_attention_corpus": "21 passed",
+    "b12x_combined": "122 passed, 1 skipped",
+    "b12x_generator": "68 passed, 1 skipped",
+    "b12x_moe_corpus": "12 passed",
+    "b12x_sm120_regressions": "11 passed",
+    "runtime_policy": "pass",
+    "vllm_dflash": "9 passed",
+    "vllm_geometry": "28 passed",
+    "vllm_kda_stream": "3 passed, 2 skipped",
+    "vllm_model": "19 passed",
+    "vllm_pooled_indexer": "13 passed, 31 skipped"
+  },
+  "sources": {
+    "b12x": {
+      "commit": "6d47b10eddf408799796650baf3e802bd56bf844",
+      "tree": "afdd4b4cc589fddb079f1661d91e932f9d99b8c5"
+    },
+    "runtime": {
+      "commit": "01c67936a364009ff6b42e8bd10a01628d1e7078",
+      "tree": "36fbabcbf2f16603341787e7e7c9a58cbf24783b"
+    },
+    "vllm": {
+      "commit": "e96b18dbb8c19230591e79e0ed056b12947b2ea1",
+      "tree": "31e73a43eb8a03e932f03c51341df2c73c60f3d4"
+    }
+  },
+  "tp4_regression": {
+    "accelerators_used": 4,
+    "answer": "TP4 MTP3 pinned release works",
+    "cudagraph_mode": "FULL_AND_PIECEWISE",
+    "gpu_kv_cache_tokens": 3584942,
+    "health": "pass",
+    "max_model_len_concurrency": 3.42,
+    "mode": "mtp3",
+    "model_memory_gib_per_rank": 47.31,
+    "model_revision": "378ca54585c46542bad1f3cb3ed0d73ae51cdb62",
+    "mtp_moe_backend": "MARLIN",
+    "preexisting_gpu_workloads_stopped_before_launch": true,
+    "status": "pass",
+    "target_moe_backend": "B12X",
+    "tensor_parallel_size": 4,
+    "text": "pass"
+  },
+  "verdict": "pass"
+}

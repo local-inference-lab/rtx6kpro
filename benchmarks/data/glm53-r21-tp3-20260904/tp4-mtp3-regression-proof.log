@@ -1,0 +1,17 @@
+Qualification image: sha256:dbdc64cb31b0c2bc1a0bbd5eaa4e5a91a1539333123547cc6de9b08c426bf6c1 (local, unpublished), runtime 01c67936a364009ff6b42e8bd10a01628d1e7078.
+Regression configuration: target revision 378ca54585c46542bad1f3cb3ed0d73ae51cdb62, tensor parallel 4, data parallel 1, decode-context parallel 1, MTP depth 3, target attention B12X, target MoE B12X, MTP attention B12X, and MTP MoE marlin.
+(Worker pid=549) INFO 09-04 22:47:35 [b12x_pcie_all_reduce.py:244] Using B12X PCIe all-reduce (algorithm=oneshot, one-shot max=86016, fused max=86016, two-shot bf16 max=786432, DMA min=6291456).
+(Worker pid=549) INFO 09-04 22:47:35 [cuda_communicator.py:318] Using ['B12X_PCIE', 'PYNCCL'] all-reduce backends (in dispatch order) for group 'tp:0'.
+(Worker pid=549) INFO 09-04 22:47:35 [cuda_communicator.py:318] Using ['PYNCCL'] all-reduce backends (in dispatch order) for group 'ep:0'.
+(Worker_TP0 pid=549) INFO 09-04 22:47:37 [nvfp4.py:261] Using 'B12X' NvFp4 MoE backend.
+(Worker_TP0 pid=549) INFO 09-04 22:57:44 [mxfp8.py:125] Using 'MARLIN' MxFp8 MoE backend (user-requested).
+(Worker_TP2 pid=551) INFO 09-04 22:57:53 [model_runner.py:410] Model loading took 47.31 GiB memory and 617.427289 seconds.
+(Worker_TP1 pid=550) INFO 09-04 22:57:53 [model_runner.py:410] Model loading took 47.31 GiB memory and 617.440739 seconds.
+(Worker_TP0 pid=549) INFO 09-04 22:57:53 [model_runner.py:410] Model loading took 47.31 GiB memory and 617.459469 seconds.
+(Worker_TP3 pid=552) INFO 09-04 22:57:53 [model_runner.py:410] Model loading took 47.31 GiB memory and 617.475285 seconds.
+(Worker_TP0 pid=549) INFO 09-04 22:59:07 [model_runner.py:993] Graph capturing finished in 45 secs, took 8.25 GiB.
+(EngineCore pid=532) INFO 09-04 22:59:08 [kv_cache_utils.py:2205] GPU KV cache size: 3,584,942 tokens, Maximum concurrency for 1,048,576 tokens per request: 3.42x.
+(Worker_TP0 pid=549) INFO 09-04 22:59:41 [model_runner.py:993] Graph capturing finished in 32 secs, took 5.48 GiB.
+(APIServer pid=1) INFO: Application startup complete.
+Text smoke: response content was exactly `TP4 MTP3 pinned release works`; finish reason `stop`.
+Cleanup: the regression container exited with status 0 and was removed.

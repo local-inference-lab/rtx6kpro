@@ -1,0 +1,11 @@
+--- a/vllm/models/qwen3_8_flash_next/nvidia/ple_layer.py
++++ b/vllm/models/qwen3_8_flash_next/nvidia/ple_layer.py
+@@ -187,0 +188 @@
++    config: Qwen3_8FlashNextTextConfig,
+@@ -192,0 +194,3 @@
++    if getattr(config, "ple_embedding_dtype", None) == "float8_e4m3fn":
++        return Qwen3_8FlashNextPLEFp8EmbeddingMethod()
++
+@@ -289 +293 @@
+-                quant_config, f"{prefix}.ngram_embedding"
++                config, quant_config, f"{prefix}.ngram_embedding"

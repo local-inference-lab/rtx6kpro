@@ -1,0 +1,45 @@
+services:
+  vllm:
+    image: vllm/vllm-openai:qwen38-flash-next
+    container_name: vllm-qwen38-flash-fp8
+    ports:
+      - "18005:8000"
+    volumes:
+      - ${HOME}/.cache/huggingface:/root/.cache/huggingface
+    shm_size: "62g"
+    mem_limit: "62g"
+    memswap_limit: "62g"
+    runtime: nvidia
+    cap_add:
+      - SYS_PTRACE
+    environment:
+      HUGGING_FACE_HUB_TOKEN: ${HUGGING_FACE_HUB_TOKEN:-}
+      CUDA_VISIBLE_DEVICES: "0,1"
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      TORCH_CUDA_ARCH_LIST: "12.0f"
+      PYTORCH_ALLOC_CONF: expandable_segments:True
+      VLLM_PLE_CPU_OFFLOAD: "1"
+    command:
+      - --model
+      - Qwen/Qwen3.8-Flash-Next-FP8
+      - --served-model-name
+      - qwen3.8-flash
+      - --enable-prefix-caching
+      - --tensor-parallel-size
+      - "2"
+      - --disable-custom-all-reduce
+      - --gpu-memory-utilization
+      - "0.97"
+      - --max-model-len
+      - "262144"
+      - --max-num-seqs
+      - "4"
+      - --max-num-batched-tokens
+      - "8192"
+      - --reasoning-parser
+      - qwen3
+      - --tool-call-parser
+      - qwen3_coder
+      - --enable-auto-tool-choice
+      - --speculative-config
+      - '{"method": "mtp", "num_speculative_tokens": 3}'

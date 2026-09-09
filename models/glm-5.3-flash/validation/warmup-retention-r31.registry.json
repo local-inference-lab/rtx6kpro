@@ -1,0 +1,14 @@
+{
+  "status": "verified-registry-content",
+  "repository": "localinferencelab/vllm",
+  "tag": "jovian-judgement-community-20260909-r31",
+  "digest": "sha256:da7157d5649a85298635c44b03eeb127837448fa42a45388e48ad9de4a99ff39",
+  "image_id": "sha256:b6f31960019f2808418f52f9f60e445f9347d6d3bf7ce3f9d52e287f736ed087",
+  "rootfs_layers": 2,
+  "source_lock_sha256": "f2c30d3703e82148d7ba5d1e3da03d876b3ba535c6de36d11612b0588eadbec1",
+  "pull_by_digest_verified": true,
+  "registry_config_matches_tested_image": true,
+  "artifact_audit": "results/warmup-retention-20260909/restore-headroom-native-parity.json",
+  "tiers_evidence": "results/warmup-retention-20260909/headroom-retain-answer-tiers.json",
+  "pressure_evidence": "results/warmup-retention-20260909/headroom-retain-pressure.json"
+}

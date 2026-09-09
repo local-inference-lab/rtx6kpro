@@ -1,0 +1,809 @@
+{
+  "pressure_without_headroom": {
+    "source_file": "lmcache-retain-pressure.json",
+    "status": "failed",
+    "conditions": {
+      "container": "glm53-warmup-retention-r31-lmcache-probe",
+      "image": "sha256:602361fa0e852e956634ec4c7e785a10698276339da89947454f373c67e8aa24",
+      "ram_capacity_bytes": 4294967296,
+      "prompt_tokens": 32768,
+      "temperature": 0,
+      "max_tokens": 1,
+      "nonce": 1788987622254990000
+    },
+    "cases": [
+      {
+        "name": "cold-0",
+        "elapsed_seconds": 2.998615625023376,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 80,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 1102970880,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.256805419921875,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 1102970880
+      },
+      {
+        "name": "cold-1",
+        "elapsed_seconds": 2.998776617052499,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 160,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 2205941760,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.51361083984375,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 2205941760
+      },
+      {
+        "name": "cold-2",
+        "elapsed_seconds": 2.9914356590015814,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 240,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 3308912640,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.770416259765625,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 3308912640
+      },
+      {
+        "name": "cold-3",
+        "elapsed_seconds": 2.997265808051452,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 272,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 3750100992,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.873138427734375,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 4411883520
+      },
+      {
+        "name": "cold-4",
+        "elapsed_seconds": 2.9979313620133325,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 298,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 4108566528,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.9566001892089844,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 5514854400
+      },
+      {
+        "name": "cold-5",
+        "elapsed_seconds": 2.984229856985621,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 272,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 3750100992,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.873138427734375,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 6617825280
+      },
+      {
+        "name": "replay-after-pressure",
+        "elapsed_seconds": 3.024392266990617,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 294,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 4053417984,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.9437599182128906,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 6617825280
+      }
+    ],
+    "checks": {
+      "durable_payloads_exceed_ram_capacity": true,
+      "ram_remains_bounded": true,
+      "ram_allocator_healthy": true,
+      "read_and_write_locks_released": true,
+      "cold_prompts_are_uncached": true,
+      "replay_is_exact": true,
+      "replay_zero_recompute": false
+    }
+  },
+  "pressure_with_headroom": {
+    "source_file": "headroom-retain-pressure.json",
+    "status": "qualified",
+    "conditions": {
+      "container": "glm53-warmup-retention-r31-headroom-probe",
+      "image": "sha256:b6f31960019f2808418f52f9f60e445f9347d6d3bf7ce3f9d52e287f736ed087",
+      "ram_capacity_bytes": 4294967296,
+      "prompt_tokens": 32768,
+      "temperature": 0,
+      "max_tokens": 1,
+      "nonce": 1788989568064830000
+    },
+    "cases": [
+      {
+        "name": "cold-0",
+        "elapsed_seconds": 5.233915828051977,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 80,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 1102970880,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.256805419921875,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 1102970880
+      },
+      {
+        "name": "cold-1",
+        "elapsed_seconds": 2.9946551979519427,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 160,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 2205941760,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.51361083984375,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 2205941760
+      },
+      {
+        "name": "cold-2",
+        "elapsed_seconds": 3.006270102050621,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 240,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 3308912640,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.770416259765625,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 3308912640
+      },
+      {
+        "name": "cold-3",
+        "elapsed_seconds": 3.0233081110054627,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 272,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 3750100992,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.873138427734375,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 4411883520
+      },
+      {
+        "name": "cold-4",
+        "elapsed_seconds": 3.0090023009688593,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 298,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 4108566528,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.9566001892089844,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 5514854400
+      },
+      {
+        "name": "cold-5",
+        "elapsed_seconds": 2.992517225968186,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 32768,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 272,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 3750100992,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.873138427734375,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 6617825280
+      },
+      {
+        "name": "replay-after-pressure",
+        "elapsed_seconds": 0.17037237802287564,
+        "prompt_sources": {
+          "external_kv_transfer": 32768,
+          "local_compute": 0,
+          "local_cache_hit": 0
+        },
+        "text": " color",
+        "ram": {
+          "is_healthy": true,
+          "total_object_count": 308,
+          "write_locked_count": 0,
+          "read_locked_count": 0,
+          "temporary_count": 0,
+          "memory_used_bytes": 4246437888,
+          "memory_total_bytes": 4294967296,
+          "memory_configured_bytes": 4294967296,
+          "memory_usage_ratio": 0.9887008666992188,
+          "write_ttl_seconds": 600,
+          "read_ttl_seconds": 300
+        },
+        "added_filesystem_bytes": 6617825280
+      }
+    ],
+    "checks": {
+      "durable_payloads_exceed_ram_capacity": true,
+      "ram_remains_bounded": true,
+      "ram_allocator_healthy": true,
+      "read_and_write_locks_released": true,
+      "cold_prompts_are_uncached": true,
+      "replay_is_exact": true,
+      "replay_zero_recompute": true
+    }
+  },
+  "tiers": {
+    "source_file": "headroom-retain-answer-tiers.json",
+    "status": "qualified",
+    "conditions": {
+      "answer_values_in_output_example": false,
+      "checkpoint_contract": "semantic",
+      "chunk_tokens": 4096,
+      "container": "glm53-warmup-retention-r31-headroom-probe",
+      "image_id": "sha256:b6f31960019f2808418f52f9f60e445f9347d6d3bf7ce3f9d52e287f736ed087",
+      "max_tokens": 512,
+      "model": "GLM-5.3-Flash-NVFP4",
+      "positions": [
+        1750,
+        2100,
+        2999,
+        3333
+      ],
+      "prompt_tokens": 54643,
+      "salt": "lmcache-literal-1788989592520987140",
+      "sentences": 5000
+    },
+    "checks": {
+      "all_answers_exact": true,
+      "apc_avoided_external_transfer": true,
+      "apc_used_local_prefix": true,
+      "cold_computed_full_prompt": true,
+      "disk_restored_objects_remain_resident": true,
+      "external_tiers_restored_all_chunks": true,
+      "instruction_answers_exact": true,
+      "instruction_boundary_is_partial": true,
+      "instruction_changed_system_sources_exact": true,
+      "instruction_cold_sources_exact": true,
+      "instruction_local_sibling_sources_exact": true,
+      "instruction_ram_sibling_sources_exact": true,
+      "instruction_restart_sibling_sources_exact": true,
+      "retained_ram_is_bounded": true,
+      "retained_replay_preserves_ram_inventory": true,
+      "retained_replay_zero_recompute": true
+    },
+    "expected": {
+      "1750": 5250,
+      "2100": 6300,
+      "2999": 9000,
+      "3333": 10000
+    },
+    "instruction_requests": {
+      "changed_system": {
+        "answer_correct": true,
+        "expected": "VALUE_CHANGED",
+        "id": "chatcmpl-97249681d4c3583d",
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": "VALUE_CHANGED",
+          "function_call": null,
+          "reasoning": null,
+          "refusal": null,
+          "role": "assistant"
+        },
+        "position": 333,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_cache_hit": 0,
+          "local_compute": 11348
+        },
+        "usage": {
+          "completion_tokens": 4,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_tokens": 11348,
+          "prompt_tokens_details": null,
+          "total_tokens": 11352
+        }
+      },
+      "cold": {
+        "answer_correct": true,
+        "expected": "VALUE_2342",
+        "id": "chatcmpl-89eb076245f33478",
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": "VALUE_2342",
+          "function_call": null,
+          "reasoning": "Record 333: VALUE_2342.",
+          "refusal": null,
+          "role": "assistant"
+        },
+        "position": 333,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_cache_hit": 0,
+          "local_compute": 11351
+        },
+        "usage": {
+          "completion_tokens": 17,
+          "completion_tokens_details": {
+            "reasoning_tokens": 10
+          },
+          "prompt_tokens": 11351,
+          "prompt_tokens_details": null,
+          "total_tokens": 11368
+        }
+      },
+      "local_sibling": {
+        "answer_correct": true,
+        "expected": "VALUE_3511",
+        "id": "chatcmpl-a80a4d6677d0e39f",
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": "VALUE_3511",
+          "function_call": null,
+          "reasoning": null,
+          "refusal": null,
+          "role": "assistant"
+        },
+        "position": 500,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_cache_hit": 11340,
+          "local_compute": 11
+        },
+        "usage": {
+          "completion_tokens": 7,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_tokens": 11351,
+          "prompt_tokens_details": null,
+          "total_tokens": 11358
+        }
+      },
+      "ram_sibling": {
+        "answer_correct": true,
+        "expected": "VALUE_4911",
+        "id": "chatcmpl-9906f2abe139a05d",
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": "VALUE_4911",
+          "function_call": null,
+          "reasoning": null,
+          "refusal": null,
+          "role": "assistant"
+        },
+        "position": 700,
+        "prompt_sources": {
+          "external_kv_transfer": 11340,
+          "local_cache_hit": 0,
+          "local_compute": 11
+        },
+        "usage": {
+          "completion_tokens": 7,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_tokens": 11351,
+          "prompt_tokens_details": null,
+          "total_tokens": 11358
+        }
+      },
+      "restart_sibling": {
+        "answer_correct": true,
+        "expected": "VALUE_5611",
+        "id": "chatcmpl-824e01f1f4af766e",
+        "message": {
+          "annotations": null,
+          "audio": null,
+          "content": "VALUE_5611",
+          "function_call": null,
+          "reasoning": null,
+          "refusal": null,
+          "role": "assistant"
+        },
+        "position": 800,
+        "prompt_sources": {
+          "external_kv_transfer": 11340,
+          "local_cache_hit": 0,
+          "local_compute": 11
+        },
+        "usage": {
+          "completion_tokens": 7,
+          "completion_tokens_details": {
+            "reasoning_tokens": 0
+          },
+          "prompt_tokens": 11351,
+          "prompt_tokens_details": null,
+          "total_tokens": 11358
+        }
+      }
+    },
+    "requests": {
+      "apc": {
+        "elapsed_seconds": 0.27,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_cache_hit": 54643,
+          "local_compute": 0
+        },
+        "usage": {
+          "completion_tokens": 64,
+          "completion_tokens_details": {
+            "reasoning_tokens": 34
+          },
+          "prompt_tokens": 54643,
+          "prompt_tokens_details": null,
+          "total_tokens": 54707
+        },
+        "observed": {
+          "1750": 5250,
+          "2100": 6300,
+          "2999": 9000,
+          "3333": 10000
+        },
+        "answer_correct": true,
+        "finish_reason": "stop",
+        "ram": {
+          "is_healthy": true,
+          "memory_configured_bytes": 4294967296,
+          "memory_total_bytes": 4294967296,
+          "memory_usage_ratio": 0.9983310699462891,
+          "memory_used_bytes": 4287799296,
+          "read_locked_count": 0,
+          "read_ttl_seconds": 300,
+          "temporary_count": 0,
+          "total_object_count": 311,
+          "write_locked_count": 0,
+          "write_ttl_seconds": 600
+        }
+      },
+      "cold": {
+        "elapsed_seconds": 6.334,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_cache_hit": 0,
+          "local_compute": 54643
+        },
+        "usage": {
+          "completion_tokens": 64,
+          "completion_tokens_details": {
+            "reasoning_tokens": 34
+          },
+          "prompt_tokens": 54643,
+          "prompt_tokens_details": null,
+          "total_tokens": 54707
+        },
+        "observed": {
+          "1750": 5250,
+          "2100": 6300,
+          "2999": 9000,
+          "3333": 10000
+        },
+        "answer_correct": true,
+        "finish_reason": "stop",
+        "ram": {
+          "is_healthy": true,
+          "memory_configured_bytes": 4294967296,
+          "memory_total_bytes": 4294967296,
+          "memory_usage_ratio": 0.9983310699462891,
+          "memory_used_bytes": 4287799296,
+          "read_locked_count": 0,
+          "read_ttl_seconds": 300,
+          "temporary_count": 0,
+          "total_object_count": 311,
+          "write_locked_count": 0,
+          "write_ttl_seconds": 600
+        }
+      },
+      "filesystem_l2": {
+        "elapsed_seconds": 0.293,
+        "prompt_sources": {
+          "external_kv_transfer": 54643,
+          "local_cache_hit": 0,
+          "local_compute": 0
+        },
+        "usage": {
+          "completion_tokens": 64,
+          "completion_tokens_details": {
+            "reasoning_tokens": 34
+          },
+          "prompt_tokens": 54643,
+          "prompt_tokens_details": null,
+          "total_tokens": 54707
+        },
+        "observed": {
+          "1750": 5250,
+          "2100": 6300,
+          "2999": 9000,
+          "3333": 10000
+        },
+        "answer_correct": true,
+        "finish_reason": "stop",
+        "ram": {
+          "is_healthy": true,
+          "memory_configured_bytes": 4294967296,
+          "memory_total_bytes": 4294967296,
+          "memory_usage_ratio": 0.410888671875,
+          "memory_used_bytes": 1764753408,
+          "read_locked_count": 0,
+          "read_ttl_seconds": 300,
+          "temporary_count": 0,
+          "total_object_count": 128,
+          "write_locked_count": 0,
+          "write_ttl_seconds": 600
+        }
+      },
+      "ram_l1": {
+        "elapsed_seconds": 0.278,
+        "prompt_sources": {
+          "external_kv_transfer": 54643,
+          "local_cache_hit": 0,
+          "local_compute": 0
+        },
+        "usage": {
+          "completion_tokens": 64,
+          "completion_tokens_details": {
+            "reasoning_tokens": 34
+          },
+          "prompt_tokens": 54643,
+          "prompt_tokens_details": null,
+          "total_tokens": 54707
+        },
+        "observed": {
+          "1750": 5250,
+          "2100": 6300,
+          "2999": 9000,
+          "3333": 10000
+        },
+        "answer_correct": true,
+        "finish_reason": "stop",
+        "ram": {
+          "is_healthy": true,
+          "memory_configured_bytes": 4294967296,
+          "memory_total_bytes": 4294967296,
+          "memory_usage_ratio": 0.9983310699462891,
+          "memory_used_bytes": 4287799296,
+          "read_locked_count": 0,
+          "read_ttl_seconds": 300,
+          "temporary_count": 0,
+          "total_object_count": 311,
+          "write_locked_count": 0,
+          "write_ttl_seconds": 600
+        }
+      },
+      "restart_l2": {
+        "elapsed_seconds": 0.41,
+        "prompt_sources": {
+          "external_kv_transfer": 54643,
+          "local_cache_hit": 0,
+          "local_compute": 0
+        },
+        "usage": {
+          "completion_tokens": 64,
+          "completion_tokens_details": {
+            "reasoning_tokens": 34
+          },
+          "prompt_tokens": 54643,
+          "prompt_tokens_details": null,
+          "total_tokens": 54707
+        },
+        "observed": {
+          "1750": 5250,
+          "2100": 6300,
+          "2999": 9000,
+          "3333": 10000
+        },
+        "answer_correct": true,
+        "finish_reason": "stop",
+        "ram": {
+          "is_healthy": true,
+          "memory_configured_bytes": 4294967296,
+          "memory_total_bytes": 4294967296,
+          "memory_usage_ratio": 0.410888671875,
+          "memory_used_bytes": 1764753408,
+          "read_locked_count": 0,
+          "read_ttl_seconds": 300,
+          "temporary_count": 0,
+          "total_object_count": 128,
+          "write_locked_count": 0,
+          "write_ttl_seconds": 600
+        }
+      },
+      "retained_ram_l1": {
+        "elapsed_seconds": 0.271,
+        "prompt_sources": {
+          "external_kv_transfer": 54643,
+          "local_cache_hit": 0,
+          "local_compute": 0
+        },
+        "usage": {
+          "completion_tokens": 64,
+          "completion_tokens_details": {
+            "reasoning_tokens": 34
+          },
+          "prompt_tokens": 54643,
+          "prompt_tokens_details": null,
+          "total_tokens": 54707
+        },
+        "observed": {
+          "1750": 5250,
+          "2100": 6300,
+          "2999": 9000,
+          "3333": 10000
+        },
+        "answer_correct": true,
+        "finish_reason": "stop",
+        "ram": {
+          "is_healthy": true,
+          "memory_configured_bytes": 4294967296,
+          "memory_total_bytes": 4294967296,
+          "memory_usage_ratio": 0.410888671875,
+          "memory_used_bytes": 1764753408,
+          "read_locked_count": 0,
+          "read_ttl_seconds": 300,
+          "temporary_count": 0,
+          "total_object_count": 128,
+          "write_locked_count": 0,
+          "write_ttl_seconds": 600
+        }
+      }
+    }
+  }
+}

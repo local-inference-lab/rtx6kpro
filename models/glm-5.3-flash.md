@@ -32,10 +32,10 @@ do not require checkpoint paths or source-code bind mounts.
 | DFlash2 checkpoint | `local-inference-lab/GLM-5.3-Flash-DFlash2`; Hugging Face `main` unless `DFLASH_MODEL_REVISION` is set |
 | Target routed experts | ModelOpt NVFP4 using B12X 4-bit weights and 4-bit activations |
 | DFlash2 weights | Offline-serialized ModelOpt MXFP8; no online weight quantization |
-| Target KV cache | **qualified** FP8; packed NVFP4 is implemented but not qualified for R30 |
+| Target KV cache | **qualified** FP8; packed NVFP4 is implemented but not qualified for R31 |
 | MTP proposal vocabulary head | NVFP4 draft-only copy by default; the target verifier vocabulary head remains BF16 |
 | GPU prefix cache | **qualified** request/SYSTEM boundaries in all six TP4 mode/DCP combinations; fine aligned retention is selectable |
-| Native DRAM offload | **implemented** and opt-in with `CACHE_MODE=native`; not independently requalified for R30 |
+| Native DRAM offload | **implemented** and opt-in with `CACHE_MODE=native`; not independently requalified for R31 |
 | LMCache DRAM and filesystem tiers | **qualified** and opt-in with `CACHE_MODE=lmcache`; asynchronous engine-driven pinned shared memory is the default transfer path |
 | CUDA graphs | **qualified** with launcher default `CUDAGRAPH_MODE=FULL_AND_PIECEWISE` for target and speculative decode |
 | Scheduler | 4,096 target tokens per step; fixed prefill compute share 0.4; interval 1; one prefill lane by default, optional bounded interleaving |
@@ -78,8 +78,8 @@ score.
 ## Docker artifact
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260909-r30
-localinferencelab/vllm@sha256:5f6fcbc681f20b7c052815ca17511d9fe789aea314a17723c202789dd7adc131
+localinferencelab/vllm:jovian-judgement-community-20260909-r31
+localinferencelab/vllm@sha256:da7157d5649a85298635c44b03eeb127837448fa42a45388e48ad9de4a99ff39
 ```
 
 The image contains two filesystem layers: a flattened CUDA 13.3/PyTorch 2.13
@@ -88,11 +88,13 @@ LMCache sources. FlashInfer, the DS4-compatible native vLLM operator and the
 authenticated FlashKDA extension are source-locked. It is not built by adding
 layers to a preceding community release.
 
-The [embedded source lock](glm-5.3-flash/validation/shared-serving-r30.source.lock)
-has SHA-256 `a293571bd5c0e5b18b04e6e42e5122b4783e64e61ad3f71031fead99fdab7d98`.
-The [R30 qualification and changelog](glm-5.3-flash/validation/shared-serving-r30.md)
-records the immutable image identity, differences from R29, measurements,
-cache migration requirements and known test limitations.
+The [embedded source lock](glm-5.3-flash/validation/warmup-retention-r31.source.lock)
+has SHA-256 `f2c30d3703e82148d7ba5d1e3da03d876b3ba535c6de36d11612b0588eadbec1`.
+The [R31 qualification and changelog](glm-5.3-flash/validation/warmup-retention-r31.md)
+records the immutable image identity, differences from R30, measurements and
+qualification limits. R31 qualifies MoE warmup reuse and bounded LMCache RAM
+retention on TP4/DCP1 MTP3; the six-mode/DCP matrix retains its explicitly
+versioned evidence below rather than being represented as a fresh R31 run.
 
 The same installed runtime supports
 [Qwen3.8-Flash-Next](qwen38-flash-next.md) and
@@ -124,6 +126,27 @@ qualified GLM target, MTP or DFlash2 hot paths. FlashKDA is the prefill default;
 performance table below uses FlashKDA, not that alternative.
 
 ## Measured performance
+
+### R31 warmup and retained-RAM update
+
+Same physical quartet of **RTX PRO 6000 Max-Q Workstation, 300 W, VRAM +6000**;
+TP4/DCP1 MTP3, FP8 KV, 4096-token budget, full-and-piecewise graphs,
+temperature 1/top-p 0.95. LMCache is disabled for these performance cells.
+
+| Measurement | R30 | R31 source | R31 source repeat |
+|---|---:|---:|---:|
+| Cold 32K prefill | 11,151 tok/s | 11,068 tok/s (−0.74%) | Not repeated |
+| C1 output | 264.61 tok/s | 248.51 tok/s (−6.09%) | 259.26 tok/s (−2.02%) |
+| C1 verifier | 103.406 steps/s | 103.571 (+0.16%) | 103.389 (−0.02%) |
+| Mean emitted tokens per step | 2.5595 | 2.3999 | 2.5081 |
+
+Prefill and verifier execution are essentially unchanged. Output varies with
+acceptance; no throughput improvement is established. GPU KV capacity remains
+3,780,444 logical tokens. The [report](glm-5.3-flash/validation/warmup-retention-r31.md)
+preserves all cells, the source/final-image boundary and exact cache tests.
+Do not compare this Max-Q table directly to stock 600 W Workstation results.
+
+### Historical R29-to-R30 source comparison
 
 The [R30 source comparison](glm-5.3-flash/validation/shared-serving-r30.md#matched-performance)
 uses DFlash2 K7, TP4/DCP4 and engine-driven LMCache on the same stock quartet:
@@ -185,7 +208,7 @@ The defaults already select full-and-piecewise graphs, the B12X paths,
 FlashInfer sampling, NCCL 16 channels/2 MiB and OMP1.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260909-r30
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260909-r31
 GPU_DEVICES=0,1,2,3
 PORT=8000
 docker pull "$IMAGE"
@@ -218,7 +241,7 @@ Run the common command after assigning the chosen mode's variables:
 ```bash
 docker run -d --name "$NAME" --init \
   --gpus "\"device=${GPU_DEVICES}\"" --network host --ipc host \
-  -v jovian-judgement-r30-runtime-cache:/cache \
+  -v jovian-judgement-r31-runtime-cache:/cache \
   -v jovian-judgement-huggingface-cache:/root/.cache/huggingface \
   -e MODEL=local-inference-lab/GLM-5.3-Flash-NVFP4 \
   -e CACHE_MODE=vram -e KV_CACHE_QUANT=fp8_ds_mla \
@@ -361,7 +384,7 @@ LMCache is opt-in. In the common command, replace `-e CACHE_MODE=vram` with:
 -e LMCACHE_TRANSFER_MODE=engine_driven \
 -e LMCACHE_L1_SIZE_GB=64 \
 -e LMCACHE_L2_ENABLED=1 \
--v jovian-judgement-r30-lmcache-l2:/lmcache-l2
+-v jovian-judgement-r31-lmcache-l2:/lmcache-l2
 ```
 
 The host shared-memory filesystem must have at least 96 GiB available for the
@@ -383,6 +406,27 @@ match the version-2 storage keys used here.
 Set `LMCACHE_L2_ENABLED=0` for RAM-only operation. If multiple instances share
 the host network, give each distinct API and LMCache HTTP/MP/metrics ports.
 Do not share a writable cache directory across independent sidecars.
+
+`LMCACHE_L2_PREFETCH_POLICY=retain` is the default: disk-loaded objects remain
+reusable in the bounded host-RAM L1 after readers finish. They are not pinned
+forever; LRU can evict objects without active readers or writers. If a retained
+filesystem restore needs RAM, the launcher enables bounded emergency eviction
+without enabling writeback. Active owners can still force a safe cache miss.
+This is host-memory caching, not GPU hardware L2 prefetching.
+
+`LMCACHE_L2_PREFETCH_POLICY=default` selects temporary prefetched objects that
+are released when readers finish. `LMCACHE_SERVER_EXTRA_ARGS` accepts literal
+whitespace-separated server options, for example `--max-cpu-workers 4`.
+Shell expressions and embedded quoting are not evaluated; use dedicated
+variables for identity, geometry, transport and listener settings.
+
+R31's 4 GiB RAM-pressure test writes 6.62 GB of durable objects, then restores
+an evicted 32K prompt in 0.170 s with zero recompute. A 54,643-token literal
+lookup restores from RAM in 0.278 s, filesystem in 0.293 s and after both
+services restart in 0.410 s. All answers are exact. After filesystem load,
+128 objects / 1.76 GB remain reusable in RAM. These are bounded TP4/DCP1 MTP3
+checks with a warm OS page cache; see the
+[retention report](glm-5.3-flash/validation/warmup-retention-r31.md#ram-retention-and-restore-correctness).
 
 `LMCACHE_HTTP_HOST` defaults to `127.0.0.1`. Wildcard or IPv6 binds have matching
 readiness addresses. This interface exposes administrative operations; remote
@@ -417,7 +461,7 @@ A separate one-observation, same-quartet R28/R28.1 RAM comparison records
 report; it is insufficient to establish steady-state transfer-speed equivalence.
 
 Native DRAM offload remains implemented through `CACHE_MODE=native`; it is not
-independently requalified for R30. The qualified external path above is LMCache.
+independently requalified for R31. The qualified external path above is LMCache.
 Packed NVFP4 target KV and Qwen LMCache are outside this release's qualification.
 
 R29 additionally qualifies DFlash2/DCP4 after the paged-gather metadata fix:
@@ -426,7 +470,7 @@ of 3,639,803,904 transferred bytes across four ranks, and three C8 cancellation
 and live-read eviction rounds. This bounded check is not a repeat of the
 one-million-token timing matrix.
 
-Use an empty external-cache namespace for R30. Immutable pinned block-ID
+Use an empty external-cache namespace when adopting R31. Immutable pinned block-ID
 snapshots prevent asynchronous gathers from copying a later batch's pages.
 The correction cannot repair payloads written without that guarantee. Atomic
 GLM checkpoint identities reject incompatible sources; fresh named volumes

@@ -1,0 +1,1467 @@
+{
+  "status": "failed",
+  "conditions": {
+    "image": "sha256:84a2c85d9f889bf0a4b0d08f33630544e1366deb3546d2b26046b64e3e1f364a",
+    "container": "glm53-warmup-retention-r32-probe",
+    "concurrent_requests": 4,
+    "temperature": 0,
+    "rounds": 3,
+    "topology": "one TP4 engine and its CPU-only LMCache sidecar"
+  },
+  "rounds": [
+    {
+      "trial": 0,
+      "salt": "concurrent-page-publication-1788996199014897704",
+      "cold": [
+        {
+          "id": "chatcmpl-9919e41c3cc0e441",
+          "elapsed_seconds": 6.497789065819234,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24290,
+            "completion_tokens": 15,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 9
+            }
+          },
+          "content": "VALUE_788",
+          "expected": "VALUE_788",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-92b45cbaab83d0a6",
+          "elapsed_seconds": 9.126284070080146,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24292,
+            "completion_tokens": 17,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            }
+          },
+          "content": "VALUE_2342",
+          "expected": "VALUE_2342",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-999f296e50b0ac7f",
+          "elapsed_seconds": 8.480374634964392,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24302,
+            "completion_tokens": 26,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "Record 777 has value VALUE_5450",
+          "expected": "VALUE_5450",
+          "answer_correct": false
+        },
+        {
+          "id": "chatcmpl-848cd9911c08bbb3",
+          "elapsed_seconds": 10.064377355854958,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_7788",
+          "expected": "VALUE_7788",
+          "answer_correct": true
+        }
+      ],
+      "concurrent_prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 69636,
+        "local_cache_hit": 27466
+      },
+      "after_cold": {
+        "is_healthy": true,
+        "engine_type": "MPCacheServer",
+        "chunk_size": 4096,
+        "hash_algorithm": "blake3",
+        "active_sessions": 0,
+        "storage_manager": {
+          "is_healthy": true,
+          "l1_manager": {
+            "is_healthy": true,
+            "total_object_count": 256,
+            "write_locked_count": 0,
+            "read_locked_count": 0,
+            "temporary_count": 0,
+            "memory_used_bytes": 3529506816,
+            "memory_total_bytes": 4294967296,
+            "memory_configured_bytes": 4294967296,
+            "memory_usage_ratio": 0.82177734375,
+            "write_ttl_seconds": 600,
+            "read_ttl_seconds": 300
+          },
+          "store_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "pending_keys_count": 0,
+            "in_flight_task_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "prefetch_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "max_in_flight": 8,
+            "submission_queue_size": 0,
+            "pending_queue_size": 0,
+            "in_flight_request_count": 0,
+            "lookup_phase_count": 0,
+            "load_phase_count": 0,
+            "completed_results_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "l1_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "eviction_policy": "LRU",
+            "trigger_watermark": 0.8,
+            "eviction_ratio": 0.2,
+            "write_back_enabled": false,
+            "periodic_flush_interval": 0.0,
+            "periodic_flush_enabled": false,
+            "l2_flush_enabled": false,
+            "l2_flush_adapter_ids": [],
+            "sync_flush_failures": 0,
+            "sync_flush_backoff_seconds": 0.0
+          },
+          "l2_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "adapters": [
+              {
+                "eviction_policy": "LRU",
+                "trigger_watermark": 0.8,
+                "eviction_ratio": 0.2,
+                "current_usage": 0.05371847748756409,
+                "total_bytes_used": 29532045312,
+                "total_capacity_bytes": 549755813888,
+                "num_cache_salt_buckets": 1
+              }
+            ]
+          },
+          "l2_adapters": [
+            {
+              "is_healthy": true,
+              "type": "FSNativeL2Adapter",
+              "reserved_store_bytes": 0,
+              "base_path": "/lmcache-l2/glm53-r18-cache-v1/_model-cache_snapshots_46aaae8a82032f77100f2f03e9cc11b391df3b4d-efa4cfcd9a512c56264fd1ff88f871ab88ec1e051a4a3ae2b09a8c4fed2ba5b3/kv-fp8_ds_mla/tp-4-dcp-1-i-4-g-0/spec-mtp-3-draft-none/chunk-4096",
+              "use_odirect": false,
+              "num_workers": 8,
+              "read_ahead_size": null
+            }
+          ],
+          "num_l2_adapters": 1,
+          "store_admission": {
+            "waits": 0,
+            "retries": 0,
+            "successes_after_eviction": 0,
+            "exhausted_timeouts": 0
+          }
+        },
+        "active_prefetch_jobs": 0,
+        "active_p2p_lookup_jobs": 0,
+        "p2p_enabled": false,
+        "p2p_state": "unregistered",
+        "p2p_peer_count": 0,
+        "p2p_peers": [],
+        "worker_liveness": {
+          "enabled": true,
+          "reap_timeout_seconds": 120.0,
+          "registration_grace_seconds": 3600.0,
+          "tracked_instances": 4
+        },
+        "engine_driven_shm_pool": {
+          "shm_name": "lmcache_l1_pool_lmcache-glm53-warmup-retention-5555",
+          "pool_size": 4294967296
+        },
+        "registered_non_cuda_instance_ids": [
+          2967190265687660531,
+          2133706396425841894,
+          1849902559834758050,
+          1807196891085202811
+        ],
+        "non_cuda_context_meta": {
+          "2967190265687660531": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "2133706396425841894": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1849902559834758050": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1807196891085202811": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          }
+        },
+        "recurrent_checkpoints": {
+          "format_version": 1,
+          "durable_index": true,
+          "published_generations": 48,
+          "pending_generations": 0,
+          "store_leases": 0,
+          "retrieve_leases": 0,
+          "max_leases": 1024
+        }
+      },
+      "replays": [
+        {
+          "id": "chatcmpl-95f7143768112e3c",
+          "elapsed_seconds": 0.20077134994789958,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24290,
+            "completion_tokens": 15,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 9
+            }
+          },
+          "content": "VALUE_788",
+          "expected": "VALUE_788",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24275,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-85e5c0dcf7aa4035",
+          "elapsed_seconds": 0.14130240795202553,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24292,
+            "completion_tokens": 17,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            }
+          },
+          "content": "VALUE_2342",
+          "expected": "VALUE_2342",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24275,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-bbb9c0b4061d8110",
+          "elapsed_seconds": 0.13963106600567698,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_5450",
+          "expected": "VALUE_5450",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24276,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-b04c883bea710579",
+          "elapsed_seconds": 0.14364034705795348,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_7788",
+          "expected": "VALUE_7788",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24276,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        }
+      ],
+      "isolated_salt": {
+        "id": "chatcmpl-9b4047dd8eb75f7f",
+        "elapsed_seconds": 2.8755548980552703,
+        "usage": {
+          "prompt_tokens": 24275,
+          "total_tokens": 24291,
+          "completion_tokens": 16,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 10
+          }
+        },
+        "content": "VALUE_788",
+        "expected": "VALUE_788",
+        "answer_correct": true,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 24275,
+          "local_cache_hit": 0
+        }
+      },
+      "settled": {
+        "is_healthy": true,
+        "engine_type": "MPCacheServer",
+        "chunk_size": 4096,
+        "hash_algorithm": "blake3",
+        "active_sessions": 0,
+        "storage_manager": {
+          "is_healthy": true,
+          "l1_manager": {
+            "is_healthy": true,
+            "total_object_count": 264,
+            "write_locked_count": 0,
+            "read_locked_count": 0,
+            "temporary_count": 0,
+            "memory_used_bytes": 3639803904,
+            "memory_total_bytes": 4294967296,
+            "memory_configured_bytes": 4294967296,
+            "memory_usage_ratio": 0.8474578857421875,
+            "write_ttl_seconds": 600,
+            "read_ttl_seconds": 300
+          },
+          "store_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "pending_keys_count": 0,
+            "in_flight_task_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "prefetch_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "max_in_flight": 8,
+            "submission_queue_size": 0,
+            "pending_queue_size": 0,
+            "in_flight_request_count": 0,
+            "lookup_phase_count": 0,
+            "load_phase_count": 0,
+            "completed_results_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "l1_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "eviction_policy": "LRU",
+            "trigger_watermark": 0.8,
+            "eviction_ratio": 0.2,
+            "write_back_enabled": false,
+            "periodic_flush_interval": 0.0,
+            "periodic_flush_enabled": false,
+            "l2_flush_enabled": false,
+            "l2_flush_adapter_ids": [],
+            "sync_flush_failures": 0,
+            "sync_flush_backoff_seconds": 0.0
+          },
+          "l2_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "adapters": [
+              {
+                "eviction_policy": "LRU",
+                "trigger_watermark": 0.8,
+                "eviction_ratio": 0.2,
+                "current_usage": 0.05712917447090149,
+                "total_bytes_used": 31407095808,
+                "total_capacity_bytes": 549755813888,
+                "num_cache_salt_buckets": 1
+              }
+            ]
+          },
+          "l2_adapters": [
+            {
+              "is_healthy": true,
+              "type": "FSNativeL2Adapter",
+              "reserved_store_bytes": 0,
+              "base_path": "/lmcache-l2/glm53-r18-cache-v1/_model-cache_snapshots_46aaae8a82032f77100f2f03e9cc11b391df3b4d-efa4cfcd9a512c56264fd1ff88f871ab88ec1e051a4a3ae2b09a8c4fed2ba5b3/kv-fp8_ds_mla/tp-4-dcp-1-i-4-g-0/spec-mtp-3-draft-none/chunk-4096",
+              "use_odirect": false,
+              "num_workers": 8,
+              "read_ahead_size": null
+            }
+          ],
+          "num_l2_adapters": 1,
+          "store_admission": {
+            "waits": 0,
+            "retries": 0,
+            "successes_after_eviction": 0,
+            "exhausted_timeouts": 0
+          }
+        },
+        "active_prefetch_jobs": 0,
+        "active_p2p_lookup_jobs": 0,
+        "p2p_enabled": false,
+        "p2p_state": "unregistered",
+        "p2p_peer_count": 0,
+        "p2p_peers": [],
+        "worker_liveness": {
+          "enabled": true,
+          "reap_timeout_seconds": 120.0,
+          "registration_grace_seconds": 3600.0,
+          "tracked_instances": 4
+        },
+        "engine_driven_shm_pool": {
+          "shm_name": "lmcache_l1_pool_lmcache-glm53-warmup-retention-5555",
+          "pool_size": 4294967296
+        },
+        "registered_non_cuda_instance_ids": [
+          2967190265687660531,
+          2133706396425841894,
+          1849902559834758050,
+          1807196891085202811
+        ],
+        "non_cuda_context_meta": {
+          "2967190265687660531": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "2133706396425841894": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1849902559834758050": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1807196891085202811": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          }
+        },
+        "recurrent_checkpoints": {
+          "format_version": 1,
+          "durable_index": true,
+          "published_generations": 52,
+          "pending_generations": 0,
+          "store_leases": 0,
+          "retrieve_leases": 0,
+          "max_leases": 1024
+        }
+      }
+    },
+    {
+      "trial": 1,
+      "salt": "concurrent-page-publication-1788996212956989624",
+      "cold": [
+        {
+          "id": "chatcmpl-b82c3f273abb2f5d",
+          "elapsed_seconds": 3.0564552950672805,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24290,
+            "completion_tokens": 15,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 9
+            }
+          },
+          "content": "VALUE_788",
+          "expected": "VALUE_788",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-b677ad697d4dcf95",
+          "elapsed_seconds": 4.2378712659701705,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24293,
+            "completion_tokens": 18,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "content": "VALUE_2342",
+          "expected": "VALUE_2342",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-bbf17451905d00eb",
+          "elapsed_seconds": 4.682319971965626,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_5450",
+          "expected": "VALUE_5450",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-8580d2463fc31de5",
+          "elapsed_seconds": 5.726081216009334,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_7788",
+          "expected": "VALUE_7788",
+          "answer_correct": true
+        }
+      ],
+      "concurrent_prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 55903,
+        "local_cache_hit": 41199
+      },
+      "after_cold": {
+        "is_healthy": true,
+        "engine_type": "MPCacheServer",
+        "chunk_size": 4096,
+        "hash_algorithm": "blake3",
+        "active_sessions": 0,
+        "storage_manager": {
+          "is_healthy": true,
+          "l1_manager": {
+            "is_healthy": true,
+            "total_object_count": 304,
+            "write_locked_count": 0,
+            "read_locked_count": 0,
+            "temporary_count": 0,
+            "memory_used_bytes": 4191289344,
+            "memory_total_bytes": 4294967296,
+            "memory_configured_bytes": 4294967296,
+            "memory_usage_ratio": 0.975860595703125,
+            "write_ttl_seconds": 600,
+            "read_ttl_seconds": 300
+          },
+          "store_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "pending_keys_count": 0,
+            "in_flight_task_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "prefetch_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "max_in_flight": 8,
+            "submission_queue_size": 0,
+            "pending_queue_size": 0,
+            "in_flight_request_count": 0,
+            "lookup_phase_count": 0,
+            "load_phase_count": 0,
+            "completed_results_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "l1_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "eviction_policy": "LRU",
+            "trigger_watermark": 0.8,
+            "eviction_ratio": 0.2,
+            "write_back_enabled": false,
+            "periodic_flush_interval": 0.0,
+            "periodic_flush_enabled": false,
+            "l2_flush_enabled": false,
+            "l2_flush_adapter_ids": [],
+            "sync_flush_failures": 0,
+            "sync_flush_backoff_seconds": 0.0
+          },
+          "l2_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "adapters": [
+              {
+                "eviction_policy": "LRU",
+                "trigger_watermark": 0.8,
+                "eviction_ratio": 0.2,
+                "current_usage": 0.06354930996894836,
+                "total_bytes_used": 34936602624,
+                "total_capacity_bytes": 549755813888,
+                "num_cache_salt_buckets": 1
+              }
+            ]
+          },
+          "l2_adapters": [
+            {
+              "is_healthy": true,
+              "type": "FSNativeL2Adapter",
+              "reserved_store_bytes": 0,
+              "base_path": "/lmcache-l2/glm53-r18-cache-v1/_model-cache_snapshots_46aaae8a82032f77100f2f03e9cc11b391df3b4d-efa4cfcd9a512c56264fd1ff88f871ab88ec1e051a4a3ae2b09a8c4fed2ba5b3/kv-fp8_ds_mla/tp-4-dcp-1-i-4-g-0/spec-mtp-3-draft-none/chunk-4096",
+              "use_odirect": false,
+              "num_workers": 8,
+              "read_ahead_size": null
+            }
+          ],
+          "num_l2_adapters": 1,
+          "store_admission": {
+            "waits": 0,
+            "retries": 0,
+            "successes_after_eviction": 0,
+            "exhausted_timeouts": 0
+          }
+        },
+        "active_prefetch_jobs": 0,
+        "active_p2p_lookup_jobs": 0,
+        "p2p_enabled": false,
+        "p2p_state": "unregistered",
+        "p2p_peer_count": 0,
+        "p2p_peers": [],
+        "worker_liveness": {
+          "enabled": true,
+          "reap_timeout_seconds": 120.0,
+          "registration_grace_seconds": 3600.0,
+          "tracked_instances": 4
+        },
+        "engine_driven_shm_pool": {
+          "shm_name": "lmcache_l1_pool_lmcache-glm53-warmup-retention-5555",
+          "pool_size": 4294967296
+        },
+        "registered_non_cuda_instance_ids": [
+          2967190265687660531,
+          2133706396425841894,
+          1849902559834758050,
+          1807196891085202811
+        ],
+        "non_cuda_context_meta": {
+          "2967190265687660531": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "2133706396425841894": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1849902559834758050": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1807196891085202811": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          }
+        },
+        "recurrent_checkpoints": {
+          "format_version": 1,
+          "durable_index": true,
+          "published_generations": 61,
+          "pending_generations": 0,
+          "store_leases": 0,
+          "retrieve_leases": 0,
+          "max_leases": 1024
+        }
+      },
+      "replays": [
+        {
+          "id": "chatcmpl-a8d56086cabce97c",
+          "elapsed_seconds": 0.13095394591800869,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24290,
+            "completion_tokens": 15,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 9
+            }
+          },
+          "content": "VALUE_788",
+          "expected": "VALUE_788",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24275,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-b16169d222f35990",
+          "elapsed_seconds": 0.13501115702092648,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24293,
+            "completion_tokens": 18,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "content": "VALUE_2342",
+          "expected": "VALUE_2342",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24275,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-b54d9daba75f2fea",
+          "elapsed_seconds": 0.15153644001111388,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24301,
+            "completion_tokens": 25,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "content": "Record 777 has value VALUE_5450",
+          "expected": "VALUE_5450",
+          "answer_correct": false,
+          "prompt_sources": {
+            "external_kv_transfer": 24276,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-a6b449492cd1dd55",
+          "elapsed_seconds": 0.13928758702240884,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_7788",
+          "expected": "VALUE_7788",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24276,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        }
+      ],
+      "isolated_salt": {
+        "id": "chatcmpl-a06878b7adefbef7",
+        "elapsed_seconds": 2.3398415541741997,
+        "usage": {
+          "prompt_tokens": 24275,
+          "total_tokens": 24291,
+          "completion_tokens": 16,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 10
+          }
+        },
+        "content": "VALUE_788",
+        "expected": "VALUE_788",
+        "answer_correct": true,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 24275,
+          "local_cache_hit": 0
+        }
+      },
+      "settled": {
+        "is_healthy": true,
+        "engine_type": "MPCacheServer",
+        "chunk_size": 4096,
+        "hash_algorithm": "blake3",
+        "active_sessions": 0,
+        "storage_manager": {
+          "is_healthy": true,
+          "l1_manager": {
+            "is_healthy": true,
+            "total_object_count": 271,
+            "write_locked_count": 0,
+            "read_locked_count": 0,
+            "temporary_count": 0,
+            "memory_used_bytes": 3736313856,
+            "memory_total_bytes": 4294967296,
+            "memory_configured_bytes": 4294967296,
+            "memory_usage_ratio": 0.8699283599853516,
+            "write_ttl_seconds": 600,
+            "read_ttl_seconds": 300
+          },
+          "store_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "pending_keys_count": 0,
+            "in_flight_task_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "prefetch_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "max_in_flight": 8,
+            "submission_queue_size": 0,
+            "pending_queue_size": 0,
+            "in_flight_request_count": 0,
+            "lookup_phase_count": 0,
+            "load_phase_count": 0,
+            "completed_results_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "l1_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "eviction_policy": "LRU",
+            "trigger_watermark": 0.8,
+            "eviction_ratio": 0.2,
+            "write_back_enabled": false,
+            "periodic_flush_interval": 0.0,
+            "periodic_flush_enabled": false,
+            "l2_flush_enabled": false,
+            "l2_flush_adapter_ids": [],
+            "sync_flush_failures": 0,
+            "sync_flush_backoff_seconds": 0.0
+          },
+          "l2_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "adapters": [
+              {
+                "eviction_policy": "LRU",
+                "trigger_watermark": 0.8,
+                "eviction_ratio": 0.2,
+                "current_usage": 0.06696000695228577,
+                "total_bytes_used": 36811653120,
+                "total_capacity_bytes": 549755813888,
+                "num_cache_salt_buckets": 1
+              }
+            ]
+          },
+          "l2_adapters": [
+            {
+              "is_healthy": true,
+              "type": "FSNativeL2Adapter",
+              "reserved_store_bytes": 0,
+              "base_path": "/lmcache-l2/glm53-r18-cache-v1/_model-cache_snapshots_46aaae8a82032f77100f2f03e9cc11b391df3b4d-efa4cfcd9a512c56264fd1ff88f871ab88ec1e051a4a3ae2b09a8c4fed2ba5b3/kv-fp8_ds_mla/tp-4-dcp-1-i-4-g-0/spec-mtp-3-draft-none/chunk-4096",
+              "use_odirect": false,
+              "num_workers": 8,
+              "read_ahead_size": null
+            }
+          ],
+          "num_l2_adapters": 1,
+          "store_admission": {
+            "waits": 0,
+            "retries": 0,
+            "successes_after_eviction": 0,
+            "exhausted_timeouts": 0
+          }
+        },
+        "active_prefetch_jobs": 0,
+        "active_p2p_lookup_jobs": 0,
+        "p2p_enabled": false,
+        "p2p_state": "unregistered",
+        "p2p_peer_count": 0,
+        "p2p_peers": [],
+        "worker_liveness": {
+          "enabled": true,
+          "reap_timeout_seconds": 120.0,
+          "registration_grace_seconds": 3600.0,
+          "tracked_instances": 4
+        },
+        "engine_driven_shm_pool": {
+          "shm_name": "lmcache_l1_pool_lmcache-glm53-warmup-retention-5555",
+          "pool_size": 4294967296
+        },
+        "registered_non_cuda_instance_ids": [
+          2967190265687660531,
+          2133706396425841894,
+          1849902559834758050,
+          1807196891085202811
+        ],
+        "non_cuda_context_meta": {
+          "2967190265687660531": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "2133706396425841894": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1849902559834758050": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1807196891085202811": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          }
+        },
+        "recurrent_checkpoints": {
+          "format_version": 1,
+          "durable_index": true,
+          "published_generations": 65,
+          "pending_generations": 0,
+          "store_leases": 0,
+          "retrieve_leases": 0,
+          "max_leases": 1024
+        }
+      }
+    },
+    {
+      "trial": 2,
+      "salt": "concurrent-page-publication-1788996221950591853",
+      "cold": [
+        {
+          "id": "chatcmpl-ab3d504a1a070742",
+          "elapsed_seconds": 2.9025649290997535,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24285,
+            "completion_tokens": 10,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "content": "VALUE_788",
+          "expected": "VALUE_788",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-9578523fd531699c",
+          "elapsed_seconds": 4.086610781028867,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24292,
+            "completion_tokens": 17,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 10
+            }
+          },
+          "content": "VALUE_2342",
+          "expected": "VALUE_2342",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-8db1631c32c01202",
+          "elapsed_seconds": 4.535818571923301,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24294,
+            "completion_tokens": 18,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "content": "VALUE_5450",
+          "expected": "VALUE_5450",
+          "answer_correct": true
+        },
+        {
+          "id": "chatcmpl-a60cac54767af2e5",
+          "elapsed_seconds": 5.525042277062312,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_7788",
+          "expected": "VALUE_7788",
+          "answer_correct": true
+        }
+      ],
+      "concurrent_prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 55903,
+        "local_cache_hit": 41199
+      },
+      "after_cold": {
+        "is_healthy": true,
+        "engine_type": "MPCacheServer",
+        "chunk_size": 4096,
+        "hash_algorithm": "blake3",
+        "active_sessions": 0,
+        "storage_manager": {
+          "is_healthy": true,
+          "l1_manager": {
+            "is_healthy": true,
+            "total_object_count": 248,
+            "write_locked_count": 0,
+            "read_locked_count": 0,
+            "temporary_count": 0,
+            "memory_used_bytes": 3419209728,
+            "memory_total_bytes": 4294967296,
+            "memory_configured_bytes": 4294967296,
+            "memory_usage_ratio": 0.7960968017578125,
+            "write_ttl_seconds": 600,
+            "read_ttl_seconds": 300
+          },
+          "store_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "pending_keys_count": 0,
+            "in_flight_task_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "prefetch_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "max_in_flight": 8,
+            "submission_queue_size": 0,
+            "pending_queue_size": 0,
+            "in_flight_request_count": 0,
+            "lookup_phase_count": 0,
+            "load_phase_count": 0,
+            "completed_results_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "l1_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "eviction_policy": "LRU",
+            "trigger_watermark": 0.8,
+            "eviction_ratio": 0.2,
+            "write_back_enabled": false,
+            "periodic_flush_interval": 0.0,
+            "periodic_flush_enabled": false,
+            "l2_flush_enabled": false,
+            "l2_flush_adapter_ids": [],
+            "sync_flush_failures": 0,
+            "sync_flush_backoff_seconds": 0.0
+          },
+          "l2_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "adapters": [
+              {
+                "eviction_policy": "LRU",
+                "trigger_watermark": 0.8,
+                "eviction_ratio": 0.2,
+                "current_usage": 0.07338014245033264,
+                "total_bytes_used": 40341159936,
+                "total_capacity_bytes": 549755813888,
+                "num_cache_salt_buckets": 1
+              }
+            ]
+          },
+          "l2_adapters": [
+            {
+              "is_healthy": true,
+              "type": "FSNativeL2Adapter",
+              "reserved_store_bytes": 0,
+              "base_path": "/lmcache-l2/glm53-r18-cache-v1/_model-cache_snapshots_46aaae8a82032f77100f2f03e9cc11b391df3b4d-efa4cfcd9a512c56264fd1ff88f871ab88ec1e051a4a3ae2b09a8c4fed2ba5b3/kv-fp8_ds_mla/tp-4-dcp-1-i-4-g-0/spec-mtp-3-draft-none/chunk-4096",
+              "use_odirect": false,
+              "num_workers": 8,
+              "read_ahead_size": null
+            }
+          ],
+          "num_l2_adapters": 1,
+          "store_admission": {
+            "waits": 0,
+            "retries": 0,
+            "successes_after_eviction": 0,
+            "exhausted_timeouts": 0
+          }
+        },
+        "active_prefetch_jobs": 0,
+        "active_p2p_lookup_jobs": 0,
+        "p2p_enabled": false,
+        "p2p_state": "unregistered",
+        "p2p_peer_count": 0,
+        "p2p_peers": [],
+        "worker_liveness": {
+          "enabled": true,
+          "reap_timeout_seconds": 120.0,
+          "registration_grace_seconds": 3600.0,
+          "tracked_instances": 4
+        },
+        "engine_driven_shm_pool": {
+          "shm_name": "lmcache_l1_pool_lmcache-glm53-warmup-retention-5555",
+          "pool_size": 4294967296
+        },
+        "registered_non_cuda_instance_ids": [
+          2967190265687660531,
+          2133706396425841894,
+          1849902559834758050,
+          1807196891085202811
+        ],
+        "non_cuda_context_meta": {
+          "2967190265687660531": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "2133706396425841894": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1849902559834758050": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1807196891085202811": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          }
+        },
+        "recurrent_checkpoints": {
+          "format_version": 1,
+          "durable_index": true,
+          "published_generations": 74,
+          "pending_generations": 0,
+          "store_leases": 0,
+          "retrieve_leases": 0,
+          "max_leases": 1024
+        }
+      },
+      "replays": [
+        {
+          "id": "chatcmpl-b6401ad3ff273168",
+          "elapsed_seconds": 0.732975107152015,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24285,
+            "completion_tokens": 10,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 4
+            }
+          },
+          "content": "VALUE_788",
+          "expected": "VALUE_788",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24275,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-a07465dfb96ddb65",
+          "elapsed_seconds": 0.8591750229243189,
+          "usage": {
+            "prompt_tokens": 24275,
+            "total_tokens": 24293,
+            "completion_tokens": 18,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 11
+            }
+          },
+          "content": "VALUE_2342",
+          "expected": "VALUE_2342",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24275,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-91f34787fe34cafe",
+          "elapsed_seconds": 0.31132150581106544,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_5450",
+          "expected": "VALUE_5450",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24276,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "id": "chatcmpl-8d32af7e490c2f82",
+          "elapsed_seconds": 0.22516203089617193,
+          "usage": {
+            "prompt_tokens": 24276,
+            "total_tokens": 24295,
+            "completion_tokens": 19,
+            "prompt_tokens_details": null,
+            "completion_tokens_details": {
+              "reasoning_tokens": 12
+            }
+          },
+          "content": "VALUE_7788",
+          "expected": "VALUE_7788",
+          "answer_correct": true,
+          "prompt_sources": {
+            "external_kv_transfer": 24276,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        }
+      ],
+      "isolated_salt": {
+        "id": "chatcmpl-8dae60e15fb2d695",
+        "elapsed_seconds": 2.341996377101168,
+        "usage": {
+          "prompt_tokens": 24275,
+          "total_tokens": 24291,
+          "completion_tokens": 16,
+          "prompt_tokens_details": null,
+          "completion_tokens_details": {
+            "reasoning_tokens": 10
+          }
+        },
+        "content": "VALUE_788",
+        "expected": "VALUE_788",
+        "answer_correct": true,
+        "prompt_sources": {
+          "external_kv_transfer": 0,
+          "local_compute": 24275,
+          "local_cache_hit": 0
+        }
+      },
+      "settled": {
+        "is_healthy": true,
+        "engine_type": "MPCacheServer",
+        "chunk_size": 4096,
+        "hash_algorithm": "blake3",
+        "active_sessions": 0,
+        "storage_manager": {
+          "is_healthy": true,
+          "l1_manager": {
+            "is_healthy": true,
+            "total_object_count": 292,
+            "write_locked_count": 0,
+            "read_locked_count": 0,
+            "temporary_count": 0,
+            "memory_used_bytes": 4025843712,
+            "memory_total_bytes": 4294967296,
+            "memory_configured_bytes": 4294967296,
+            "memory_usage_ratio": 0.9373397827148438,
+            "write_ttl_seconds": 600,
+            "read_ttl_seconds": 300
+          },
+          "store_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "pending_keys_count": 0,
+            "in_flight_task_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "prefetch_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "max_in_flight": 8,
+            "submission_queue_size": 0,
+            "pending_queue_size": 0,
+            "in_flight_request_count": 0,
+            "lookup_phase_count": 0,
+            "load_phase_count": 0,
+            "completed_results_count": 0,
+            "num_l2_adapters": 1,
+            "num_active_adapters": 1,
+            "num_draining_adapters": 0
+          },
+          "l1_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "eviction_policy": "LRU",
+            "trigger_watermark": 0.8,
+            "eviction_ratio": 0.2,
+            "write_back_enabled": false,
+            "periodic_flush_interval": 0.0,
+            "periodic_flush_enabled": false,
+            "l2_flush_enabled": false,
+            "l2_flush_adapter_ids": [],
+            "sync_flush_failures": 0,
+            "sync_flush_backoff_seconds": 0.0
+          },
+          "l2_eviction_controller": {
+            "is_healthy": true,
+            "thread_alive": true,
+            "adapters": [
+              {
+                "eviction_policy": "LRU",
+                "trigger_watermark": 0.8,
+                "eviction_ratio": 0.2,
+                "current_usage": 0.07739272713661194,
+                "total_bytes_used": 42547101696,
+                "total_capacity_bytes": 549755813888,
+                "num_cache_salt_buckets": 1
+              }
+            ]
+          },
+          "l2_adapters": [
+            {
+              "is_healthy": true,
+              "type": "FSNativeL2Adapter",
+              "reserved_store_bytes": 0,
+              "base_path": "/lmcache-l2/glm53-r18-cache-v1/_model-cache_snapshots_46aaae8a82032f77100f2f03e9cc11b391df3b4d-efa4cfcd9a512c56264fd1ff88f871ab88ec1e051a4a3ae2b09a8c4fed2ba5b3/kv-fp8_ds_mla/tp-4-dcp-1-i-4-g-0/spec-mtp-3-draft-none/chunk-4096",
+              "use_odirect": false,
+              "num_workers": 8,
+              "read_ahead_size": null
+            }
+          ],
+          "num_l2_adapters": 1,
+          "store_admission": {
+            "waits": 4,
+            "retries": 4,
+            "successes_after_eviction": 4,
+            "exhausted_timeouts": 0
+          }
+        },
+        "active_prefetch_jobs": 0,
+        "active_p2p_lookup_jobs": 0,
+        "p2p_enabled": false,
+        "p2p_state": "unregistered",
+        "p2p_peer_count": 0,
+        "p2p_peers": [],
+        "worker_liveness": {
+          "enabled": true,
+          "reap_timeout_seconds": 120.0,
+          "registration_grace_seconds": 3600.0,
+          "tracked_instances": 4
+        },
+        "engine_driven_shm_pool": {
+          "shm_name": "lmcache_l1_pool_lmcache-glm53-warmup-retention-5555",
+          "pool_size": 4294967296
+        },
+        "registered_non_cuda_instance_ids": [
+          2967190265687660531,
+          2133706396425841894,
+          1849902559834758050,
+          1807196891085202811
+        ],
+        "non_cuda_context_meta": {
+          "2967190265687660531": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "2133706396425841894": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1849902559834758050": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          },
+          "1807196891085202811": {
+            "model_name": "/model-cache/snapshots/46aaae8a82032f77100f2f03e9cc11b391df3b4d",
+            "world_size": 4,
+            "block_size": 4096,
+            "use_mla": true
+          }
+        },
+        "recurrent_checkpoints": {
+          "format_version": 1,
+          "durable_index": true,
+          "published_generations": 79,
+          "pending_generations": 0,
+          "store_leases": 0,
+          "retrieve_leases": 0,
+          "max_leases": 1024
+        }
+      }
+    }
+  ],
+  "checks": {
+    "concurrent_answers_exact": false,
+    "restored_answers_exact": false,
+    "every_prompt_restored_without_recompute": true,
+    "different_salt_is_an_exact_cold_miss": true,
+    "generation_and_copy_ownership_drains": true,
+    "healthy_after_concurrent_work": true
+  }
+}

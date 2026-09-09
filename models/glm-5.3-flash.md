@@ -78,8 +78,8 @@ score.
 ## Docker artifact
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260909-r31
-localinferencelab/vllm@sha256:da7157d5649a85298635c44b03eeb127837448fa42a45388e48ad9de4a99ff39
+localinferencelab/vllm:jovian-judgement-community-20260909-r32
+localinferencelab/vllm@sha256:c9ad4a6ef4aa55232df9ed1a37e85d94eb8c7d5349561a6cbe828e72b61de83c
 ```
 
 The image contains two filesystem layers: a flattened CUDA 13.3/PyTorch 2.13
@@ -88,18 +88,24 @@ LMCache sources. FlashInfer, the DS4-compatible native vLLM operator and the
 authenticated FlashKDA extension are source-locked. It is not built by adding
 layers to a preceding community release.
 
-The [embedded source lock](glm-5.3-flash/validation/warmup-retention-r31.source.lock)
-has SHA-256 `f2c30d3703e82148d7ba5d1e3da03d876b3ba535c6de36d11612b0588eadbec1`.
-The [R31 qualification and changelog](glm-5.3-flash/validation/warmup-retention-r31.md)
-records the immutable image identity, differences from R30, measurements and
-qualification limits. R31 qualifies MoE warmup reuse and bounded LMCache RAM
-retention on TP4/DCP1 MTP3; the six-mode/DCP matrix retains its explicitly
-versioned evidence below rather than being represented as a fresh R31 run.
+The [embedded source lock](glm-5.3-flash/validation/concurrent-checkpoints-r32.source.lock)
+has SHA-256 `16bba062c83574820d3a097414d672deef8d6079b1abe1c7f989980424654901`.
+The [R32 qualification and changelog](glm-5.3-flash/validation/concurrent-checkpoints-r32.md)
+records immutable image identity, concurrent LMCache publication behavior and
+qualification limits. A checkpoint waiting for a shared immutable page retries
+in the worker background until the page's writer commits or aborts. All R31
+serving code, native kernels and launcher settings remain unchanged. Performance
+tables below retain their measured versions; they are not R32 performance runs.
 
 The same installed runtime supports
 [Qwen3.8-Flash-Next](qwen38-flash-next.md) and
 [DeepSeek V4 text/Vision](ds4-jovian-community-r29.md) through separate launch
 profiles. DS4 backend defaults do not replace the GLM settings below.
+
+Known limitation: concurrent MTP3 requests with strict JSON-schema output and
+LMCache can fail grammar validation with HTTP 500. The failure is reproduced
+on both R31 and R32; [vLLM #726](https://github.com/local-inference-lab/vllm/issues/726)
+tracks it. R32 corrects cache publication, not that constrained-output defect.
 
 ## Runtime backends
 
@@ -208,7 +214,7 @@ The defaults already select full-and-piecewise graphs, the B12X paths,
 FlashInfer sampling, NCCL 16 channels/2 MiB and OMP1.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260909-r31
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260909-r32
 GPU_DEVICES=0,1,2,3
 PORT=8000
 docker pull "$IMAGE"
@@ -241,7 +247,7 @@ Run the common command after assigning the chosen mode's variables:
 ```bash
 docker run -d --name "$NAME" --init \
   --gpus "\"device=${GPU_DEVICES}\"" --network host --ipc host \
-  -v jovian-judgement-r31-runtime-cache:/cache \
+  -v jovian-judgement-r32-runtime-cache:/cache \
   -v jovian-judgement-huggingface-cache:/root/.cache/huggingface \
   -e MODEL=local-inference-lab/GLM-5.3-Flash-NVFP4 \
   -e CACHE_MODE=vram -e KV_CACHE_QUANT=fp8_ds_mla \
@@ -384,7 +390,7 @@ LMCache is opt-in. In the common command, replace `-e CACHE_MODE=vram` with:
 -e LMCACHE_TRANSFER_MODE=engine_driven \
 -e LMCACHE_L1_SIZE_GB=64 \
 -e LMCACHE_L2_ENABLED=1 \
--v jovian-judgement-r31-lmcache-l2:/lmcache-l2
+-v jovian-judgement-r32-lmcache-l2:/lmcache-l2
 ```
 
 The host shared-memory filesystem must have at least 96 GiB available for the
@@ -470,7 +476,7 @@ of 3,639,803,904 transferred bytes across four ranks, and three C8 cancellation
 and live-read eviction rounds. This bounded check is not a repeat of the
 one-million-token timing matrix.
 
-Use an empty external-cache namespace when adopting R31. Immutable pinned block-ID
+Use an empty external-cache namespace when adopting R32. Immutable pinned block-ID
 snapshots prevent asynchronous gathers from copying a later batch's pages.
 The correction cannot repair payloads written without that guarantee. Atomic
 GLM checkpoint identities reject incompatible sources; fresh named volumes
@@ -489,9 +495,9 @@ tests. It lists the exact source revisions; no chain of preceding community
 images is needed. Runtime ABI dependencies are supplied by its pinned base.
 
 Complete Git mirrors preserve authorship and integration resolutions:
-[vLLM](https://github.com/voipmonitor/vllm/tree/integration/jovian-immutable-cache-serving-20260909),
+[vLLM](https://github.com/voipmonitor/vllm/tree/integration/jovian-warmup-buffer-reuse-20260909),
 [B12X](https://github.com/voipmonitor/b12x/tree/release/jovian-judgement-20260909-r29),
-[LMCache](https://github.com/local-inference-lab/LMCache/tree/integration/jovian-checkpoint-dedup-20260909).
+[LMCache](https://github.com/local-inference-lab/LMCache/tree/integration/jovian-concurrent-checkpoint-publication-20260909).
 The [open merge checklist](https://github.com/local-inference-lab/vllm/issues/651)
 describes each PR and integration caveat. Source locks, not tag-name inference,
 identify the measured packages. The timing matrix and exact packaged storage

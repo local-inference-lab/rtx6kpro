@@ -8,14 +8,14 @@ n-gram embedding (PLE) table to host RAM. It is a different model from
 [Qwen3.8-27B](qwen38-27b.md).
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260909-r31
+localinferencelab/vllm:jovian-judgement-community-20260909-r32
 ```
 
 The image contains the same vLLM/B12X runtime as [GLM-5.3-Flash](glm-5.3-flash.md),
 but Qwen needs its own launch arguments. The Compose recipe below bypasses the
 image's GLM entrypoint. No source mounts or absolute checkpoint paths are needed.
-R31 retains the Qwen profile and its temperature 1/top-p 0.95/top-k 20 model
-defaults. Qwen GPU tests were not repeated for R31; the R29 and R28.1 evidence
+R32 retains the Qwen profile and its temperature 1/top-p 0.95/top-k 20 model
+defaults. Qwen GPU tests were not repeated for R32; the R29 and R28.1 evidence
 below remains labelled with the measured artifact.
 
 ## Start on one GPU: TP1
@@ -61,7 +61,7 @@ That is a different workload from the reasoning benchmark below.
 ## Start on two GPUs: TP2
 
 Status: **implemented**, with a statically checked recipe; TP2 serving and
-performance have **not been qualified on the shared R31 image**. Measurements from
+performance have **not been qualified on the shared R32 image**. Measurements from
 other Qwen-specific images are not substituted for that missing result.
 
 Select two distinct available GPUs. Stop the TP1 service before switching

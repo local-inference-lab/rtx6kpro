@@ -1,0 +1,1206 @@
+{
+  "status": "failed",
+  "image_id": "sha256:b6f31960019f2808418f52f9f60e445f9347d6d3bf7ce3f9d52e287f736ed087",
+  "container": "glm53-warmup-retention-r31-grammar-lmcache",
+  "environment": [
+    "DCP=1",
+    "CACHE_MODE=lmcache",
+    "TP=4",
+    "SPECULATOR=mtp",
+    "MTP_DEPTH=3"
+  ],
+  "rounds": [
+    {
+      "index": 0,
+      "results": [
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-ad973f9768276a0b",
+            "object": "chat.completion",
+            "created": 1788997431,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111: VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24320,
+              "completion_tokens": 19,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 9
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 3.402649008203298,
+          "phase": "cold"
+        },
+        {
+          "position": 333,
+          "expected": {
+            "value": "VALUE_2342"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-bac400e06e1b122d",
+            "object": "chat.completion",
+            "created": 1788997431,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_2342\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 333: VALUE_2342."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24322,
+              "completion_tokens": 21,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 10
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 5.69027862418443,
+          "phase": "cold"
+        },
+        {
+          "position": 777,
+          "expected": {
+            "value": "VALUE_5450"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-985b6f7a7993a1a3",
+            "object": "chat.completion",
+            "created": 1788997431,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_5450\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 777: VALUE_5450."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24324,
+              "completion_tokens": 22,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 11
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 6.9782914710231125,
+          "phase": "cold"
+        },
+        {
+          "position": 1111,
+          "expected": {
+            "value": "VALUE_7788"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-ae66d4cfb097ec85",
+            "object": "chat.completion",
+            "created": 1788997431,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_7788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 1111 has value VALUE_7788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24325,
+              "completion_tokens": 23,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 12
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 6.1371383420191705,
+          "phase": "cold"
+        },
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-8dfb4bf9653c1af9",
+            "object": "chat.completion",
+            "created": 1788997438,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111: VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24320,
+              "completion_tokens": 19,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 9
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.13439783710055053,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24301,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 333,
+          "expected": {
+            "value": "VALUE_2342"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-986c7af43543b230",
+            "object": "chat.completion",
+            "created": 1788997438,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_2342\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 333: VALUE_2342."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24322,
+              "completion_tokens": 21,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 10
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.13381110783666372,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24301,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 777,
+          "expected": {
+            "value": "VALUE_5450"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-9c6a3235d25b0fe6",
+            "object": "chat.completion",
+            "created": 1788997438,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_5450\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 777: VALUE_5450."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24324,
+              "completion_tokens": 22,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 11
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.13880050112493336,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24302,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 1111,
+          "expected": {
+            "value": "VALUE_7788"
+          },
+          "salt": "mtp-json-contract-1788997431423077585",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-a406b8f3e698d8da",
+            "object": "chat.completion",
+            "created": 1788997439,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_7788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 1111 has value VALUE_7788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24325,
+              "completion_tokens": 23,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 12
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.13360218913294375,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24302,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997431423077585-independent-tenant",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-9e48997393086461",
+            "object": "chat.completion",
+            "created": 1788997439,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111: VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24320,
+              "completion_tokens": 19,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 9
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 2.404818122042343,
+          "phase": "isolated",
+          "prompt_sources": {
+            "external_kv_transfer": 0,
+            "local_compute": 24301,
+            "local_cache_hit": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "results": [
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-bbc40c8ee0a15eb4",
+            "object": "chat.completion",
+            "created": 1788997441,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111 has value VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24321,
+              "completion_tokens": 20,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 10
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 2.9131028919946402,
+          "phase": "cold"
+        },
+        {
+          "position": 333,
+          "expected": {
+            "value": "VALUE_2342"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-a6bb8631bd25e740",
+            "object": "chat.completion",
+            "created": 1788997441,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_2342\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 333: VALUE_2342."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24322,
+              "completion_tokens": 21,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 10
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 4.099504406796768,
+          "phase": "cold"
+        },
+        {
+          "position": 777,
+          "expected": {
+            "value": "VALUE_5450"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-b3f08daf522e6051",
+            "object": "chat.completion",
+            "created": 1788997441,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_5450\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 777: VALUE_5450."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24324,
+              "completion_tokens": 22,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 11
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 4.54642854584381,
+          "phase": "cold"
+        },
+        {
+          "position": 1111,
+          "expected": {
+            "value": "VALUE_7788"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-ac6a7b6fff66b2da",
+            "object": "chat.completion",
+            "created": 1788997441,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_7788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 1111 has value VALUE_7788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24325,
+              "completion_tokens": 23,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 12
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 5.5799547377973795,
+          "phase": "cold"
+        },
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-822ab70c9fc09224",
+            "object": "chat.completion",
+            "created": 1788997447,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111 \u2192 VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24320,
+              "completion_tokens": 19,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 9
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.13308485806919634,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24301,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 333,
+          "expected": {
+            "value": "VALUE_2342"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-ae3415a052a846fc",
+            "object": "chat.completion",
+            "created": 1788997447,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_2342\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 333: VALUE_2342."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24322,
+              "completion_tokens": 21,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 10
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.14298042305745184,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24301,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 777,
+          "expected": {
+            "value": "VALUE_5450"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-b8a8879a198999e9",
+            "object": "chat.completion",
+            "created": 1788997447,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_5450\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 777 has value VALUE_5450."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24325,
+              "completion_tokens": 23,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 12
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.13438466493971646,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24302,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 1111,
+          "expected": {
+            "value": "VALUE_7788"
+          },
+          "salt": "mtp-json-contract-1788997441730683980",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-9d55c69cc3727bde",
+            "object": "chat.completion",
+            "created": 1788997448,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_7788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 1111 has value VALUE_7788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24325,
+              "completion_tokens": 23,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 12
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 0.14192935801111162,
+          "phase": "replay",
+          "prompt_sources": {
+            "external_kv_transfer": 24302,
+            "local_compute": 0,
+            "local_cache_hit": 0
+          }
+        },
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997441730683980-independent-tenant",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-942f5bf3d3a69898",
+            "object": "chat.completion",
+            "created": 1788997448,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111 has value VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24321,
+              "completion_tokens": 20,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 10
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 2.3301283090841025,
+          "phase": "isolated",
+          "prompt_sources": {
+            "external_kv_transfer": 0,
+            "local_compute": 24301,
+            "local_cache_hit": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "results": [
+        {
+          "position": 111,
+          "expected": {
+            "value": "VALUE_788"
+          },
+          "salt": "mtp-json-contract-1788997450761402438",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-8868a22dc01b9403",
+            "object": "chat.completion",
+            "created": 1788997450,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 111: VALUE_788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24301,
+              "total_tokens": 24320,
+              "completion_tokens": 19,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 9
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 2.91668970300816,
+          "phase": "cold"
+        },
+        {
+          "position": 333,
+          "expected": {
+            "value": "VALUE_2342"
+          },
+          "salt": "mtp-json-contract-1788997450761402438",
+          "http_status": 500,
+          "error_body": "{\"error\":{\"message\":\"Internal server error\",\"type\":\"InternalServerError\",\"param\":null,\"code\":500}}",
+          "exact_answer": false,
+          "elapsed_seconds": 4.06783947115764,
+          "phase": "cold"
+        },
+        {
+          "position": 777,
+          "expected": {
+            "value": "VALUE_5450"
+          },
+          "salt": "mtp-json-contract-1788997450761402438",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-a20bedf7eb8e8f70",
+            "object": "chat.completion",
+            "created": 1788997450,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_5450\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 777: VALUE_5450."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24324,
+              "completion_tokens": 22,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 11
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 5.51688317488879,
+          "phase": "cold"
+        },
+        {
+          "position": 1111,
+          "expected": {
+            "value": "VALUE_7788"
+          },
+          "salt": "mtp-json-contract-1788997450761402438",
+          "http_status": 200,
+          "response": {
+            "id": "chatcmpl-916aaed5fbf575c7",
+            "object": "chat.completion",
+            "created": 1788997450,
+            "model": "GLM-5.3-Flash-NVFP4",
+            "choices": [
+              {
+                "index": 0,
+                "message": {
+                  "role": "assistant",
+                  "content": "{\"value\":\"VALUE_7788\"}",
+                  "refusal": null,
+                  "annotations": null,
+                  "audio": null,
+                  "function_call": null,
+                  "reasoning": "Record 1111: VALUE_7788."
+                },
+                "logprobs": null,
+                "finish_reason": "stop",
+                "stop_reason": 154827,
+                "token_ids": null,
+                "routed_experts": null
+              }
+            ],
+            "service_tier": null,
+            "system_fingerprint": "vllm-0.26.1rc0+glm53.r31.vllm55769270-tp4-8ef6be45",
+            "usage": {
+              "prompt_tokens": 24302,
+              "total_tokens": 24324,
+              "completion_tokens": 22,
+              "prompt_tokens_details": null,
+              "completion_tokens_details": {
+                "reasoning_tokens": 11
+              }
+            },
+            "prompt_logprobs": null,
+            "prompt_token_ids": null,
+            "prompt_text": null,
+            "kv_transfer_params": null,
+            "ec_transfer_params": null,
+            "metrics": null
+          },
+          "exact_answer": true,
+          "elapsed_seconds": 4.518320387927815,
+          "phase": "cold"
+        }
+      ]
+    }
+  ],
+  "http_errors": 1,
+  "incorrect_answers": 1
+}

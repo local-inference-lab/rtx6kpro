@@ -1,0 +1,191 @@
+{
+  "status": "qualified",
+  "conditions": {
+    "container": "glm53-warmup-retention-r32-probe",
+    "image": "sha256:84a2c85d9f889bf0a4b0d08f33630544e1366deb3546d2b26046b64e3e1f364a",
+    "ram_capacity_bytes": 4294967296,
+    "prompt_tokens": 32768,
+    "temperature": 0,
+    "max_tokens": 1,
+    "nonce": 1788996610131116015
+  },
+  "cases": [
+    {
+      "name": "cold-0",
+      "elapsed_seconds": 3.0693973579909652,
+      "prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 32768,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 84,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 1158119424,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.26964569091796875,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 1158119424
+    },
+    {
+      "name": "cold-1",
+      "elapsed_seconds": 2.9875905129592866,
+      "prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 32768,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 168,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 2316238848,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.5392913818359375,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 2316238848
+    },
+    {
+      "name": "cold-2",
+      "elapsed_seconds": 2.9961065789684653,
+      "prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 32768,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 252,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 3474358272,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.8089370727539062,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 3474358272
+    },
+    {
+      "name": "cold-3",
+      "elapsed_seconds": 3.015707751037553,
+      "prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 32768,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 286,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 3943120896,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.9180793762207031,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 4632477696
+    },
+    {
+      "name": "cold-4",
+      "elapsed_seconds": 2.9933260870166123,
+      "prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 32768,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 251,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 3460571136,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.8057270050048828,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 5790597120
+    },
+    {
+      "name": "cold-5",
+      "elapsed_seconds": 2.995897652115673,
+      "prompt_sources": {
+        "external_kv_transfer": 0,
+        "local_compute": 32768,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 285,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 3929333760,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.9148693084716797,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 6948716544
+    },
+    {
+      "name": "replay-after-pressure",
+      "elapsed_seconds": 0.08188186190091074,
+      "prompt_sources": {
+        "external_kv_transfer": 32768,
+        "local_compute": 0,
+        "local_cache_hit": 0
+      },
+      "text": " color",
+      "ram": {
+        "is_healthy": true,
+        "total_object_count": 308,
+        "write_locked_count": 0,
+        "read_locked_count": 0,
+        "temporary_count": 0,
+        "memory_used_bytes": 4246437888,
+        "memory_total_bytes": 4294967296,
+        "memory_configured_bytes": 4294967296,
+        "memory_usage_ratio": 0.9887008666992188,
+        "write_ttl_seconds": 600,
+        "read_ttl_seconds": 300
+      },
+      "added_filesystem_bytes": 6948716544
+    }
+  ],
+  "checks": {
+    "durable_payloads_exceed_ram_capacity": true,
+    "ram_remains_bounded": true,
+    "ram_allocator_healthy": true,
+    "read_and_write_locks_released": true,
+    "cold_prompts_are_uncached": true,
+    "replay_is_exact": true,
+    "replay_zero_recompute": true
+  }
+}

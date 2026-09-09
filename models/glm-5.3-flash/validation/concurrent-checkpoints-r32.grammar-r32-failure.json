@@ -1,0 +1,18 @@
+{
+  "status": "failed",
+  "image_id": "sha256:84a2c85d9f889bf0a4b0d08f33630544e1366deb3546d2b26046b64e3e1f364a",
+  "phase": "third concurrent cold round",
+  "timestamp_utc": "2026-09-09T23:25:37Z",
+  "request_id": "chatcmpl-934d19df6c6c007e-b39e3efe",
+  "http_status": 500,
+  "rejected_tokens": [
+    62,
+    100928,
+    23,
+    62
+  ],
+  "first_rejected_token": 62,
+  "engine_remained_healthy": true,
+  "partial_results": "concurrent-checkpoints-r32.grammar-r32-partial.json",
+  "tracking_issue": "https://github.com/local-inference-lab/vllm/issues/726"
+}

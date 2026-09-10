@@ -179,6 +179,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 
 ## Benchmarks And Quality
 
+- [Czech Tutoring Workload Quality: DeepSeek-V4-Flash vs V4.1-Flash vs Qwen3.8-Flash-Next vs GLM-5.3-Flash](benchmarks/czech-tutor-quality-comparison.md) - `benchmarks/czech-tutor-quality-comparison.md`
 - [GLM-5.2 KLD Evaluation](benchmarks/glm52-kld-evaluation.md) - `benchmarks/glm52-kld-evaluation.md`
 - [Inference Throughput: Qwen3.5-397B-A17B Quantizations](benchmarks/inference-throughput/README.md) - `benchmarks/inference-throughput/README.md`
 - [vLLM vs SGLang Throughput: lukealonso/Qwen3.5-397B-A17B-NVFP4](benchmarks/inference-throughput/vllm-vs-sglang.md) - `benchmarks/inference-throughput/vllm-vs-sglang.md`

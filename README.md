@@ -38,6 +38,7 @@ Need the complete map of every Markdown page?
 | Rebuild the Docker image | [Eldritch Docker](models/eldritch-enlightenment-docker.md), model-specific image sections, and build scripts in [scripts](scripts/). |
 | Compare backend speed | Model benchmark tables plus [Benchmark Results](benchmarks/results.md). |
 | Check quantization fidelity | [General KLD methodology](kld/README.md), [GLM-5.2 KLD](benchmarks/glm52-kld-evaluation.md), and model-specific KLD sections. |
+| Compare model output quality on a real Czech tutoring workload | [Czech tutoring quality comparison](benchmarks/czech-tutor-quality-comparison.md): DeepSeek-V4-Flash, V4.1-Flash, Qwen3.8-Flash-Next and GLM-5.3-Flash per reasoning mode, with a reproducible runner. |
 | Understand MTP, DSpark, or DFlash | [Speculative Decoding](optimization/speculative-decoding.md), DS4/Kimi/MiMo pages. |
 | Debug topology or PCIe behavior | [Topology](hardware/topology.md), [PCIe Bandwidth](hardware/pcie-bandwidth.md), [GPU Configurations](hardware/gpu-configs.md). |
 | Avoid known runtime footguns | [Common Issues](troubleshooting/common-issues.md), model caveats, and daily summaries. |

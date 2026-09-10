@@ -6,7 +6,7 @@ its own launcher profile; GLM precision, scheduler and cache settings are not
 substituted for the DS4 profile.
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260909-r32
+localinferencelab/vllm:jovian-judgement-community-20260910-r33
 ```
 
 Status: **qualified for the bounded TP2/DCP1 FP8 checks below**.
@@ -16,10 +16,12 @@ complete without the previously reproduced launch failure. This does not
 qualify long-duration filesystem-pressure behavior. Other TP/DCP topologies
 and NVFP4 target KV are not qualified by these checks.
 
-The bounded GPU evidence below is from R29. R32 retains those model/native
+The bounded GPU evidence below is from R29. R33 retains those model/native
 components and the launcher sampling defaults of temperature 1/top-p 0.95,
-with request and native-CLI overrides. DS4 inference is not rerun for R32.
-See the [R32 changelog and qualification scope](glm-5.3-flash/validation/concurrent-checkpoints-r32.md).
+with request and native-CLI overrides. Its NVFP4 split-prefill change is for GLM
+and eligible Qwen shapes; DS4 already has native shared-input MXFP4/MXFP8 split
+compute. No DS4 speedup or repeated text/Vision/LMCache matrix is attributed
+to this update. See the [R33 changelog and qualification scope](glm-5.3-flash/validation/fp4-prefill-filesystem-r33.md).
 
 ## Start text or Vision
 
@@ -29,7 +31,7 @@ are required. It downloads weights on first launch. Docker needs NVIDIA
 Container Toolkit and a CUDA 13.3-compatible driver.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260909-r32
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r33
 GPU_DEVICES=0,1
 PORT=8000
 VARIANT=text
@@ -177,7 +179,7 @@ also retains the unresolved sanitizer diagnostic and its CUDA-only reproducer.
 
 The image has two filesystem layers, complete committed component histories,
 and an embedded `/opt/glm53-flash/source.lock`. The
-[R32 artifact report](glm-5.3-flash/validation/concurrent-checkpoints-r32.md) records
+[R33 artifact report](glm-5.3-flash/validation/fp4-prefill-filesystem-r33.md) records
 the deployed source identity. The historical
 [R29 qualification](glm-5.3-flash/validation/shared-serving-r29.md) records
 the GLM/Qwen/DS4 integration, immutable identities, test counts and limits.

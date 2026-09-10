@@ -8,15 +8,16 @@ n-gram embedding (PLE) table to host RAM. It is a different model from
 [Qwen3.8-27B](qwen38-27b.md).
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260909-r32
+localinferencelab/vllm:jovian-judgement-community-20260910-r33
 ```
 
 The image contains the same vLLM/B12X runtime as [GLM-5.3-Flash](glm-5.3-flash.md),
 but Qwen needs its own launch arguments. The Compose recipe below bypasses the
 image's GLM entrypoint. No source mounts or absolute checkpoint paths are needed.
-R32 retains the Qwen profile and its temperature 1/top-p 0.95/top-k 20 model
-defaults. Qwen GPU tests were not repeated for R32; the R29 and R28.1 evidence
-below remains labelled with the measured artifact.
+R33 retains temperature 1/top-p 0.95/top-k 20 and enables shared-input NVFP4
+split prefill for eligible TP1 expert shapes. The packaged image passes the
+TP1/MTP3 answer, prefix-cache, logprob and performance checks below. R29 and
+R28.1 comparisons retain their measured artifact and clock conditions.
 
 ## Start on one GPU: TP1
 
@@ -61,7 +62,7 @@ That is a different workload from the reasoning benchmark below.
 ## Start on two GPUs: TP2
 
 Status: **implemented**, with a statically checked recipe; TP2 serving and
-performance have **not been qualified on the shared R32 image**. Measurements from
+performance have **not been qualified on the shared R33 image**. Measurements from
 other Qwen-specific images are not substituted for that missing result.
 
 Select two distinct available GPUs. Stop the TP1 service before switching
@@ -142,8 +143,9 @@ at C8/C16 in three diagnostic sweeps; value one restored acceptance without
 changing the target vocabulary head. The W4A4 kernel-level cause is not
 established, so W4A16 remains the qualified configuration.
 
-The TP1 qualification reported **859,808 usable logical KV tokens**, with a
-small allocation variation between boots. This is a pool shared by requests,
+R33 TP1 qualification reports **857,047 usable logical KV tokens**, versus
+859,808 in its R32 control (−0.32%, including boot allocation variation).
+This is a pool shared by requests,
 not the maximum context of one request. A nominal physical-blocks-times-page
 calculation reported about 13.1 million; that is **not usable capacity** for
 this hybrid cache. Trust the engine's logical-capacity startup line. The
@@ -151,6 +153,41 @@ requested block size is 64, but the measured effective hybrid pages are 3,008
 tokens; the recipe does not manually force a different geometry.
 
 ## Measured llmbench and Sieve performance
+
+### R33 NVFP4 prefill: one GPU with VRAM +6000
+
+Status: **qualified for these bounded cells**. The same physical RTX PRO 6000
+Blackwell Workstation GPU, 600 W limit, graphics offset zero and **VRAM +6000**
+is used sequentially for both arms. TP1/MTP3, FP8 KV, CPU PLE offload, OMP2,
+6019-token budget, 16 sequences and full-and-piecewise graphs through 64 rows.
+Sampling is **temperature 1, top-p 0.95, top-k 20**, normal reasoning, EOS
+respected. These are not the stock-clock/xhigh Sieve results below.
+
+| Measurement | R32 | R33 packaged image | Change |
+|---|---:|---:|---:|
+| Uncached 32K prefill, HTTP-wall input tok/s | 15,707.42 | 17,192.95 | **+9.46%** |
+| Uncached 32K prefill, engine-accounted input tok/s | 15,865.89 | 17,390.95 | +9.61% |
+| C1/context 0 output tok/s | 195.06 | 199.69 | +2.37% |
+| C1 verifier steps/s | 97.45 | 96.79 | −0.67% |
+| C8/context 0 aggregate output tok/s | 736.33 | 732.85 | −0.47% |
+| C8 aggregate verifier steps/s | 378.79 | 384.38 | +1.48% |
+
+Prefill excludes two warmups and retains five requests of exactly 32768 input
+tokens and one output token, all with zero cache hits. Decode uses a ten-second
+warmup and one thirty-second cell per concurrency. Acceptance changes with
+sampling, so these short decode observations are not a general speedup or
+statistical equivalence claim. A source-overlay prototype gave 17,211 input
+tok/s; the table uses the packaged image's independently repeated result.
+
+The image passes 68 cold/repeated requests, six shared-instruction cases and
+38 post-prefill logprob requests. No checkpoint values change. B12X proves
+exact equality of immutable expert input scales and shares input quantization
+across routed experts before separate projections. Target head BF16 and the
+private NVFP4 draft head remain unchanged. TP2's width-320 expert partition is
+not split-tile eligible; no TP2 gain is claimed. LMCache remains unqualified
+for Qwen. [Source, raw samples, numerical limits and complete R33 changelog](glm-5.3-flash/validation/fp4-prefill-filesystem-r33.md).
+
+### Historical stock-clock engine and Sieve comparisons
 
 The shared R29 composition passes a same-GPU TP1/MTP3 comparison against
 R28.1: three warmed C1 repeats have median output **173.66 → 177.27 tok/s
@@ -217,7 +254,7 @@ Generated Python was not executed: this is throughput evidence, not code-quality
 validation. The [measurement summary and Sieve samples](qwen38-flash-next/validation/tp1-engine-comparison.json)
 retain every measured decode cell and all ten Sieve rates per engine.
 
-TP2, no-MTP, PLE-offload-disabled and +6000 throughput remain **unqualified**
+TP2, no-MTP and PLE-offload-disabled throughput remain **unqualified**
 for this image. The separate
 [TP1 qualification report](qwen38-flash-next/validation/r28.1-tp1.md) preserves
 the three-repeat same-GPU image comparison and bounded cache/output checks.

@@ -21,6 +21,7 @@ measure of correctness, capability, generation stability, or user preference.
 | GLM-5.3-Flash route-controlled KLD result | research-only | The [BF16-to-NVFP4 four-cell report](glm-5.3-flash-bf16-nvfp4.md) publishes analysis and held-out results; it has no acceptance threshold and measures `FLASHINFER_CUTLASS`, not the nondeterministic B12X NVFP4 MoE path |
 | GLM-5.3-Flash QAD step-1,750 checkpoint comparison | research-only | The [QAD step 1,750 report](glm-5.3-flash-qad-step1750.md) finds lower aggregate BF16-to-candidate KLD than the published NVFP4 comparator under pre-specified fixed-route and natural-route criteria; the gain is heterogeneous and concentrated in dialogue/instruction data |
 | GLM-5.3-Flash QAD step-2,500 checkpoint progression | research-only | The [QAD step 2,500 report](glm-5.3-flash-qad-step2500.md) finds lower KLD than published NVFP4 in both routing conditions; relative to QAD step 1,750, natural-route KLD improves while exact-BF16-route KLD regresses |
+| GLM-5.3-Flash QAD TV-nucleus step-2,500 comparison | research-only | The [QAD TV-nucleus step 2,500 report](glm-5.3-flash-qad-tvn-step2500.md) finds lower natural-route KLD than published NVFP4, an inconclusive exact-BF16-route change, and higher KLD than QAD step 2,500 under both routing conditions |
 
 The status of one model artifact does not qualify the same capture path,
 runtime, dataset, or acceptance threshold for another model.

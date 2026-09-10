@@ -1,325 +1,244 @@
 # GLM-5.3-Flash verifier-backed behavioral fidelity
 
-Status: **qualified execution; inconclusive one-percentage-point decision**.
+Status: **implemented** as a benchmark method. The three-checkpoint R30
+nucleus-sampling comparison documented here is **qualified**.
 
 Verifier-Backed Behavioral Fidelity (VBF) is a Local Inference Lab regression
-benchmark for a practical question: when checkpoint weights change, do the
-changes produce objectively better or worse answers?
+benchmark for measuring whether checkpoint changes alter objectively
+verifiable answers. It complements next-token distribution metrics such as
+Kullback-Leibler Divergence (KLD): KLD measures probability-distribution
+movement, while VBF measures whether generated answers cross a specified
+correctness boundary.
 
-VBF is a project-specific benchmark with a published operation contract, not
-an established external leaderboard or a universal model-quality score.
+VBF is a project-specific benchmark with an explicit operation contract. It is
+not an external leaderboard or a universal model-quality score.
 
-The [QAD step-2,500 companion report](qad-step2500-verifier-backed-behavioral-fidelity.md)
-applies VBF to 9,856 non-overlapping task pairs for published NVFP4 and QAD
-step 2,500. Its primary result establishes practical equivalence inside a
-predeclared ±1-point semantic-score margin. The same report contains a
-separately declared 2,048-task comparison that confirms a QAD advantage on
-unseen numeric instances of the deterministic integer-program template. A
-separate 224-task TP4×2 execution remains variance-estimation evidence and
-retains the QAD step-1,750 comparison.
+## Qualified GLM-5.3-Flash result
 
-VBF gives each checkpoint the same deterministic tasks and scores every answer
-against programmatically computed ground truth. It does not ask another model
-to judge the answer, and it does not compare candidate prose with a BF16
-generation. A quantized checkpoint can therefore receive credit when it solves
-a task that BF16 misses, and it receives a regression when BF16 is correct and
-the quantized checkpoint is not.
+The qualified evaluation compares three NVIDIA 4-bit floating-point
+(NVFP4)-family checkpoints on 7,168 procedurally generated tasks. Each
+checkpoint produced three fixed-seed
+sampling repeats per task, for 21,504 responses per checkpoint and 64,512
+responses overall. Generation used temperature 1.0, nucleus sampling with
+top-p 0.95, maximum reasoning effort, and a 32,768-token completion limit.
 
-The evaluated 224-task execution is complete and satisfies the recorded
-checkpoint-comparison contract. Its statistical resolution is not sufficient
-to establish improvement, non-inferiority, or equivalence inside the declared
-one-percentage-point margin.
+| Checkpoint | Semantic score | Exact responses | Protocol-valid responses | Length-limited responses |
+|---|---:|---:|---:|---:|
+| Published NVFP4 | 94.5386% | 19,285/21,504 (89.6810%) | 21,383/21,504 (99.4373%) | 73 |
+| QAD step 2,500 | 94.5698% | 19,112/21,504 (88.8765%) | 21,439/21,504 (99.6977%) | 46 |
+| QAD TV-nucleus step 2,500 | 94.5989% | 19,338/21,504 (89.9275%) | 21,436/21,504 (99.6838%) | 52 |
 
-## Result in plain language
+The semantic score is the mean fraction of correct required fields. Repeats
+belonging to the same task remain in one statistical cluster.
 
-| Checkpoint | Semantic score | Completely correct tasks | Output protocol valid |
-|---|---:|---:|---:|
-| BF16 reference | **93.11%** | **198/224 (88.39%)** | 97.32% |
-| Published NVFP4 | 91.63% | 192/224 (85.71%) | 95.98% |
-| QAD step 1,750 | 92.35% | 190/224 (84.82%) | 97.32% |
+| Candidate minus reference | Score change | Paired 95% interval | Predeclared decision |
+|---|---:|---:|---|
+| QAD step 2,500 minus published NVFP4 | +0.0311 points | -0.2748 to +0.3380 points | practically equivalent |
+| QAD TV-nucleus step 2,500 minus published NVFP4 | +0.0603 points | -0.2581 to +0.3785 points | practically equivalent |
+| QAD TV-nucleus step 2,500 minus QAD step 2,500 | +0.0292 points | -0.2739 to +0.3325 points | practically equivalent |
 
-Quantization-Aware Distillation (QAD) step 1,750 is closer to BF16 than the
-published NVIDIA 4-bit floating-point (NVFP4) checkpoint on the primary
-fractional score: its observed loss is 0.77 percentage points instead of 1.49
-points. That is encouraging, but it is not a demonstrated quality improvement.
+Every interval lies completely inside the predeclared ±1-percentage-point
+equivalence band and crosses zero. The result establishes practical
+equivalence on the primary VBF endpoint under this serving and decoding
+contract. It does not establish that one checkpoint is better.
 
-The paired uncertainty intervals are several points wide. QAD also has the
-lowest exact-task point estimate, despite its better fractional score. The
-supported conclusion is therefore:
+The checkpoint-specific reports contain the complete comparisons:
 
-- QAD changes useful behavior, with both regressions and recoveries;
-- the observed aggregate VBF score is closer to BF16 than published NVFP4 is;
-- the retained data do not establish that QAD is better, worse, equivalent to,
-  or non-inferior to BF16 within one percentage point; and
-- QAD remains **research-only as a claimed behavioral improvement**.
+- [QAD step 2,500 behavioral fidelity](qad-step2500-verifier-backed-behavioral-fidelity.md)
+- [QAD TV-nucleus step 2,500 behavioral fidelity](qad-tvn-step2500-verifier-backed-behavioral-fidelity.md)
 
-`Inconclusive` is not a euphemism for failure and is not proof of equivalence.
-It means the completed sample does not contain enough information for the
-declared decision threshold.
+## Secondary outcome diagnostics
+
+An exact task cluster counts as correct only when all three sampled responses
+are exact. Published NVFP4 has 5,540 such tasks, QAD step 2,500 has 5,377, and
+QAD TV-nucleus step 2,500 has 5,587.
+
+The paired exact-task diagnostic favors published NVFP4 over QAD step 2,500
+(909 published-only versus 746 QAD-only tasks; exact McNemar
+p=0.0000674). It does not distinguish TV-nucleus from published NVFP4
+(787 published-only versus 834 TV-nucleus-only; p=0.253). It favors
+TV-nucleus over QAD step 2,500 (738 QAD-only versus 948 TV-nucleus-only;
+p=0.000000346). These are predeclared secondary diagnostics and do not replace
+the semantic-score decision.
+
+No task-family comparison excludes zero. The widest and least certain family
+is program execution:
+
+| Candidate minus reference | Program-execution change | Paired 95% interval |
+|---|---:|---:|
+| QAD step 2,500 minus published NVFP4 | +0.7952 points | -1.1300 to +2.7297 points |
+| QAD TV-nucleus step 2,500 minus published NVFP4 | +0.2372 points | -1.7764 to +2.2554 points |
+| QAD TV-nucleus step 2,500 minus QAD step 2,500 | -0.5580 points | -2.4786 to +1.3486 points |
+
+The 7,168-task suite already contains 1,024 program-execution tasks and 3,072
+program responses per checkpoint. A separate 2,048-task suite containing more
+instances of the same integer-program template is not part of this
+qualification set.
+
+Length-limit rates are low under nucleus sampling: 0.3395% for published
+NVFP4, 0.2139% for QAD step 2,500, and 0.2418% for TV-nucleus. Paired
+finish-reason accounting shows no TV-nucleus looping penalty in this
+configuration. Finish-reason groups are outcome-selected diagnostics rather
+than counterfactual estimates of another token budget.
 
 ## What VBF measures
 
-Kullback-Leibler Divergence (KLD) measures whether the complete next-token
-probability distribution moved. VBF measures whether model behavior moved
-across the boundary between objectively correct and incorrect answers.
+Python generators create each prompt and its executable answer key. No
+language model writes prompts, computes expected answers, or judges responses.
+A master seed, task family, and item number determine every generated value.
 
-For example, a small distribution change can leave the final answer unchanged,
-while another small change can alter one digit in a total, reverse a rule
-precedence decision, or select the wrong node in a dependency graph. KLD sees
-both distribution changes; VBF distinguishes their observed task outcomes.
+The suite contains 1,024 tasks from each family:
 
-VBF is intentionally narrow. It measures deterministic reasoning and
-instruction execution when all required facts are supplied in the prompt. It
-does not measure creative writing, style, subjective usefulness, factual
-knowledge not present in the prompt, safety, tool use, or every possible user
-workload. It complements KLD and capability-specific evaluations rather than
-replacing them.
-
-## Test construction
-
-Python generators create both the prompt and its answer key. No language model
-writes the prompts or computes the expected answers. A master seed, task family,
-and item number deterministically select every generated value.
-
-The suite contains 32 prompts from each of seven equally represented task
-families. Each family cycles through standard, demanding, and stress inputs.
-
-| Task family | Behavior being tested |
+| Task family | Verifiable behavior |
 |---|---|
-| Record reconciliation | Apply ordered corrections, filter records, join payments, and calculate exact aggregates. |
-| Event-sourced state | Reconstruct mutable state from an ordered event stream and answer final-state queries. |
-| Dependency graph | Calculate reachability, path counts, shortest and longest paths, ancestry, and mandatory nodes in a directed acyclic graph. |
-| Constraint assignment | Solve a one-to-one ordering problem that the generator has verified has one unique solution. |
-| Program execution | Execute precisely specified integer control flow without executing model-produced code. |
-| Policy application | Apply business rules with explicit priority, precedence, and boundary operators. |
-| Evidence-chain retrieval | Follow corrected asset, material, and supplier relationships through distractor-heavy context up to approximately 15,000 characters. |
+| Record reconciliation | Apply ordered corrections, joins, filters, and exact aggregates. |
+| Event-sourced state | Reconstruct mutable state from an ordered event stream. |
+| Dependency graph | Compute reachability, path properties, ancestry, and mandatory nodes. |
+| Constraint assignment | Solve a generated one-to-one ordering problem with a verified unique solution. |
+| Program execution | Execute specified integer control flow; no model-produced code is executed. |
+| Policy application | Apply explicit rules with priority, precedence, and boundary operators. |
+| Evidence-chain retrieval | Follow corrected relationships through distractor-heavy supplied context. |
 
-Every prompt requests one JSON object with named fields and explicit value
-types. The generated JSONL suite contains a manifest, immutable task records,
-and a SHA-256 digest over the canonical task content. Loading stops on a changed
-record, duplicate task identifier, unsupported schema, or invalid answer
-contract.
+VBF measures deterministic reasoning and instruction execution when the prompt
+supplies all required facts. It does not measure free-form writing, subjective
+usefulness, factual knowledge outside the prompt, safety, repository work,
+tool selection, or arbitrary deployment traffic.
 
-The answer key is retained beside each task for scoring but is never included
-in the request sent to the model.
+## Scoring contract
 
-## How one answer is scored
+Every prompt requests one strict JSON object with named fields and explicit
+types. The scorer removes separately returned reasoning and inline think
+blocks, then parses the last complete JSON object in visible answer content.
+It does not repair malformed JSON, coerce types, ignore list order, or infer
+missing values.
 
-The scorer removes separately returned reasoning and inline `<think>` blocks,
-then finds the last complete JSON object in visible answer content. It does not
-repair malformed JSON, convert strings to numbers, treat booleans as integers,
-ignore list order, or guess an intended answer.
+Two scores are retained:
 
-Suppose the expected object is:
+1. Semantic score is the fraction of required top-level fields whose values
+   and types exactly match the executable answer key. Every task receives
+   equal aggregate weight.
+2. Exact-response accuracy is one only when every required field is correct
+   and the object has exactly the required keys.
 
-```json
-{
-  "eligible_count": 3,
-  "overdue_ids": ["INV-002", "INV-009"],
-  "outstanding_total": 950
-}
-```
+For stochastic evaluation, the primary score first averages the three repeats
+within each task and then averages the 7,168 task values. The paired percentile
+bootstrap resamples whole task identifiers and keeps all three repeats
+together. It uses 100,000 samples.
 
-This answer has two of three fields correct because the list order is wrong:
+The practical decision margin is one semantic-score percentage point:
 
-```json
-{
-  "eligible_count": 3,
-  "overdue_ids": ["INV-009", "INV-002"],
-  "outstanding_total": 950
-}
-```
-
-VBF retains two scores for every task:
-
-1. **Semantic score** is the fraction of required top-level fields whose value
-   and type exactly match the answer key. Each prompt receives equal aggregate
-   weight, regardless of its number of fields.
-2. **Exact-task accuracy** is one only when every required field is correct and
-   the object contains exactly the required keys. A missing or extra key makes
-   the exact score zero.
-
-Semantic score is the primary metric because it preserves information about
-partial damage. Exact-task accuracy provides the stricter user-visible view.
-Per-field counts are retained as diagnostics, but fields belonging to one
-prompt are not treated as independent statistical samples.
-
-## Paired comparison
-
-The comparison operates task by task. For each task, it subtracts the BF16
-semantic score from the candidate semantic score, then averages those paired
-differences. This answers whether the *same questions* changed; comparing two
-unpaired accuracy intervals would not answer that question.
-
-The report includes:
-
-- a 95% paired bootstrap interval that resamples whole task identifiers;
-- exact tasks solved only by the reference or only by the candidate;
-- a two-sided exact McNemar test over exact-task flips;
-- correct-to-incorrect field regressions and incorrect-to-correct recoveries;
-- tasks where both models are wrong in different ways; and
-- separate diagnostic intervals for every task family.
-
-If a task has repeated generations, its repeats remain in one statistical
-cluster. The evaluated GLM-5.3-Flash suite uses one generation per task.
-
-## Decision rule
-
-The practical margin was fixed at one semantic-score percentage point before
-the comparison was interpreted. For candidate minus reference:
-
-| Decision | Required paired 95% interval |
+| Decision | Required paired 95% interval for candidate minus reference |
 |---|---|
-| `worse` | Entire interval is below -1 point. |
-| `better` | Entire interval is above +1 point. |
-| `practically_equivalent` | Entire interval lies between -1 and +1 points. |
-| `not_worse` | Harm beyond -1 point is excluded, but two-sided equivalence is not established. |
-| `inconclusive` | Interval still includes harm beyond -1 point. |
-| `unsupported` | Complete pairing, provenance, or matched execution conditions are absent. |
+| worse | Entire interval is below -1 point. |
+| better | Entire interval is above +1 point. |
+| practically equivalent | Entire interval lies between -1 and +1 points. |
+| not worse | Harm beyond -1 point is excluded, but two-sided equivalence is not established. |
+| inconclusive | The interval still includes harm beyond -1 point. |
+| unsupported | Complete pairing, provenance, or required execution conditions are absent. |
 
-One percentage point is a deployment-policy tolerance, not a mathematical
-constant. A deployment that tolerates a different loss must declare its margin
-before evaluating an independent suite.
+The one-point margin is a declared deployment tolerance, not a mathematical
+constant.
 
-## Checkpoints and matched execution
+## Checkpoints and serving contract
 
-| Role | Artifact identity |
+| Role | Durable identity |
 |---|---|
-| BF16 reference | `zai-org/GLM-5.3-Flash-BF16@61f77a1e1a67c410650ce5017411337da0dcd11a` |
-| Published comparator | `local-inference-lab/GLM-5.3-Flash-NVFP4@378ca54585c46542bad1f3cb3ed0d73ae51cdb62` |
-| QAD candidate | `GLM-5.3-Flash-NVFP4-QAD-step1750`; Quatrain training step 1,750 |
+| Published NVFP4 | local-inference-lab/GLM-5.3-Flash-NVFP4 at revision 378ca54585c46542bad1f3cb3ed0d73ae51cdb62; model-index SHA-256 0d1d9e6b226e76520e182de10d4e7194cc885c5cb1bf885bb90de1916ce312cb |
+| QAD step 2,500 | Materialization-manifest SHA-256 962f7905587be9e4377b8bebbcd8e93b49c3c49f3bda6d818260da518dcd5e0a |
+| QAD TV-nucleus step 2,500 | Materialization-manifest SHA-256 01a1ea703cef6e0e44cf788a774504ca430bad60beddde44779cf607743769c1 |
 
-All three checkpoints used:
+All checkpoints use the R30 serving image
+localinferencelab/vllm at digest
+sha256:5f6fcbc681f20b7c052815ca17511d9fe789aea314a17723c202789dd7adc131.
+Each checkpoint is served sequentially by four Tensor Parallelism 4 (TP4),
+Decode Context Parallelism 1 (DCP1) replicas on physical GPU groups 0-3, 4-7,
+8-11, and 12-15. Each replica schedules at most 96
+sequences, captures CUDA graphs through 96 sequences, and reserves 28 GiB of
+8-bit floating-point (FP8) key/value cache per GPU. Aggregate client
+concurrency is 384.
 
-- one user message per prompt and no system message;
-- `temperature=0`, a task-derived request seed, and maximum reasoning effort;
-- a 32,768-token output limit and one generation per task;
-- eight NVIDIA RTX PRO 6000 Blackwell Workstation Edition GPUs with Tensor
-  Parallelism 8 and Decode Context Parallelism 1;
-- Multi-Token Prediction disabled, eight concurrent sequences, a 65,536-token
-  model limit, and a 4,096-token scheduler budget;
-- FP8 key/value cache with 9 GiB allocated per GPU; and
-- container image
-  `voipmonitor/vllm@sha256:d6ccc79f65e3b83896e7307afafc89146b2d116ef2e7166295e15bd362a5d340`.
+The runtime uses Brain Floating Point 16-bit (BF16) activations, the B12X
+NVFP4 matrix-kernel backend, a 65,536-token model limit, a 4,096-token
+scheduler budget, the FlashKDA recurrent-prefill kernel, prefix caching, and
+no Multi-Token Prediction (MTP) or other speculative decoding. Exact
+container, source-lock, checkpoint, GPU, and endpoint metadata are retained
+with every run.
 
-The normalized runtime-comparison contract SHA-256 is
-`f007d372af980c07d4cfcd1fa2dc870415123e06e54aa9744f7c8a28f6d27856`
-for every checkpoint. Weight-format-specific loaders and kernels differ where
-the representation requires them; the remaining recorded serving inputs match.
+A +6000 MHz memory-clock offset was present for every QAD response and for the
+last portion of the published-NVFP4 run. It was not present uniformly during
+the first portion of the published run. Clock frequency is not a scoring or
+decoding input, and no GPU error was observed, but the asymmetry means these
+receipts must not be used for a checkpoint throughput comparison.
 
-A run is **qualified** only when the full suite executes, at least 32 tasks are
-present in every family, no request fails, task pairing is complete, the suite
-and receipts pass hash validation, and both runtime manifests contain the same
-checkpoint-comparison contract. Qualification certifies provenance and
-completeness; it does not guarantee enough statistical power for a directional
-decision.
+## Verification and reproducibility
 
-## Paired results
+All 64,512 declared responses completed without API errors. An independent
+verifier executed all 1,024 program answer keys and recomputed every receipt
+digest and score. It found no missing or duplicate keys, invalid digests,
+unexpected responses, or score mismatches.
 
-| Candidate minus reference | Semantic difference | Paired 95% interval | One-point decision | Exact harm / recovery | McNemar p |
-|---|---:|---:|---|---:|---:|
-| Published NVFP4 minus BF16 | **-1.49 points** | **-5.63 to +2.64** | `inconclusive` | 25 / 19 | `0.4514` |
-| QAD minus BF16 | **-0.77 points** | **-4.42 to +2.85** | `inconclusive` | 28 / 20 | `0.3123` |
-| QAD minus published NVFP4 | **+0.72 points** | **-3.18 to +4.66** | `inconclusive` | 21 / 19 | `0.8746` |
-
-“Exact harm” means that the row's reference solved the complete task and the
-candidate did not. “Recovery” means the reverse. QAD's semantic score is 0.72
-points above published NVFP4, while its exact-task rate is 0.89 points lower.
-Neither difference is resolved by the retained sample.
-
-Relative to BF16, published NVFP4 contains 121 correct-to-incorrect field
-changes and 98 recoveries across 51 tasks with at least one changed value. QAD
-contains 92 field regressions and 86 recoveries across 54 tasks with a changed
-value. These field totals describe where answers moved; they are not additional
-independent samples.
-
-## Task-family diagnostics
-
-The family results show that aggregate similarity can hide opposing changes.
-These intervals are exploratory: seven families were inspected and no
-multiple-comparison correction was applied.
-
-| Task family | QAD minus BF16 | Paired 95% interval | QAD minus published NVFP4 | Paired 95% interval |
-|---|---:|---:|---:|---:|
-| Constraint assignment | +0.00 points | +0.00 to +0.00 | +0.00 points | +0.00 to +0.00 |
-| Dependency graph | +2.68 points | -7.59 to +13.84 | +6.70 points | -5.36 to +19.20 |
-| Event-sourced state | -10.94 points | -25.00 to +2.34 | -10.16 points | -21.88 to -0.78 |
-| Evidence-chain retrieval | +7.29 points | +0.26 to +16.93 | +5.47 points | -1.04 to +14.84 |
-| Policy application | +0.00 points | +0.00 to +0.00 | +0.00 points | +0.00 to +0.00 |
-| Program execution | +2.23 points | -10.71 to +15.18 | +2.23 points | -14.73 to +19.20 |
-| Record reconciliation | -6.64 points | -15.62 to +1.95 | +0.78 points | -9.77 to +11.72 |
-
-QAD has a higher evidence-chain-retrieval point estimate and a lower
-event-sourced-state point estimate in this suite. Those observations are useful
-hypotheses, not qualified domain claims. They require a separately frozen
-replication suite.
-
-Constraint assignment and policy application are at a 100% BF16 ceiling.
-BF16 reaches a 35.71% semantic-score floor in the program-execution stress
-stratum. No task or stratum was removed after candidate results were observed.
-
-## Greedy-decoding noise control
-
-A separate 42-task BF16 self-comparison is **research-only** because it contains
-only six tasks per family. Two executions of the same BF16 checkpoint score
-95.24% and 90.69%; the paired difference is -4.55 points with a 95% interval of
--10.80 to 0.00 points and three exact-task flips.
-
-Greedy decoding, fixed request seeds, and a matched runtime therefore do not
-eliminate batching and GPU-kernel nondeterminism. The 224-task execution uses
-one run per checkpoint, so small observed differences cannot be attributed
-solely to quantization.
-
-The observed standard deviation of QAD-minus-BF16 task differences is 0.277. A
-normal approximation requires approximately 2,950 independent tasks merely to
-reduce the 95% interval half-width to one percentage point. Demonstrating
-equivalence can require more because the observed difference is not centered
-at zero. That estimate is planning guidance, not a guaranteed sample size.
-
-## Relationship to KLD and AA-LCR
-
-The separate [route-controlled distribution-fidelity report](../../kld/glm-5.3-flash-qad-step1750.md)
-finds that QAD reduces held-out forward KLD relative to published NVFP4 by
-10.00% under exact BF16-route replay and by 10.80% under natural routing. Both
-predeclared directional criteria pass.
-
-That distributional improvement does not imply the same ordering in task
-accuracy. VBF finds an encouraging fractional point estimate for QAD but no
-statistically resolved behavioral improvement. A separate 200-question
-MMLU-Pro cross-check scores BF16 at 87.0%, published NVFP4 at 84.5%, and QAD at
-84.0%; its paired tests also do not distinguish the checkpoints.
-
-The [AA-LCR comparison](aa-lcr-bf16-vs-nvfp4.md) scores published NVFP4 at
-74.00%, QAD at 73.00%, and BF16 at 71.67%. Its paired intervals include zero,
-and its MTP depth 3 serving configurations differ from the MTP-disabled,
-topology-matched checkpoint isolation used by VBF.
-
-The combined evidence supports one narrow conclusion: QAD is measurably closer
-to the BF16 next-token distribution than published NVFP4 on the held-out KLD
-corpus, but no completed capability evaluation demonstrates a user-visible
-quality improvement.
-
-## Reproducibility record
+The [machine-readable public summary](validation/r30-top-p095-vbf-three-checkpoint-20260910.json)
+records full-precision primary values and durable evidence identities.
 
 | Evidence | Durable identifier |
 |---|---|
-| Suite | 224 tasks; 32 per family |
-| Canonical task-record SHA-256 | `e6d71089c599db57f77b894ab693186100d81d8d15ad35017e8fc6870eac859d` |
-| Complete suite-file SHA-256 | `67a7674a731dc9cd51697abe9c2bce9f3d406c1b211c6f947de1861004ac8b47` |
-| Comparison receipt SHA-256 | `5b8a1b9b74002588566964a637d31719b89e1a9f6b644531a09ae79f73e0a6e6` |
-| Bootstrap samples | 100,000 paired task-cluster resamples |
-| Runtime-comparison contract SHA-256 | `f007d372af980c07d4cfcd1fa2dc870415123e06e54aa9744f7c8a28f6d27856` |
-| Evaluated implementation | `local-inference-lab/llm-inference-bench`, package `behavioral_fidelity`, Git commit `db4e5d9f28ad66f769cef2ef2365e9d24dd7969b` |
-| Retained artifact root | `/mnt/luke/evals/glm-5.3-flash-behavioral-fidelity/checkpoint-qualification-v2-224-20260904` |
+| Suite file | SHA-256 38fc5741abb98cc188a5ecd80d2c7b0f328e9615725317b54d8b32c663fc0b42 |
+| Canonical task records | SHA-256 7c5fc36de45e8b388c98279c1666aba22e3daa8f8273a11d2378794913c76f43 |
+| Effective qualification-scope amendment | SHA-256 05982dff9f4eae75c58367942b27cff689aee9e8a942ceb18911ea07b3350284 |
+| Evaluation contract | SHA-256 503680dbe53a4bd034c628b17e3091e65c7522a7100b2b1bd5c55112f93f7c41 |
+| Published run / summary / verifier | fa179fa98e9f6fa6b669a2748316ede093a18dd1a410050a29014071baae8994 / 5d68a0aeaba1d2ae1f09757c43b36514a676e017dfd465b9305a11587de138cc / b9cf8274d51fb20632e9555423445895fe957a9a8f90b8802b28909527660b28 |
+| QAD run / summary / verifier | 28e6a51b08c4f0bc2a35948e292c1e8029d4230d9b91797e1bee721820f5a201 / b9997e328c8172e2802011949d3282de0ca12f4ae98b8fbf3028ad0ebeafe2b7 / 343e65261acb1d9d7bf30c0db2182ae8380ee72ba68191c9ca7ae3a6577ec040 |
+| TV-nucleus run / summary / verifier | 2f826f67590d10ddca6e53222bb40716aeafd494a53e2a4b825f2880447c3c12 / bc70065f436a7ce8a99484f53d17b597713b6b0272d0a3fdf8d9170d4a2fda54 / 494613616554d80c7ab1c5dbb296d46fdc5d8385c2d31b4e77590943965b4e50 |
+| Published-reference comparison | SHA-256 a94be5c4220a17de848dd40db79ce31380079b1a2ea4a66af202bda318fd130d |
+| TV-nucleus versus QAD comparison | SHA-256 f042ee1f1d5dbfac68bce630721c1e646cb33db9b7a9d34d1cdf7e3bcb6ce44c |
+| Consolidated diagnostic | SHA-256 e3653cecd14e6d4dd8db37c77640eea2d7a18e44c748c0eb000c17f5ecee40af |
+| Public machine-readable summary | SHA-256 b5479a38814a08b564c0264d37c102727d0b6313eac2e2d80bae3699a4de958c |
+| Complete artifact checksum manifest | SHA-256 972f8b6edc767a57557ad3cd444cd1290e9763e330da4662b81e30c9ccd75f7b |
+| Retained artifact root | /mnt/luke/evals/glm-5.3-flash-behavioral-fidelity/r30-temperature1-top-p095-three-checkpoint-20260909 |
 
-The implementation writes an immutable run manifest, append-only hashed JSONL
-receipts, and a derived summary. Resume mode skips successful task/repeat keys,
-retries failures, and refuses a changed execution contract.
+Qualification certifies the declared scope, provenance, pairing, execution
+completeness, and verification. It does not turn VBF into a universal quality
+measure.
+
+## Relationship to KLD and decoding
+
+On the held-out distribution-fidelity suite, natural-route forward KLD from
+BF16 is 0.162164 nats/token for published NVFP4, 0.129126 for QAD step 2,500,
+and 0.145654 for QAD TV-nucleus step 2,500. Under exact BF16-route replay the
+values are 0.067476, 0.064066, and 0.066875. The distribution reports provide
+the uncertainty intervals and route interpretation:
+
+- [QAD step 2,500 distribution fidelity](../../kld/glm-5.3-flash-qad-step2500.md)
+- [QAD TV-nucleus step 2,500 distribution fidelity](../../kld/glm-5.3-flash-qad-tvn-step2500.md)
+
+Both trained checkpoints improve the natural-route KLD point estimate relative
+to published NVFP4, while all three are practically equivalent on the
+qualified nucleus-sampling VBF endpoint. QAD step 2,500 has lower KLD than the
+TV-nucleus checkpoint, but no resolved semantic-score advantage. KLD is
+therefore useful as a distribution-fidelity measurement, not as a standalone
+capability objective.
+
+A separate temperature-zero comparison produced semantic scores of 90.959%
+for published NVFP4, 91.436% for QAD step 2,500, and 88.850% for TV-nucleus.
+Under that contract TV-nucleus was worse by 2.109 points versus published
+NVFP4 and 2.586 points versus QAD step 2,500. Those executions also differed
+in runtime image, scheduler capacity, and comparator concurrency. Their
+cross-contract comparison with the R30 nucleus-sampling result is
+**research-only**. It shows that the greedy served-system regression does not
+replicate under the matched R30 temperature-1/top-p-0.95 contract, but it does
+not isolate top-p as the sole cause.
+
+KLD reconstructs the full teacher-forced next-token distribution before token
+selection. Changing temperature or top-p does not change the already captured
+KLD value. Decoding parameters can nevertheless change autoregressive
+trajectories, stopping behavior, and the practical effect of distribution
+errors, which is why the deployed decoding contract must be tested separately.
 
 ## Attribution
 
-The deterministic task generators, strict JSON scoring contract, durable
-receipt format, runtime matching, and VBF comparison implementation are Local
-Inference Lab work. Paired bootstrap confidence intervals, Wilson intervals,
-and McNemar's test are established statistical methods rather than claimed
-mathematical inventions.
+The deterministic task generators, executable answer keys, strict scoring
+contract, durable receipt format, runtime-verification records, executions,
+paired analysis, and report are Local Inference Lab work. Paired bootstrap
+intervals and McNemar's exact test are established statistical methods rather
+than claimed mathematical inventions. AI tools assisted implementation and
+documentation under human direction and review.

@@ -26,9 +26,10 @@ do not require checkpoint paths or source-code bind mounts.
 | Tensor parallelism of eight | **implemented**; not independently hardware-qualified for this artifact |
 | Target checkpoint | `local-inference-lab/GLM-5.3-Flash-NVFP4`; Hugging Face `main` unless `MODEL_REVISION` is set |
 | QAD step-1,750 research checkpoint | [`GLM-5.3-Flash-NVFP4-QAD-step1750`](../kld/glm-5.3-flash-qad-step1750.md); distribution fidelity, verifier-backed behavior, and AA-LCR are measured, but the checkpoint is not a qualified serving target |
-| QAD step-2,500 research checkpoint | [`GLM-5.3-Flash-NVFP4-QAD-step2500`](../kld/glm-5.3-flash-qad-step2500.md); distribution fidelity is measured, and the [9,856-task VBF report](glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md) qualifies practical equivalence on its primary semantic score; production serving remains unqualified |
+| QAD step-2,500 research checkpoint | [`GLM-5.3-Flash-NVFP4-QAD-step2500`](../kld/glm-5.3-flash-qad-step2500.md); distribution fidelity is measured, and the [R30 nucleus-sampling VBF report](glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md) qualifies practical equivalence on its primary semantic score; production serving remains unqualified |
+| QAD TV-nucleus step-2,500 research checkpoint | [`GLM-5.3-Flash-NVFP4-QAD-TVN-step2500`](../kld/glm-5.3-flash-qad-tvn-step2500.md); distribution fidelity is measured, and the [R30 nucleus-sampling VBF report](glm-5.3-flash/qad-tvn-step2500-verifier-backed-behavioral-fidelity.md) qualifies practical equivalence to published NVFP4 and QAD step 2,500; production serving remains unqualified |
 | AA-LCR capability evaluation | **qualified** for the exact BF16, published-NVFP4, and QAD checkpoint-and-runtime configurations in the [three-configuration report](glm-5.3-flash/aa-lcr-bf16-vs-nvfp4.md) |
-| Verifier-backed behavioral fidelity | **qualified** practical equivalence for QAD step 2,500 versus published NVFP4 on the primary 9,856-task semantic score; **qualified execution with inconclusive one-point decisions** in the [TP8 BF16/published-NVFP4/QAD-step-1,750 report](glm-5.3-flash/verifier-backed-behavioral-fidelity.md) |
+| Verifier-backed behavioral fidelity | **qualified** practical equivalence among published NVFP4, QAD step 2,500, and QAD TV-nucleus step 2,500 under the [R30 temperature-1/top-p-0.95 three-checkpoint contract](glm-5.3-flash/verifier-backed-behavioral-fidelity.md) |
 | DFlash2 checkpoint | `local-inference-lab/GLM-5.3-Flash-DFlash2`; Hugging Face `main` unless `DFLASH_MODEL_REVISION` is set |
 | Target routed experts | ModelOpt NVFP4 using B12X 4-bit weights and 4-bit activations |
 | DFlash2 weights | Offline-serialized ModelOpt MXFP8; no online weight quantization |
@@ -47,7 +48,8 @@ do not require checkpoint paths or source-code bind mounts.
 
 The [BF16-to-NVFP4 distribution-fidelity report](../kld/glm-5.3-flash-bf16-nvfp4.md),
 [QAD step 1,750 comparison](../kld/glm-5.3-flash-qad-step1750.md), and
-[QAD step 2,500 progression comparison](../kld/glm-5.3-flash-qad-step2500.md)
+[QAD step 2,500 progression comparison](../kld/glm-5.3-flash-qad-step2500.md),
+and [QAD TV-nucleus step 2,500 comparison](../kld/glm-5.3-flash-qad-tvn-step2500.md)
 are research-only. They measure a reproducible FlashInfer CUTLASS path rather
 than the B12X serving path specified here.
 
@@ -60,20 +62,15 @@ the three complete configurations. The accompanying
 dataset, prompt, sampling, runtime, equality checker, and receipt validation.
 
 The [Verifier-Backed Behavioral Fidelity report](glm-5.3-flash/verifier-backed-behavioral-fidelity.md)
-uses 224 deterministic tasks with executable answer keys and no language-model
-judge. BF16 scores 93.11%, published NVFP4 scores 91.63%, and QAD step 1,750
-scores 92.35% on the primary fractional metric. All paired one-point decisions
-are inconclusive; the report separates qualified execution provenance from the
-statistical power required to claim behavioral equivalence or improvement.
-
-The [QAD step-2,500 VBF report](glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md)
-pools 9,856 non-overlapping task pairs from a two-replica TP4 component and an
-independent one-replica Max-Q TP4 component. Published NVFP4 scores 91.001%
-and QAD step 2,500 scores 91.333%; the +0.332-point difference has a paired
-95% interval from -0.317 to +0.982 points, entirely inside the predeclared
-±1-point equivalence band. Exact-task accuracy and exploratory family results
-remain mixed, so the qualified claim is limited to the primary VBF semantic
-score.
+compares published NVFP4, QAD step 2,500, and QAD TV-nucleus step 2,500 on
+7,168 deterministic tasks with executable answer keys and no language-model
+judge. Each checkpoint produces three fixed-seed responses per task under the
+R30 temperature-1/top-p-0.95 serving contract. Their primary semantic scores
+are 94.5386%, 94.5698%, and 94.5989%, respectively. Every paired 95% interval
+lies inside the predeclared ±1-point equivalence band and crosses zero. The
+result establishes practical equivalence on the primary endpoint, not a
+superior checkpoint. Exact-task and family diagnostics remain separate
+secondary outcomes.
 
 ## Docker artifact
 

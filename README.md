@@ -6,9 +6,6 @@ contains reproducible Docker builds, exact vLLM and SGLang runbooks, benchmark
 tables, KLD quality checks, quantization notes, DCP/MTP/DSpark/DFlash debugging,
 PCIe topology work, and regression history.
 
-> Community workbench for RTX PRO 6000 / SM120 serving:
-> https://discord.gg/X54jjmcxWJ
-
 ## Start Here
 
 If you just want to run a model, use these stable hub pages first:
@@ -37,14 +34,14 @@ Need the complete map of every Markdown page?
 
 | Need | Where |
 |---|---|
-| Copy/paste production launch commands | Model hubs and current versioned model pages. |
-| Rebuild the Docker image | [Eldritch Docker](models/eldritch-enlightenment-docker.md), current model image sections, and build scripts in [scripts](scripts/). |
+| Copy/paste production launch commands | Model hubs and versioned model pages that declare a supported or qualified status. |
+| Rebuild the Docker image | [Eldritch Docker](models/eldritch-enlightenment-docker.md), model-specific image sections, and build scripts in [scripts](scripts/). |
 | Compare backend speed | Model benchmark tables plus [Benchmark Results](benchmarks/results.md). |
 | Check quantization fidelity | [General KLD methodology](kld/README.md), [GLM-5.2 KLD](benchmarks/glm52-kld-evaluation.md), and model-specific KLD sections. |
 | Understand MTP, DSpark, or DFlash | [Speculative Decoding](optimization/speculative-decoding.md), DS4/Kimi/MiMo pages. |
 | Debug topology or PCIe behavior | [Topology](hardware/topology.md), [PCIe Bandwidth](hardware/pcie-bandwidth.md), [GPU Configurations](hardware/gpu-configs.md). |
 | Avoid known runtime footguns | [Common Issues](troubleshooting/common-issues.md), model caveats, and daily summaries. |
-| Understand old measurements | Historical versioned pages and [Daily Summaries](daily-summaries/). |
+| Understand historical measurements | Historical versioned pages and [Daily Summaries](daily-summaries/). |
 
 ## Recommended Production-Style Pages
 
@@ -60,7 +57,7 @@ Need the complete map of every Markdown page?
 | MiMo FP4-DFlash | [MiMo FP4-DFlash v3](models/xiaomi-mimo-v2.5-pro-fp4-dflash_v3.md) | MiMo DFlash validation and fix notes. |
 
 Older pages are intentionally preserved. Prefer the hub page for each model
-family unless you are reproducing a specific old result.
+family unless you are reproducing a specific historical result.
 
 ## Core Topics
 
@@ -87,8 +84,9 @@ family unless you are reproducing a specific old result.
 | General KLD methodology | [Measuring quantization distribution fidelity in vLLM](kld/README.md) |
 | MTP quality checks | [MTP Quality Evaluation](benchmarks/mtp-quality-evaluation.md) |
 | NVFP4 quantization comparison | [NVFP4 Quantization Comparison](benchmarks/nvfp4-quantization-comparison.md) |
-| GLM-5.3-Flash behavioral fidelity | [Verifier-backed BF16, NVFP4, and QAD comparison](models/glm-5.3-flash/verifier-backed-behavioral-fidelity.md) |
-| GLM-5.3-Flash QAD step-2,500 fidelity | [Aggregate equivalence and program-execution gain](models/glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md) |
+| GLM-5.3-Flash behavioral fidelity | [R30 nucleus-sampling comparison of published NVFP4, QAD, and QAD TV-nucleus](models/glm-5.3-flash/verifier-backed-behavioral-fidelity.md) |
+| GLM-5.3-Flash QAD step-2,500 fidelity | [Qualified temperature-1/top-p-0.95 practical-equivalence result](models/glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md) |
+| GLM-5.3-Flash QAD TV-nucleus step-2,500 fidelity | [Qualified temperature-1/top-p-0.95 practical-equivalence result and greedy diagnostic](models/glm-5.3-flash/qad-tvn-step2500-verifier-backed-behavioral-fidelity.md) |
 
 KLD is a regression and quantization-sanity tool, not a complete quality metric.
 Use it together with long-context decode, coding probes, acceptance-rate checks,
@@ -96,7 +94,8 @@ and task-level benchmarks.
 
 ## Hardware And Topology
 
-Most current measurements target RTX PRO 6000 Blackwell / GB202 / SM120 cards:
+Most measurements in this repository target RTX PRO 6000 Blackwell / GB202 /
+SM120 cards:
 96 GB GDDR7 per GPU, PCIe 5.0 x16, no NVLink, usually 4-GPU, 8-GPU, or 16-GPU
 PCIe-switch systems.
 
@@ -113,9 +112,9 @@ PCIe-switch systems.
 
 ## Inference Engines
 
-| Engine | Page | Current role |
+| Engine | Page | Role |
 |---|---|---|
-| vLLM | [vLLM](inference-engines/vllm.md) | Primary runtime for current GLM-5.2, DS4, Kimi, and MiMo pages. |
+| vLLM | [vLLM](inference-engines/vllm.md) | Primary runtime for supported GLM-5.2, DS4, Kimi, and MiMo pages. |
 | FlashInfer | [FlashInfer](inference-engines/flashinfer.md) | SM120 sparse MLA, CUTLASS MoE, sampler, and kernel integration notes. |
 | SGLang | [SGLang](inference-engines/sglang.md) | Historical and alternate runtime notes, especially older GLM/MiMo paths. |
 
@@ -160,7 +159,7 @@ without turning it into an unstructured support queue.
 When adding a page:
 
 - Link it from the relevant model hub.
-- Add a short status block if it is a current runbook.
+- Add a short status block if the page specifies a supported serving runbook.
 - Keep exact Docker image tags, source commits, model snapshot IDs, GPU layout,
   backend choices, and benchmark commands.
 - Regenerate the full index:

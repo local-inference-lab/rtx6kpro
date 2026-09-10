@@ -75,6 +75,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [GLM-5.3-Flash AA-LCR reproduction specification](models/glm-5.3-flash/aa-lcr-reproduction.md) - `models/glm-5.3-flash/aa-lcr-reproduction.md`
 - [GLM community R27 build inputs](models/glm-5.3-flash/build/README.md) - `models/glm-5.3-flash/build/README.md`
 - [GLM-5.3-Flash QAD step 2,500 verifier-backed behavioral fidelity](models/glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md) - `models/glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md`
+- [GLM-5.3-Flash QAD TV-nucleus step 2,500 verifier-backed behavioral fidelity](models/glm-5.3-flash/qad-tvn-step2500-verifier-backed-behavioral-fidelity.md) - `models/glm-5.3-flash/qad-tvn-step2500-verifier-backed-behavioral-fidelity.md`
 - [GLM FP8 serving and checkpoint qualification](models/glm-5.3-flash/validation/fp8-serving-r28.md) - `models/glm-5.3-flash/validation/fp8-serving-r28.md`
 - [GLM FP8 scheduler and launcher qualification](models/glm-5.3-flash/validation/scheduler-serving-r28.1.md) - `models/glm-5.3-flash/validation/scheduler-serving-r28.1.md`
 - [GLM-5.3-Flash verifier-backed behavioral fidelity](models/glm-5.3-flash/verifier-backed-behavioral-fidelity.md) - `models/glm-5.3-flash/verifier-backed-behavioral-fidelity.md`
@@ -192,6 +193,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [GLM-5.3-Flash BF16-to-NVFP4 distribution fidelity](kld/glm-5.3-flash-bf16-nvfp4.md) - `kld/glm-5.3-flash-bf16-nvfp4.md`
 - [GLM-5.3-Flash NVFP4 QAD step 1,750 distribution fidelity](kld/glm-5.3-flash-qad-step1750.md) - `kld/glm-5.3-flash-qad-step1750.md`
 - [GLM-5.3-Flash NVFP4 QAD step 2,500 distribution fidelity](kld/glm-5.3-flash-qad-step2500.md) - `kld/glm-5.3-flash-qad-step2500.md`
+- [GLM-5.3-Flash NVFP4 QAD TV-nucleus step 2,500 distribution fidelity](kld/glm-5.3-flash-qad-tvn-step2500.md) - `kld/glm-5.3-flash-qad-tvn-step2500.md`
 
 ## Optimization Notes
 

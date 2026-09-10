@@ -31,18 +31,16 @@ step 2,500 as the more faithful end-to-end checkpoint under its own routing,
 but not as the more faithful expert computation conditional on BF16 routes.
 
 The separate [verifier-backed behavioral-fidelity report](../models/glm-5.3-flash/qad-step2500-verifier-backed-behavioral-fidelity.md)
-compares published NVFP4 with QAD step 2,500 on 9,856 non-overlapping,
-deterministic task pairs. QAD increases the primary semantic point estimate by
-0.332 percentage points; the paired 95% interval is -0.317 to +0.982 points
-and lies inside the predeclared ±1-point practical-equivalence band. Exact-task
-discordance and exploratory family results are not uniformly favorable.
-A separately declared comparison on 2,048 additional program-execution tasks
-finds a QAD gain of 8.371 points with a paired 95% interval from 5.985 to
-10.742 points. Improved distribution fidelity therefore accompanies preserved
-aggregate VBF semantic score and a confirmed gain on one deterministic
-integer-program template. The evidence does not establish an aggregate
-behavioral improvement, general programming ability, tool-use ability, or a
-causal link from lower KLD to the program-execution gain.
+compares published NVFP4 with QAD step 2,500 under the R30
+temperature-1/top-p-0.95 serving contract. Each checkpoint produced three
+responses for each of 7,168 tasks. QAD increases the primary semantic point
+estimate by 0.0311 percentage points; the paired 95% interval is -0.2748 to
++0.3380 points and lies inside the predeclared ±1-point
+practical-equivalence band. The program-execution family changes by +0.7952
+points with an interval from -1.1300 to +2.7297 points. Improved distribution
+fidelity therefore accompanies preserved aggregate behavioral fidelity, not a
+resolved aggregate or programming improvement. The evidence does not establish
+a causal link from lower KLD to task quality.
 
 ## Checkpoint identity and contents
 

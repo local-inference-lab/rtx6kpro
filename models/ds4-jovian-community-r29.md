@@ -6,10 +6,15 @@ its own launcher profile; GLM precision, scheduler and cache settings are not
 substituted for the DS4 profile.
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260910-r33
+localinferencelab/vllm:jovian-judgement-community-20260910-r34
 ```
 
 Status: **qualified for the bounded TP2/DCP1 FP8 checks below**.
+
+R34 retains the DS4 launcher and compiled implementation. Its change makes
+native MoE selection default to B12X; the DS4 profile already explicitly
+selects B12X. The DS4 checks below retain their measured release identity and
+were not repeated for this configuration-only update.
 The source includes the clustered BF16-router barrier correction and immutable
 LMCache gather metadata. Two concurrent Vision/LMCache tests of 600 seconds
 complete without the previously reproduced launch failure. This does not
@@ -31,7 +36,7 @@ are required. It downloads weights on first launch. Docker needs NVIDIA
 Container Toolkit and a CUDA 13.3-compatible driver.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r33
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r34
 GPU_DEVICES=0,1
 PORT=8000
 VARIANT=text

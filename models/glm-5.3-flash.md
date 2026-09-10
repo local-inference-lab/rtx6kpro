@@ -33,10 +33,10 @@ do not require checkpoint paths or source-code bind mounts.
 | DFlash2 checkpoint | `local-inference-lab/GLM-5.3-Flash-DFlash2`; Hugging Face `main` unless `DFLASH_MODEL_REVISION` is set |
 | Target routed experts | ModelOpt NVFP4 using B12X 4-bit weights and 4-bit activations; eligible prefills share input quantization and use separate expert projections |
 | DFlash2 weights | Offline-serialized ModelOpt MXFP8; no online weight quantization |
-| Target KV cache | **qualified** FP8; packed NVFP4 is implemented but not qualified for R33 |
+| Target KV cache | **qualified** FP8; packed NVFP4 is implemented but not qualified for R34 |
 | MTP proposal vocabulary head | NVFP4 draft-only copy by default; the target verifier vocabulary head remains BF16 |
 | GPU prefix cache | **qualified** request/SYSTEM boundaries in all six TP4 mode/DCP combinations; fine aligned retention is selectable |
-| Native DRAM offload | **implemented** and opt-in with `CACHE_MODE=native`; not independently requalified for R33 |
+| Native DRAM offload | **implemented** and opt-in with `CACHE_MODE=native`; not independently requalified for R34 |
 | LMCache DRAM and filesystem tiers | **qualified** and opt-in with `CACHE_MODE=lmcache`; asynchronous engine-driven pinned shared memory is the default transfer path |
 | CUDA graphs | **qualified** with launcher default `CUDAGRAPH_MODE=FULL_AND_PIECEWISE` for target and speculative decode |
 | Scheduler | 4,096 target tokens per step; fixed prefill compute share 0.4; interval 1; one prefill lane by default, optional bounded interleaving |
@@ -46,9 +46,11 @@ do not require checkpoint paths or source-code bind mounts.
 | DeepSeek V4 serving | **qualified** for bounded TP2/DCP1 FP8 text and Vision checks; see the [DS4 runbook](ds4-jovian-community-r29.md) |
 | Qualification date | 2026-09-10 |
 
-R33 independently repeats all three GLM modes at TP4/DCP1 and Qwen at TP1.
-DCP4 and DeepSeek capabilities retain their documented qualification lineage;
-their complete hardware matrices were not repeated for the R33 update.
+R34 qualifies the deployment-default change with GLM DFlash2 TP4/DCP1 serving,
+C1, cold 32K prefill and configuration-precedence tests. Its B12X and LMCache
+sources and all 14 audited native libraries match R33. The other modes retain
+their documented qualification lineage; their complete matrices were not
+repeated for this configuration-only update.
 
 The [BF16-to-NVFP4 distribution-fidelity report](../kld/glm-5.3-flash-bf16-nvfp4.md),
 [QAD step 1,750 comparison](../kld/glm-5.3-flash-qad-step1750.md), and
@@ -79,8 +81,7 @@ secondary outcomes.
 ## Docker artifact
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260910-r33
-localinferencelab/vllm@sha256:3ae04d964f8e7e936ef4b34dd75406b9169fead8062fb8b4b1634f3bbf512827
+localinferencelab/vllm:jovian-judgement-community-20260910-r34
 ```
 
 The image contains two filesystem layers: a flattened CUDA 13.3/PyTorch 2.13
@@ -89,17 +90,23 @@ LMCache sources. FlashInfer, the DS4-compatible native vLLM operator and the
 authenticated FlashKDA extension are source-locked. It is not built by adding
 layers to a preceding community release.
 
-The [embedded source lock](glm-5.3-flash/validation/fp4-prefill-filesystem-r33.source.lock)
-has SHA-256 `c4b1029eb355736f94b02efa19b10efe4d9680cac41ae38b952b05de9e4381c4`.
-The [R33 qualification and changelog](glm-5.3-flash/validation/fp4-prefill-filesystem-r33.md)
-records immutable image identity, raw samples and qualification limits.
+The [embedded source lock](glm-5.3-flash/validation/moe-backend-default-r34.source.lock)
+has SHA-256 `e7b5712d12676c8daf0a000398cfa2d57eedb3e290cedf611fcee28fe2413dd0`.
+The [R34 qualification and changelog](glm-5.3-flash/validation/moe-backend-default-r34.md)
+records image identity, raw samples and qualification limits; the
+[registry receipt](glm-5.3-flash/validation/moe-backend-default-r34-registry.json)
+contains the immutable digest and verified pull result.
 Eligible GLM and Qwen prefills share quantized input across routed experts and
 use separate expert projections. LMCache filesystem eviction retires missing
 objects from byte accounting while protecting pending writes and preserving
 actual I/O errors. Checkpoint policies, concurrent publication, model precision,
-sampling/history defaults and all launchers are preserved. Only the CPU
-filesystem connector differs among the audited native libraries; CUDA, vLLM
-and FlashKDA binaries remain unchanged.
+sampling/history defaults and all launchers are preserved. All audited native
+libraries are byte-identical to R33, including its corrected filesystem
+connector. The image sets `VLLM_DEFAULT_MOE_BACKEND=b12x`, so direct
+`vllm serve` also selects B12X when `--moe-backend` is omitted. An explicit
+backend, including `auto`, remains authoritative. The GLM wrapper additionally
+accepts `MOE_BACKEND`; its default is B12X. This changes MoE selection, not
+attention or sampler selection.
 
 The same installed runtime supports
 [Qwen3.8-Flash-Next](qwen38-flash-next.md) and
@@ -109,7 +116,7 @@ profiles. DS4 backend defaults do not replace the GLM settings below.
 Known limitation: concurrent MTP3 requests with strict JSON-schema output and
 LMCache can fail grammar validation with HTTP 500. The failure is reproduced
 on both R31 and R32; [vLLM #726](https://github.com/local-inference-lab/vllm/issues/726)
-tracks it. R33 does not claim to fix that constrained-output defect.
+tracks it. R34 does not claim to fix that constrained-output defect.
 
 ## Runtime backends
 
@@ -136,6 +143,16 @@ qualified GLM target, MTP or DFlash2 hot paths. FlashKDA is the prefill default;
 performance table below uses FlashKDA, not that alternative.
 
 ## Measured performance
+
+### R34 deployment-default qualification
+
+GLM DFlash2 K7, TP4/DCP1, FP8 KV, the same physical RTX PRO 6000 Workstation
+quartet with **VRAM +6000**, 4096-token budget and full-and-piecewise graphs:
+32K prefill **16,961 → 16,997 tok/s (+0.21%)**, R33 → R34. The R34 C1 cell gives
+**249.77 output tok/s and 97.40 verifier steps/s**. Both images use B12X;
+this is not a B12X-versus-FlashInfer comparison. The short C1 control has
+different speculative acceptance, so no general decode gain is claimed.
+[Conditions, control values and raw samples](glm-5.3-flash/validation/moe-backend-default-r34.md).
 
 ### R33 shared-input NVFP4 prefill
 
@@ -252,7 +269,7 @@ The defaults already select full-and-piecewise graphs, the B12X paths,
 FlashInfer sampling, NCCL 16 channels/2 MiB and OMP1.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r33
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r34
 GPU_DEVICES=0,1,2,3
 PORT=8000
 docker pull "$IMAGE"

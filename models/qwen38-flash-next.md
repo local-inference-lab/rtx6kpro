@@ -8,16 +8,18 @@ n-gram embedding (PLE) table to host RAM. It is a different model from
 [Qwen3.8-27B](qwen38-27b.md).
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260910-r33
+localinferencelab/vllm:jovian-judgement-community-20260910-r34
 ```
 
 The image contains the same vLLM/B12X runtime as [GLM-5.3-Flash](glm-5.3-flash.md),
 but Qwen needs its own launch arguments. The Compose recipe below bypasses the
 image's GLM entrypoint. No source mounts or absolute checkpoint paths are needed.
-R33 retains temperature 1/top-p 0.95/top-k 20 and enables shared-input NVFP4
-split prefill for eligible TP1 expert shapes. The packaged image passes the
-TP1/MTP3 answer, prefix-cache, logprob and performance checks below. R29 and
-R28.1 comparisons retain their measured artifact and clock conditions.
+R34 defaults native MoE selection to B12X even when `--moe-backend` is omitted;
+explicit choices still override it. The Compose recipe already specifies B12X.
+Temperature 1/top-p 0.95/top-k 20 and shared-input NVFP4 split prefill for eligible
+TP1 expert shapes are retained. Qwen qualification below belongs to R33; R34
+preserves its kernels and passes configuration-precedence tests and a GLM
+serving control, without repeating the full Qwen matrix.
 
 ## Start on one GPU: TP1
 
@@ -62,7 +64,7 @@ That is a different workload from the reasoning benchmark below.
 ## Start on two GPUs: TP2
 
 Status: **implemented**, with a statically checked recipe; TP2 serving and
-performance have **not been qualified on the shared R33 image**. Measurements from
+performance have **not been qualified on the shared R34 image**. Measurements from
 other Qwen-specific images are not substituted for that missing result.
 
 Select two distinct available GPUs. Stop the TP1 service before switching
@@ -153,6 +155,23 @@ requested block size is 64, but the measured effective hybrid pages are 3,008
 tokens; the recipe does not manually force a different geometry.
 
 ## Measured llmbench and Sieve performance
+
+### B12X versus omitted MoE selection
+
+Measured on R33, Qwen TP1/MTP3 with one RTX PRO 6000 Workstation, **VRAM +6000**,
+FP8 KV, CPU PLE offload, BF16 target head and private NVFP4 draft head.
+Temperature 1/top-p 0.95/top-k 20; three warmed C1 runs and five uncached
+32K requests. Only target MoE selection differs; draft MoE remains B12X.
+
+| Measurement | Omitted target option: FlashInfer CUTLASS | B12X | Change |
+|---|---:|---:|---:|
+| C1 output tok/s, median | 182.97 | 204.04 | +11.52% |
+| C1 verifier steps/s, median | 86.78 | 96.91 | +11.67% |
+| 32K prefill input tok/s, wall median | 16,958.18 | 17,268.18 | +1.83% |
+
+R34 makes omission choose B12X too. This is not a speedup over the published
+R33 Compose recipe, which already selects B12X.
+[Raw samples, ranges and limitations](glm-5.3-flash/validation/moe-backend-default-r34.md).
 
 ### R33 NVFP4 prefill: one GPU with VRAM +6000
 

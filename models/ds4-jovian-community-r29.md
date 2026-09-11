@@ -6,15 +6,16 @@ its own launcher profile; GLM precision, scheduler and cache settings are not
 substituted for the DS4 profile.
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260910-r34
+localinferencelab/vllm:jovian-judgement-community-20260911-r35
 ```
 
 Status: **qualified for the bounded TP2/DCP1 FP8 checks below**.
 
-R34 retains the DS4 launcher and compiled implementation. Its change makes
-native MoE selection default to B12X; the DS4 profile already explicitly
-selects B12X. The DS4 checks below retain their measured release identity and
-were not repeated for this configuration-only update.
+R35 retains the DS4 launcher and compiled implementation. Native MoE selection
+defaults to B12X; the DS4 profile explicitly selects B12X. The public source
+composition is audited for preservation, but the DS4 checks below retain their
+measured release identity and were not repeated on R35. No DS4.1 experimental
+runtime is included or qualified. See the [R35 scope and changelog](glm-5.3-flash/validation/swiglu-reviewed-composition-r35.md).
 The source includes the clustered BF16-router barrier correction and immutable
 LMCache gather metadata. Two concurrent Vision/LMCache tests of 600 seconds
 complete without the previously reproduced launch failure. This does not
@@ -36,7 +37,7 @@ are required. It downloads weights on first launch. Docker needs NVIDIA
 Container Toolkit and a CUDA 13.3-compatible driver.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r34
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260911-r35
 GPU_DEVICES=0,1
 PORT=8000
 VARIANT=text

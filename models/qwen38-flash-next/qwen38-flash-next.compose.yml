@@ -57,7 +57,7 @@ x-environment: &environment
   CUDA_CACHE_PATH: /cache/jit/qwen38-r281/cuda
 
 x-runtime: &runtime
-  image: ${QWEN_IMAGE:-localinferencelab/vllm:jovian-judgement-community-20260910-r34}
+  image: ${QWEN_IMAGE:-localinferencelab/vllm:jovian-judgement-community-20260911-r35}
   init: true
   network_mode: host
   ipc: host

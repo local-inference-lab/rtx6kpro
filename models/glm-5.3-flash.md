@@ -33,7 +33,7 @@ do not require checkpoint paths or source-code bind mounts.
 | DFlash2 checkpoint | `local-inference-lab/GLM-5.3-Flash-DFlash2`; Hugging Face `main` unless `DFLASH_MODEL_REVISION` is set |
 | Target routed experts | ModelOpt NVFP4 using B12X 4-bit weights and 4-bit activations; eligible prefills share input quantization and use separate expert projections |
 | DFlash2 weights | Offline-serialized ModelOpt MXFP8; no online weight quantization |
-| Target KV cache | **qualified** FP8; packed NVFP4 is implemented but not qualified for R34 |
+| Target KV cache | **qualified** FP8; packed NVFP4 is implemented but not qualified for R35 |
 | MTP proposal vocabulary head | NVFP4 draft-only copy by default; the target verifier vocabulary head remains BF16 |
 | GPU prefix cache | **qualified** request/SYSTEM boundaries in all six TP4 mode/DCP combinations; fine aligned retention is selectable |
 | Native DRAM offload | **implemented** and opt-in with `CACHE_MODE=native`; not independently requalified for R34 |
@@ -44,13 +44,18 @@ do not require checkpoint paths or source-code bind mounts.
 | FlashKDA numerical stability | **qualified** with the stable FP32 forward-substitution inverse |
 | Qwen3.8-Flash-Next serving | **qualified** separately for TP1/MTP3 text, GPU prefix cache and bounded performance; see the [Qwen deployment page](qwen38-flash-next.md) for launch, PLE offload, clock conditions, TP2 limitations and results |
 | DeepSeek V4 serving | **qualified** for bounded TP2/DCP1 FP8 text and Vision checks; see the [DS4 runbook](ds4-jovian-community-r29.md) |
-| Qualification date | 2026-09-10 |
+| Qualification date | 2026-09-11; mode-specific evidence retains its measured release identity |
 
-R34 qualifies the deployment-default change with GLM DFlash2 TP4/DCP1 serving,
-C1, cold 32K prefill and configuration-precedence tests. Its B12X and LMCache
-sources and all 14 audited native libraries match R33. The other modes retain
-their documented qualification lineage; their complete matrices were not
-repeated for this configuration-only update.
+R35 qualifies the public source composition with GLM DFlash2 TP4/DCP1 serving,
+C1/C8, cold 32K prefill, prefix restoration and focused GPU correctness tests.
+The capability table also records qualification inherited from the linked
+mode-specific reports; it does not imply that every matrix was repeated on R35.
+No complete MTP3/DCP4/LMCache restart or Qwen/DeepSeek serving retest is claimed.
+
+**Upgrade GLM NVFP4 deployments from R33/R34:** their split MoE prefill omits
+the model's SwiGLU clamp. R35 applies the merged B12X correction without
+disabling the fast split path. The defect and arithmetic fix are reproduced;
+this is not proof that every reported runaway generation has the same cause.
 
 The [BF16-to-NVFP4 distribution-fidelity report](../kld/glm-5.3-flash-bf16-nvfp4.md),
 [QAD step 1,750 comparison](../kld/glm-5.3-flash-qad-step1750.md), and
@@ -81,7 +86,7 @@ secondary outcomes.
 ## Docker artifact
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260910-r34
+localinferencelab/vllm:jovian-judgement-community-20260911-r35
 ```
 
 The image contains two filesystem layers: a flattened CUDA 13.3/PyTorch 2.13
@@ -90,19 +95,21 @@ LMCache sources. FlashInfer, the DS4-compatible native vLLM operator and the
 authenticated FlashKDA extension are source-locked. It is not built by adding
 layers to a preceding community release.
 
-The [embedded source lock](glm-5.3-flash/validation/moe-backend-default-r34.source.lock)
-has SHA-256 `e7b5712d12676c8daf0a000398cfa2d57eedb3e290cedf611fcee28fe2413dd0`.
-The [R34 qualification and changelog](glm-5.3-flash/validation/moe-backend-default-r34.md)
-records image identity, raw samples and qualification limits; the
-[registry receipt](glm-5.3-flash/validation/moe-backend-default-r34-registry.json)
+The [embedded source lock](glm-5.3-flash/validation/swiglu-reviewed-composition-r35.source.lock)
+identifies the installed components and build inputs. The
+[R35 qualification and R34-to-R35 changelog](glm-5.3-flash/validation/swiglu-reviewed-composition-r35.md)
+records artifact identity, measurements and qualification limits; the
+[registry receipt](glm-5.3-flash/validation/swiglu-reviewed-composition-r35-registry.json)
 contains the immutable digest and verified pull result.
 Eligible GLM and Qwen prefills share quantized input across routed experts and
 use separate expert projections. LMCache filesystem eviction retires missing
 objects from byte accounting while protecting pending writes and preserving
 actual I/O errors. Checkpoint policies, concurrent publication, model precision,
-sampling/history defaults and all launchers are preserved. All audited native
-libraries are byte-identical to R33, including its corrected filesystem
-connector. The image sets `VLLM_DEFAULT_MOE_BACKEND=b12x`, so direct
+sampling/history defaults and model launch profiles are preserved. The separate
+standalone LMCache wrapper also provisions named SHM for explicit engine-driven
+transfer. Native libraries match the qualified source-composition image; no
+CUDA, FlashInfer or FlashKDA replacement is involved. The image sets
+`VLLM_DEFAULT_MOE_BACKEND=b12x`, so direct
 `vllm serve` also selects B12X when `--moe-backend` is omitted. An explicit
 backend, including `auto`, remains authoritative. The GLM wrapper additionally
 accepts `MOE_BACKEND`; its default is B12X. This changes MoE selection, not
@@ -116,7 +123,7 @@ profiles. DS4 backend defaults do not replace the GLM settings below.
 Known limitation: concurrent MTP3 requests with strict JSON-schema output and
 LMCache can fail grammar validation with HTTP 500. The failure is reproduced
 on both R31 and R32; [vLLM #726](https://github.com/local-inference-lab/vllm/issues/726)
-tracks it. R34 does not claim to fix that constrained-output defect.
+tracks it. R35 does not claim to fix that constrained-output defect.
 
 ## Runtime backends
 
@@ -143,6 +150,25 @@ qualified GLM target, MTP or DFlash2 hot paths. FlashKDA is the prefill default;
 performance table below uses FlashKDA, not that alternative.
 
 ## Measured performance
+
+### R35 source-composition qualification
+
+Same physical quartet of RTX PRO 6000 Workstation GPUs, **VRAM +6000**, 600 W,
+TP4/DCP1, DFlash2 K7, FP8 KV, B12X MoE, 4096-token budget, OMP1 and
+full-and-piecewise graphs. Sampling uses temperature 1 and top-p 0.95.
+
+| Metric | R34 | R35 component composition | Change |
+|---|---:|---:|---:|
+| Cold 32K prefill tok/s | 16,872 | 16,694 | −1.05% |
+| C1 output tok/s | 254.85 | 255.05 | +0.08% |
+| C1 verifier steps/s | 97.37 | 97.71 | +0.34% |
+| C8 aggregate output tok/s | 803.70 | 792.84 | −1.35% |
+| C8 aggregate verifier steps/s | 308.74 | 310.74 | +0.65% |
+
+These are bounded screening measurements, not a general speedup claim. R35's
+installed component sources and native libraries match the measured composition;
+only release metadata and the separately tested standalone LMCache wrapper
+differ. [Conditions, artifact proof and final-image checks](glm-5.3-flash/validation/swiglu-reviewed-composition-r35.md).
 
 ### R34 deployment-default qualification
 
@@ -269,7 +295,7 @@ The defaults already select full-and-piecewise graphs, the B12X paths,
 FlashInfer sampling, NCCL 16 channels/2 MiB and OMP1.
 
 ```bash
-IMAGE=localinferencelab/vllm:jovian-judgement-community-20260910-r34
+IMAGE=localinferencelab/vllm:jovian-judgement-community-20260911-r35
 GPU_DEVICES=0,1,2,3
 PORT=8000
 docker pull "$IMAGE"
@@ -544,16 +570,16 @@ the required shareable allocator. These settings do not enable LMCache.
 
 ## Source and review contract
 
-The [portable source-locked build recipe](https://github.com/local-inference-lab/blackwell-llm-docker/tree/codex/glm53-source-locked-build/recipes/glm53)
+The [portable source-locked build recipe](https://github.com/local-inference-lab/blackwell-llm-docker/tree/main/recipes/glm53)
 includes the native FlashKDA build, source-bundle verification and CPU build
 tests. It lists the exact source revisions; no chain of preceding community
 images is needed. Runtime ABI dependencies are supplied by its pinned base.
 
 Complete Git mirrors preserve authorship and integration resolutions:
-[vLLM](https://github.com/voipmonitor/vllm/tree/integration/jovian-warmup-buffer-reuse-20260909),
-[B12X](https://github.com/voipmonitor/b12x/tree/release/jovian-judgement-20260909-r29),
-[LMCache](https://github.com/local-inference-lab/LMCache/tree/integration/jovian-concurrent-checkpoint-publication-20260909).
-The [open merge checklist](https://github.com/local-inference-lab/vllm/issues/651)
+[vLLM](https://github.com/voipmonitor/vllm/tree/integration/jovian-reviewed-sources-20260911),
+[B12X](https://github.com/voipmonitor/b12x/tree/integration/jovian-reviewed-sources-20260911),
+[LMCache](https://github.com/local-inference-lab/LMCache/tree/release/jovian-fp4-fs-ledger-r33-20260910).
+The [open merge checklist](https://github.com/local-inference-lab/vllm/issues/731)
 describes each PR and integration caveat. Source locks, not tag-name inference,
 identify the measured packages. The timing matrix and exact packaged storage
 checks have their source boundaries recorded in the validation evidence.

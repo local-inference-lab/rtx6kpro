@@ -8,18 +8,20 @@ n-gram embedding (PLE) table to host RAM. It is a different model from
 [Qwen3.8-27B](qwen38-27b.md).
 
 ```text
-localinferencelab/vllm:jovian-judgement-community-20260910-r34
+localinferencelab/vllm:jovian-judgement-community-20260911-r35
 ```
 
 The image contains the same vLLM/B12X runtime as [GLM-5.3-Flash](glm-5.3-flash.md),
 but Qwen needs its own launch arguments. The Compose recipe below bypasses the
 image's GLM entrypoint. No source mounts or absolute checkpoint paths are needed.
-R34 defaults native MoE selection to B12X even when `--moe-backend` is omitted;
+R35 defaults native MoE selection to B12X even when `--moe-backend` is omitted;
 explicit choices still override it. The Compose recipe already specifies B12X.
 Temperature 1/top-p 0.95/top-k 20 and shared-input NVFP4 split prefill for eligible
-TP1 expert shapes are retained. Qwen qualification below belongs to R33; R34
-preserves its kernels and passes configuration-precedence tests and a GLM
-serving control, without repeating the full Qwen matrix.
+TP1 expert shapes are retained. Qwen measurements below belong to R33. R35
+preserves the Qwen split-prefill guards and common native runtime while updating
+the public source composition; it does not claim a repeated Qwen serving matrix
+or a Qwen speedup. Its split-NVFP4 SwiGLU correction is relevant to models that
+declare a finite activation limit. See the [R35 scope and changelog](glm-5.3-flash/validation/swiglu-reviewed-composition-r35.md).
 
 ## Start on one GPU: TP1
 

@@ -3,6 +3,11 @@
 Status: **qualified for the bounded conditions below**. This is a historical
 R32-to-R33 release report, not a general model-quality or all-topology claim.
 
+**GLM correctness advisory:** the R35 audit reproduces an omitted SwiGLU clamp
+in R33's B12X split NVFP4 prefill. Upgrade GLM NVFP4 serving to R35. The observations
+below do not establish parity with the clamped GLM model.
+[Arithmetic proof and corrected artifact](swiglu-reviewed-composition-r35.md).
+
 Artifact: `localinferencelab/vllm:jovian-judgement-community-20260910-r33`.
 Tested image ID:
 `sha256:8a4aa9d80cd52d31a70702917c8efb5b54281b53910a20712e5a5c3b6f73b57c`.

@@ -3,6 +3,11 @@
 Status: **qualified for the configuration and serving checks below**. This is
 a historical release report; it does not claim a complete multi-model retest.
 
+**GLM correctness advisory:** the R35 audit reproduces an omitted SwiGLU clamp
+in R34's B12X split NVFP4 prefill. Upgrade GLM NVFP4 serving to R35. The measurements
+below remain historical observations, not evidence of parity with the clamped
+model. [Arithmetic proof and corrected artifact](swiglu-reviewed-composition-r35.md).
+
 Image: `localinferencelab/vllm:jovian-judgement-community-20260910-r34`.
 The [registry receipt](moe-backend-default-r34-registry.json) identifies the
 immutable digest and verified pull. The [qualification record](moe-backend-default-r34.json)

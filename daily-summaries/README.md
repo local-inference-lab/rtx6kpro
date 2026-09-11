@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-09-11](2026-09/2026-09-11.md) | DeepSeek-V4.1-Flash launches: 552B MoE + 196B "Engram" params, native FP4 experts, 1M ctx, tunable r |
 | [2026-09-10](2026-09/2026-09-10.md) | DeepSeek-V4.1-Flash released: new "Engram" architecture, 552B backbone + 196B Engram params, KV cach |
 | [2026-09-09](2026-09/2026-09-09.md) | DeepSeek V4.1 Flash spotted live via hidden model ID (`deepseek-v4.1-flash-expires-on-0910`), report |
 | [2026-09-08](2026-09/2026-09-08.md) | DeepSeek V4 Flash "Jovian Judgement r9" shipped on Docker Hub, fixing a NaN-leak bug in B12X attenti |
@@ -204,6 +205,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|------------|
+| [2026-09-11](2026-09/2026-09-11.md) | DeepSeek-V4.1-Flash launches: 552B MoE + 196B "Engram" params, native FP4 experts, 1M ctx, tunable r |
 | [2026-09-10](2026-09/2026-09-10.md) | DeepSeek-V4.1-Flash released: new "Engram" architecture, 552B backbone + 196B Engram params, KV cach |
 | [2026-09-09](2026-09/2026-09-09.md) | DeepSeek V4.1 Flash spotted live via hidden model ID (`deepseek-v4.1-flash-expires-on-0910`), report |
 | [2026-09-08](2026-09/2026-09-08.md) | DeepSeek V4 Flash "Jovian Judgement r9" shipped on Docker Hub, fixing a NaN-leak bug in B12X attenti |

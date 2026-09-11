@@ -1,0 +1,28 @@
+{
+  "guild_id": "1466898002793857221",
+  "summary_channel_id": "1488533923687432352",
+  "model_base_url": "http://192.168.66.4:4999",
+  "model": "DeepSeek-V4-Flash",
+  "wiki_repository": "https://github.com/local-inference-lab/rtx6kpro.git",
+  "state_directory": "/var/lib/discord-summary",
+  "window_hours": 24,
+  "maximum_message_characters": 800,
+  "maximum_input_characters": 700000,
+  "maximum_summary_characters": 1900,
+  "excluded_channel_ids": [
+    "1488533923687432352",
+    "1543442118972932167",
+    "1543442432819986462"
+  ],
+  "excluded_channel_names": [
+    "daily-summaries",
+    "faq",
+    "info",
+    "media",
+    "model-requests",
+    "off-topic",
+    "offtopic",
+    "voice-channels",
+    "welcome"
+  ]
+}

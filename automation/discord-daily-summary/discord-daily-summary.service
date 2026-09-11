@@ -1,0 +1,35 @@
+[Unit]
+Description=Validated Discord daily summary
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=discord-summary
+Group=discord-summary
+WorkingDirectory=/var/lib/discord-summary
+StateDirectory=discord-summary
+RuntimeDirectory=discord-summary
+UMask=0077
+LoadCredential=discord-token:/etc/discord-summary/discord-token
+LoadCredential=github-token:/etc/discord-summary/github-token
+ExecStart=/usr/bin/python3 /opt/discord-summary/daily_summary.py --config /etc/discord-summary/config.json
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateTmp=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectHostname=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=multi-user.target

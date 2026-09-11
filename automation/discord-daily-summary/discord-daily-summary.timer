@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the Discord daily summary at 08:07 UTC
+
+[Timer]
+OnCalendar=*-*-* 08:07:00 UTC
+Persistent=true
+RandomizedDelaySec=60
+Unit=discord-daily-summary.service
+
+[Install]
+WantedBy=timers.target

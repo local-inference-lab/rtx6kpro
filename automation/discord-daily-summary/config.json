@@ -5,9 +5,11 @@
   "model": "DeepSeek-V4-Flash",
   "wiki_repository": "https://github.com/local-inference-lab/rtx6kpro.git",
   "state_directory": "/var/lib/discord-summary",
+  "policy_path": "/etc/discord-summary/policy.json",
   "window_hours": 24,
-  "maximum_message_characters": 800,
-  "maximum_input_characters": 700000,
+  "maximum_message_characters": 0,
+  "maximum_chunk_characters": 60000,
+  "chunk_overlap_records": 3,
   "maximum_summary_characters": 1900,
   "excluded_channel_ids": [
     "1488533923687432352",

@@ -9,7 +9,8 @@ Each highlight links directly to the relevant Discord message.
 ## March 2026
 
 | Date | Highlights |
-|------|------------|
+|------|
+| [2026-09-12](2026-09/2026-09-12.md) | Qwen3.8 Flash Next TP2 decode collapses above 16 concurrent requests (1340 tps at C16, 120 tps at C3 |------------|
 | [2026-09-11](2026-09/2026-09-11.md) | DeepSeek-V4.1-Flash launches: 552B MoE + 196B "Engram" params, native FP4 experts, 1M ctx, tunable r |
 | [2026-09-10](2026-09/2026-09-10.md) | DeepSeek-V4.1-Flash released: new "Engram" architecture, 552B backbone + 196B Engram params, KV cach |
 | [2026-09-09](2026-09/2026-09-09.md) | DeepSeek V4.1 Flash spotted live via hidden model ID (`deepseek-v4.1-flash-expires-on-0910`), report |

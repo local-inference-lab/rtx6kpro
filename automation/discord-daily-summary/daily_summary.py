@@ -1422,6 +1422,77 @@ def run_git(
     )
 
 
+def changed_repository_paths(repository: Path, environment: dict[str, str]) -> set[str]:
+    commands = (
+        ["diff", "--name-only", "-z"],
+        ["diff", "--cached", "--name-only", "-z"],
+        ["ls-files", "--others", "--exclude-standard", "-z"],
+    )
+    paths: set[str] = set()
+    for arguments in commands:
+        output = subprocess.run(
+            ["git", *arguments],
+            cwd=repository,
+            env=environment,
+            check=True,
+            capture_output=True,
+        ).stdout
+        paths.update(path.decode("utf-8") for path in output.split(b"\0") if path)
+    return paths
+
+
+def recover_interrupted_publication(
+    repository: Path,
+    environment: dict[str, str],
+    publication_paths: set[str],
+) -> None:
+    changed_paths = changed_repository_paths(repository, environment)
+    if not changed_paths:
+        return
+    unexpected_paths = changed_paths - publication_paths
+    if unexpected_paths:
+        unexpected = ", ".join(sorted(unexpected_paths))
+        raise RuntimeError(
+            f"Dedicated wiki clone contains changes outside the publication paths: {unexpected}"
+        )
+
+    for relative_path in sorted(changed_paths):
+        tracked = (
+            subprocess.run(
+                ["git", "ls-files", "--error-unmatch", "--", relative_path],
+                cwd=repository,
+                env=environment,
+                capture_output=True,
+            ).returncode
+            == 0
+        )
+        if tracked:
+            run_git(
+                ["restore", "--staged", "--worktree", "--", relative_path],
+                repository,
+                environment,
+            )
+            continue
+        path = repository / relative_path
+        if path.is_file() or path.is_symlink():
+            path.unlink()
+        elif path.exists():
+            raise RuntimeError(
+                f"Refusing to remove non-file publication path {relative_path}"
+            )
+
+    remaining_paths = changed_repository_paths(repository, environment)
+    if remaining_paths:
+        remaining = ", ".join(sorted(remaining_paths))
+        raise RuntimeError(
+            f"Dedicated wiki clone remains dirty after publication recovery: {remaining}"
+        )
+    LOG.warning(
+        "Recovered interrupted publication paths: %s",
+        ", ".join(sorted(changed_paths)),
+    )
+
+
 def update_summary_index(
     index_path: Path, run_date: str, month: str, summary: str
 ) -> None:
@@ -1482,38 +1553,45 @@ def publish_to_github(
             "GIT_COMMITTER_EMAIL": "bot@voipmonitor.org",
         }
     )
-    status = subprocess.run(
-        ["git", "status", "--porcelain"],
-        cwd=repository,
-        env=environment,
-        check=True,
-        capture_output=True,
-        text=True,
-    ).stdout
-    if status:
-        raise RuntimeError(f"Dedicated wiki clone is not clean: {status.strip()}")
+    month = run_date[:7]
+    relative_summary = Path("daily-summaries") / month / f"{run_date}.md"
+    relative_index = Path("daily-summaries") / "README.md"
+    recover_interrupted_publication(
+        repository,
+        environment,
+        {str(relative_summary), str(relative_index)},
+    )
     run_git(["fetch", "origin", "master"], repository, environment)
     run_git(["checkout", "master"], repository, environment)
     run_git(["rebase", "origin/master"], repository, environment)
 
-    month = run_date[:7]
-    summary_path = repository / "daily-summaries" / month / f"{run_date}.md"
+    summary_path = repository / relative_summary
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     summary_path.write_text(summary + "\n", encoding="utf-8")
-    index_path = repository / "daily-summaries" / "README.md"
+    index_path = repository / relative_index
     update_summary_index(index_path, run_date, month, summary)
-    relative_summary = summary_path.relative_to(repository)
-    relative_index = index_path.relative_to(repository)
     run_git(
         ["add", str(relative_summary), str(relative_index)], repository, environment
     )
     changed = subprocess.run(
         ["git", "diff", "--cached", "--quiet"], cwd=repository, env=environment
     ).returncode
-    if changed == 0:
+    if changed != 0:
+        run_git(
+            ["commit", "-m", f"Daily summary - {run_date}"], repository, environment
+        )
+    else:
         LOG.info("GitHub summary already matches %s", run_date)
+    ahead = subprocess.run(
+        ["git", "rev-list", "--count", "origin/master..HEAD"],
+        cwd=repository,
+        env=environment,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if ahead == "0":
         return
-    run_git(["commit", "-m", f"Daily summary - {run_date}"], repository, environment)
     try:
         run_git(["push", "origin", "HEAD:master"], repository, environment)
     except subprocess.CalledProcessError:

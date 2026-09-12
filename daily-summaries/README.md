@@ -134,7 +134,7 @@ Each highlight links directly to the relevant Discord message.
 | [2026-05-13](2026-05/2026-05-13.md) | DSV4 Flash MTP2: 35→120 tok/s after jasl vllm fixes; new image `lavd/vllm:jasl-dsv4-5-12-26` hits  |
 | [2026-05-12](2026-05/2026-05-12.md) | repne/vllm:v3 released with tinygemm_bf16; Qwen3.6-27B FP8 TP=1 benchmarks: prefill 9,057 tok/s @8k  |
 | [2026-05-11](2026-05/2026-05-11.md) | MiniMax M2.7 reaches 145 tok/s (TP=2) with latest b12x 0.13.5 + `B12X_MOE_FORCE_A16=1`, double the o |
-| [2026-05-10](2026-05/2026-05-10.md) | DS4 Flash on 2x RTX Pro 6000 (FP8+FP4): 39 tok/s single, 79 tok/s dual. MTP + CUDA graph conflict � |
+| [2026-05-10](2026-05/2026-05-10.md) | DS4 Flash on 2x RTX Pro 6000 (FP8+FP4): 39 tok/s single, 79 tok/s dual. MTP + CUDA graph conflict — |
 | [2026-05-09](2026-05/2026-05-09.md) | GLM-5.1 DCP=4 fixed: `voipmonitor/vllm:glm51-kimi-comm-20260508` eliminates garbage output at DCP=4; |
 | [2026-05-08](2026-05/2026-05-08.md) | MiMo-V2.5 looping fix found: `do_sample=false` in generation_config.json disabled sampling params; f |
 | [2026-05-07](2026-05/2026-05-07.md) | MiMo V2.5 thought loops confirmed as model-level bug: Luke ruled out quantization, kernels, and MTP  |
@@ -329,7 +329,7 @@ Each highlight links directly to the relevant Discord message.
 | [2026-05-13](2026-05/2026-05-13.md) | DSV4 Flash MTP2: 35→120 tok/s after jasl vllm fixes; new image `lavd/vllm:jasl-dsv4-5-12-26` hits  |
 | [2026-05-12](2026-05/2026-05-12.md) | repne/vllm:v3 released with tinygemm_bf16; Qwen3.6-27B FP8 TP=1 benchmarks: prefill 9,057 tok/s @8k  |
 | [2026-05-11](2026-05/2026-05-11.md) | MiniMax M2.7 reaches 145 tok/s (TP=2) with latest b12x 0.13.5 + `B12X_MOE_FORCE_A16=1`, double the o |
-| [2026-05-10](2026-05/2026-05-10.md) | DS4 Flash on 2x RTX Pro 6000 (FP8+FP4): 39 tok/s single, 79 tok/s dual. MTP + CUDA graph conflict � |
+| [2026-05-10](2026-05/2026-05-10.md) | DS4 Flash on 2x RTX Pro 6000 (FP8+FP4): 39 tok/s single, 79 tok/s dual. MTP + CUDA graph conflict — |
 | [2026-05-09](2026-05/2026-05-09.md) | GLM-5.1 DCP=4 fixed: `voipmonitor/vllm:glm51-kimi-comm-20260508` eliminates garbage output at DCP=4; |
 | [2026-05-08](2026-05/2026-05-08.md) | MiMo-V2.5 looping fix found: `do_sample=false` in generation_config.json disabled sampling params; f |
 | [2026-05-07](2026-05/2026-05-07.md) | MiMo V2.5 thought loops confirmed as model-level bug: Luke ruled out quantization, kernels, and MTP  |

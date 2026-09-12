@@ -7,6 +7,7 @@ import importlib.util
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -238,6 +239,67 @@ class PerformanceClaimTest(unittest.TestCase):
                 "Measured 100 tok/s and 50 tok/s", list(records), records
             )
         )
+
+
+class PublicationRecoveryTest(unittest.TestCase):
+    def initialize_repository(self, directory: str) -> Path:
+        repository = Path(directory)
+        subprocess.run(["git", "init", "-q"], cwd=repository, check=True)
+        subprocess.run(
+            ["git", "config", "user.email", "test@example.com"],
+            cwd=repository,
+            check=True,
+        )
+        subprocess.run(
+            ["git", "config", "user.name", "Test"], cwd=repository, check=True
+        )
+        index_path = repository / "daily-summaries" / "README.md"
+        index_path.parent.mkdir(parents=True)
+        index_path.write_text("index\n", encoding="utf-8")
+        subprocess.run(["git", "add", "."], cwd=repository, check=True)
+        subprocess.run(["git", "commit", "-qm", "Initial"], cwd=repository, check=True)
+        return repository
+
+    def test_recovers_only_expected_publication_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = self.initialize_repository(directory)
+            index_path = repository / "daily-summaries" / "README.md"
+            summary_path = repository / "daily-summaries" / "2026-09" / "2026-09-12.md"
+            index_path.write_text("changed\n", encoding="utf-8")
+            summary_path.parent.mkdir(parents=True)
+            summary_path.write_text("summary\n", encoding="utf-8")
+
+            daily_summary.recover_interrupted_publication(
+                repository,
+                {},
+                {
+                    "daily-summaries/README.md",
+                    "daily-summaries/2026-09/2026-09-12.md",
+                },
+            )
+
+            self.assertEqual(index_path.read_text(encoding="utf-8"), "index\n")
+            self.assertFalse(summary_path.exists())
+            self.assertEqual(
+                daily_summary.changed_repository_paths(repository, {}), set()
+            )
+
+    def test_rejects_changes_outside_publication_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repository = self.initialize_repository(directory)
+            unexpected = repository / "unrelated.txt"
+            unexpected.write_text("keep me\n", encoding="utf-8")
+
+            with self.assertRaisesRegex(
+                RuntimeError, "changes outside the publication paths"
+            ):
+                daily_summary.recover_interrupted_publication(
+                    repository,
+                    {},
+                    {"daily-summaries/README.md"},
+                )
+
+            self.assertTrue(unexpected.exists())
 
 
 if __name__ == "__main__":

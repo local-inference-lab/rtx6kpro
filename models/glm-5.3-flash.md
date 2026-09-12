@@ -16,6 +16,10 @@ speculation, with three-token Multi-Token Prediction (MTP), or with the
 The commands use Hugging Face repository names and named Docker volumes. They
 do not require checkpoint paths or source-code bind mounts.
 
+For two 96 GiB GPUs, see the separate experimental
+[GLM Spark TP2/DCP2 MTP3 deployment](glm-5.3-flash-spark-tp2.md).
+Its checkpoint, memory budget and qualification scope differ from this TP4 profile.
+
 ## Status
 
 | Capability | Status |

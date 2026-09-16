@@ -82,7 +82,7 @@ spec:
       - name: qwen3-8-flash-next-vllm
         # Shared-PLE overlay on localinferencelab/vllm:jovian-judgement-community-20260911-r35;
         # build it from ../build/ or pull the published tag.
-        image: ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c
+        image: ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -90,7 +90,8 @@ spec:
         resources:
           requests:
             cpu: "8"
-            memory: "48Gi"
+            # Attached replicas measured 7.9 GiB; the 80Gi limit covers a populate.
+            memory: "24Gi"
             nvidia.com/gpu: 1
           limits:
             cpu: "16"

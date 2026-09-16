@@ -141,7 +141,9 @@ setting when supplied to vLLM.
 
 Status: **implemented; qualified on one GPU** with an overlay image on the
 R35 digest ([validation report](qwen38-flash-next/validation/shared-ple-r35-20260916.md)).
-Two attachers on two GPUs are the next measurement.
+Two attachers on two GPUs and TP2 (one half-table per rank) were exercised in
+that report's tuning runs; the eGPU replica has not had the full single-GPU
+protocol.
 
 With `VLLM_PLE_CPU_OFFLOAD=1` every TP1 replica on a host pins its own
 26.82 GiB copy of the n-gram table in `cudaHostAlloc` memory: four replicas
@@ -154,7 +156,7 @@ the quantization is unchanged; only who owns the memory changes.
 
 Use it when more than one Qwen3.8-Flash-Next process serves on the same
 host. It requires the shared-PLE overlay image
-(`ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c`, built from
+(`ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9`, built from
 [`qwen38-flash-next/build/`](qwen38-flash-next/build/README.md)), a tmpfs
 mount shared by the containers (`/dev/shm` with `ipc: host` in Compose,
 `hostIPC: true` plus a `/dev/shm` hostPath on Kubernetes) and the `IPC_LOCK`
@@ -200,11 +202,17 @@ How it behaves:
   (C1/C8/C16 and 32K prefill; report). `cudaHostRegisterReadOnly` is not
   available on RTX PRO 6000 drivers as of this writing; attachers log the
   fallback to a writable mapping once per file.
+- The key names a checkpoint by path and revision, not by content. Pin
+  `--revision`; if you replace the files behind a local checkpoint path
+  without changing either, prune the key first or the next replica attaches
+  the old table. The directory is private to one user (root `0700`; symlinked,
+  foreign-owned or group/world-writable paths are refused), so every replica
+  sharing a table must run as the same user.
 - Stale keys after a revision bump stay in tmpfs until pruned:
 
 ```bash
 docker run --rm --ipc host -v /dev/shm:/dev/shm --entrypoint /opt/venv/bin/python \
-  ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c \
+  ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9 \
   -m vllm.models.qwen3_8_flash_next.ple_shared_table --dir /dev/shm/vllm-ple list
 # then: ... prune --keep <key-from-list-or-logs> [--dry-run]
 ```

@@ -7,9 +7,9 @@
    "overlay_commit": "6c2fc869c94e0fe1a7df32f2359dffbd99edd7af"
   },
   "published": {
-   "tag": "ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c",
-   "digest": "sha256:915cb9e50a110ac0e3fe65f13be16cadd19b2f227d3dcb9c46d7481a5d0e3d8f",
-   "overlay_commit": "30ac5b387e1cc055911d8b9ad6290d58e9bc822e",
+   "tag": "ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9",
+   "digest": "sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1",
+   "overlay_commit": "028b1c4921f92c61889b5b8485f1ef606a32b41c",
    "note": "rebuilt from the same tree 9cb88da0db0b1fd3874d846379303617ac804e94 after commit metadata was rewritten; per-file SHA-256 identical to the measured image"
   }
  },

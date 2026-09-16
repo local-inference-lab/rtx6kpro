@@ -14,10 +14,10 @@ and checkpoint are those of the [TP1 recipe](../../qwen38-flash-next.md).
 |---|---|
 | Base image | `docker.io/localinferencelab/vllm@sha256:7a425c6864b951bbc368111490a4b0ac69d8cd0dd4987075b2c7d40b753b1bf5` (`jovian-judgement-community-20260911-r35`, vLLM `0.26.1rc0+glm53.r35.vllmde982a50`, b12x 1.3.0 @ `98086604`) |
 | Base source commit | `de982a50c6a3e4718e5cf9f00423a92192718da1` (the checkout at `/opt/glm53-flash/vllm` inside the image) |
-| Overlay source | [`renehonig/vllm` branch `build/qwen38-shared-ple-r35`](https://github.com/renehonig/vllm/tree/build/qwen38-shared-ple-r35), commit `30ac5b387e1cc055911d8b9ad6290d58e9bc822e` (tree `9cb88da0`, five commits on top of `de982a50`); the branch head adds two later commits (a clearer tmpfs error message and a test-double tweak) that are not in the image |
+| Overlay source | [`renehonig/vllm` branch `build/qwen38-shared-ple-r35`](https://github.com/renehonig/vllm/tree/build/qwen38-shared-ple-r35), commit `028b1c4921f92c61889b5b8485f1ef606a32b41c` (branch head: the five overlay commits plus the tmpfs-message, test-double and review-hardening follow-ups, all on top of `de982a50`) |
 | PR branch | `feat/qwen38-shared-ple-table`, targeting `local-inference-lab/vllm` `dev/jovian-judgement` |
 | Overlaid files | `vllm/envs.py`, `vllm/models/qwen3_8_flash_next/{model.py,ple_layer.py,ple_shared_table.py}`, `tests/models/test_qwen3_8_flash_next_ple_shared_table.py` |
-| Published image | `ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c` = `ghcr.io/renehonig/vllm@sha256:915cb9e50a110ac0e3fe65f13be16cadd19b2f227d3dcb9c46d7481a5d0e3d8f` |
+| Published image | `ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9` = `ghcr.io/renehonig/vllm@sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1` |
 | Source lock | [`qwen38-flash-next-shared-ple-r35.source.lock`](qwen38-flash-next-shared-ple-r35.source.lock): the image's `/opt/glm53-flash/source.lock` plus `overlay.*` keys (repository, commit, tree, per-file sha256) |
 | Validation | [`../validation/shared-ple-r35-20260916.md`](../validation/shared-ple-r35-20260916.md) |
 
@@ -38,11 +38,11 @@ records repository, branch, commit and base commit; OCI labels carry the same.
 git clone --filter=blob:none https://github.com/renehonig/vllm.git jovian-vllm
 git -C jovian-vllm fetch origin build/qwen38-shared-ple-r35
 cd rtx6kpro/models/qwen38-flash-next/build
-VLLM_FORK=../../../../jovian-vllm ./build-overlay.sh 30ac5b387e1cc055911d8b9ad6290d58e9bc822e
+VLLM_FORK=../../../../jovian-vllm ./build-overlay.sh 028b1c4921f92c61889b5b8485f1ef606a32b41c
 # Optional GPU-side check (serve --help needs a visible GPU):
-CHECK_GPU=<gpu-index> VLLM_FORK=... ./build-overlay.sh 30ac5b387e1cc055911d8b9ad6290d58e9bc822e
-docker tag localinferencelab/vllm:jovian-r35-shared-ple-30ac5b387e1c <registry>/vllm:jovian-r35-shared-ple-30ac5b387e1c
-docker push <registry>/vllm:jovian-r35-shared-ple-30ac5b387e1c   # pin the RepoDigest it prints
+CHECK_GPU=<gpu-index> VLLM_FORK=... ./build-overlay.sh 028b1c4921f92c61889b5b8485f1ef606a32b41c
+docker tag localinferencelab/vllm:jovian-r35-shared-ple-028b1c4921f9 <registry>/vllm:jovian-r35-shared-ple-028b1c4921f9
+docker push <registry>/vllm:jovian-r35-shared-ple-028b1c4921f9   # pin the RepoDigest it prints
 ```
 
 `build-overlay.sh` builds from a `git archive` of the commit, never from a

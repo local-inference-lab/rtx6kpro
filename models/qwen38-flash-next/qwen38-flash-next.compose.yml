@@ -140,7 +140,7 @@ services:
   qwen-tp1-shared-0:
     <<: *runtime
     profiles: [tp1-shared]
-    image: ${QWEN_SHARED_PLE_IMAGE:-ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9}
+    image: ${QWEN_SHARED_PLE_IMAGE:-ghcr.io/renehonig/vllm@sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1}
     volumes:
       - qwen-model-cache:/root/.cache/huggingface
       - qwen-runtime-cache-shared-0:/cache
@@ -161,7 +161,7 @@ services:
   qwen-tp1-shared-1:
     <<: *runtime
     profiles: [tp1-shared]
-    image: ${QWEN_SHARED_PLE_IMAGE:-ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9}
+    image: ${QWEN_SHARED_PLE_IMAGE:-ghcr.io/renehonig/vllm@sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1}
     volumes:
       - qwen-model-cache:/root/.cache/huggingface
       - qwen-runtime-cache-shared-1:/cache

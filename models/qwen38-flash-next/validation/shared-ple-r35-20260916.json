@@ -10,7 +10,42 @@
    "tag": "ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9",
    "digest": "sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1",
    "overlay_commit": "028b1c4921f92c61889b5b8485f1ef606a32b41c",
-   "note": "rebuilt from the same tree 9cb88da0db0b1fd3874d846379303617ac804e94 after commit metadata was rewritten; per-file SHA-256 identical to the measured image"
+   "overlay_tree": "e281ab446d0a47b5103e43432a8fb55fbd00bf69",
+   "relation_to_measured": {
+    "measured_overlay_tree": "9cb88da0db0b1fd3874d846379303617ac804e94",
+    "unchanged_files": {
+     "vllm/envs.py": "40eecc0b2bb623e9d039624be4fb6c22a2e3b8e3b9465550596cdaa4bda2373c",
+     "vllm/models/qwen3_8_flash_next/model.py": "20fe2e20390bf69ea51ff63474000a766c253202e43460bc5fee1b525ff74777"
+    },
+    "changed_files": {
+     "vllm/models/qwen3_8_flash_next/ple_shared_table.py": {
+      "measured": "920d88878c21a07255364a41dbd2f5f037908169480e2bed1beff70e6fb1ad34",
+      "published": "c69ee30183c654df4bbfe0a51b56374d9344c5599f2e9df485755979e8415e11",
+      "what": "tmpfs error message; private directory/file checks (0700/0600, O_NOFOLLOW, owner and mode); SharedTable.abort() and finalizer; prune keeps lock files; list tolerates concurrent prune"
+     },
+     "vllm/models/qwen3_8_flash_next/ple_layer.py": {
+      "measured": "01c63e18e25c8eefc45aff8f23e48d9138d9b9cf00a1acabc9d753454383b485",
+      "published": "9d22b8ff81301f5e9cb1ae597c72ce22c983526f889e841a842bdfb9779ef81e",
+      "what": "_validate_embedding_loaded aborts an unfinished populate on failure (abort_shared_table); the successful path is unchanged"
+     },
+     "tests/models/test_qwen3_8_flash_next_ple_shared_table.py": {
+      "measured": "e50629f30a5dbabde4fcb2920e59a1c52cf40c99e36a6bc517ced73956c6be0c",
+      "published": "aa6b9ab8a6a491c150e662b2268623132404e81872998153e45b9056a65ae5f9",
+      "what": "tmpfs test dir; layout/plan double; abort, validation-failure and private-path tests"
+     }
+    },
+    "remeasured_on_published_image": [
+     "unit tests (24 passed, CPU) on the published tree",
+     "attach start against the existing table (Ready in ~100 s, 2026-09-16 17:20 CEST)"
+    ],
+    "not_remeasured_on_published_image": [
+     "throughput sweeps",
+     "output equivalence",
+     "populate timing",
+     "resilience (kill mid-populate, manifest mismatch, attach-only)"
+    ],
+    "note": "the table file format, manifest, key derivation, loader path and serving kernels are unchanged between the two trees; the differences are error handling, directory permission checks and tests"
+   }
   }
  },
  "host": "the test host, 4x RTX PRO 6000 Blackwell 96 GB, 246 GiB RAM, k3s v1.34.4 + NVIDIA DRA; GPU 00000000:F1:00.0 (GPU-c930b32a) for every measurement; MiniMax M2.7 (2 GPUs) and one Qwen3.8-27B replica (eGPU) serving concurrently",

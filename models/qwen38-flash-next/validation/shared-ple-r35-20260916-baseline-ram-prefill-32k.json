@@ -1,0 +1,305 @@
+{
+  "metadata": {
+    "version": "0.6.1",
+    "engine": "vllm",
+    "model": "qwen3-8-flash-next",
+    "server": "pod-ip-1:8000",
+    "timestamp": "2026-09-16T12:23:03.950475",
+    "decode_mode": "duration",
+    "primary_decode_layer": "sustained_decode",
+    "duration_per_test": 30.0,
+    "request_count": 0,
+    "warmup_request_count": 0,
+    "run_burst": false,
+    "prefill_mode": "standalone_cold",
+    "standalone_prefill": true,
+    "prefill_only": true,
+    "skip_prefill": false,
+    "burst_e2e_status": "not_run_use_--run-burst",
+    "burst_request_count": 0,
+    "burst_warmup_request_count": 0,
+    "burst_requests_per_concurrency": 5,
+    "decode_warmup_seconds": 3.0,
+    "decode_warmup_context": 0,
+    "decode_warmup_loop_diagnostics": [],
+    "loop_detection": {
+      "enabled": true,
+      "scope": "decode_cells_and_their_warmups",
+      "confirmed_min_chars": 4096,
+      "confirmed_min_cycles": 4,
+      "max_period_chars": 32768,
+      "history_chars_per_request_channel": 131072,
+      "check_interval_chars": 256,
+      "invalid_cell_aggregate_tps_sentinel": -3.0,
+      "limitation": "exact repeated text heuristic; not a semantic correctness test"
+    },
+    "decode_warmup_concurrency": 1,
+    "cell_warmup_timeout_seconds": 0.0,
+    "cell_warmup_timeout_policy": "<=32k:60s,64k:120s,>=128k:180s when override is 0",
+    "show_capacity_limited_values": false,
+    "max_tokens": 8192,
+    "temperature": 1.0,
+    "ignore_eos": true,
+    "max_total_tokens": 7874944,
+    "dcp_size": 0,
+    "metrics_available": true,
+    "metrics_warning": "",
+    "concurrency_levels": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128
+    ],
+    "context_lengths": [
+      0,
+      16384,
+      32768,
+      65536,
+      131072
+    ],
+    "startup_diagnostics_available": true,
+    "nvidia_p2p_override_effective": false,
+    "p2pmark_status": "not_run",
+    "amd_fabric_status": "not_run"
+  },
+  "startup_diagnostics": {
+    "version": "0.6.1",
+    "server_url": "http://pod-ip-1:8000",
+    "hostname": "the test host",
+    "uname": "Linux test-host 7.0.0-28-generic #28-Ubuntu SMP PREEMPT_DYNAMIC Sun Jun 21 01:01:36 UTC 2026 x86_64 GNU/Linux",
+    "env": {},
+    "args": {
+      "concurrency": "1,2,4,8,16,32,64,128",
+      "contexts": "0,16k,32k,64k,128k",
+      "max_tokens": 8192,
+      "duration": 30.0,
+      "request_count": 0,
+      "run_burst": false,
+      "standalone_prefill": true,
+      "prefill_only": true,
+      "skip_prefill": false,
+      "prefill_contexts": "32k",
+      "prefill_metric": "client",
+      "dcp_size": 0,
+      "kv_budget": 0
+    },
+    "nvidia_p2p_override": {
+      "effective": false,
+      "configured": false,
+      "params_path": "/proc/driver/nvidia/params",
+      "params_available": true,
+      "modprobe_path": "/etc/modprobe.d/nvidia-p2p-override.conf",
+      "modprobe_available": false,
+      "runtime": {
+        "ForceP2P": "",
+        "RMForceP2PType": "",
+        "RMPcieP2PType": "",
+        "GrdmaPciTopoCheckOverride": "",
+        "EnableResizableBar": "0",
+        "DmaRemapPeerMmio": "1"
+      },
+      "expected": {
+        "ForceP2P": "0x11",
+        "RMForceP2PType": "1",
+        "RMPcieP2PType": "2",
+        "GrdmaPciTopoCheckOverride": "1",
+        "EnableResizableBar": "1"
+      },
+      "missing": [
+        "ForceP2P",
+        "RMForceP2PType",
+        "RMPcieP2PType",
+        "GrdmaPciTopoCheckOverride"
+      ],
+      "mismatched": {
+        "EnableResizableBar": {
+          "expected": "1",
+          "actual": "0"
+        }
+      },
+      "registry_dwords": "",
+      "suggested_modprobe_line": "options nvidia NVreg_RegistryDwords=\"ForceP2P=0x11;RMForceP2PType=1;RMPcieP2PType=2;GrdmaPciTopoCheckOverride=1;EnableResizableBar=1\"",
+      "suggested_reload": "stop GPU workloads, then reload NVIDIA modules or reboot; the modprobe file alone is not enough until the nvidia module is reloaded"
+    },
+    "p2pmark": {
+      "status": "not_run"
+    },
+    "amd_fabric": {
+      "status": "not_run"
+    },
+    "nvidia_smi_query": {
+      "cmd": [
+        "nvidia-smi",
+        "--query-gpu=index,name,driver_version,pci.bus_id,pcie.link.gen.current,pcie.link.width.current,power.limit",
+        "--format=csv,noheader,nounits"
+      ],
+      "returncode": 0,
+      "stdout": "0, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 595.91.07, 00000000:01:00.0, 1, 4, 500.00\n1, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 595.91.07, 00000000:11:00.0, 5, 16, 500.00\n2, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 595.91.07, 00000000:21:00.0, 5, 16, 500.00\n3, NVIDIA RTX PRO 6000 Blackwell Workstation Edition, 595.91.07, 00000000:F1:00.0, 1, 16, 500.00",
+      "stderr": ""
+    },
+    "nvidia_smi_topo": {
+      "cmd": [
+        "nvidia-smi",
+        "topo",
+        "-m"
+      ],
+      "returncode": 0,
+      "stdout": "\u001b[4mGPU0\tGPU1\tGPU2\tGPU3\tCPU Affinity\tNUMA Affinity\tGPU NUMA ID\u001b[0m\nGPU0\t X \tNODE\tNODE\tNODE\t0-47\t0\t\tN/A\nGPU1\tNODE\t X \tNODE\tNODE\t0-47\t0\t\tN/A\nGPU2\tNODE\tNODE\t X \tNODE\t0-47\t0\t\tN/A\nGPU3\tNODE\tNODE\tNODE\t X \t0-47\t0\t\tN/A\n\nLegend:\n\n  X    = Self\n  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)\n  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node\n  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)\n  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)\n  PIX  = Connection traversing at most a single PCIe bridge\n  NV#  = Connection traversing a bonded set of # NVLinks",
+      "stderr": ""
+    }
+  },
+  "nvidia_p2p_override": {
+    "effective": false,
+    "configured": false,
+    "params_path": "/proc/driver/nvidia/params",
+    "params_available": true,
+    "modprobe_path": "/etc/modprobe.d/nvidia-p2p-override.conf",
+    "modprobe_available": false,
+    "runtime": {
+      "ForceP2P": "",
+      "RMForceP2PType": "",
+      "RMPcieP2PType": "",
+      "GrdmaPciTopoCheckOverride": "",
+      "EnableResizableBar": "0",
+      "DmaRemapPeerMmio": "1"
+    },
+    "expected": {
+      "ForceP2P": "0x11",
+      "RMForceP2PType": "1",
+      "RMPcieP2PType": "2",
+      "GrdmaPciTopoCheckOverride": "1",
+      "EnableResizableBar": "1"
+    },
+    "missing": [
+      "ForceP2P",
+      "RMForceP2PType",
+      "RMPcieP2PType",
+      "GrdmaPciTopoCheckOverride"
+    ],
+    "mismatched": {
+      "EnableResizableBar": {
+        "expected": "1",
+        "actual": "0"
+      }
+    },
+    "registry_dwords": "",
+    "suggested_modprobe_line": "options nvidia NVreg_RegistryDwords=\"ForceP2P=0x11;RMForceP2PType=1;RMPcieP2PType=2;GrdmaPciTopoCheckOverride=1;EnableResizableBar=1\"",
+    "suggested_reload": "stop GPU workloads, then reload NVIDIA modules or reboot; the modprobe file alone is not enough until the nvidia module is reloaded"
+  },
+  "p2pmark": {
+    "status": "not_run"
+  },
+  "amd_fabric": {
+    "status": "not_run"
+  },
+  "hardware_run_summary": {
+    "samples": 26,
+    "duration_seconds": 62.375,
+    "gpu_count": 4,
+    "cpu_util_avg_pct": 32.11,
+    "cpu_temp_max_c": 94.38,
+    "gpu_util_avg_pct": 74.05,
+    "gpu_util_max_pct": 100.0,
+    "mem_util_avg_pct": 43.19,
+    "mem_util_max_pct": 67.0,
+    "temp_avg_c": 58.96,
+    "temp_max_c": 83.0,
+    "power_total_avg_w": 1290.4,
+    "power_total_max_w": 1324.83,
+    "power_limit_total_w": 2000.0,
+    "vram_used_avg_mb": 384068.0,
+    "vram_used_max_mb": 384068.0,
+    "vram_total_mb": 391548.0,
+    "vram_used_avg_pct": 98.09,
+    "vram_used_max_pct": 98.09,
+    "pcie_rx_avg_mb_s": 1058.73,
+    "pcie_rx_max_mb_s": 2412.0,
+    "pcie_tx_avg_mb_s": 1038.58,
+    "pcie_tx_max_mb_s": 1117.0
+  },
+  "event_log": [],
+  "prefill": {
+    "32768": {
+      "ttft_seconds": 2.435,
+      "prefill_seconds": 2.435,
+      "tok_per_sec": 13207.0,
+      "client_ttft_seconds": 2.435,
+      "client_tok_per_sec": 13207.0,
+      "prompt_tokens": 32152,
+      "samples": 24,
+      "method": "client",
+      "server_validation": {
+        "method": "",
+        "tok_per_sec": 0.0,
+        "prefill_seconds": 0.0,
+        "prompt_tokens": 0,
+        "request_prompt_tokens": 0,
+        "cached_tokens": 0,
+        "token_source": "",
+        "samples": 0,
+        "invalid_reason": ""
+      },
+      "hardware_summary": {
+        "samples": 25,
+        "duration_seconds": 59.937,
+        "gpu_count": 4,
+        "cpu_util_avg_pct": 30.72,
+        "cpu_temp_max_c": 94.38,
+        "gpu_util_avg_pct": 74.03,
+        "gpu_util_max_pct": 100.0,
+        "mem_util_avg_pct": 43.09,
+        "mem_util_max_pct": 67.0,
+        "temp_avg_c": 59.04,
+        "temp_max_c": 83.0,
+        "power_total_avg_w": 1298.94,
+        "power_total_max_w": 1324.83,
+        "power_limit_total_w": 2000.0,
+        "vram_used_avg_mb": 384068.0,
+        "vram_used_max_mb": 384068.0,
+        "vram_total_mb": 391548.0,
+        "vram_used_avg_pct": 98.09,
+        "vram_used_max_pct": 98.09,
+        "pcie_rx_avg_mb_s": 1066.2,
+        "pcie_rx_max_mb_s": 2412.0,
+        "pcie_tx_avg_mb_s": 1039.52,
+        "pcie_tx_max_mb_s": 1117.0
+      }
+    }
+  },
+  "results": [],
+  "summary_table": {},
+  "burst_results": [],
+  "burst_summary_table": {},
+  "methodology": {
+    "prefill": {
+      "name": "Prefill",
+      "present": true,
+      "mode": "standalone_cold",
+      "formula": "prompt_tokens / TTFT",
+      "notes": "Default mode records the required decode scout request for each non-zero decode context, so normal runs do not pay for a separate prefill phase. Standalone mode repeats cold-prefill samples. Prometheus prefill counters, when available and uncontaminated, are stored as validation."
+    },
+    "sustained_decode": {
+      "name": "Sustained Decode",
+      "present": false,
+      "formula": "OpenAI stream usage completion_tokens per measured window; client chunk fallback only when continuous usage is unavailable",
+      "notes": "Duration-based steady-state cell after warmup. This is the main tuning/regression signal for kernels, NCCL, DCP, MTP, and scheduling. Prometheus metrics are stored as validation and scheduler state, not the default headline."
+    },
+    "burst_e2e_decode": {
+      "name": "Burst / E2E Decode",
+      "present": false,
+      "status": "not run; use --run-burst",
+      "formula": "sum(completion_tokens) / profiling_wall_time",
+      "notes": "Finite client-facing request burst using OpenAI stream usage. It includes request admission, scheduling, prefill/cache behavior, and completion."
+    },
+    "acceptance_normalization": {
+      "name": "Acceptance-normalized decode (MTP / speculative)",
+      "present": false,
+      "formula": "engine_steps = spec_drafts + max(0, output_tokens - (accepted_tokens + spec_drafts)); accept_len_effective = output_tokens / engine_steps; steps_per_s = aggregate_tps / accept_len_effective",
+      "notes": "With speculative decoding tok/s = steps_per_s * accept_len, so raw tok/s mixes engine speed with data-dependent acceptance. steps_per_s (target-model forward passes per second) is the acceptance-independent speed used to compare runs; server_spec_pos_accept holds per-draft-position acceptance probabilities. Counters are vLLM window deltas; SGLang falls back to its lifetime accept-length gauge."
+    }
+  }
+}

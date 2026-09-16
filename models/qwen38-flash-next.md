@@ -137,6 +137,98 @@ The native override `--additional-config '{"ple_table_memory":"mapped_host"}'`
 or `'{"ple_table_memory":"device"}'` takes precedence over the environment
 setting when supplied to vLLM.
 
+## Multiple TP1 replicas with one shared PLE table
+
+Status: **implemented; qualified on one GPU** with an overlay image on the
+R35 digest ([validation report](qwen38-flash-next/validation/shared-ple-r35-20260916.md)).
+Two attachers on two GPUs are the next measurement.
+
+With `VLLM_PLE_CPU_OFFLOAD=1` every TP1 replica on a host pins its own
+26.82 GiB copy of the n-gram table in `cudaHostAlloc` memory: four replicas
+on a four-GPU host cost 107 GiB of host RAM before any process RSS.
+`VLLM_PLE_TABLE_MEMORY=shared` keeps the same b12x mapped-host lookup but
+stores the packed NVFP4 table once, as files in a tmpfs directory that every
+replica maps with `mmap(MAP_SHARED)` and `cudaHostRegister`. The bytes are the
+checkpoint's, unchanged (byte-identical by SHA-256 in the validation report);
+the quantization is unchanged; only who owns the memory changes.
+
+Use it when more than one Qwen3.8-Flash-Next process serves on the same
+host. It requires the shared-PLE overlay image
+(`ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c`, built from
+[`qwen38-flash-next/build/`](qwen38-flash-next/build/README.md)), a tmpfs
+mount shared by the containers (`/dev/shm` with `ipc: host` in Compose,
+`hostIPC: true` plus a `/dev/shm` hostPath on Kubernetes) and the `IPC_LOCK`
+capability the TP1 recipe already carries. A single replica gains nothing
+except faster weight loading (see below); keep `ram` there if you prefer the
+qualified image.
+
+| Setting | Values | Meaning |
+|---|---|---|
+| `VLLM_PLE_TABLE_MEMORY` | `ram`, `disk`, **`shared`** (or `--additional-config '{"ple_table_memory":"shared"}'`) | `shared` = mapped-host storage whose bytes live in the shared directory |
+| `VLLM_PLE_SHARED_TABLE_DIR` | path, default `/dev/shm/vllm-ple` | must be tmpfs; the CUDA driver does not pin mappings of ordinary file systems |
+| `VLLM_PLE_SHARED_TABLE_ROLE` | **`auto`**, `populate`, `attach` | `auto` populates when no complete table exists, else attaches; `attach` fails fast without one (for replicas that must never pay the load); `populate` always rewrites |
+| `VLLM_PLE_SHARED_TABLE_LOCK_TIMEOUT_S` | seconds, default `3600` | how long a starting replica waits for another one to finish populating |
+
+How it behaves:
+
+- The first replica per checkpoint revision, TP rank and PLE layer takes a
+  `flock`, allocates `<dir>/<key>/weight.bin` and `weight_scale.bin`, loads
+  the checkpoint shards into them through the ordinary loader, and publishes
+  `manifest.json` plus `READY` once every row is verified present. Others wait
+  on the lock, check every manifest field against their own plan (a mismatch
+  fails startup naming the field; nothing falls back to a private copy),
+  attach, and skip both the shard reads and copies. The log says
+  `Populated shared PLE table <key> (26.82 GiB) … after 70s` or
+  `Attached shared PLE table <key> (26.82 GiB, …)`.
+- Host RAM: 26.82 GiB once, charged to the cgroup of the replica that
+  populated it and kept by tmpfs after that replica exits. Measured on the test host:
+  populating pod 33.1 GiB `memory.current`, attached pod 7.9 GiB, the ram-mode
+  pod 5.0 GiB in its cgroup plus 26.82 GiB of driver memory Kubernetes never
+  sees. Keep an 80 GiB limit on every replica (any of them may populate after
+  a reboot); requests can follow the attacher footprint.
+- Weight loading is faster in both roles than in `ram` mode: 23–32 s versus
+  244–272 s on the same GPU, because the loader's scale validation reads the
+  ram table back from write-combined memory. Attach reached `Ready` in
+  101–111 s against 330–351 s for ram mode on that host.
+- tmpfs sizing: one table per checkpoint revision, TP rank and PLE layer;
+  26.82 GiB at TP1 for this checkpoint, half that per rank at TP2. Size
+  `/dev/shm` (or `shm_size`) for the tables you keep plus the engines' own
+  shared memory. A reboot clears tmpfs; the first replica repopulates
+  (allow ≥ 30 min in startup probes). Cap the ZFS ARC (`zfs_arc_max`) on ZFS
+  hosts before relying on pinned tmpfs pages.
+- Throughput on the same GPU was within the baseline's own run-to-run spread
+  (C1/C8/C16 and 32K prefill; report). `cudaHostRegisterReadOnly` is not
+  available on RTX PRO 6000 drivers as of this writing; attachers log the
+  fallback to a writable mapping once per file.
+- Stale keys after a revision bump stay in tmpfs until pruned:
+
+```bash
+docker run --rm --ipc host -v /dev/shm:/dev/shm --entrypoint /opt/venv/bin/python \
+  ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c \
+  -m vllm.models.qwen3_8_flash_next.ple_shared_table --dir /dev/shm/vllm-ple list
+# then: ... prune --keep <key-from-list-or-logs> [--dry-run]
+```
+
+  Set `VLLM_TARGET_DEVICE=cpu` when running it without a GPU. A table that is
+  being populated (lock held) is never pruned; removing a table that running
+  replicas still map is safe, the pages go when they exit.
+
+Two replicas on GPU0/GPU1 with Compose:
+
+```bash
+GPU0=0 GPU1=1 PORT0=8000 PORT1=8001 \
+  docker compose -f qwen38-flash-next/qwen38-flash-next.compose.yml --profile tp1-shared up -d
+```
+
+The [Kubernetes example](qwen38-flash-next/k8s/README.md) runs N replicas
+of one Deployment on one node with the prune Job next to it. Both are
+examples of the mechanism, not qualified serving profiles beyond what the
+report covers. The patch lives in the vLLM fork
+(`feat/qwen38-shared-ple-table` on `dev/jovian-judgement`, tracking
+[rtx6kpro #102](https://github.com/local-inference-lab/rtx6kpro/issues/102));
+b12x is untouched because its `plan()` already accepts external mapped-host
+tensors.
+
 ## Precision, backends and cache
 
 The checkpoint combines NVIDIA 4-bit floating-point weights (NVFP4) with

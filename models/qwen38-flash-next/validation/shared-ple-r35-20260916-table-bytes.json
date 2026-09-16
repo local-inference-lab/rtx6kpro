@@ -1,0 +1,19 @@
+{
+ "weight.bin": {
+  "rows": 320001536,
+  "checkpoint_sha256": "784bb2508226bd323656bc33819e2f58a3822db22d1210d59be139eef7d1cf87",
+  "file_sha256": "784bb2508226bd323656bc33819e2f58a3822db22d1210d59be139eef7d1cf87",
+  "identical": true,
+  "file_bytes": 25600122880
+ },
+ "weight_scale.bin": {
+  "rows": 320001536,
+  "dtypes": [
+   "F8_E4M3"
+  ],
+  "checkpoint_sha256": "bf717013ee62365a86f5018961cf5b335de6dd448ecb13e296535c376f57235b",
+  "file_sha256": "bf717013ee62365a86f5018961cf5b335de6dd448ecb13e296535c376f57235b",
+  "identical": true,
+  "file_bytes": 3200015360
+ }
+}

@@ -1,0 +1,38 @@
+# Remove stale shared PLE tables from the host tmpfs after a checkpoint or
+# revision bump.  Set KEEP to the key(s) the running replicas log
+# ("Attached shared PLE table <key>" / "Populated shared PLE table <key>");
+# everything else under /dev/shm/vllm-ple is removed.  Tables that are being
+# populated (lock held) are skipped.  Run:
+#   kubectl apply -f qwen3-8-flash-next-ple-table-prune.yaml
+#   kubectl logs -n default job/qwen3-8-flash-next-ple-table-prune
+#   kubectl delete -f qwen3-8-flash-next-ple-table-prune.yaml
+# Use "list" instead of "prune ..." in args to inspect first.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: qwen3-8-flash-next-ple-table-prune
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      hostIPC: true
+      containers:
+      - name: prune
+        image: ghcr.io/renehonig/vllm:jovian-r35-shared-ple-30ac5b387e1c
+        imagePullPolicy: IfNotPresent
+        command: [/opt/venv/bin/python, -m, vllm.models.qwen3_8_flash_next.ple_shared_table]
+        args: [--dir, /dev/shm/vllm-ple, prune, --keep, "$(KEEP)", --dry-run]
+        env:
+        - {name: KEEP, value: "REPLACE-WITH-CURRENT-KEY"}
+        - {name: VLLM_TARGET_DEVICE, value: cpu}
+        resources:
+          requests: {cpu: 500m, memory: 2Gi}
+          limits: {cpu: "2", memory: 4Gi}
+        volumeMounts:
+        - {name: shm, mountPath: /dev/shm}
+      volumes:
+      - name: shm
+        hostPath: {path: /dev/shm, type: Directory}

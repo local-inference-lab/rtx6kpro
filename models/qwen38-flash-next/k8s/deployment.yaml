@@ -1,0 +1,218 @@
+# Example: N independent TP1 Qwen3.8-Flash-Next replicas on one node sharing
+# one CPU-resident PLE table through the host's /dev/shm.
+#
+# This is an example, not a qualified production manifest.  It uses the plain
+# nvidia.com/gpu resource (one GPU per pod); pin GPUs with DRA or the device
+# plugin's own mechanisms as your cluster requires.  Adjust the model cache
+# volume, image pull secret and the API key secret to your environment.
+#
+# Every replica must run on the same node (podAffinity below) so they see the
+# same /dev/shm.  The first replica to start writes the 26.82 GiB table; the
+# others map it.  Memory: the populating pod is charged those tmpfs pages, so
+# the limit stays at 80Gi; attachers only pay their own RSS.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: qwen3-8-flash-next-vllm-logging-config
+data:
+  logging_config.json: |
+    {
+      "version": 1,
+      "disable_existing_loggers": false,
+      "formatters": {"default": {"format": "[%(asctime)s %(name)s:%(levelname)s] %(message)s", "datefmt": "%Y-%m-%d %H:%M:%S"}},
+      "loggers": {
+        "uvicorn.access": {"level": "WARNING", "handlers": [], "propagate": false},
+        "uvicorn.error": {"level": "INFO", "handlers": ["default"], "propagate": false},
+        "vllm": {"level": "INFO", "handlers": ["default"], "propagate": false}
+      },
+      "root": {"level": "INFO", "handlers": ["default"]},
+      "handlers": {"default": {"formatter": "default", "class": "logging.StreamHandler", "stream": "ext://sys.stdout"}}
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen3-8-flash-next-vllm
+  labels:
+    app: qwen3-8-flash-next-vllm
+    model.aibrix.ai/name: qwen3-8-flash-next
+spec:
+  type: ClusterIP
+  selector:
+    app: qwen3-8-flash-next-vllm
+  ports:
+  - {name: http, port: 8000, targetPort: 8000, protocol: TCP}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-8-flash-next-vllm
+  labels:
+    app: qwen3-8-flash-next-vllm
+    model.aibrix.ai/name: qwen3-8-flash-next
+    model.aibrix.ai/port: "8000"
+    model.aibrix.ai/engine: vllm
+spec:
+  replicas: 2
+  progressDeadlineSeconds: 2700
+  selector:
+    matchLabels:
+      app: qwen3-8-flash-next-vllm
+  template:
+    metadata:
+      labels:
+        app: qwen3-8-flash-next-vllm
+        model.aibrix.ai/name: qwen3-8-flash-next
+        model.aibrix.ai/port: "8000"
+        model.aibrix.ai/engine: vllm
+    spec:
+      hostIPC: true
+      runtimeClassName: nvidia
+      terminationGracePeriodSeconds: 120
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels: {app: qwen3-8-flash-next-vllm}
+            topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: 1000
+      containers:
+      - name: qwen3-8-flash-next-vllm
+        # Shared-PLE overlay on localinferencelab/vllm:jovian-judgement-community-20260911-r35;
+        # build it from ../build/ or pull the published tag.
+        image: ghcr.io/renehonig/vllm@sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8000
+        resources:
+          requests:
+            cpu: "8"
+            # Attached replicas measured 7.9 GiB; the 80Gi limit covers a populate.
+            memory: "24Gi"
+            nvidia.com/gpu: 1
+          limits:
+            cpu: "16"
+            memory: "80Gi"
+            nvidia.com/gpu: 1
+        env:
+        - {name: TZ, value: Europe/Paris}
+        - {name: CUDA_DEVICE_ORDER, value: PCI_BUS_ID}
+        - {name: OMP_NUM_THREADS, value: "2"}
+        - {name: VLLM_WORKER_MULTIPROC_METHOD, value: spawn}
+        - {name: VLLM_USE_V2_MODEL_RUNNER, value: "1"}
+        - {name: VLLM_COMPUTE_NANS_IN_LOGITS, value: "0"}
+        - {name: VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS, value: "0"}
+        - {name: PYTORCH_CUDA_ALLOC_CONF, value: "expandable_segments:True"}
+        - {name: VLLM_SSM_CONV_STATE_LAYOUT, value: DS}
+        # One host-resident PLE table per checkpoint revision, shared by every
+        # replica through /dev/shm.  Replaces VLLM_PLE_CPU_OFFLOAD=1.
+        - {name: VLLM_PLE_TABLE_MEMORY, value: shared}
+        - {name: VLLM_PLE_SHARED_TABLE_DIR, value: /dev/shm/vllm-ple}
+        - {name: VLLM_PLE_SHARED_TABLE_ROLE, value: auto}
+        - {name: VLLM_PLE_SHARED_TABLE_LOCK_TIMEOUT_S, value: "3600"}
+        - {name: VLLM_DISABLED_KERNELS, value: MarlinFP8ScaledMMLinearKernel}
+        - {name: VLLM_CAUSAL_CONV1D_UPDATE_HOIST, value: "1"}
+        - {name: VLLM_MXFP8_LM_HEAD, value: "0"}
+        - {name: VLLM_MTP_NVFP4_LM_HEAD, value: "1"}
+        - {name: VLLM_LM_HEAD_A16, value: "1"}
+        - {name: VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT, value: "1"}
+        - {name: VLLM_GDN_SPEC_DECODE_METADATA_FASTPATH, value: "1"}
+        - {name: VLLM_QWEN3_8_FLASH_NEXT_OVERLAP, value: "1"}
+        - {name: VLLM_B12X_DENSE_ACTIVATION_MODE, value: auto}
+        - {name: B12X_DYNAMIC_SPLIT_ROUTE_COMPUTE, value: "1"}
+        - {name: B12X_DYNAMIC_DIRECT_EXPERT_SCALES, value: "1"}
+        - {name: B12X_DYNAMIC_SPLIT_LOW_SMEM, value: "1"}
+        - {name: B12X_DYNAMIC_SKIP_SPLIT_BARRIER_RESET, value: "1"}
+        - {name: B12X_DYNAMIC_SPLIT_FAST_PREPARE, value: "1"}
+        - {name: B12X_DYNAMIC_WORK_SOURCE, value: persistent_grid}
+        - {name: B12X_DYNAMIC_DETERMINISTIC_OUTPUT, value: "0"}
+        - {name: B12X_DYNAMIC_SPLIT_COMPUTE_MAC, value: "224"}
+        - {name: B12X_DENSE_SPLITK_TURBO, value: "1"}
+        - {name: HF_HOME, value: /root/.cache/huggingface}
+        - {name: HF_HUB_OFFLINE, value: "0"}
+        - {name: HF_HUB_DISABLE_XET, value: "0"}
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef: {name: huggingface-credentials, key: token, optional: true}
+        - name: API_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef: {name: aibrix-api-keys, key: primary-token, optional: false}
+        - {name: VLLM_LOGGING_CONFIG_PATH, value: /etc/vllm/logging_config.json}
+        # JIT caches are per pod so replicas never write the same path
+        # concurrently.  POD_NAME must be declared before the paths that use it.
+        - name: POD_NAME
+          valueFrom:
+            fieldRef: {fieldPath: metadata.name}
+        - {name: XDG_CACHE_HOME, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)}
+        - {name: VLLM_CACHE_ROOT, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/vllm}
+        - {name: VLLM_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/vllm}
+        - {name: TRITON_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/triton}
+        - {name: CUTE_DSL_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/cute-dsl}
+        - {name: B12X_CUTE_COMPILE_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/b12x/cute}
+        - {name: B12X_COMPILE_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/b12x/compile}
+        - {name: SPARKINFER_COMPILE_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/b12x/compile}
+        - {name: TORCHINDUCTOR_CACHE_DIR, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/torchinductor}
+        - {name: CUDA_CACHE_PATH, value: /cache/jit/qwen38-r35-shared-ple/$(POD_NAME)/cuda}
+        volumeMounts:
+        - {name: model-cache, mountPath: /root/.cache/huggingface}
+        - {name: runtime-cache, mountPath: /cache}
+        - {name: shm, mountPath: /dev/shm}
+        - {name: logging-config, mountPath: /etc/vllm, readOnly: true}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities: {add: [IPC_LOCK, SYS_RESOURCE]}
+        command: [/bin/bash, -lc]
+        args:
+        - |
+          set -euo pipefail
+          ulimit -l unlimited || true
+          ulimit -n 1048576 || true
+          unset NCCL_GRAPH_FILE
+          nvidia-smi --query-gpu=pci.bus_id,uuid --format=csv,noheader
+          cat /opt/glm53-flash/overlay.identity
+          exec /opt/venv/bin/python -m vllm.entrypoints.cli.main serve local-inference-lab/Qwen3.8-Flash-Next-NVFP4 \
+            --revision ada4da32a583a78aa47299f45a70603c950490b8 \
+            --served-model-name qwen3-8-flash-next --host 0.0.0.0 --port 8000 \
+            --tensor-parallel-size 1 --pipeline-parallel-size 1 \
+            --mamba-cache-mode align --enable-prefix-caching --enable-chunked-prefill \
+            --mamba-ssm-cache-dtype auto --async-scheduling \
+            --dtype bfloat16 --kv-cache-dtype fp8 --quantization modelopt_mixed \
+            --block-size 64 --load-format instanttensor --gpu-memory-utilization 0.90 \
+            --max-model-len 262144 --max-num-seqs 16 --max-num-batched-tokens 6019 \
+            --mm-encoder-tp-mode data --mm-processor-cache-gb 0 --language-model-only \
+            --speculative-config '{"method":"mtp","num_speculative_tokens":3,"moe_backend":"b12x"}' \
+            --gdn-decode-kernel b12x --linear-backend b12x --moe-backend b12x \
+            --no-enable-flashinfer-autotune \
+            --compilation-config '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}' \
+            --max-cudagraph-capture-size 64 \
+            --reasoning-parser qwen3 --tool-call-parser qwen3_xml --enable-auto-tool-choice \
+            --api-key "${API_AUTH_TOKEN}"
+        startupProbe:
+          httpGet: {path: /health, port: 8000}
+          periodSeconds: 10
+          timeoutSeconds: 10
+          # 40 min: after a reboot the first replica repopulates the 26.82 GiB
+          # table from the checkpoint before it can answer.
+          failureThreshold: 240
+        readinessProbe:
+          httpGet: {path: /health, port: 8000}
+          periodSeconds: 15
+          timeoutSeconds: 10
+          failureThreshold: 6
+        livenessProbe:
+          httpGet: {path: /health, port: 8000}
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 5
+      volumes:
+      - name: model-cache
+        persistentVolumeClaim: {claimName: qwen3-8-flash-next-model-cache}
+      - name: runtime-cache
+        emptyDir: {}
+      - name: shm
+        hostPath: {path: /dev/shm, type: Directory}
+      - name: logging-config
+        configMap: {name: qwen3-8-flash-next-vllm-logging-config}

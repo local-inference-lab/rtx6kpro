@@ -1,0 +1,255 @@
+{
+ "A": {
+  "config": "canary: max-num-seqs 16, MTP3, gpu-mem 0.90, graphs<=64 (KV 7.96 GiB / 515,017 tok)",
+  "decode": {
+   "C1": {
+    "runs": [
+     173.5,
+     179.5
+    ],
+    "median": 176.5
+   },
+   "C16": {
+    "runs": [
+     655.0,
+     633.4
+    ],
+    "median": 644.2
+   },
+   "C32": {
+    "runs": [
+     640.7,
+     628.7
+    ],
+    "median": 634.7
+   },
+   "C64": {
+    "runs": [
+     632.8,
+     667.0
+    ],
+    "median": 649.9
+   },
+   "C128": {
+    "runs": [
+     616.7,
+     647.3
+    ],
+    "median": 632.0
+   }
+  },
+  "smalljobs": {
+   "aggregate_tps": 661.2,
+   "completed_in_60s": 305,
+   "ttft_p50_s": 45.47,
+   "ttft_p99_s": 48.25
+  }
+ },
+ "B": {
+  "config": "max-num-seqs 128, MTP3, gpu-mem 0.88, graphs<=512 (KV 4.2 GiB / 271,611 tok)",
+  "decode": {
+   "C1": {
+    "runs": [
+     171.5,
+     174.2
+    ],
+    "median": 172.8
+   },
+   "C16": {
+    "runs": [
+     461.2,
+     500.2
+    ],
+    "median": 480.7
+   },
+   "C32": {
+    "runs": [
+     509.7,
+     471.1
+    ],
+    "median": 490.4
+   },
+   "C64": {
+    "runs": [
+     464.8,
+     488.2
+    ],
+    "median": 476.5
+   }
+  },
+  "smalljobs": {
+   "aggregate_tps": 473.8,
+   "completed_in_60s": 220,
+   "ttft_p50_s": 60.06,
+   "ttft_p99_s": 68.29
+  }
+ },
+ "C": {
+  "config": "max-num-seqs 128, no MTP, gpu-mem 0.88, graphs<=128 (KV 8.27 GiB / 629,609 tok)",
+  "decode": {
+   "C1": {
+    "runs": [
+     121.0,
+     121.1
+    ],
+    "median": 121.0
+   },
+   "C16": {
+    "runs": [
+     925.8,
+     919.1
+    ],
+    "median": 922.5
+   },
+   "C32": {
+    "runs": [
+     878.8,
+     898.0
+    ],
+    "median": 888.4
+   },
+   "C64": {
+    "runs": [
+     890.1,
+     899.2
+    ],
+    "median": 894.7
+   },
+   "C128": {
+    "runs": [
+     892.1,
+     886.0
+    ],
+    "median": 889.0
+   }
+  },
+  "smalljobs": {
+   "aggregate_tps": 919.3,
+   "completed_in_60s": 425,
+   "ttft_p50_s": 28.7,
+   "ttft_p99_s": 33.25
+  }
+ },
+ "D": {
+  "config": "as C with --kv-cache-memory 13 GiB (989,419 tok): CUDA OOM under load at C32",
+  "decode": {
+   "C1": {
+    "runs": [
+     120.1
+    ],
+    "median": 120.1
+   }
+  },
+  "smalljobs": null
+ },
+ "F": {
+  "config": "as C with --kv-cache-memory 11.5 GiB, graphs<=32 (875,282 tok): 24 running",
+  "decode": {
+   "C1": {
+    "runs": [
+     119.6
+    ],
+    "median": 119.6
+   },
+   "C32": {
+    "runs": [
+     1023.5
+    ],
+    "median": 1023.5
+   },
+   "C64": {
+    "runs": [
+     1026.0
+    ],
+    "median": 1026.0
+   }
+  },
+  "smalljobs": {
+   "aggregate_tps": 1128.4,
+   "completed_in_60s": 509,
+   "ttft_p50_s": 22.08,
+   "ttft_p99_s": 27.37
+  }
+ },
+ "TP2": {
+  "config": "TP2 on F1:00.0 + 01:00.0 (eGPU x4), no P2P, max-num-seqs 128, no MTP, gpu-mem 0.88, graphs<=128 (KV 43.79 GiB/GPU, 6,321,988 tok)",
+  "decode": {
+   "C1": {
+    "runs": [
+     132.5
+    ],
+    "median": 132.5
+   },
+   "C32": {
+    "runs": [
+     1565.1
+    ],
+    "median": 1565.1
+   },
+   "C64": {
+    "runs": [
+     2227.6
+    ],
+    "median": 2227.6
+   },
+   "C128": {
+    "runs": [
+     2705.8
+    ],
+    "median": 2705.8
+   }
+  },
+  "smalljobs": {
+   "aggregate_tps": 2246.7,
+   "completed_in_60s": 512,
+   "ttft_p50_s": 0.21,
+   "ttft_p99_s": 4.73
+  }
+ },
+ "TP2-256": {
+  "config": "as TP2 with max-num-seqs 256, graphs<=256 (KV 6,239,986 tok): ~191 running",
+  "decode": {
+   "C128": {
+    "runs": [
+     2689.7
+    ],
+    "median": 2689.7
+   },
+   "C192": {
+    "runs": [
+     3025.6
+    ],
+    "median": 3025.6
+   },
+   "C256": {
+    "runs": [
+     3027.9
+    ],
+    "median": 3027.9
+   }
+  },
+  "smalljobs": {
+   "aggregate_tps": 2311.7,
+   "completed_in_60s": 955,
+   "ttft_p50_s": 6.03,
+   "ttft_p99_s": 18.92
+  }
+ },
+ "2xTP1-F": {
+  "config": "two TP1 replicas (profile F) on F1:00.0 and 01:00.0 attached to one shared table, benchmarked simultaneously",
+  "per_pod": {
+   "C32 per pod": [
+    1032.0,
+    1016.0
+   ],
+   "C16 per pod": [
+    911.7,
+    932.5
+   ]
+  },
+  "sum": {
+   "C32 per pod": 2048.0,
+   "C16 per pod": 1844.2
+  }
+ }
+}

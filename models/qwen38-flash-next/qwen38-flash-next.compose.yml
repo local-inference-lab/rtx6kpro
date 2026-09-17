@@ -13,6 +13,11 @@ x-environment: &environment
   PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
   VLLM_SSM_CONV_STATE_LAYOUT: DS
   VLLM_PLE_CPU_OFFLOAD: ${VLLM_PLE_CPU_OFFLOAD:-1}
+  # Used by the tp1-shared services, which set VLLM_PLE_TABLE_MEMORY=shared;
+  # tp1/tp2 leave that unset so VLLM_PLE_CPU_OFFLOAD keeps applying.
+  VLLM_PLE_SHARED_TABLE_DIR: ${VLLM_PLE_SHARED_TABLE_DIR:-/dev/shm/vllm-ple}
+  VLLM_PLE_SHARED_TABLE_ROLE: ${VLLM_PLE_SHARED_TABLE_ROLE:-auto}
+  VLLM_PLE_SHARED_TABLE_LOCK_TIMEOUT_S: ${VLLM_PLE_SHARED_TABLE_LOCK_TIMEOUT_S:-3600}
   VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
   VLLM_CAUSAL_CONV1D_UPDATE_HOIST: "1"
   VLLM_ENABLE_PCIE_ALLREDUCE: "1"
@@ -128,6 +133,54 @@ services:
               device_ids: ["${GPU0:-0}", "${GPU1:-1}"]
               capabilities: [gpu]
 
+  # Two TP1 replicas on GPU0/GPU1 serving one CPU-resident PLE table.  Needs
+  # the shared-PLE overlay image (models/qwen38-flash-next/build/) and the
+  # host's /dev/shm: the first replica to start writes 26.82 GiB there, the
+  # second maps it.  Each replica gets its own port and runtime cache.
+  qwen-tp1-shared-0:
+    <<: *runtime
+    profiles: [tp1-shared]
+    image: ${QWEN_SHARED_PLE_IMAGE:-ghcr.io/renehonig/vllm@sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1}
+    volumes:
+      - qwen-model-cache:/root/.cache/huggingface
+      - qwen-runtime-cache-shared-0:/cache
+      - /dev/shm:/dev/shm
+    environment:
+      <<: *environment
+      TP: "1"
+      PORT: ${PORT0:-8000}
+      VLLM_PLE_TABLE_MEMORY: shared
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${GPU0:-0}"]
+              capabilities: [gpu]
+
+  qwen-tp1-shared-1:
+    <<: *runtime
+    profiles: [tp1-shared]
+    image: ${QWEN_SHARED_PLE_IMAGE:-ghcr.io/renehonig/vllm@sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1}
+    volumes:
+      - qwen-model-cache:/root/.cache/huggingface
+      - qwen-runtime-cache-shared-1:/cache
+      - /dev/shm:/dev/shm
+    environment:
+      <<: *environment
+      TP: "1"
+      PORT: ${PORT1:-8001}
+      VLLM_PLE_TABLE_MEMORY: shared
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["${GPU1:-1}"]
+              capabilities: [gpu]
+
 volumes:
   qwen-model-cache:
   qwen-runtime-cache:
+  qwen-runtime-cache-shared-0:
+  qwen-runtime-cache-shared-1:

@@ -181,6 +181,9 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [Qwen3.8-Flash-Next direct-answer arithmetic stability: NVFP4 versus QAD](models/qwen38-flash-next/direct-arithmetic-stability-nvfp4-vs-qad.md) - `models/qwen38-flash-next/direct-arithmetic-stability-nvfp4-vs-qad.md`
 - [Qwen TP1/MTP3 qualification for the Jovian Judgement R28.1 image](models/qwen38-flash-next/validation/r28.1-tp1.md) - `models/qwen38-flash-next/validation/r28.1-tp1.md`
 - [Qwen TP1 engine throughput comparison](models/qwen38-flash-next/validation/tp1-engine-comparison.md) - `models/qwen38-flash-next/validation/tp1-engine-comparison.md`
+- [Shared host PLE table for TP1 replicas: R35 overlay qualification](models/qwen38-flash-next/validation/shared-ple-r35-20260916.md) - `models/qwen38-flash-next/validation/shared-ple-r35-20260916.md`
+- [Qwen3.8-Flash-Next shared-PLE-table overlay on R35](models/qwen38-flash-next/build/README.md) - `models/qwen38-flash-next/build/README.md`
+- [Kubernetes example: N TP1 replicas, one shared PLE table](models/qwen38-flash-next/k8s/README.md) - `models/qwen38-flash-next/k8s/README.md`
 - [Qwen3.8-Flash-Next](models/qwen38-flash-next.md) - `models/qwen38-flash-next.md`
 - [Qwen3.8-27B QSRT K5 dense-MLP recovery](models/qwen38-qsrt-k5-r16.md) - `models/qwen38-qsrt-k5-r16.md`
 - [Qwen3.8-27B QSRT K5 recovery: what the training result means](models/qwen38-qsrt-k5-training-result.md) - `models/qwen38-qsrt-k5-training-result.md`

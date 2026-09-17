@@ -1,0 +1,332 @@
+{
+ "image": {
+  "measured": {
+   "tag": "ghcr.io/renehonig/vllm:jovian-r35-shared-ple-6c2fc869c94e",
+   "digest": "sha256:84e87512807e323086c9f88ac8b7eabb7427c9629248d4a540b2123d93714a87",
+   "base_digest": "sha256:7a425c6864b951bbc368111490a4b0ac69d8cd0dd4987075b2c7d40b753b1bf5",
+   "overlay_commit": "6c2fc869c94e0fe1a7df32f2359dffbd99edd7af"
+  },
+  "published": {
+   "tag": "ghcr.io/renehonig/vllm:jovian-r35-shared-ple-028b1c4921f9",
+   "digest": "sha256:65cec7a0dc6a702ed4911339365cbf5356cf8f14311714adbfee5e8f12bb60e1",
+   "overlay_commit": "028b1c4921f92c61889b5b8485f1ef606a32b41c",
+   "overlay_tree": "e281ab446d0a47b5103e43432a8fb55fbd00bf69",
+   "relation_to_measured": {
+    "measured_overlay_tree": "9cb88da0db0b1fd3874d846379303617ac804e94",
+    "unchanged_files": {
+     "vllm/envs.py": "40eecc0b2bb623e9d039624be4fb6c22a2e3b8e3b9465550596cdaa4bda2373c",
+     "vllm/models/qwen3_8_flash_next/model.py": "20fe2e20390bf69ea51ff63474000a766c253202e43460bc5fee1b525ff74777"
+    },
+    "changed_files": {
+     "vllm/models/qwen3_8_flash_next/ple_shared_table.py": {
+      "measured": "920d88878c21a07255364a41dbd2f5f037908169480e2bed1beff70e6fb1ad34",
+      "published": "c69ee30183c654df4bbfe0a51b56374d9344c5599f2e9df485755979e8415e11",
+      "what": "tmpfs error message; private directory/file checks (0700/0600, O_NOFOLLOW, owner and mode); SharedTable.abort() and finalizer; prune keeps lock files; list tolerates concurrent prune"
+     },
+     "vllm/models/qwen3_8_flash_next/ple_layer.py": {
+      "measured": "01c63e18e25c8eefc45aff8f23e48d9138d9b9cf00a1acabc9d753454383b485",
+      "published": "9d22b8ff81301f5e9cb1ae597c72ce22c983526f889e841a842bdfb9779ef81e",
+      "what": "_validate_embedding_loaded aborts an unfinished populate on failure (abort_shared_table); the successful path is unchanged"
+     },
+     "tests/models/test_qwen3_8_flash_next_ple_shared_table.py": {
+      "measured": "e50629f30a5dbabde4fcb2920e59a1c52cf40c99e36a6bc517ced73956c6be0c",
+      "published": "aa6b9ab8a6a491c150e662b2268623132404e81872998153e45b9056a65ae5f9",
+      "what": "tmpfs test dir; layout/plan double; abort, validation-failure and private-path tests"
+     }
+    },
+    "remeasured_on_published_image": [
+     "unit tests (24 passed, CPU) on the published tree",
+     "attach start against the existing table (Ready in ~100 s, 2026-09-16 17:20 CEST)"
+    ],
+    "not_remeasured_on_published_image": [
+     "throughput sweeps",
+     "output equivalence",
+     "populate timing",
+     "resilience (kill mid-populate, manifest mismatch, attach-only)"
+    ],
+    "note": "the table file format, manifest, key derivation, loader path and serving kernels are unchanged between the two trees; the differences are error handling, directory permission checks and tests"
+   }
+  }
+ },
+ "host": "the test host, 4x RTX PRO 6000 Blackwell 96 GB, 246 GiB RAM, k3s v1.34.4 + NVIDIA DRA; GPU 00000000:F1:00.0 (GPU-c930b32a) for every measurement; MiniMax M2.7 (2 GPUs) and one Qwen3.8-27B replica (eGPU) serving concurrently",
+ "benchmark": {
+  "tool": "llm_decode_bench.py 80d1f1b0ab9830c3fd8a22c42f461c40cbc7cf96",
+  "sha256": "516dc590b80dda6d9880f9f5034026fdf1b2074e9747bf8a920758680f019817"
+ },
+ "decode": {
+  "baseline-ram": {
+   "C1": {
+    "runs": [
+     178.0,
+     166.2,
+     160.1
+    ],
+    "median": 166.2
+   },
+   "C8": {
+    "runs": [
+     616.3,
+     627.8,
+     627.6
+    ],
+    "median": 627.6
+   },
+   "C16": {
+    "runs": [
+     603.9,
+     661.3,
+     575.6
+    ],
+    "median": 603.9
+   }
+  },
+  "shared-attach": {
+   "C1": {
+    "runs": [
+     175.7,
+     174.5,
+     165.9
+    ],
+    "median": 174.5
+   },
+   "C8": {
+    "runs": [
+     608.6,
+     633.9,
+     615.1
+    ],
+    "median": 615.1
+   },
+   "C16": {
+    "runs": [
+     663.8,
+     638.4,
+     644.7
+    ],
+    "median": 644.7
+   }
+  }
+ },
+ "prefill_32k": {
+  "baseline-ram": {
+   "tok_per_sec": 13207.0,
+   "ttft_seconds": 2.435,
+   "samples": 24,
+   "prompt_tokens": 32152
+  },
+  "shared-attach": {
+   "tok_per_sec": 13460.0,
+   "ttft_seconds": 2.389,
+   "samples": 24,
+   "prompt_tokens": 32153
+  }
+ },
+ "correctness": {
+  "pairs": {
+   "baseline-ram-1 vs baseline-ram-2": {
+    "token_identical": "1/21",
+    "first_token_identical": "21/21",
+    "first_token_top5_logprob_absdiff_median": null,
+    "max": null,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "baseline-ram-2 vs baseline-ram-3": {
+    "token_identical": "4/21",
+    "first_token_identical": "21/21",
+    "first_token_top5_logprob_absdiff_median": null,
+    "max": null,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "baseline-ram-3 vs baseline-ram-4": {
+    "token_identical": "3/21",
+    "first_token_identical": "21/21",
+    "first_token_top5_logprob_absdiff_median": 0.1396,
+    "max": 1.6871,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "shared-populate-1 vs shared-populate-2": {
+    "token_identical": "1/21",
+    "first_token_identical": "20/21",
+    "first_token_top5_logprob_absdiff_median": 0.2393,
+    "max": 2.0635,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "shared-attach-1 vs shared-attach-2": {
+    "token_identical": "3/21",
+    "first_token_identical": "20/21",
+    "first_token_top5_logprob_absdiff_median": 0.1967,
+    "max": 1.4983,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "baseline-ram-3 vs shared-populate-2": {
+    "token_identical": "2/21",
+    "first_token_identical": "21/21",
+    "first_token_top5_logprob_absdiff_median": 0.225,
+    "max": 1.6088,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "baseline-ram-4 vs shared-populate-1": {
+    "token_identical": "1/21",
+    "first_token_identical": "20/21",
+    "first_token_top5_logprob_absdiff_median": 0.2493,
+    "max": 1.1867,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "baseline-ram-4 vs shared-attach-2": {
+    "token_identical": "2/21",
+    "first_token_identical": "20/21",
+    "first_token_top5_logprob_absdiff_median": 0.1553,
+    "max": 1.5132,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "shared-populate-2 vs shared-attach-1": {
+    "token_identical": "2/21",
+    "first_token_identical": "19/21",
+    "first_token_top5_logprob_absdiff_median": 0.2231,
+    "max": 1.9378,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   },
+   "baseline-ram-warm vs shared-attach-1": {
+    "token_identical": "3/21",
+    "first_token_identical": "19/21",
+    "first_token_top5_logprob_absdiff_median": 0.2363,
+    "max": 1.434,
+    "smoke": [
+     "31/32",
+     "31/32"
+    ]
+   }
+  },
+  "smoke_failing_item_all_runs": 28,
+  "table_bytes": {
+   "weight.bin": {
+    "rows": 320001536,
+    "checkpoint_sha256": "784bb2508226bd323656bc33819e2f58a3822db22d1210d59be139eef7d1cf87",
+    "file_sha256": "784bb2508226bd323656bc33819e2f58a3822db22d1210d59be139eef7d1cf87",
+    "identical": true,
+    "file_bytes": 25600122880
+   },
+   "weight_scale.bin": {
+    "rows": 320001536,
+    "dtypes": [
+     "F8_E4M3"
+    ],
+    "checkpoint_sha256": "bf717013ee62365a86f5018961cf5b335de6dd448ecb13e296535c376f57235b",
+    "file_sha256": "bf717013ee62365a86f5018961cf5b335de6dd448ecb13e296535c376f57235b",
+    "identical": true,
+    "file_bytes": 3200015360
+   }
+  }
+ },
+ "startup": {
+  "baseline-ram-cold-arc": {
+   "pod_start": "12:00:46",
+   "ready": "12:06:16",
+   "seconds": 330,
+   "loading_weights_s": 244.3,
+   "model_loading_s": 259.3,
+   "init_engine_s": 29.2
+  },
+  "baseline-ram-warm-arc": {
+   "pod_start": "13:12:46",
+   "ready": "13:18:37",
+   "seconds": 351,
+   "loading_weights_s": 271.8,
+   "model_loading_s": 287.5,
+   "init_engine_s": 31.1
+  },
+  "shared-populate-cold-jit": {
+   "pod_start": "12:23:27",
+   "ready": "12:27:38",
+   "seconds": 251,
+   "loading_weights_s": 31.8,
+   "model_loading_s": 52.3,
+   "populated_after_s": 69.9,
+   "init_engine_s": 136.5,
+   "compilation_s": 27.9
+  },
+  "shared-populate-after-kill-warm-jit": {
+   "container_restart": "13:09:20",
+   "ready": "13:11:21",
+   "seconds": 121,
+   "populated_after_s": 47.0
+  },
+  "shared-attach-1": {
+   "pod_start": "12:40:24",
+   "ready": "12:42:15",
+   "seconds": 111,
+   "loading_weights_s": 27.5,
+   "model_loading_s": 40.9,
+   "init_engine_s": 36.9,
+   "compilation_s": 3.9
+  },
+  "shared-attach-2": {
+   "pod_start": "13:20:15",
+   "ready": "13:21:56",
+   "seconds": 101,
+   "loading_weights_s": 23.4,
+   "model_loading_s": 36.0,
+   "init_engine_s": 31.6
+  }
+ },
+ "memory": {
+  "baseline-ram": {
+   "pod_cgroup_memory_current_mib": 5082,
+   "pod_anon_mib": 4431,
+   "host_used_delta_gib_cold_run": 28,
+   "host_used_delta_gib_warm_run": 56,
+   "note": "cudaHostAlloc pinned memory is not charged to the pod cgroup; the warm-run delta includes ZFS ARC growth from re-reading the checkpoint"
+  },
+  "shared-populate": {
+   "pod_cgroup_memory_current_mib": 33103,
+   "pod_shmem_mib": 27502,
+   "host_shared_gib": 28
+  },
+  "shared-attach": {
+   "pod_cgroup_memory_current_mib": [
+    7649,
+    7876
+   ],
+   "pod_shmem_mib": 36,
+   "host_shared_gib": 28
+  },
+  "vram_used_mib": {
+   "baseline-ram": 94981,
+   "shared": 94523
+  },
+  "available_kv_cache_gib": {
+   "baseline-ram": 7.98,
+   "shared": [
+    7.51,
+    7.53
+   ]
+  }
+ }
+}

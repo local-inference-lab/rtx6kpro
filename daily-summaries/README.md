@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-09-19](2026-09/2026-09-19.md) | kanadaj/sglang pull request 18 added the --prefill-batches-before-decode option (0.5 = one prefill t |
 | [2026-09-18](2026-09/2026-09-18.md) | Reported CUDA 615 on Blackwell: release notes document cuTensorMapEncodeTiled/Im2col MMU faults (XID |
 | [2026-09-17](2026-09/2026-09-17.md) | NVIDIA published DeepSeek-V4.1-Flash-NVFP4 on Hugging Face; the model link was shared in the DS4.1-F |
 | [2026-09-16](2026-09/2026-09-16.md) | Measured r37 to r38 on 4x Max-Q at 300W stock with TP4/DCP1 and VLLM_USE_BREAKABLE_CUDAGRAPH=1: KV p |

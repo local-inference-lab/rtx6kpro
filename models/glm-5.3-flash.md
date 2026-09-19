@@ -12,45 +12,42 @@ The same image serves Qwen and DeepSeek; a model-specific image or entrypoint
 is not required. The shared guide owns the image tag, launch command, LMCache
 configuration and general option reference.
 
-Status: **implemented** profile. **Qualified** bounded TP4/DCP1 MTP3 and
-DFlash2 measurements are recorded below with their actual image identities.
-The published beta's packaging tests do not imply a repeated full serving or
-external-cache matrix on that exact registry digest.
-
 ## Start the server
 
-Select `LIL_IMAGE` from the [image section](../docs/unified-vllm-docker.md#select-the-image),
-then use these values in the [common launch command](../docs/unified-vllm-docker.md#start-a-server):
+This starts MTP3 on four GPUs with the shared Karmic Kraken beta image:
 
 ```bash
-PROFILE=glm53-flash
-GPU_DEVICES=0,1,2,3
-TP=4
-PORT=8000
-SERVE_ARGS=(--mode mtp --draft-tokens 3)
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name glm53 --init --restart unless-stopped \
+  --gpus '"device=0,1,2,3"' --network host --ipc host --shm-size 32g \
+  -v lil-huggingface:/root/.cache/huggingface -v glm53-runtime:/cache \
+  -e PROFILE=glm53-flash -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=4 -e PORT=8000 "$IMAGE" --mode mtp --draft-tokens 3
 ```
 
-Choose one speculation setting before running that command:
+The API is on port 8000 with model name `GLM-5.3-Flash-NVFP4`.
+Change `-e PORT=8000` to choose a port and `device=0,1,2,3` to choose GPUs.
+Check readiness with `docker logs -f glm53` and
+`curl -fsS http://127.0.0.1:8000/health`.
 
-```bash
-SERVE_ARGS=(--mode off)
-```
+Replace the arguments **after `"$IMAGE"`** to select another mode:
 
-```bash
-SERVE_ARGS=(--mode mtp --draft-tokens 3)
-```
-
-```bash
-SERVE_ARGS=(--mode dflash2 --draft-tokens 7)
-```
+| Mode | Arguments after the image |
+|---|---|
+| No speculation | `--mode off` |
+| MTP3 | `--mode mtp --draft-tokens 3` |
+| DFlash2 K7 | `--mode dflash2 --draft-tokens 7` |
 
 DFlash2 downloads `local-inference-lab/GLM-5.3-Flash-DFlash2`, an offline
-MXFP8 draft checkpoint, through the shared Hugging Face volume. It is not
-online weight quantization. No absolute host model paths are required.
+MXFP8 checkpoint, into the shared HF volume. Add
+`-e SERVED_MODEL_NAME=GLM-5.3-Flash` before the image for that shorter API name.
+For two GPUs use the [Spark TP2 recipe](glm-5.3-flash-spark-tp2.md); its
+checkpoint and memory budget differ from this four-GPU configuration.
 
-The API model name is `GLM-5.3-Flash-NVFP4`. Clients requiring the name
-`GLM-5.3-Flash` can append `--served-model-name GLM-5.3-Flash` to `SERVE_ARGS`.
-Changing the API name does not change the checkpoint.
+Measured Karmic Kraken results and saved JJ comparisons are in the
+[model benchmark table](../benchmarks/karmic-kraken-serving.md).
+The separate JJ measurements below retain their original image boundaries.
 
 ## Serving defaults and alternatives
 
@@ -59,7 +56,7 @@ Changing the API name does not change the checkpoint.
 | Parallelism | TP4/DCP1; four 96-GB GPUs in the measured configuration |
 | Speculation when omitted | Off; the explicit examples select MTP3 or DFlash2 K7 |
 | Target precision | ModelOpt NVFP4; B12X MoE and dense backends |
-| Attention | B12X sparse attention/selection; FlashKDA recurrent prefill |
+| Attention | B12X sparse attention/selection and B12X KDA prefill |
 | MTP | B12X attention, Marlin draft MoE, private NVFP4 draft vocabulary head; BF16 target head |
 | DFlash2 | Offline MXFP8 weights, B12X dense path, FLASH_ATTN draft attention, automatic draft KV dtype |
 | Target KV | FP8; `--kv-cache-dtype nvfp4_ds_mla` is an explicit, separately unqualified option for this artifact |
@@ -76,8 +73,8 @@ server defaults. If replacing the complete template-default JSON, retain
 
 The [shared cache section](../docs/unified-vllm-docker.md#cache-storage-gpu-lmcache-or-native-offload)
 documents GPU-local, LMCache RAM/filesystem and native KV offload. LMCache is
-opt-in; the published image's 91 cache contract tests are not a model-level
-RAM/restart-filesystem performance result.
+opt-in; text prefixes support CPU restore and persistent restart recovery.
+External recurrent restore does not apply to image-bearing requests.
 
 `--decode-context-parallel-size 4` selects DCP4 and automatic full-CKV gather;
 this is not specific to DFlash2. DCP4 and TP8 are **implemented**, but the

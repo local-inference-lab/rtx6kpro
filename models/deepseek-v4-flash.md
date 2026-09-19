@@ -5,31 +5,29 @@ the [shared vLLM Docker guide](../docs/unified-vllm-docker.md). The image is
 shared with GLM, Qwen and DeepSeek Vision; its model profile selects the
 DSpark and B12X defaults.
 
-Status: **implemented** profile with **qualified** bounded TP2/DCP1, fixed-K5
-measurements below. For image input, use the separate
-[DeepSeek V4 Vision profile](deepseek-v4-flash-vision.md). For Engram tables
-and native V4.1 DSpark, use [DeepSeek V4.1](deepseek-v4.1-flash.md).
-
 ## Start the server
 
-Select `LIL_IMAGE` in the [shared image section](../docs/unified-vllm-docker.md#select-the-image),
-then use these values with the [common launch command](../docs/unified-vllm-docker.md#start-a-server):
+This starts TP2/DCP1 with DSpark K5:
 
 ```bash
-PROFILE=ds4-flash
-GPU_DEVICES=0,1
-TP=2
-PORT=8000
-SERVE_ARGS=(--mode dspark --draft-tokens 5)
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name ds4 --init --restart unless-stopped \
+  --gpus '"device=0,1"' --network host --ipc host --shm-size 32g \
+  -v lil-huggingface:/root/.cache/huggingface -v ds4-runtime:/cache \
+  -e PROFILE=ds4-flash -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=2 -e PORT=8000 "$IMAGE"
 ```
 
-The API model name is `DeepSeek-V4-Flash-0731`. The profile pins compatible
-checkpoint and remote-code revisions internally; a plain Hugging Face name
-does not remove that source contract. Revision overrides require their own
-qualification. Checkpoint downloads use the shared persistent model volume.
+The API model is `DeepSeek-V4-Flash-0731` on port 8000.
+Change `device=0,1`, `-e TP=2` and `-e PORT=8000` to select the deployment.
+Check readiness with `docker logs -f ds4`.
 
-Use `SERVE_ARGS=(--mode off)` for target-only serving. That mode is implemented
-but not timed in this wheel-image comparison.
+For target-only serving append `--mode off` **after `"$IMAGE"`**.
+Model and compiler caches stay in named volumes. The image profile selects
+compatible model/code revisions; no absolute checkpoint path is required.
+The [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
+records the shared-image comparison. The JJ results below are separate.
 
 ## Serving defaults and alternatives
 
@@ -49,19 +47,20 @@ GLM's complete backend environment into this recipe.
 
 DSpark and standard Multi-Token Prediction (MTP) use different checkpoint
 contracts. The following standard-MTP alternative is **implemented**, but
-not qualified by the DSpark measurements on this page:
+not qualified by the DSpark measurements on this page. Replace the serving
+command's final line with:
 
 ```bash
-SERVE_ARGS=(--model deepseek-ai/DeepSeek-V4-Flash
-  --served-model-name DeepSeek-V4-Flash --mode mtp --draft-tokens 3)
+"$IMAGE" --model deepseek-ai/DeepSeek-V4-Flash \
+  --served-model-name DeepSeek-V4-Flash --mode mtp --draft-tokens 3
 ```
 
 GPU-only KV is the default. LMCache RAM/filesystem offload is opt-in through
 the [shared cache controls](../docs/unified-vllm-docker.md#cache-storage-gpu-lmcache-or-native-offload).
-The published beta has package/native contract checks, not a repeated
-whole-model RAM/restart-filesystem matrix. Historical R9 restore qualification
-does not automatically qualify another image. Native KV offload is unsupported
-by this profile. DeepSeek V4.1's Engram RAM/SSD controls are unrelated to it.
+CPU and disk-prefix recovery have whole-model checks in the
+[Karmic Kraken cache record](../benchmarks/karmic-kraken-serving.md#prefix-cache-checks).
+Native KV offload is unsupported by this profile. DeepSeek V4.1's Engram RAM/SSD
+controls are unrelated to it.
 
 ## Measured performance
 

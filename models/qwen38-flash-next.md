@@ -6,58 +6,50 @@ The image and launcher are shared with GLM and DeepSeek; no GLM entrypoint
 bypass or copied kernel environment is needed. This is not
 [Qwen3.8-27B](qwen38-27b.md).
 
-Status: **implemented** TP1/TP2 profile, with **qualified** bounded TP1/MTP3
-text measurements below. TP2, vision and no-MTP performance are not part of
-that wheel-image qualification. The measured prefill difference remains open.
-
 ## Start on one GPU: TP1
 
-Select `LIL_IMAGE` in the [shared image section](../docs/unified-vllm-docker.md#select-the-image),
-then use these values with the [common launch command](../docs/unified-vllm-docker.md#start-a-server):
-
 ```bash
-PROFILE=qwen38-flash-next
-GPU_DEVICES=0
-TP=1
-PORT=8000
-SERVE_ARGS=(--mode mtp --draft-tokens 3)
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name qwen38 --init --restart unless-stopped \
+  --gpus '"device=0"' --network host --ipc host --shm-size 32g \
+  -v lil-huggingface:/root/.cache/huggingface -v qwen38-runtime:/cache \
+  -e PROFILE=qwen38-flash-next -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=1 -e PORT=8000 "$IMAGE"
 ```
 
-TP1 means one 96-GB GPU. The API model name is `Qwen3.8-Flash-Next`.
-The named Hugging Face volume downloads/reuses the model by repository name.
-The shared command leaves GPU clocks unchanged.
-
-For no speculation, replace the argument array with `SERVE_ARGS=(--mode off)`.
-Do not set positive draft-token counts together with `--mode off`.
+The profile selects MTP3 and CPU PLE tables. The API model is
+`Qwen3.8-Flash-Next` on port 8000. It downloads the checkpoint by name and
+does not change GPU clocks. Check startup with `docker logs -f qwen38`.
 
 ## Start on two GPUs: TP2
 
-Use a different available pair, and stop an overlapping instance before reuse:
+Use the same command with `--gpus '"device=0,1"'` and `-e TP=2`.
+Change the container name or stop the overlapping instance before starting it.
+The checkpoint and PLE placement stay the same.
+
+Optional arguments go **after `"$IMAGE"`**:
+
+| Choice | Arguments |
+|---|---|
+| MTP3 | Default, or `--mode mtp --draft-tokens 3` |
+| No speculation | `--mode off` |
+| Vision | `--no-language-model-only` |
+| Eight-GiB KV budget used by the comparison | `--kv-cache-memory-bytes 8589934592` |
+
+Use `-e PORT=8001` before the image to change the API port.
+The [Compose example](qwen38-flash-next/qwen38-flash-next.compose.yml)
+provides TP1 and TP2 services using these same image profiles:
 
 ```bash
-PROFILE=qwen38-flash-next
-GPU_DEVICES=0,1
-TP=2
-PORT=8000
-SERVE_ARGS=(--mode mtp --draft-tokens 3)
-```
-
-This changes both visible devices and tensor parallelism. It does not disable
-PLE offload or change the checkpoint. TP2 is **implemented**, not newly timed
-by the TP1 comparison. B12X/NCCL collectives apply to TP2; TP1 performs no
-multi-GPU all-reduce.
-
-The optional [Compose example](qwen38-flash-next/qwen38-flash-next.compose.yml)
-uses the same profile interface and requires `LIL_IMAGE` from the shared guide:
-
-```bash
+export LIL_IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
 curl -fLO https://raw.githubusercontent.com/local-inference-lab/rtx6kpro/master/models/qwen38-flash-next/qwen38-flash-next.compose.yml
 GPU=0 PORT=8000 docker compose -f qwen38-flash-next.compose.yml --profile tp1 up -d
 ```
 
-Select `--profile tp2` and `GPU0`/`GPU1` for two GPUs. Do not enable both Compose
-profiles on the same port. The Compose file contains deployment settings,
-not a second copy of B12X or scheduler policy.
+For two GPUs select `--profile tp2` and set `GPU0`/`GPU1`.
+The [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
+records the TP1 comparison; the JJ results below remain a separate measurement.
 
 ## Precision, model tables and cache
 
@@ -72,7 +64,7 @@ not a second copy of B12X or scheduler policy.
 | Scheduler / context | 6019 tokens, 16 sequences, maximum context 262,144 |
 | Prefix cache | Enabled; native `auto` selects exact recurrent request boundaries where supported |
 | Vision | Text-only by default; `--no-language-model-only` enables the model path |
-| LMCache | Unsupported by this profile; not enabled by PLE offload |
+| LMCache | Optional CPU/disk restore for text; separate from PLE offload |
 
 PLE is a learned embedding table, not request KV and not an n-gram speculator.
 Historical startup accounting records about 26.82 GiB of mapped host tables;
@@ -82,9 +74,9 @@ memory and correctness qualification.
 
 The shared guide explains [prefix retention](../docs/unified-vllm-docker.md#prefix-cache-defaults).
 Do not add a global `--prefix-cache-retention-interval 4096` override.
-For vision, append `--no-language-model-only` to the argument array. The flag
-is implemented, but the text-only measurements below do not qualify vision
-correctness or throughput on the published beta digest.
+For vision, append `--no-language-model-only` after the image name. Image-bearing
+requests do not restore recurrent checkpoints through external LMCache; their
+uncached vision path remains available.
 
 Request sampling in the recorded tests is temperature 1/top-p .95/top-k 20.
 The profile leaves checkpoint generation configuration authoritative rather

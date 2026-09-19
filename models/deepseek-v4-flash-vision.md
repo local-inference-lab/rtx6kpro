@@ -5,32 +5,29 @@ profile in the [shared vLLM Docker guide](../docs/unified-vllm-docker.md).
 It shares the image and launcher with GLM, Qwen and DeepSeek text, but has
 its own checkpoint, Vision defaults and fixed DSpark K3 configuration.
 
-Status: **implemented** profile; **qualified** bounded TP2/DCP1 text decode,
-32K text prefill and image smoke checks in the wheel-image evidence below.
-Long-running multimodal stability and arbitrary image sizes are not qualified.
-
 ## Start the server
 
-Select `LIL_IMAGE` in the [shared image section](../docs/unified-vllm-docker.md#select-the-image),
-then use these values in the [common launch command](../docs/unified-vllm-docker.md#start-a-server):
+This starts TP2/DCP1 with DSpark K3:
 
 ```bash
-PROFILE=ds4-vision
-GPU_DEVICES=0,1
-TP=2
-PORT=8000
-SERVE_ARGS=(--mode dspark --draft-tokens 3)
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name ds4-vision --init --restart unless-stopped \
+  --gpus '"device=0,1"' --network host --ipc host --shm-size 32g \
+  -v lil-huggingface:/root/.cache/huggingface -v ds4-vision-runtime:/cache \
+  -e PROFILE=ds4-vision -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=2 -e PORT=8000 "$IMAGE"
 ```
 
-The API model name is `DeepSeek-V4-Flash-Vision-Exp`. Model and compiler caches
-are persistent named volumes. The profile pins compatible checkpoint and
-remote-code revisions internally; plain repository names in commands do not
-remove that source contract. Explicit `MODEL_REVISION`/`MODEL_CODE_REVISION`
-overrides require corresponding qualification.
+The API model is `DeepSeek-V4-Flash-Vision-Exp` on port 8000.
+Change `device=0,1`, `-e TP=2` and `-e PORT=8000` to select the deployment.
+Check readiness with `docker logs -f ds4-vision`.
 
-Use `SERVE_ARGS=(--mode off)` for target-only serving; it is implemented but
-not timed in this comparison. Do not assume the text checkpoint's standard
-MTP recipe applies to the Vision checkpoint.
+For target-only serving append `--mode off` **after `"$IMAGE"`**.
+Model and compiler caches stay in named volumes. The image profile selects
+compatible model/code revisions; no absolute checkpoint path is required.
+The [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
+records the shared-image comparison. The JJ results below are separate.
 
 ## Serving defaults and cache
 
@@ -53,9 +50,9 @@ into this profile without a separate comparison.
 GPU-only cache is the default. LMCache host-RAM and filesystem modes are
 implemented as documented in the
 [shared cache section](../docs/unified-vllm-docker.md#cache-storage-gpu-lmcache-or-native-offload).
-The published beta has package/native contract checks, not a repeated
-whole-model Vision LMCache cold/restart matrix. Native KV offload is unsupported
-by this profile.
+Text and image-prefix recovery, restart recovery and different-image isolation
+are checked in the [Karmic Kraken cache record](../benchmarks/karmic-kraken-serving.md#prefix-cache-checks).
+Native KV offload is unsupported by this profile.
 
 ## Measured performance
 

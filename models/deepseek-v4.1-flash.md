@@ -6,42 +6,40 @@ text/vision input, B12X kernels and the checkpoint's embedded DSpark draft.
 It is distinct from [DeepSeek V4 text](deepseek-v4-flash.md) and
 [V4 Vision](deepseek-v4-flash-vision.md).
 
-Status: **implemented** profile, with **qualified** bounded TP4/DCP1,
-RAM-Engram measurements and API/image tests below. Whole-model disk throughput,
-DCP4 and external KV offload are not qualified by these checks.
-
 ## Start the server
 
-Select `LIL_IMAGE` from the [shared image section](../docs/unified-vllm-docker.md#select-the-image).
-For the RAM-Engram placement used in the measurements, choose:
+This starts TP4/DCP1 with adaptive DSpark K7 and disk-backed Engram tables:
 
 ```bash
-PROFILE=ds41-flash
-GPU_DEVICES=0,1,2,3
-TP=4
-PORT=8000
-SERVE_ARGS=(--mode dspark --draft-tokens 7 --engram-table-memory ram)
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name ds41 --init --restart unless-stopped \
+  --gpus '"device=0,1,2,3"' --network host --ipc host --shm-size 32g \
+  --ulimit memlock=-1 --security-opt seccomp=unconfined \
+  -v lil-huggingface:/root/.cache/huggingface -v ds41-runtime:/cache \
+  -e PROFILE=ds41-flash -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=4 -e PORT=8000 "$IMAGE"
 ```
 
-Run the [common launch command](../docs/unified-vllm-docker.md#start-a-server).
-It adds the DS4.1 memlock/io_uring permissions and downloads the checkpoint
-into the shared Hugging Face cache. The API name is `DeepSeek-V4.1-Flash`.
+The API model is `DeepSeek-V4.1-Flash` on port 8000. The checkpoint downloads
+into the shared HF volume. Check readiness with `docker logs -f ds41`.
+The io_uring loader needs the syscall permission above; use a trusted image.
 
-For the profile's disk-backed table default, use:
+Add native options **after `"$IMAGE"`**:
 
-```bash
-SERVE_ARGS=(--mode dspark --draft-tokens 7 --engram-table-memory disk)
-```
+| Choice | Arguments |
+|---|---|
+| Keep n-gram tables in RAM | `--engram-table-memory ram` |
+| Read tables from SSD | `--engram-table-memory disk` (default) |
+| No speculation | `--mode off` |
+| Restrict context | `--max-model-len 131072` |
+| Change request slots | `--max-num-seqs 16` |
 
-For target-only serving with RAM tables:
-
-```bash
-SERVE_ARGS=(--mode off --engram-table-memory ram)
-```
-
-These are alternatives, not arguments to combine. DS4.1's profile supports
-`off` and `dspark`, not GLM's MTP/DFlash2 modes. The default maximum concurrency
-is four; append `--max-num-seqs 32` to reproduce the C8 benchmark admission.
+The default is 32 slots and an automatically sized context. Change GPU IDs,
+`TP` and `PORT` before the image name. MTP/DFlash2 are not DS4.1's DSpark mode.
+See the [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
+for the KK comparison with RAM Engram; disk placement has separate functional
+cache checks. The JJ RAM-Engram table below is a distinct image comparison.
 
 ## RAM versus SSD ngrams
 
@@ -56,8 +54,8 @@ caching or an LMCache tier. Target/draft transformer weights remain on GPU.
 RAM allocation failure does not silently choose disk. Generic CPU model
 offload remains disabled. Optional `--engram-disk-resident-scales` and
 `--engram-projection-tp` are not enabled by default and have no whole-model
-speed claim in this qualification. `CACHE_MODE=lmcache` is unsupported for
-this profile; selecting RAM Engram does not enable it.
+speed claim in this qualification. `CACHE_MODE=lmcache` independently enables
+CPU/disk prefix storage; selecting RAM Engram does not enable it.
 
 ## Serving defaults
 
@@ -66,13 +64,14 @@ this profile; selecting RAM Engram does not enable it.
 | Parallelism / speculation | TP4/DCP1, DSpark K7 with adaptive verification |
 | Draft sampling | Greedy proposals, standard rejection; target sampling remains temperature 1/top-p .95 |
 | Backends | B12X attention, MoE and dense; B12X/NCCL communication |
-| Scheduler | 4096 tokens, four sequences, one prefill lane, compute share 0.4 |
-| Context / GPU fraction | 131,072 / 0.95 |
+| Scheduler | 4096 tokens, 32 sequences, one prefill lane, compute share 0.4 |
+| Context / GPU fraction | Automatic context sizing (`-1`) / 0.95 |
 | Main / sliding-window pages | 256 / 128 tokens |
 | Graphs | Full-and-piecewise decode, cap 128; breakable prefill off |
 | Prefix cache | Enabled; retention interval defaults to `0`, not cache disabled |
 | Reasoning | `high` by default; publisher mapping `low=50`, `high=75`, `max=100` |
 | API compatibility | DS4.1 tool namespaces/reminders and Responses text-part normalization |
+| JIT monitor | `warn`; a missing warmup warns instead of rejecting the request |
 
 The native cache is heterogeneous despite the CLI's `fp8` label: MXFP8
 sliding-window payloads, NVFP4 indexed payloads and index/state groups. Do not

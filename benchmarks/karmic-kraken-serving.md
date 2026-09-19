@@ -57,7 +57,7 @@ These are functionality checks, not external-cache throughput measurements.
 | DS4 Vision, text and image | 12,288 tokens | 14 | Correct restore; changed image misses and answers correctly |
 | DS4.1, text | 12,288 tokens | 19 | Correct RAM and restart-disk answers |
 | DS4.1, image before shared text | 16,384 tokens | 23 | Correct restore; changed-image negative control passes |
-| GLM Spark TP2, public image | 16,285 tokens | 28 | Correct RAM and restart-disk answers, zero GPU hits |
+| GLM Spark TP2, public preset | 16,286 tokens | 28 | Correct RAM and restart-disk answers, zero GPU hits |
 
 GLM and Qwen external recurrent checkpoints are text-only. Vision remains
 usable, but the connector recomputes those requests instead of reusing an
@@ -72,10 +72,15 @@ follow-up uses `9872cfefe738`, with the same B12X revision. The saved JJ matrix
 uses vLLM `1048fc5439d` and B12X `d9b572754a`.
 
 The multimodal cache-isolation follow-up uses LMCache `688bee14e157`.
-The public GLM Spark TP2 cache check uses vLLM `bd76814003bd`, B12X
+The public GLM Spark TP2 preset check uses vLLM `bd76814003bd`, B12X
 `eea3ced11fc1`, that LMCache wheel, and image digest
-`sha256:038ab1d937cfbd42272af364171396eef4fa1d12d4f66b6f55740cdabb3271eb`.
-Its Max-Q validation host is not the stock Workstation speed-measurement host.
+`sha256:495b340eede3bbb348fd6c9662d1535e0d2f27e47c08cc71802fea6bc68caf40`.
+It verifies text, native prefixes, one/two-image requests, RAM restore and
+disk restore after serving and cache processes restart. The image is published
+as `karmic-kraken-beta-20260919-8226320d8ecf9f53`; its
+[release manifest](https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-8226320d8ecf9f5342a9dba71a90ef8911f1da61dfde5e4d70dfa106d173a570)
+records the complete composition. Its Max-Q validation host is not the stock
+Workstation speed-measurement host.
 
 [Issue #808](https://github.com/local-inference-lab/vllm/issues/808) lists the
 attributed PRs reconstructing the integrated serving sources. The

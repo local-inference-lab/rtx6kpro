@@ -51,8 +51,9 @@ GPU-only prefix caching is enabled by default. For LMCache, add these arguments
 
 This starts the CPU cache service automatically: up to 16 GiB RAM plus a
 64-GiB disk tier in the persistent `/cache` volume. To use only RAM, also add
-`-e LMCACHE_L2_ENABLED=0`. Cache ports derive from the model API port; use
-different API ports and runtime volumes for independent instances.
+`-e LMCACHE_L2_ENABLED=0`. LMCache reserves `PORT + 10000`, `PORT + 10001`
+and `PORT + 10002`. Use API ports at least three apart and separate runtime volumes
+for independent cache instances.
 
 Text prefixes restore from RAM and from disk after both services restart.
 Image-bearing requests run normally, but their recurrent checkpoints

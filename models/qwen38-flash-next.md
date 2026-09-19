@@ -27,6 +27,8 @@ does not change GPU clocks. Check startup with `docker logs -f qwen38`.
 Use the same command with `--gpus '"device=0,1"'` and `-e TP=2`.
 Change the container name or stop the overlapping instance before starting it.
 The checkpoint and PLE placement stay the same.
+Keep DCP at 1: Qwen's QSA attention backend rejects context parallelism.
+TP2 splits model weights across two GPUs; it does not require DCP2.
 
 Optional arguments go **after `"$IMAGE"`**:
 

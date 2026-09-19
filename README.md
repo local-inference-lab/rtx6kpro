@@ -41,7 +41,7 @@ Need the complete map of every Markdown page?
 | Need | Where |
 |---|---|
 | Shared image launch, speculation and cache settings | [Unified Docker guide](docs/unified-vllm-docker.md), then the relevant model profile page. Other model families retain their own runbooks. |
-| Rebuild the unified image | [Versioned runtime configuration and assembly sources](docs/unified-vllm-docker.md#common-overrides-and-configuration-inspection); historical recipes remain in model release pages and [scripts](scripts/). |
+| Rebuild the unified image | [Versioned runtime configuration and assembly sources](docs/unified-vllm-docker.md#inspect-or-override-the-launch); historical recipes remain in model release pages and [scripts](scripts/). |
 | Compare backend speed | Model benchmark tables plus [Benchmark Results](benchmarks/results.md). |
 | Check quantization fidelity | [General KLD methodology](kld/README.md), [GLM-5.2 KLD](benchmarks/glm52-kld-evaluation.md), and model-specific KLD sections. |
 | Compare model output quality on a real Czech tutoring workload | [Czech tutoring quality comparison](benchmarks/czech-tutor-quality-comparison.md): DeepSeek-V4-Flash, V4.1-Flash, Qwen3.8-Flash-Next and GLM-5.3-Flash per reasoning mode, with a reproducible runner. |

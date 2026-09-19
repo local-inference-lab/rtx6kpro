@@ -133,6 +133,9 @@ For **RAM plus disk**, add:
 
 The image starts and supervises the CPU-only cache service. Its persistent
 directory is inside `/cache`; service ports derive from the model API port.
+LMCache reserves API-port + 10000, + 10001 and + 10002. For simultaneous
+instances, space API ports at least three apart, for example 8000 and 8003,
+or explicitly choose non-overlapping cache-service ports.
 The GLM Spark TP2 page includes the bounded worker settings for that deployment.
 Check host RAM, `/dev/shm` and disk capacity. With `--ipc host`, Docker's
 `--shm-size` does not enlarge host shared memory.

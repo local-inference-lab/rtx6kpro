@@ -1961,8 +1961,15 @@ def validate_editorial_output(
         if section not in SUMMARY_SECTION_IDS:
             raise ValueError(f"Editorial item uses invalid section {section!r}")
         event_ids = list(dict.fromkeys(str(value) for value in item["event_ids"]))
-        if not event_ids or any(value not in events_by_id for value in event_ids):
-            raise ValueError("Editorial item refers to an unknown extracted event")
+        if not event_ids:
+            raise ValueError("Editorial item has no extracted event")
+        unknown_event_ids = [value for value in event_ids if value not in events_by_id]
+        if unknown_event_ids:
+            LOG.warning(
+                "Ignoring editorial item with unknown extracted events: %s",
+                ", ".join(unknown_event_ids),
+            )
+            continue
         if any(audit_by_id[value]["disposition"] != "publish" for value in event_ids):
             raise ValueError(
                 "Editorial item refers to an event not marked for publication"

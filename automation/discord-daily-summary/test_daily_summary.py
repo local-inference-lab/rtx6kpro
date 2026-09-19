@@ -249,6 +249,50 @@ class PerformanceClaimTest(unittest.TestCase):
 
 
 class EditorialValidationTest(unittest.TestCase):
+    def test_recovers_known_events_from_an_item_with_an_unknown_event(self) -> None:
+        source = record(message_id="10")
+        events = [
+            {
+                "id": "e0001",
+                "text": "A release was published.",
+                "source_urls": [source.url],
+            },
+            {
+                "id": "e0002",
+                "text": "A benchmark was measured.",
+                "source_urls": [source.url],
+            },
+        ]
+        raw = {
+            "audit": [
+                {"event_id": "e0001", "disposition": "publish", "reason": "Release"},
+                {"event_id": "e0002", "disposition": "publish", "reason": "Benchmark"},
+            ],
+            "items": [
+                {
+                    "section": "releases_and_fixes",
+                    "text": "A release was published.",
+                    "event_ids": ["e0001", "e9999"],
+                    "source_urls": [source.url],
+                },
+                {
+                    "section": "benchmarks_and_implementation_findings",
+                    "text": "A benchmark was measured.",
+                    "event_ids": ["e0002"],
+                    "source_urls": [source.url],
+                },
+            ],
+        }
+
+        validated = daily_summary.validate_editorial_output(
+            raw, events, {source.url: source}, require_publication_coverage=False
+        )
+
+        self.assertEqual(validated["_missing_publish_event_ids"], ["e0001"])
+        self.assertEqual(validated["items"][0]["event_ids"], ["e0002"])
+        with self.assertRaisesRegex(ValueError, "publication coverage mismatch"):
+            daily_summary.validate_editorial_output(raw, events, {source.url: source})
+
     def test_constrains_editorial_citations_to_the_items_events(self) -> None:
         source = record(message_id="10")
         unrelated = record(message_id="11")

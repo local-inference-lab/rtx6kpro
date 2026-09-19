@@ -16,8 +16,10 @@ record and fails when any record is omitted. Input chunking bounds individual
 model requests without dropping records. The editorial audit marks
 each extracted event as `publish`, `duplicate`, `low_signal`, or `unsupported`
 and records a reason. Ranking determines section placement rather than imposing
-an item-count limit. A citation-verification call accepts or rejects each
-publication item without rewriting it. Rejected items enter a separate repair
+an item-count limit. An item that names an unknown event enters editorial
+recovery; publication still requires an item for every `publish` event. A
+citation-verification call accepts or rejects each publication item without
+rewriting it. Rejected items enter a separate repair
 pass with the verifier's reason and original evidence, and repaired text must
 pass the citation verifier again. The Python renderer accepts only source URLs
 present in the fetched records. Before verification, editorial citations are

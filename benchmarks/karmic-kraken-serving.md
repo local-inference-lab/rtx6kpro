@@ -53,6 +53,7 @@ These are functionality checks, not external-cache throughput measurements.
 | Model / request | Restored prefix | Persistent objects | Result |
 |---|---:|---:|---|
 | Qwen TP1, text | 16,301 tokens | 116 | Correct RAM and restart-disk answers |
+| Qwen TP2, text, public image | 16,336 tokens | 232 | Correct RAM and restart-disk answers, zero GPU hits |
 | DS4 text, TP2 | 12,288 tokens | 14 | Correct RAM and restart-disk answers |
 | DS4 Vision, text and image | 12,288 tokens | 14 | Correct restore; changed image misses and answers correctly |
 | DS4.1, text | 12,288 tokens | 19 | Correct RAM and restart-disk answers |
@@ -81,6 +82,12 @@ as `karmic-kraken-beta-20260919-8226320d8ecf9f53`; its
 [release manifest](https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-8226320d8ecf9f5342a9dba71a90ef8911f1da61dfde5e4d70dfa106d173a570)
 records the complete composition. Its Max-Q validation host is not the stock
 Workstation speed-measurement host.
+
+Qwen TP2 uses the same public image for the RAM/disk check above. It keeps
+MTP3, CPU PLE offload, vision enabled and automatic KV sizing. Its cold,
+native-prefix, RAM-reset and changed-question checks pass; both serving and
+cache processes restart before the 232-object disk recovery. This establishes
+TP2 cache functionality, not TP2 throughput or parity with the TP1 speed table.
 
 [Issue #808](https://github.com/local-inference-lab/vllm/issues/808) lists the
 attributed PRs reconstructing the integrated serving sources. The

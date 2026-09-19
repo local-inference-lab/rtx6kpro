@@ -29,6 +29,9 @@ Change the container name or stop the overlapping instance before starting it.
 The checkpoint and PLE placement stay the same.
 Keep DCP at 1: Qwen's QSA attention backend rejects context parallelism.
 TP2 splits model weights across two GPUs; it does not require DCP2.
+TP2 with MTP3 and vision passes text/image checks and text-prefix recovery
+from RAM and disk after restart. These are functionality checks; the measured
+speed table below uses TP1.
 
 Optional arguments go **after `"$IMAGE"`**:
 

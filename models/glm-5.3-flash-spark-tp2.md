@@ -60,6 +60,18 @@ Image-bearing requests run normally, but their recurrent checkpoints
 are not restored through external cache. CPU and disk caches reuse prior
 requests; they do not enlarge the active context or GPU KV allocation.
 
+For an edit near the end of a long user message, the server also keeps a
+checkpoint before the final prefill chunk. It can restore that unchanged
+prefix and recompute roughly one to two chunks. An edit before that checkpoint
+still needs an earlier matching prefix or a full recomputation. This costs one
+additional checkpoint bundle, about 3% context capacity in this preset.
+
+With the CPU/disk settings above, a tested suffix edit in a 520k-token prompt
+restored 516,096 tokens in 1.66 seconds instead of recomputing the full prompt
+in 70.07 seconds. Restoration also passes after restarting both the server
+and cache process. These are request-latency checks, separate from the
+Workstation throughput measurements below.
+
 ## Capacity and controls
 
 | Setting | Preset value | Change before the image name |
@@ -69,7 +81,7 @@ requests; they do not enlarge the active context or GPU KV allocation.
 | Request slots | 4 | `-e MAX_NUM_SEQS=4` |
 | Prefill budget | 3072 tokens | `-e MAX_NUM_BATCHED_TOKENS=3072` |
 | KV allocation | 3996 MiB per GPU | `-e KV_CACHE_MEMORY_BYTES=3758096384` selects 3.5 GiB |
-| Context capacity | About 983k GPU-only; 924k with LMCache | Startup reports the resolved limit |
+| Context capacity | About 897k with the LMCache configuration above | Startup reports the resolved limit for your cache mode |
 | Vision | Enabled, no one-image admission cap | Image size/count still consume memory |
 | Prefix policy | Request-boundary checkpoints | No retention-interval parameter needed |
 

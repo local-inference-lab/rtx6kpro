@@ -125,6 +125,17 @@ the R35 report's 517,581-token estimate omitted those reserves. The physical
 eight-GiB budget did not shrink. See the
 [capacity accounting](../benchmarks/qwen-boundary-capacity-accounting.md).
 
+### TP4 memory option
+
+For TP4/MTP3, use four GPU IDs and `-e TP=4` in the launch command. The
+hardware profile's default is sixteen NCCL channels. A measured alternative
+is to add `-e NCCL_MIN_NCHANNELS=2 -e NCCL_MAX_NCHANNELS=2` before `"$IMAGE"`.
+It reduced sampled device memory by about 0.8–1.2 GiB per GPU and improved
+decode in both TP4 test series. The gain varies between server starts;
+the [TP4 results](../benchmarks/tp4-memory-controls.md#qwen-tp4-confirmations)
+retain both series. This option was not measured at TP1/TP2 and should not
+be copied into every model's configuration.
+
 ## Quality evaluation and historical releases
 
 - [Published NVFP4 versus QAD AA-LCR](qwen38-flash-next/aa-lcr-nvfp4-vs-qad.md).

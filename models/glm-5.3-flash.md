@@ -118,6 +118,13 @@ respectively, shared across requests. Both modes pass arithmetic and
 repeated/changed-prefix checks.
 [Exact images, settings and all samples](../benchmarks/karmic-kraken-serving.md).
 
+Speed varies across server starts: a separate five-run C1 check measured
+265.7–277.0 tok/s for MTP3 and 212.9–225.2 tok/s for DFlash2. The lower
+DFlash2 result is below the saved R35 219.7 tok/s. These are separate startup
+series, not extra samples added to the table. See the
+[startup comparison](../benchmarks/glm-startup-consistency.md); clearing the
+compilation cache is not a recommended fix.
+
 Sieve, no-spec and DCP4 were not remeasured in this matrix. Their preceding
 results, including stock Workstation measurements, remain in the
 [versioned guide archive](../archive/serving-guides/README.md).

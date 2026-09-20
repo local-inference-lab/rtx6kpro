@@ -169,9 +169,15 @@ without turning it into an unstructured support queue.
 When adding a page:
 
 - Link it from the relevant model hub.
-- Add a short status block if the page specifies a supported serving runbook.
-- Keep exact Docker image tags, source commits, model snapshot IDs, GPU layout,
-  backend choices, and benchmark commands.
+- Start a serving guide with a complete copy-paste launch command and practical
+  hardware requirements. Explain each configurable setting with its exact flag
+  or environment variable, default and example override.
+- Keep source commits, checkpoint revisions, full benchmark commands and review
+  status in a linked technical report. A normal setup guide does not need a
+  qualification-status block.
+- Identify the model, mode, image, hardware and clocks for every speed table.
+  Preserve preceding release recipes in the archive before replacing a model's
+  recommended instructions.
 - Regenerate the full index:
 
 ```bash

@@ -1,9 +1,9 @@
 # Karmic Kraken model-serving measurements
 
 Status: **qualified** six-mode serving measurements under the conditions below.
-The additional TP4 buffer-control comparison is **research-only** until its
-measurements complete. No memory-saving
-control is promoted to a shared default by this report.
+The separate [TP4 memory-control comparison](tp4-memory-controls.md) records
+isolated capacity/throughput trade-offs. No memory-saving control is promoted
+to a shared default by this report.
 
 ## Conditions
 
@@ -72,7 +72,7 @@ verifier execution. Accepted length is lower; an independent saved R9 repeat
 measured 195.15 tok/s with 73.22 steps/s. Neither output sample is discarded.
 Automatic MoE selection matches the explicitly pinned 128-CTA diagnostic
 without a grid override and preserves prefill/C8 throughput. See the
-[MoE tuning evidence](https://github.com/local-inference-lab/b12x/tree/26d5f43048670c0e130c0418abf4ae6d6d1d1391/validation/serving/moe_overlap_tuning).
+[MoE tuning evidence](https://github.com/local-inference-lab/b12x/tree/d606d254998b33649fca41f6d8ac7fef971deb21/validation/serving/moe_overlap_tuning).
 
 Qwen's prefill deficit against R35 is 0.26%. The source-composition startup's
 81.78 C1 verifier steps/s was below a separate repaired-source arm's 84.06.
@@ -88,6 +88,22 @@ The four-iteration C1 profile confirms target and MTP kernel execution after
 the unprofiled repeat. It contains 192 target dynamic-MoE launches, 12 MTP
 W4A16 MoE launches and 12 CUDA graph launches. Kernel durations overlap and
 profiling perturbs execution; they are not another throughput sample.
+
+### GLM startup variability
+
+A separate empty/populated compilation-cache startup pair retains five warmed
+C1 windows per arm. MTP3 measures 277.03 then 265.69 tok/s (110.90 then
+105.74 steps/s); DFlash2 measures 225.21 then 212.85 tok/s (87.21 then
+85.05 steps/s). The latter output median is below the saved JJ 219.7 tok/s,
+although verifier execution remains above JJ's 84.28 steps/s. The table above
+is not replaced with a preferred startup, and these same-image pairs are not
+a source-revision regression test.
+
+[Startup samples, four-rank profiles and interpretation](glm-startup-consistency.md)
+retain the slower results. Matching kernel selections and launch inventories
+do not establish the cause of the execution difference. Neither clearing
+compilation caches nor changing a hardware-queue limit is recommended solely
+from these observations.
 
 ## KV capacity
 

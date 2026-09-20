@@ -208,6 +208,22 @@ The [complete parameter reference](https://github.com/local-inference-lab/blackw
 lists supported aliases. Profiles and deployment presets live in the same
 [runtime directory](https://github.com/local-inference-lab/blackwell-llm-docker/tree/main/runtime).
 
+### Memory tuning
+
+Keep the model or preset's allocator and NCCL settings unless you need to
+trade throughput for capacity. Spark TP2's memory reductions are not universal
+TP4 defaults: smaller NCCL channel counts reduce DFlash2 C8 throughput, and
+smaller allocator segments reduce DeepSeek V4.1 C1 throughput in the
+[matched TP4 tests](../benchmarks/tp4-memory-controls.md).
+
+The most consistent isolated saving in that comparison is the cuBLAS workspace
+limit. It is **opt-in**, not a shared default. To try it, add
+`-e CUBLAS_WORKSPACE_CONFIG=:4096:1` before `"$IMAGE"` in a launch command.
+Five automatic-KV TP4 profiles made roughly 205–246 MiB more KV memory
+available on rank 0; Qwen's fixed-budget profile instead used less device memory.
+This does not establish the same result at TP1/TP2 or with combined overrides.
+Removing that override restores the image/preset's workspace policy.
+
 ## Performance evidence
 
 The [Karmic Kraken model table](../benchmarks/karmic-kraken-serving.md) records

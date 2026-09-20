@@ -13,12 +13,13 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 ## Landing Pages And Hubs
 
 - [Glossary And Acronym Guide](GLOSSARY.md) - `GLOSSARY.md`
-- [INDEX](INDEX.md) - `INDEX.md`
+- [RTX PRO 6000 Blackwell Wiki Index](INDEX.md) - `INDEX.md`
 - [RTX PRO 6000 Blackwell LLM Wiki](README.md) - `README.md`
 
 ## Contributor And Onboarding Guides
 
 - [Newcomer Onboarding Without Lowering The Signal](docs/newcomer-onboarding.md) - `docs/newcomer-onboarding.md`
+- [Jovian Judgement wheel-image deployment archive](docs/unified-vllm-docker-jj-archive.md) - `docs/unified-vllm-docker-jj-archive.md`
 - [One Docker image for GLM, Qwen and DeepSeek](docs/unified-vllm-docker.md) - `docs/unified-vllm-docker.md`
 - [ML Primitive Glossary](docs/wiki/ML-Primitive-Glossary.md) - `docs/wiki/ML-Primitive-Glossary.md`
 
@@ -94,7 +95,8 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [Warmup buffer reuse and host-RAM retention: R31 qualification](models/glm-5.3-flash/validation/warmup-retention-r31.md) - `models/glm-5.3-flash/validation/warmup-retention-r31.md`
 - [GLM-5.3-Flash verifier-backed behavioral fidelity](models/glm-5.3-flash/verifier-backed-behavioral-fidelity.md) - `models/glm-5.3-flash/verifier-backed-behavioral-fidelity.md`
 - [GLM-5.3-Flash — community R35 deployment and measurement archive](models/glm-5.3-flash-community-r35.md) - `models/glm-5.3-flash-community-r35.md`
-- [GLM-5.3-Flash Spark on two GPUs](models/glm-5.3-flash-spark-tp2.md) - `models/glm-5.3-flash-spark-tp2.md`
+- [GLM Spark TP2: experimental R2 archive](models/glm-5.3-flash-spark-tp2-r2-archive.md) - `models/glm-5.3-flash-spark-tp2-r2-archive.md`
+- [GLM-5.3-Flash on two 96-GB GPUs](models/glm-5.3-flash-spark-tp2.md) - `models/glm-5.3-flash-spark-tp2.md`
 - [GLM-5.3-Flash](models/glm-5.3-flash.md) - `models/glm-5.3-flash.md`
 - [GLM-4.7 on RTX PRO 6000 Blackwell](models/glm47.md) - `models/glm47.md`
 - [GLM-5.1 on RTX PRO 6000 Blackwell](models/glm5.1/README.md) - `models/glm5.1/README.md`
@@ -199,15 +201,19 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 ## Benchmarks And Quality
 
 - [Czech Tutoring Workload Quality: DeepSeek-V4-Flash vs V4.1-Flash vs Qwen3.8-Flash-Next vs GLM-5.3-Flash](benchmarks/czech-tutor-quality-comparison.md) - `benchmarks/czech-tutor-quality-comparison.md`
+- [GLM serving throughput across compilation-cache restarts](benchmarks/glm-startup-consistency.md) - `benchmarks/glm-startup-consistency.md`
 - [GLM-5.2 KLD Evaluation](benchmarks/glm52-kld-evaluation.md) - `benchmarks/glm52-kld-evaluation.md`
 - [Inference Throughput: Qwen3.5-397B-A17B Quantizations](benchmarks/inference-throughput/README.md) - `benchmarks/inference-throughput/README.md`
 - [vLLM vs SGLang Throughput: lukealonso/Qwen3.5-397B-A17B-NVFP4](benchmarks/inference-throughput/vllm-vs-sglang.md) - `benchmarks/inference-throughput/vllm-vs-sglang.md`
+- [Karmic Kraken model-serving measurements](benchmarks/karmic-kraken-serving.md) - `benchmarks/karmic-kraken-serving.md`
 - [Qwen3.5 SGLang KLD reproduction record](benchmarks/kld-evaluation.md) - `benchmarks/kld-evaluation.md`
 - [MTP Quality Evaluation](benchmarks/mtp-quality-evaluation.md) - `benchmarks/mtp-quality-evaluation.md`
 - [Qwen3.5-397B-A17B Quantization Comparison: AWQ vs NVFP4](benchmarks/nvfp4-quantization-comparison.md) - `benchmarks/nvfp4-quantization-comparison.md`
 - [Prepared-kernel ownership and API compatibility qualification](benchmarks/prepared-b12x-contracts/README.md) - `benchmarks/prepared-b12x-contracts/README.md`
 - [Wheel-composed model runtime qualification](benchmarks/prepared-b12x-serving/README.md) - `benchmarks/prepared-b12x-serving/README.md`
+- [Qwen request-boundary cache capacity](benchmarks/qwen-boundary-capacity-accounting.md) - `benchmarks/qwen-boundary-capacity-accounting.md`
 - [Benchmark Results -- RTX 6000 Pro Blackwell](benchmarks/results.md) - `benchmarks/results.md`
+- [TP4 runtime memory-control measurements](benchmarks/tp4-memory-controls.md) - `benchmarks/tp4-memory-controls.md`
 
 ## Distribution Fidelity
 
@@ -476,9 +482,21 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [Daily Summary - 2026-09-14](daily-summaries/2026-09/2026-09-15.md) - `daily-summaries/2026-09/2026-09-15.md`
 - [Daily Summary - 2026-09-15](daily-summaries/2026-09/2026-09-16.md) - `daily-summaries/2026-09/2026-09-16.md`
 - [Daily Summary - 2026-09-16](daily-summaries/2026-09/2026-09-17.md) - `daily-summaries/2026-09/2026-09-17.md`
+- [Daily Summary - 2026-09-17](daily-summaries/2026-09/2026-09-18.md) - `daily-summaries/2026-09/2026-09-18.md`
+- [Daily Summary - 2026-09-18](daily-summaries/2026-09/2026-09-19.md) - `daily-summaries/2026-09/2026-09-19.md`
+- [Daily Summary - 2026-09-19](daily-summaries/2026-09/2026-09-20.md) - `daily-summaries/2026-09/2026-09-20.md`
 - [Daily Summaries](daily-summaries/README.md) - `daily-summaries/README.md`
 
 ## Other Documents
 
+- [Archived serving guides](archive/serving-guides/README.md) - `archive/serving-guides/README.md`
+- [Karmic Kraken model-serving measurements](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/benchmarks/karmic-kraken-serving.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/benchmarks/karmic-kraken-serving.md`
+- [One Docker image for GLM, Qwen and DeepSeek](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/docs/unified-vllm-docker.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/docs/unified-vllm-docker.md`
+- [DeepSeek-V4-Flash Vision](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4-flash-vision.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4-flash-vision.md`
+- [DeepSeek-V4-Flash](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4-flash.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4-flash.md`
+- [DeepSeek-V4.1-Flash](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4.1-flash.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4.1-flash.md`
+- [GLM-5.3-Flash on two 96-GB GPUs](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/glm-5.3-flash-spark-tp2.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/glm-5.3-flash-spark-tp2.md`
+- [GLM-5.3-Flash](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/glm-5.3-flash.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/glm-5.3-flash.md`
+- [Qwen3.8-Flash-Next](archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/qwen38-flash-next.md) - `archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/qwen38-flash-next.md`
 - [Discord Daily Summary Service](automation/discord-daily-summary/README.md) - `automation/discord-daily-summary/README.md`
 - [Qwen3.5 SGLang KLD reproduction skill](scripts/kld-eval-skill.md) - `scripts/kld-eval-skill.md`

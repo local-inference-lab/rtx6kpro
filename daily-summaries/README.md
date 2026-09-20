@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-09-20](2026-09/2026-09-20.md) | GLM-5.3-Flash NVFP4-Spark on vLLM karmic-kraken-beta 5927520c, 2x RTX 6000 Pro Blackwell WS 96GB TP2 |
 | [2026-09-19](2026-09/2026-09-19.md) | kanadaj/sglang pull request 18 added the --prefill-batches-before-decode option (0.5 = one prefill t |
 | [2026-09-18](2026-09/2026-09-18.md) | Reported CUDA 615 on Blackwell: release notes document cuTensorMapEncodeTiled/Im2col MMU faults (XID |
 | [2026-09-17](2026-09/2026-09-17.md) | NVIDIA published DeepSeek-V4.1-Flash-NVFP4 on Hugging Face; the model link was shared in the DS4.1-F |

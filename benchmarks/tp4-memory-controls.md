@@ -10,6 +10,11 @@ The timed image and its relation to the published beta are identified in the
 This comparison varies runtime storage settings on that same immutable image;
 it does not compare CUDA releases or checkpoint quantization.
 
+For complete default Compose files, including image/profile ENV and resolved
+vLLM arguments, use the [expandable deployment reference](../docs/unified-vllm-docker.md#expand-the-complete-default-configurations).
+Those are the user-facing defaults; the measurement JSON above retains the
+TP4 and memory-control overrides specific to these experiments.
+
 Four RTX PRO 6000 Blackwell Max-Q GPUs, VRAM +6000, automatic graphics
 clocks, 325 W, TP4/DCP1. Each value is the median of at least three
 warmed 30-second windows. Prefill is uncached 32K client TTFT; decode

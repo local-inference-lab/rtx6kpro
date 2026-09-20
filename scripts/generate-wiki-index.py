@@ -26,6 +26,8 @@ SECTION_ORDER = [
 
 IGNORE_PARTS = {
     ".git",
+    ".pytest_cache",
+    "__pycache__",
     "images",
     "logs",
     "data",

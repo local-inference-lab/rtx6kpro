@@ -1,0 +1,64 @@
+{
+  "status": "qualified CPU configuration parity; not GPU serving validation",
+  "image": "ghcr.io/local-inference-lab/vllm@sha256:55e477ad62ae15a77c9b869e8fb8e2d958f6edcc4d95e306adfa89dee9ed19df",
+  "local_image_id": "sha256:83f00757ff18f3c3c12de291319b1a3a5496056a3873834d0994160828a3c6ee",
+  "runtime": "runc",
+  "gpu_device_requests": [],
+  "network": "none",
+  "cases": {
+    "glm53-tp4-off": {
+      "status": "passed",
+      "environment_entries": 159,
+      "argv_sha256": "82bb5ff34cf1f72cd3f3ad4881cb739c804bde2d84c0df081bdaf606ffc93fdc",
+      "compose_sha256": "410aaccbda5b17d18298fb107f1fbdcff8f01bc033692c79b6fe93856813e5c1"
+    },
+    "glm53-tp4-mtp3": {
+      "status": "passed",
+      "environment_entries": 158,
+      "argv_sha256": "7e4cc7a2f3807cb69b9dd11ced88a2d34ec8d2720345530ce75df293bebff3f2",
+      "compose_sha256": "80bc5b92a3546438a92c8ec7bb94fe7cf216c2cc2048814cb165dafe1588edf0"
+    },
+    "glm53-tp4-dflash2": {
+      "status": "passed",
+      "environment_entries": 158,
+      "argv_sha256": "df4e6a0b4aefb5ce929197b257338a08ca489c52e974c7efd9fc47f3e873e0a5",
+      "compose_sha256": "dab6ba24a73ba244fd0c5174c41124051fd5c27ac5af71cb4f3bb2932451cb65"
+    },
+    "glm53-spark-tp2": {
+      "status": "passed",
+      "environment_entries": 163,
+      "argv_sha256": "a8522a1a9f314ffa0fc3cd226d216e708f6480a676058f6c3d7f6a2e1bcb6df2",
+      "compose_sha256": "11b60759042071fa98d9fe578027655fd30e4875e543227c4efd48416646354b"
+    },
+    "qwen38-tp1": {
+      "status": "passed",
+      "environment_entries": 154,
+      "argv_sha256": "04f7d6b963f9310ddcc2de47a4600a8eb436457318c579a21391569908bf90fa",
+      "compose_sha256": "ad4be7fe05346103bbccdb0e5bf5da630b897b3c24f9e51b7fcd13010a642262"
+    },
+    "qwen38-tp2": {
+      "status": "passed",
+      "environment_entries": 154,
+      "argv_sha256": "985c4da69e5a8887fe1449540470892e275b21d80c09a7beba704c0156b32dd6",
+      "compose_sha256": "69cc0cd425c7e6fabd863a3b2311999778c8b5d4566595dc0afbdc2c62c00e08"
+    },
+    "ds4-flash-tp2": {
+      "status": "passed",
+      "environment_entries": 135,
+      "argv_sha256": "05a8d8134c771cd810d64ffd2eac3d74e4b72efb7c3192400496557a9263bdc6",
+      "compose_sha256": "6ab2e3838b1d59343d73f847640fed0e74bf0b08b53784f69272bef7bf392f37"
+    },
+    "ds4-vision-tp2": {
+      "status": "passed",
+      "environment_entries": 135,
+      "argv_sha256": "e457b010423559bb707849a4a7c79ae411c814e5a42c525e781c0a379b34b314",
+      "compose_sha256": "fb67b67040702e5d9d0f9e8edea515220589799781663854641ef428c1e9c12b"
+    },
+    "ds41-flash-tp4": {
+      "status": "passed",
+      "environment_entries": 139,
+      "argv_sha256": "55413c123b438f06976e84fac6c206082e9cb1e81a82bf99292f9868ae4d185e",
+      "compose_sha256": "f47dfca77140c55bf4b40d5f944a5fe4616610ec2a1276f02ade363a4fb6f15d"
+    }
+  }
+}

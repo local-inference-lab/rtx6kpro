@@ -18,6 +18,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 
 ## Contributor And Onboarding Guides
 
+- [Full Compose configurations from shared model profiles](docs/compose/README.md) - `docs/compose/README.md`
 - [Newcomer Onboarding Without Lowering The Signal](docs/newcomer-onboarding.md) - `docs/newcomer-onboarding.md`
 - [Jovian Judgement wheel-image deployment archive](docs/unified-vllm-docker-jj-archive.md) - `docs/unified-vllm-docker-jj-archive.md`
 - [One Docker image for GLM, Qwen and DeepSeek](docs/unified-vllm-docker.md) - `docs/unified-vllm-docker.md`

@@ -1,0 +1,55 @@
+{
+  "schema": "lil-serving-guide-archive/v1",
+  "source_repository": "local-inference-lab/rtx6kpro",
+  "source_revision": "76595579cc04c245c13537583a93d525060b8ce0",
+  "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260919-cfc67a15ebc3daf7",
+  "digest": "sha256:5927520c447fdcbc0990567f9237756ff66a54e360438915a5f70cd5cf9d530d",
+  "release": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-cfc67a15ebc3daf7d3d03204256b5daeb3c522345bc6f2b608bfb33933916339",
+  "transformations": [
+    "Added an archive notice.",
+    "Replaced the floating KK beta image in commands with the September 19 release tag.",
+    "Resolved relative links against the source wiki revision."
+  ],
+  "pages": [
+    {
+      "source_path": "docs/unified-vllm-docker.md",
+      "git_blob": "0b9588fe4192e1e1d6966ef6af0b6e0d2fea7527",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/docs/unified-vllm-docker.md"
+    },
+    {
+      "source_path": "models/glm-5.3-flash.md",
+      "git_blob": "7e6088ca1c0ab1e0f168aecdff97ee31262e9ff9",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/glm-5.3-flash.md"
+    },
+    {
+      "source_path": "models/glm-5.3-flash-spark-tp2.md",
+      "git_blob": "ecb465a3fe37e7be27176102cb06795bad149906",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/glm-5.3-flash-spark-tp2.md"
+    },
+    {
+      "source_path": "models/qwen38-flash-next.md",
+      "git_blob": "55a45de2a239226cd7362ace02c835e40270fb25",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/qwen38-flash-next.md"
+    },
+    {
+      "source_path": "models/deepseek-v4-flash.md",
+      "git_blob": "dcb2dadc25a351c74e29519611398caf9b34d42a",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4-flash.md"
+    },
+    {
+      "source_path": "models/deepseek-v4-flash-vision.md",
+      "git_blob": "a6a149a9314f1cf7afaea0eaaa71183a337de2ee",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4-flash-vision.md"
+    },
+    {
+      "source_path": "models/deepseek-v4.1-flash.md",
+      "git_blob": "804a12633ee6f62e3c8ff78c735da7a30c784090",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/models/deepseek-v4.1-flash.md"
+    },
+    {
+      "source_path": "benchmarks/karmic-kraken-serving.md",
+      "git_blob": "00f105324ea1d12c4abe41fd2ba67959e2f2a0aa",
+      "archive_path": "archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/benchmarks/karmic-kraken-serving.md"
+    }
+  ]
+}

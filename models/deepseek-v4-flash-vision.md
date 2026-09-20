@@ -27,20 +27,30 @@ For target-only serving append `--mode off` **after `"$IMAGE"`**.
 Model and compiler caches stay in named volumes. The image profile selects
 compatible model/code revisions; no absolute checkpoint path is required.
 The [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
-records the shared-image comparison. The JJ results below are separate.
+records the image comparison and exact measurement settings.
 
-## Serving defaults and cache
+## Common settings
 
-| Setting | Profile behavior |
-|---|---|
-| Parallelism / speculation | TP2/DCP1, fixed DSpark K3, probabilistic proposals, standard rejection |
-| Backends | B12X attention and W4A8 MoE; native dense selection |
-| KV / prefix cache | FP8 CLI mode, prefix cache enabled, retention interval 4096 |
-| Graphs | Full-and-piecewise; default graph cap 16 |
-| Scheduler | 4096 tokens, four sequences |
-| Context / GPU fraction | Native automatic context admission, `max-model-len=-1`; GPU fraction .975 |
-| Sampling / reasoning | Temperature 1/top-p .95, thinking enabled, `high` |
-| Images | No artificial image1/image2 cap in the profile; encoder and memory limits remain |
+The command uses TP2/DCP1 and DSpark K3. Put `-e` settings before the image
+and native arguments after it:
+
+| Setting | Default / recommendation | Example override |
+|---|---|---|
+| GPU count | TP2; expose two GPU IDs | `-e TP=4` with `device=0,1,2,3` |
+| Active requests | 4 | `-e MAX_NUM_SEQS=8` if your memory budget allows |
+| Prefill budget | 4096 tokens | `-e MAX_NUM_BATCHED_TOKENS=4096` |
+| Context | Automatic, `-1` | `-e MAX_MODEL_LEN=131072` |
+| GPU memory fraction | 0.975 | `-e GPU_MEMORY_UTILIZATION=0.95` for more image working space |
+| Speculation | DSpark K3 | `--mode dspark --draft-tokens 3` after the image; `--mode off` disables it |
+
+B12X attention and W4A8 MoE, FP8 CLI cache mode and prefix caching are enabled.
+Keep the model-specific cache retention default. Sampling defaults are
+temperature 1/top-p .95, thinking enabled and reasoning `high`. The speed test
+below uses top-p 1 explicitly.
+
+The profile imposes no artificial one/two-image cap. Image resolution, count
+and context consume memory; the text prefill figure is not an image-encoding
+benchmark. Reducing the GPU memory fraction leaves more temporary image space.
 
 The profile intentionally leaves `--linear-backend` unspecified. This delegates
 dense selection to the model/runtime; it is not evidence that every dense
@@ -56,23 +66,22 @@ Native KV offload is unsupported by this profile.
 
 ## Measured performance
 
-Same stock RTX PRO 6000 Workstation pair, TP2/DCP1, fixed K3, 4096-token
-budget, four sequences, FP8 KV, GPU-only cache and configured context limit
-1,048,576. Decode uses temperature 1/top-p **1**, not the profile's .95 default,
-with three warmed 30-second context-zero runs. C4 is aggregate; it is not C8.
+Two RTX PRO 6000 **Max-Q**, **VRAM +6000**, automatic graphics clocks;
+TP2/DCP1, DSpark K3, 4096-token budget, four slots and FP8 GPU cache.
+Five warmed 30-second windows per cell. Decode uses context zero and temperature
+1/top-p **1**, not the profile's .95 default. C4 is aggregate, not C8.
 32K prefill is uncached text input measured from client TTFT.
 
-| Metric | Community R9 → wheel image | Change |
-|---|---:|---:|
-| C1 output | 169.92 → 185.49 tok/s | +9.17% |
-| C4 output | 411.49 → 423.11 tok/s | +2.83% |
-| 32K text prefill | 10,388 → 10,615 tok/s | +2.19% |
-| Logical KV tokens | 1,215,925 → 1,285,174 | +5.70% |
+| Metric | Saved JJ R9 | Karmic Kraken | Change |
+|---|---:|---:|---:|
+| C1 output | 169.2 tok/s | 193.9 tok/s | +14.60% |
+| C4 aggregate output | 394.7 tok/s | 401.4 tok/s | +1.68% |
+| 32K text prefill | 8,993 tok/s | 9,182 tok/s | +2.10% |
+| C1 verifier rate | 79.29 steps/s | 87.18 steps/s | +9.96% |
 
-Five API checks including image input and all six decode cells pass. C1 ranges
-are 165.67–174.26 versus 185.04–192.78 tok/s. Results are bounded serving
-measurements, not a model-quality score or an actual million-token request.
-[Image identities, parameters and raw samples](../benchmarks/prepared-b12x-serving/).
+Text, image, repeated-prefix and changed-prefix checks pass. The KK server
+reports 1,291,085 logical KV tokens with a 1,048,576 per-request context cap.
+[Image versions, configuration and all samples](../benchmarks/karmic-kraken-serving.md).
 
 ## Related model and historical releases
 
@@ -83,4 +92,6 @@ measurements, not a model-quality score or an actual million-token request.
   [Vision R3 record](ds4-vision-jovian-judgement-r3.md) and
   [shared community-runtime record](ds4-jovian-community-r29.md) preserve their
   release-specific commands and qualification. They are not the unified image.
-- [Source review and limits](https://github.com/local-inference-lab/vllm/issues/773).
+- [Archived recipes and measurements](../archive/serving-guides/README.md)
+  preserve the preceding guides and stock Workstation figures.
+- [Source review and limits](https://github.com/local-inference-lab/vllm/issues/808).

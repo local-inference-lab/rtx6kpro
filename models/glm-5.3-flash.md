@@ -47,25 +47,42 @@ checkpoint and memory budget differ from this four-GPU configuration.
 
 Measured Karmic Kraken results and saved JJ comparisons are in the
 [model benchmark table](../benchmarks/karmic-kraken-serving.md).
-The separate JJ measurements below retain their original image boundaries.
 
-## Serving defaults and alternatives
+## Common settings
 
-| Setting | Profile behavior |
-|---|---|
-| Parallelism | TP4/DCP1; four 96-GB GPUs in the measured configuration |
-| Speculation when omitted | Off; the explicit examples select MTP3 or DFlash2 K7 |
-| Target precision | ModelOpt NVFP4; B12X MoE and dense backends |
-| Attention | B12X sparse attention/selection and B12X KDA prefill |
-| MTP | B12X attention, Marlin draft MoE, private NVFP4 draft vocabulary head; BF16 target head |
-| DFlash2 | Offline MXFP8 weights, B12X dense path, FLASH_ATTN draft attention, automatic draft KV dtype |
-| Target KV | FP8; `--kv-cache-dtype nvfp4_ds_mla` is an explicit, separately unqualified option for this artifact |
-| Graphs | Full-and-piecewise target/draft decode graphs, capture sizes through 256 |
-| Scheduler | 4096 tokens, 32 sequences, one prefill lane, compute share 0.4 |
-| Context / GPU fraction | 1,048,576 configured tokens / 0.93; configuration is not a million-token test |
-| Prefix policy | `request_boundaries` with `mamba-cache-mode=align`; no manual retention interval needed |
-| Sampling / reasoning | Temperature 1, top-p .95, reasoning `high`, `clear_thinking=false` |
-| Vision | No artificial one/two-image profile cap; native encoder/context/memory limits remain |
+Keep the profile defaults unless your workload needs a different capacity.
+Place the following `-e` overrides **before `"$IMAGE"`**:
+
+| Setting | Default / recommendation | Example override |
+|---|---|---|
+| GPUs | TP4; expose four GPU IDs | `-e TP=4` |
+| Context parallelism | DCP1 for the speed table | `-e DCP=4` for full-CKV gather; DCP must divide TP |
+| Active requests | 32 | `-e MAX_NUM_SEQS=16` |
+| Prefill budget | 4096 tokens | `-e MAX_NUM_BATCHED_TOKENS=4096` |
+| Per-request context limit | 1,048,576, subject to available KV | `-e MAX_MODEL_LEN=131072` |
+| GPU memory fraction | 0.93 | `-e GPU_MEMORY_UTILIZATION=0.90` to leave more working space |
+| External prefix storage | GPU-only | `-e CACHE_MODE=lmcache` with the RAM/disk settings below |
+
+TP2 needs the [Spark checkpoint and preset](glm-5.3-flash-spark-tp2.md),
+not just `-e TP=2` on this command. Changing slots or draft length can change
+graph memory and KV capacity.
+
+### Backend and request defaults
+
+The target uses ModelOpt NVFP4, B12X attention, B12X KDA prefill, B12X MoE
+and dense kernels, FP8 KV, and full-and-piecewise CUDA graphs. Two-shot
+all-reduce is off. MTP uses Marlin draft MoE and a private NVFP4 vocabulary
+head; the target head remains BF16. DFlash2 uses offline MXFP8 weights,
+B12X dense kernels, FLASH_ATTN draft attention and automatic draft KV dtype.
+
+GPU prefix caching uses `request_boundaries` with aligned recurrent states.
+Keep this default: no manual `--prefix-cache-retention-interval` is needed.
+Vision has no artificial one/two-image profile cap; image resolution and
+context still consume memory.
+
+Request defaults are temperature 1, top-p .95, reasoning `high` and
+`clear_thinking=false`. For example, a request can select
+`"chat_template_kwargs":{"reasoning_effort":"high"}`.
 
 Explicit request sampling and template options override their corresponding
 server defaults. If replacing the complete template-default JSON, retain
@@ -76,52 +93,34 @@ documents GPU-local, LMCache RAM/filesystem and native KV offload. LMCache is
 opt-in; text prefixes support CPU restore and persistent restart recovery.
 External recurrent restore does not apply to image-bearing requests.
 
-`--decode-context-parallel-size 4` selects DCP4 and automatic full-CKV gather;
-this is not specific to DFlash2. DCP4 and TP8 are **implemented**, but the
-six-profile wheel comparison below qualifies DCP1, not those alternatives.
-The [Spark TP2 recipe](glm-5.3-flash-spark-tp2.md) has a different checkpoint
-and capacity contract; it is not this four-GPU profile with TP changed to two.
+`-e DCP=4` selects DCP4 and automatic full-CKV gather in both MTP and DFlash2.
+The speed table uses DCP1; it does not predict DCP4 speed. For an explicit
+NVFP4 target-cache experiment, append `--kv-cache-dtype nvfp4_ds_mla` after
+the image. That changes the numerical and memory configuration and is not
+the FP8 measurement below.
 
 ## Measured performance
 
-Stock RTX PRO 6000 Workstation quartet, TP4/DCP1, 4096-token budget, GPU-only
-FP8 target cache, full-and-piecewise graphs, temperature 1/top-p .95. Decode:
-context zero, medians of three warmed 30-second runs. Prefill: sustained
-uncached nominal-32K requests, client time to first token. C8 is aggregate.
-Image identities, runtime arguments and raw samples are in the
-[wheel-image qualification](../benchmarks/prepared-b12x-serving/).
+Four RTX PRO 6000 **Max-Q**, **VRAM +6000**, automatic graphics clocks;
+TP4/DCP1, 4096-token budget, 32 slots, GPU-only FP8 target cache,
+full-and-piecewise graphs and temperature 1/top-p .95. Five warmed
+30-second windows per cell; context-zero decode and uncached nominal-32K
+prefill measured from client TTFT. C8 is aggregate.
 
-| Mode | C1 tok/s, R35 → wheel image | C8 tok/s, R35 → wheel image | 32K prefill tok/s, R35 → wheel image | Sieve tok/s, R35 → wheel image |
+| Mode | C1 output | C8 aggregate output | 32K prefill | Change from saved R35: C1 / C8 / prefill |
 |---|---:|---:|---:|---:|
-| MTP3 | 247.12 → 249.33 (+0.89%) | 872.67 → 875.86 (+0.37%) | 15,332 → 15,580 (+1.62%) | 326.15 → 325.75 (−0.12%) |
-| DFlash2 K7 | 211.23 → 219.83 (+4.07%) | 673.26 → 717.84 (+6.62%) | 15,538 → 15,734 (+1.26%) | 458.14 → 461.42 (+0.72%) |
+| MTP3 | 281.3 tok/s | 897.6 tok/s | 13,816 tok/s | +12.99% / +2.72% / +2.23% |
+| DFlash2 K7 | 229.0 tok/s | 702.6 tok/s | 13,955 tok/s | +4.22% / +3.67% / +0.83% |
 
-Sieve uses five measured requests and is not a coding-correctness evaluation.
-No no-spec measurement exists in this wheel-image matrix. Historical no-spec,
-DCP4 and +6000-clock values remain in the archive, not substituted here.
+The corresponding C1 verifier rates are 112.14 steps/s for MTP3 and 87.56
+steps/s for DFlash2. Startup reports 5,595,903 and 5,816,930 logical KV tokens,
+respectively, shared across requests. Both modes pass arithmetic and
+repeated/changed-prefix checks.
+[Exact images, settings and all samples](../benchmarks/karmic-kraken-serving.md).
 
-### Prepared B12X plan integration
-
-A separate same-GPU component comparison qualifies the B12X master
-reconciliation and vLLM #789, which retains GLM's prepared selection plan:
-
-| Metric | Control → prepared-plan image | Change |
-|---|---:|---:|
-| MTP3 C8 output | 856.05 → 857.27 tok/s | +0.14% |
-| MTP3 32K prefill | 15,486 → 15,531 tok/s | +0.29% |
-| DFlash2 C1 output | 214.31 → 212.08 tok/s | −1.04% |
-| DFlash2 C8 output | 695.88 → 708.64 tok/s | +1.83% |
-| DFlash2 32K prefill | 15,702 → 15,702 tok/s | 0.00% |
-
-DFlash C1 verifier throughput rises 0.22% while acceptance changes; negative
-output deltas are retained rather than called zero regression. The MTP control
-contains C8 only. Read the
-[component receipts](../benchmarks/prepared-b12x-contracts/#retained-pooled-selection-glm)
-separately from the whole-image table. Two-shot is disabled in both comparisons.
-
-Functional checks include arithmetic, repeated/changed prefix requests,
-2/8/16 small images and image history. These are bounded checks, not general
-language quality, arbitrary image resolution or million-token qualification.
+Sieve, no-spec and DCP4 were not remeasured in this matrix. Their preceding
+results, including stock Workstation measurements, remain in the
+[versioned guide archive](../archive/serving-guides/README.md).
 
 ## Quality evaluation and historical releases
 
@@ -139,4 +138,4 @@ runtime/checkpoint boundaries of these independent reports:
   release-specific launchers, DCP and no-spec matrices, +6000 measurements,
   source locks, historical LMCache restores and reported constrained-output limits.
 
-Source review and unresolved items: [issue #773](https://github.com/local-inference-lab/vllm/issues/773).
+Source review and integration checklist: [issue #808](https://github.com/local-inference-lab/vllm/issues/808).

@@ -11,19 +11,20 @@ PCIe topology work, and regression history.
 For GLM-5.3, Qwen3.8-Flash-Next, DeepSeek V4 text/Vision and V4.1, start with
 the **[shared Docker launch guide](docs/unified-vllm-docker.md)**. One image
 provides model profiles, speculation, GPU selection and optional LMCache.
-The guide distinguishes implemented modes, measured image compositions and
-the published beta's package tests; they are not interchangeable qualification.
-Model pages supply model-specific choices and recorded speeds.
+Each model page has a complete launch command, exact option examples and
+recorded speeds. Use the [recipe archive](archive/serving-guides/README.md)
+to reproduce a preceding release without changing the recommended model URLs.
 
 | Model family | Start here | Scope |
 |---|---|---|
 | GLM-5.3-Flash | [GLM-5.3-Flash](models/glm-5.3-flash.md) | Unified TP4 profile, NVFP4 target, no-spec/MTP3/MXFP8 DFlash2 choices, bounded decode/prefill/Sieve measurements and quality reports. |
+| GLM-5.3-Flash Spark | [Two-GPU recipe](models/glm-5.3-flash-spark-tp2.md) | Memory-tuned Spark checkpoint preset for two 96-GB GPUs, MTP3 and optional RAM/disk prefix storage. |
 | GLM-5.2 | [GLM-5.2 Runbook Hub](models/glm-5.2.md) | Fathomless vLLM, NVFP4, online FP8/MXFP8, B12X, DCP, MTP, KLD. |
 | DeepSeek-V4.1-Flash | [DeepSeek-V4.1-Flash](models/deepseek-v4.1-flash.md) | Unified TP4 profile, native text/vision, adaptive DSpark K7, RAM/SSD Engram tables, bounded API and throughput evidence. |
 | DeepSeek-V4-Flash / DSpark | [DeepSeek V4 text](models/deepseek-v4-flash.md), [DeepSeek V4 Vision](models/deepseek-v4-flash-vision.md) | Unified TP2 profiles, fixed DSpark K5/K3, B12X, optional LMCache and measured image comparisons. |
 | Kimi | [Kimi Runbook Hub](models/kimi.md) | Kimi-K2.7-Code, DFlash, parser/tool-call runtime. |
 | Xiaomi MiMo | [MiMo Runbook Hub](models/mimo.md) | MiMo V2.5 Pro FP4-DFlash. |
-| Qwen3.8-Flash-Next | [Qwen3.8-Flash-Next](models/qwen38-flash-next.md) | Unified TP1/TP2 profile, MTP3, CPU PLE tables and FP8 KV; bounded TP1 measurements including the unresolved prefill difference. |
+| Qwen3.8-Flash-Next | [Qwen3.8-Flash-Next](models/qwen38-flash-next.md) | Unified TP1/TP2 profile, MTP3, CPU PLE tables, optional vision and FP8 KV. |
 | Qwen3.8-27B | [Qwen3.8-27B on RTX PRO 6000 Blackwell](models/qwen38-27b.md), [readable QSRT K5 training result](models/qwen38-qsrt-k5-training-result.md), [exact QSRT K5 specification](models/qwen38-qsrt-k5-r16.md) | TP1, TP2, and TP4 throughput evidence plus the QSRT K5 training interpretation, artifact, fidelity, runtime, and source contract. |
 | GLM-5.1 | [GLM-5.1 Runbook Hub](models/glm-5.1.md) | Historical GLM-5.1, KLD methodology, older B12X/SGLang work. |
 | Legacy / secondary models | [Legacy Model Runbooks](models/legacy.md) | DeepSeek-V4-Pro, GLM-4.7, Qwen, MiniMax, older Kimi pages. |
@@ -48,7 +49,7 @@ Need the complete map of every Markdown page?
 | Understand MTP, DSpark, or DFlash | [Speculative Decoding](optimization/speculative-decoding.md), DS4/Kimi/MiMo pages. |
 | Debug topology or PCIe behavior | [Topology](hardware/topology.md), [PCIe Bandwidth](hardware/pcie-bandwidth.md), [GPU Configurations](hardware/gpu-configs.md). |
 | Avoid known runtime footguns | [Common Issues](troubleshooting/common-issues.md), model caveats, and daily summaries. |
-| Understand historical measurements | Historical versioned pages and [Daily Summaries](daily-summaries/). |
+| Reproduce a preceding deployment or compare releases | [Archived serving guides](archive/serving-guides/README.md), historical versioned pages and [Daily Summaries](daily-summaries/). |
 
 ## Serving Guides and Reproduction Records
 
@@ -87,7 +88,7 @@ family unless you are reproducing a specific historical result.
 | Area | Page |
 |---|---|
 | Consolidated throughput | [Benchmark Results](benchmarks/results.md) |
-| Unified serving-image comparison | [Six-profile wheel-image evidence](benchmarks/prepared-b12x-serving/), [component comparisons](benchmarks/prepared-b12x-contracts/) |
+| Shared beta serving-image comparison | [Karmic Kraken model measurements](benchmarks/karmic-kraken-serving.md); [archived comparisons](archive/serving-guides/README.md) retain their separate image and clock conditions. |
 | vLLM vs SGLang throughput | [Inference throughput](benchmarks/inference-throughput/README.md) |
 | GLM-5.2 KLD and quant quality | [GLM-5.2 KLD Evaluation](benchmarks/glm52-kld-evaluation.md) |
 | General KLD methodology | [Measuring quantization distribution fidelity in vLLM](kld/README.md) |

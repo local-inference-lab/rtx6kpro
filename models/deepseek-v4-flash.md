@@ -27,27 +27,34 @@ For target-only serving append `--mode off` **after `"$IMAGE"`**.
 Model and compiler caches stay in named volumes. The image profile selects
 compatible model/code revisions; no absolute checkpoint path is required.
 The [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
-records the shared-image comparison. The JJ results below are separate.
+records the image comparison and exact measurement settings.
 
-## Serving defaults and alternatives
+## Common settings
 
-| Setting | Profile behavior |
-|---|---|
-| Parallelism / speculation | TP2/DCP1, fixed DSpark K5, probabilistic proposals, standard rejection |
-| Backends | B12X attention and W4A8 MoE; native dense selection |
-| KV / prefix cache | FP8 compressed attention KV, prefix caching enabled, retention interval 4096 |
-| Graphs | Full-and-piecewise, default graph cap 48; breakable prefill off |
-| Scheduler | 4096 tokens, eight sequences |
-| Context / GPU fraction | Native automatic context admission, `max-model-len=-1`; GPU fraction .975 |
-| Sampling / reasoning | Temperature 1/top-p .95, thinking enabled, `high` |
+The command uses TP2/DCP1, DSpark K5, probabilistic proposals and standard
+rejection. Put `-e` settings before the image and native arguments after it:
+
+| Setting | Default / recommendation | Example override |
+|---|---|---|
+| GPU count | TP2; expose two GPU IDs | `-e TP=4` with `device=0,1,2,3` |
+| Active requests | 8 | `-e MAX_NUM_SEQS=16` |
+| Prefill budget | 4096 tokens | `-e MAX_NUM_BATCHED_TOKENS=4096` |
+| Context | Automatic, `-1` | `-e MAX_MODEL_LEN=131072` |
+| GPU memory fraction | 0.975 | `-e GPU_MEMORY_UTILIZATION=0.95` for more working space |
+| Speculation | DSpark K5 | `--mode dspark --draft-tokens 5` after the image; `--mode off` disables it |
+
+The profile selects B12X attention, W4A8 MoE and FP8 compressed attention KV.
+Prefix caching is on; keep its model-specific retention setting. Breakable
+prefill is off. Sampling defaults are temperature 1/top-p .95 with thinking
+enabled and reasoning `high`. The speed test below uses top-p 1 explicitly.
 
 The profile leaves `--linear-backend` unspecified; that is native selection,
 not a guarantee that every projection uses a particular kernel. Do not copy
 GLM's complete backend environment into this recipe.
 
 DSpark and standard Multi-Token Prediction (MTP) use different checkpoint
-contracts. The following standard-MTP alternative is **implemented**, but
-not qualified by the DSpark measurements on this page. Replace the serving
+contracts. The following standard-MTP alternative is not covered by the DSpark
+speed measurements on this page. Replace the serving
 command's final line with:
 
 ```bash
@@ -64,54 +71,31 @@ controls are unrelated to it.
 
 ## Measured performance
 
-Same stock RTX PRO 6000 Workstation pair, TP2/DCP1, fixed K5, 4096-token
-budget, eight sequences, FP8 KV, GPU-only cache and configured context limit
-1,048,576. Decode uses temperature 1/top-p **1**, not the profile's .95 default,
-with three warmed 30-second context-zero runs. C8 is aggregate.
-Prefill is uncached nominal 32K, measured from client time to first token.
+Two RTX PRO 6000 **Max-Q**, **VRAM +6000**, automatic graphics clocks;
+TP2/DCP1, DSpark K5, 4096-token budget, eight slots and FP8 GPU cache.
+Five warmed 30-second windows per cell. Decode uses context zero and temperature
+1/top-p **1**, not the profile's .95 default. C8 is aggregate. Prefill is
+uncached nominal 32K measured from client time to first token.
 
-| Metric | Community R9 → wheel image | Change |
-|---|---:|---:|
-| C1 output | 191.35 → 190.12 tok/s | −0.64% |
-| C8 output | 653.53 → 669.56 tok/s | +2.45% |
-| 32K prefill | 13,527 → 13,863 tok/s | +2.48% |
-| Logical KV tokens | 1,192,983 → 1,293,619 | +8.44% |
+| Metric | Saved JJ R9 | Karmic Kraken | Change |
+|---|---:|---:|---:|
+| C1 output | 214.9 tok/s | 212.5 tok/s | −1.09% |
+| C8 aggregate output | 611.9 tok/s | 667.5 tok/s | +9.08% |
+| 32K prefill | 11,167 tok/s | 11,392 tok/s | +2.01% |
+| C1 verifier rate | 73.24 steps/s | 75.45 steps/s | +3.02% |
 
-All four API checks and six decode cells pass. C1 request-verifier throughput
-rises 1.92%, while accepted length changes from 2.662 to 2.593; the small
-output decrease is retained, not called a regression-free result. Configuring
-a million-token limit is not a million-token request test.
-[Exact image identities, parameters and raw samples](../benchmarks/prepared-b12x-serving/).
+C1 output includes variable draft acceptance: median accepted length is
+2.944 versus 2.815, despite faster verification. The KK run reports 1,301,500
+logical KV tokens with a 1,048,576 per-request context cap. That is cache
+capacity, not a million-token performance test.
+[Image versions, configuration and all samples](../benchmarks/karmic-kraken-serving.md).
 
 ## Historical deployment and measurement records
 
-These pages retain their image-specific launchers, source locks and results.
-Their environment variables are not a second configuration source for the
-unified image.
-
-| Need | Record |
-|---|---|
-| Text K5 / Vision K3, GPU KV and text LMCache restore | [Jovian Judgement R9](ds4-jovian-judgement-r9.md) |
-| Shared community GLM/Qwen/DS4 image | [Shared community-runtime record](ds4-jovian-community-r29.md) |
-| Qualified Infernal source composition | [Infernal Invocation R21](ds4dspark-infernal-invocation-r21.md) |
-| Target-only 2.11M-KV capacity study | [Infernal Invocation R19](ds4dspark-infernal-invocation-r19.md) |
-| 0731 checkpoint deployment | [Infernal Invocation R18](ds4dspark-infernal-invocation-r18.md) |
-| Topology-calibrated transport | [B12X PCIe transport calibration](ds4f-b12x-pcie-autotune.md) |
-| Gilded source composition | [Gilded Gnosis R33](ds4dspark-v20-r33.md) |
-| Fathomless TP2/TP4 sweep | [Fathomless validation](ds4dspark-v10.md) |
-| DSpark and standard-MTP sweep | [DSpark/MTP reference](ds4dspark-v9.md) |
-| Empty reasoning before tool calls | [Troubleshooting](ds4f-empty-think/README.md) |
-
-### Release namespace map
-
-| Source line | Revision namespace | Serving specification |
-|---|---|---|
-| `dev/jovian-judgement` | Jovian Judgement `r*` | [DS4 text and Vision r9](ds4-jovian-judgement-r9.md) |
-| `dev/infernal-invocation` | Infernal Invocation `r*` | [r21 qualified source composition](ds4dspark-infernal-invocation-r21.md), [r19 capacity study](ds4dspark-infernal-invocation-r19.md) |
-| `dev/gilded-gnosis` | Gilded Gnosis `v20-r*` | [Gilded Gnosis r33](ds4dspark-v20-r33.md) |
-| Fathomless Firmament | `v9` and `v10` | [v10](ds4dspark-v10.md), [v9](ds4dspark-v9.md) |
-| Eldritch Enlightenment | DS4 Flash `v1-v6` | [v6](ds4-flash-v6.md), [v5](ds4-flash-v5.md), [v4](ds4-flash-v4.md), [v3](ds4-flash-v3.md), [v2](ds4-flash-v2.md), [v1](ds4-flash-v1.md) |
-
-Revision numbers belong to their source line, not to one global sequence.
-Source review and unresolved items:
-[issue #773](https://github.com/local-inference-lab/vllm/issues/773).
+- [Archived recipes and measurements](../archive/serving-guides/README.md)
+  retain complete preceding guides, including stock Workstation results.
+- [JJ R9](ds4-jovian-judgement-r9.md) contains the release-specific comparison
+  recipe. Its environment variables are not shared-image defaults.
+- [Empty reasoning before tool calls](ds4f-empty-think/README.md) and
+  [PCIe transport calibration](ds4f-b12x-pcie-autotune.md).
+- [Source review](https://github.com/local-inference-lab/vllm/issues/808).

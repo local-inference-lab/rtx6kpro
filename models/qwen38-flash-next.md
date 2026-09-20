@@ -54,28 +54,35 @@ GPU=0 PORT=8000 docker compose -f qwen38-flash-next.compose.yml --profile tp1 up
 
 For two GPUs select `--profile tp2` and set `GPU0`/`GPU1`.
 The [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
-records the TP1 comparison; the JJ results below remain a separate measurement.
+records the TP1 comparison against saved JJ measurements.
 
 ## Precision, model tables and cache
 
-| Setting | Profile behavior |
-|---|---|
-| Weight format | Mixed ModelOpt NVFP4; the repository name does not mean every tensor is four-bit |
-| PLE n-gram tables | CPU-mapped host RAM, `VLLM_PLE_CPU_OFFLOAD=1` |
-| Vocabulary projections | BF16 target; private NVFP4 MTP head with BF16 activations |
-| Kernels | B12X MoE, dense and GDN decode; native Qwen attention selection |
-| KV / recurrent state | FP8 attention KV; recurrent state follows the native model contract |
-| Runner / graphs | V2, full-and-piecewise, graph cap 64 |
-| Scheduler / context | 6019 tokens, 16 sequences, maximum context 262,144 |
-| Prefix cache | Enabled; native `auto` selects exact recurrent request boundaries where supported |
-| Vision | Text-only by default; `--no-language-model-only` enables the model path |
-| LMCache | Optional CPU/disk restore for text; separate from PLE offload |
+Put these `-e` overrides **before `"$IMAGE"`**:
+
+| Setting | Default / recommendation | Example override |
+|---|---|---|
+| Active requests | 16 | `-e MAX_NUM_SEQS=8` |
+| Prefill budget | 6019 tokens | `-e MAX_NUM_BATCHED_TOKENS=4096` |
+| Context limit | 262,144 | `-e MAX_MODEL_LEN=131072` |
+| GPU memory fraction | 0.96 | `-e GPU_MEMORY_UTILIZATION=0.93` to reserve more working space |
+| PLE table placement | Host RAM | `-e VLLM_PLE_TABLE_MEMORY=disk` for native disk loading |
+| Prefix storage | GPU-only | `-e CACHE_MODE=lmcache` with [RAM/disk controls](../docs/unified-vllm-docker.md#cache-storage-gpu-lmcache-or-native-offload) |
+
+The checkpoint uses mixed ModelOpt NVFP4, not four-bit storage for every
+tensor. The target vocabulary head stays BF16; MTP has a private NVFP4 head
+with BF16 activations. B12X handles MoE, dense kernels and GDN decode, with
+native Qwen attention. The V2 runner uses full-and-piecewise graphs.
+
+Attention KV is FP8, while recurrent state follows the model's native contract.
+Prefix caching is on; the native `auto` policy selects exact recurrent request
+boundaries where supported. Leave this policy to the model profile.
 
 PLE is a learned embedding table, not request KV and not an n-gram speculator.
 Historical startup accounting records about 26.82 GiB of mapped host tables;
 leave additional host RAM for loading and the server. Keep offload enabled for
-the one-96-GB-GPU recipe. A device-resident PLE alternative requires a separate
-memory and correctness qualification.
+the one-96-GB-GPU recipe. Disk mode requires fast local storage and still uses
+host working memory; the performance table uses RAM, not disk placement.
 
 The shared guide explains [prefix retention](../docs/unified-vllm-docker.md#prefix-cache-defaults).
 Do not add a global `--prefix-cache-retention-interval 4096` override.
@@ -92,34 +99,31 @@ workload from a reasoning benchmark.
 
 ## Measured performance
 
-Stock RTX PRO 6000 Workstation, TP1/MTP3, CPU PLE, FP8 KV, 6019-token budget,
-16 sequences, explicit eight-GiB KV allocation, context-zero decode and
-temperature 1/top-p .95/top-k 20. Three warmed 30-second decode runs; uncached
-nominal-32K prefill uses client time to first token. C8 is aggregate.
+One RTX PRO 6000 **Max-Q**, **VRAM +6000**, automatic graphics clocks;
+TP1/MTP3, CPU PLE, FP8 KV, 6019-token budget, 16 slots and explicit eight-GiB
+KV allocation. Temperature 1/top-p .95/top-k 20; five warmed 30-second
+windows per cell. Decode uses context zero; uncached nominal-32K prefill
+uses client TTFT. C8 is aggregate.
 
-| Metric | Community R35 → wheel image | Change |
-|---|---:|---:|
-| C1 output | 172.92 → 190.11 tok/s | +9.94% |
-| C8 output | 664.89 → 689.93 tok/s | +3.77% |
-| 32K prefill, one sustained window | 15,387 → 15,162 tok/s | −1.46% |
-| C1 request-verifier rate | 81.90 → 83.47 steps/s | +1.92% |
+| Metric | Saved JJ R35 | Karmic Kraken | Change |
+|---|---:|---:|---:|
+| C1 output | 157.6 tok/s | 173.2 tok/s | +9.91% |
+| C8 aggregate output | 674.2 tok/s | 698.4 tok/s | +3.58% |
+| 32K prefill | 12,104 tok/s | 12,073 tok/s | −0.26% |
+| C1 verifier rate | 76.06 steps/s | 81.78 steps/s | +7.52% |
 
-All four API checks and six decode cells pass. Acceptance changes from 2.105
-to 2.280, so the C1 output gain is not an isolated kernel speedup.
-[Exact image boundary, commands and raw samples](../benchmarks/prepared-b12x-serving/).
+Arithmetic and repeated/changed-prefix checks pass. Output includes draft
+acceptance as well as execution speed.
+[Exact image versions, configuration, repeats and samples](../benchmarks/karmic-kraken-serving.md).
 
-A separate three-window prefill repeat on the indexed-PCIe-plan integration
-image measures R35 **15,258** versus **15,031 tok/s**, a **−1.49%** median
-difference. The windows are independent warmed measurements within one
-startup per image, not three independent startups. The small gap remains
-**unresolved**, without assigning it to a particular kernel or PR.
-[Repeat conditions and receipts](../benchmarks/prepared-b12x-contracts/#qwen-prefill-repeat).
+A separate five-run restart with the same image and prepared cache measures
+178.5 C1 and 713.7 C8 tok/s. Both startup series are retained in the report.
 
-The eight-GiB comparison has 517,581 logical KV tokens. A separate automatic
-KV-sizing startup passes graph capture and API checks with 773,216 tokens;
-it is not another throughput measurement. These are shared-pool capacities,
-not the context limit of an individual request. Use engine-reported logical
-capacity rather than physical-block count times page size.
+The eight-GiB allocation reports **434,258 logical KV tokens**, shared across
+requests. It now includes safe recurrent endpoint and restore reservations;
+the R35 report's 517,581-token estimate omitted those reserves. The physical
+eight-GiB budget did not shrink. See the
+[capacity accounting](../benchmarks/qwen-boundary-capacity-accounting.md).
 
 ## Quality evaluation and historical releases
 
@@ -127,7 +131,9 @@ capacity rather than physical-block count times page size.
 - [Direct-answer arithmetic stability](qwen38-flash-next/direct-arithmetic-stability-nvfp4-vs-qad.md).
 - [Community R35 deployment and measurement archive](qwen38-flash-next-community-r35.md):
   +6000-clock results, SGLang/Sieve comparisons, older capacity measurements
-  and exact recipe boundaries. These are not measurements of the wheel image.
+  and exact recipe boundaries.
+- [Versioned guide archive](../archive/serving-guides/README.md): preceding
+  stock Workstation tables and complete launch instructions.
 
-No Qwen Sieve rerun or TP2 speed is claimed for the wheel comparison.
-Source review and unresolved items: [issue #773](https://github.com/local-inference-lab/vllm/issues/773).
+Sieve and TP2 speed were not remeasured in the Max-Q matrix.
+Source review and integration checklist: [issue #808](https://github.com/local-inference-lab/vllm/issues/808).

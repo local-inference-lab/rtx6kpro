@@ -38,8 +38,8 @@ Add native options **after `"$IMAGE"`**:
 The default is 32 slots and an automatically sized context. Change GPU IDs,
 `TP` and `PORT` before the image name. MTP/DFlash2 are not DS4.1's DSpark mode.
 See the [Karmic Kraken benchmark table](../benchmarks/karmic-kraken-serving.md)
-for the KK comparison with RAM Engram; disk placement has separate functional
-cache checks. The JJ RAM-Engram table below is a distinct image comparison.
+for the comparison with RAM Engram; disk placement has separate functional
+cache checks and is not the speed measured below.
 
 ## RAM versus SSD ngrams
 
@@ -57,21 +57,27 @@ offload remains disabled. Optional `--engram-disk-resident-scales` and
 speed claim in this qualification. `CACHE_MODE=lmcache` independently enables
 CPU/disk prefix storage; selecting RAM Engram does not enable it.
 
-## Serving defaults
+## Common settings
 
-| Setting | Profile behavior |
-|---|---|
-| Parallelism / speculation | TP4/DCP1, DSpark K7 with adaptive verification |
-| Draft sampling | Greedy proposals, standard rejection; target sampling remains temperature 1/top-p .95 |
-| Backends | B12X attention, MoE and dense; B12X/NCCL communication |
-| Scheduler | 4096 tokens, 32 sequences, one prefill lane, compute share 0.4 |
-| Context / GPU fraction | Automatic context sizing (`-1`) / 0.95 |
-| Main / sliding-window pages | 256 / 128 tokens |
-| Graphs | Full-and-piecewise decode, cap 128; breakable prefill off |
-| Prefix cache | Enabled; retention interval defaults to `0`, not cache disabled |
-| Reasoning | `high` by default; publisher mapping `low=50`, `high=75`, `max=100` |
-| API compatibility | DS4.1 tool namespaces/reminders and Responses text-part normalization |
-| JIT monitor | `warn`; a missing warmup warns instead of rejecting the request |
+Keep TP4/DCP1 and adaptive DSpark K7 for this recipe. Additional capacity
+settings go **before `"$IMAGE"`**:
+
+| Setting | Default / recommendation | Example override |
+|---|---|---|
+| Active requests | 32 | `-e MAX_NUM_SEQS=16` |
+| Prefill budget | 4096 tokens | `-e MAX_NUM_BATCHED_TOKENS=4096` |
+| Context | Automatic, `-1` | `-e MAX_MODEL_LEN=131072` |
+| GPU memory fraction | 0.95 | `-e GPU_MEMORY_UTILIZATION=0.93` for more working space |
+| JIT monitor | `warn` for serving | `-e JIT_MONITOR_MODE=error` only for strict warmup diagnostics |
+| External prefix storage | GPU-only | `-e CACHE_MODE=lmcache` with [RAM/disk settings](../docs/unified-vllm-docker.md#cache-storage-gpu-lmcache-or-native-offload) |
+
+B12X handles attention, MoE and dense kernels. Full-and-piecewise decode
+graphs are enabled; breakable prefill is off. Prefix caching is on even though
+the default retention interval is `0`. Keep the model's own cache geometry.
+
+Draft proposals are greedy with standard rejection; target requests still
+sample at temperature 1/top-p .95. Default reasoning is `high`, with the
+checkpoint's `low=50`, `high=75`, `max=100` budget mapping.
 
 The native cache is heterogeneous despite the CLI's `fp8` label: MXFP8
 sliding-window payloads, NVFP4 indexed payloads and index/state groups. Do not
@@ -83,66 +89,46 @@ itself. `--adaptive-verification-cost-scale` changes trimming cost; neither
 alternative is timed here. A request can override the reasoning budget with
 `"chat_template_kwargs":{"reasoning_effort":50}`.
 
-## Qualification and measurements
+## Measured performance
 
-Stock RTX PRO 6000 Workstation quartet, TP4/DCP1, RAM Engram, adaptive DSpark
-K7, 4096-token budget, 32 sequences, FP8 CLI cache mode, target temperature
-1/top-p .95. Context-zero decode is the median of three warmed 30-second
-runs. Prefill is uncached nominal 32K measured from client TTFT. C8 is aggregate.
+Four RTX PRO 6000 **Max-Q**, **VRAM +6000**, automatic graphics clocks;
+TP4/DCP1, RAM Engram, adaptive DSpark K7, 4096-token budget, 32 slots,
+131,072 context cap, GPU-only cache and temperature 1/top-p .95.
+Five warmed 30-second windows per cell; context-zero decode and uncached
+nominal-32K prefill measured from client TTFT. C8 is aggregate.
 
-| Metric | Community R38 → wheel image | Change |
-|---|---:|---:|
-| C1 output | 250.87 → 256.59 tok/s | +2.28% |
-| C8 output | 808.17 → 830.82 tok/s | +2.80% |
-| 32K prefill | 20,079 → 20,234 tok/s | +0.77% |
-| Logical KV tokens | 4,503,190 → 4,714,406 | +4.69% |
+| Metric | Saved JJ R38 | Karmic Kraken | Change |
+|---|---:|---:|---:|
+| C1 output | 230.6 tok/s | 249.1 tok/s | +8.01% |
+| C8 aggregate output | 748.3 tok/s | 805.5 tok/s | +7.65% |
+| 32K prefill | 17,503 tok/s | 17,982 tok/s | +2.74% |
+| C1 verifier rate | 89.87 steps/s | 98.58 steps/s | +9.69% |
 
-[Image/source identities and raw measurements](../benchmarks/prepared-b12x-serving/).
-The memory/workspace fixes are included; these are not figures for disk Engram
-or a four-concurrent-request configuration. No Sieve rerun is claimed for the
-wheel-image comparison; R38 Sieve results remain in the archive.
-
-### Indexed PCIe plan lookup
-
-The bounded lookup change is tested separately with only the communicator
-source differing: C1 **247.61 → 254.92 tok/s**, C8 **799.07 → 799.57**, and
-prefill **20,471 → 20,577**. A 512-declaration CPU miss falls **139 → 0.70 µs**.
-C1 acceptance changes 2.443 → 2.551 while request-verifier throughput falls
-1.45%; the emitted-token gain is not an isolated lookup speedup.
-[Component evidence](../benchmarks/prepared-b12x-contracts/#declared-plan-index-ds41).
+Text, image and repeated/changed-prefix checks pass. The KK server reports
+4,727,748 logical KV tokens shared by requests, not a per-request context
+limit. These are RAM-Engram results; selecting disk can change throughput.
+[Image versions, configuration and all samples](../benchmarks/karmic-kraken-serving.md).
 
 ### Breakable prefill
 
-`VLLM_USE_BREAKABLE_CUDAGRAPH=1` captures graph segments around dynamic
+`-e VLLM_USE_BREAKABLE_CUDAGRAPH=1` before the image captures graph segments around dynamic
 attention/cache operations, which still execute outside those segments. It is
 not a single FULL graph for all prefill work. Decode graphs remain available
 when this option is off.
 
-The same-image flag-only comparison measures **20,577 → 20,801 tok/s
-(+1.09%)** prefill, but logical KV falls **4,763,329 → 3,975,153 tokens
-(−16.55%)** as graph memory grows. The option remains off by default. The
-passing replay checks use caller-owned buffers, not a process-global pool.
-[Measured trade-off](../benchmarks/prepared-b12x-contracts/#breakable-prefill-ds41).
-
-## API and image checks
-
-The composed tokenizer/frontend/parser suite passes 187 tests. Fifteen HTTP
-cases cover tool namespaces, reminders, history, named choices and malformed
-calls; six Responses cases cover strings, typed text, streaming, assistant/tool
-history and an image. These are not general model-quality or repetition tests.
-
-Two, eight and sixteen 128×128 images and image-history checks pass without an
-artificial image-count override. Repeated history reuses 8192 prefix tokens;
-the changed-image case answers correctly but records zero prefix hits. Do not
-claim changed-image prefix reuse or arbitrary-resolution capacity from that test.
+It remains off by default: additional graph memory can reduce KV capacity.
+The [separate graph-memory comparison](../benchmarks/prepared-b12x-contracts/#breakable-prefill-ds41)
+records that trade-off on its own image; it is not the throughput table above.
 
 ## Historical releases and source review
 
+- [Archived recipes and measurements](../archive/serving-guides/README.md)
+  preserve the preceding guides, API checks and stock Workstation tables.
 - [Community R38 deployment and measurement archive](deepseek-v4.1-flash-community-r38.md):
   R37/R38 measurements, Sieve, source/dependency locks and exact checkpoint scope.
 - [R37 record](deepseek-v4.1-flash/r37/release.md) and
   [R36 record](deepseek-v4.1-flash/r36/release.md), including separately labelled clocks.
 - [Shared runtime dependency corrections](https://github.com/local-inference-lab/blackwell-llm-docker/blob/b3fe0afe1621273059fb19dee1034e2272043a55/runtime/DEPENDENCIES.md):
   PyTorch/CuTe corrections belong to image assembly, not model startup patches.
-- [Issue #773](https://github.com/local-inference-lab/vllm/issues/773):
+- [Issue #808](https://github.com/local-inference-lab/vllm/issues/808):
   open source PRs, integration status and qualification limits.

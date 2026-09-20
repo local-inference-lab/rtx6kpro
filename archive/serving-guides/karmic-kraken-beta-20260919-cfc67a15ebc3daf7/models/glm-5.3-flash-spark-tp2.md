@@ -1,5 +1,7 @@
 # GLM-5.3-Flash on two 96-GB GPUs
 
+> Historical recipe snapshot. Use the [model guide](https://github.com/local-inference-lab/rtx6kpro/blob/master/models/glm-5.3-flash-spark-tp2.md) for the recommended deployment. This snapshot pins the September 19 beta image; performance tables retain their original image and hardware identities. [Archive manifest](https://github.com/local-inference-lab/rtx6kpro/blob/master/archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/manifest.json).
+
 Run `local-inference-lab/GLM-5.3-Flash-NVFP4-Spark` with the shared Karmic
 Kraken beta image. The Spark preset supplies TP2/DCP2, MTP3, B12X backends
 and memory settings for two RTX PRO 6000 cards. “Spark” identifies this
@@ -8,7 +10,7 @@ checkpoint, not ARM-based DGX Spark hardware.
 ## Start the server
 
 ```bash
-IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260919-cfc67a15ebc3daf7
 docker pull "$IMAGE"
 docker run -d --name glm-spark-tp2 --init --restart unless-stopped \
   --gpus '"device=0,1"' --network host --ipc host --shm-size 32g \
@@ -81,7 +83,7 @@ Workstation throughput measurements below.
 | Request slots | 4 | `-e MAX_NUM_SEQS=4` |
 | Prefill budget | 3072 tokens | `-e MAX_NUM_BATCHED_TOKENS=3072` |
 | KV allocation | 3996 MiB per GPU | `-e KV_CACHE_MEMORY_BYTES=3758096384` selects 3.5 GiB |
-| Context capacity | About 899k with the LMCache configuration above | Startup reports the resolved limit for your cache mode |
+| Context capacity | About 897k with the LMCache configuration above | Startup reports the resolved limit for your cache mode |
 | Vision | Enabled, no one-image admission cap | Image size/count still consume memory |
 | Prefix policy | Request-boundary checkpoints | No retention-interval parameter needed |
 
@@ -112,10 +114,8 @@ of repeated benchmark runs.
 The separate Max-Q server validates startup and cache recovery, not the speeds
 above. Source composition and test details are listed in
 [vLLM issue #808](https://github.com/local-inference-lab/vllm/issues/808).
-The [R2 archive](glm-5.3-flash-spark-tp2-r2-archive.md) retains the separate
+The [R2 archive](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/glm-5.3-flash-spark-tp2-r2-archive.md) retains the separate
 CUDA 13.3 release, its measurements and its one-image limit.
-The [versioned guide archive](../archive/serving-guides/README.md) preserves
-the preceding beta recipe and cache measurements.
 
-For four GPUs use the [GLM TP4 recipe](glm-5.3-flash.md). For other models and
-common controls see the [shared Docker guide](../docs/unified-vllm-docker.md).
+For four GPUs use the [GLM TP4 recipe](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/glm-5.3-flash.md). For other models and
+common controls see the [shared Docker guide](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/docs/unified-vllm-docker.md).

@@ -1,5 +1,7 @@
 # One Docker image for GLM, Qwen and DeepSeek
 
+> Historical recipe snapshot. Use the [model guide](https://github.com/local-inference-lab/rtx6kpro/blob/master/docs/unified-vllm-docker.md) for the recommended deployment. This snapshot pins the September 19 beta image; performance tables retain their original image and hardware identities. [Archive manifest](https://github.com/local-inference-lab/rtx6kpro/blob/master/archive/serving-guides/karmic-kraken-beta-20260919-cfc67a15ebc3daf7/manifest.json).
+
 Choose a model profile and GPU IDs. The shared image supplies that model's
 backend, graph, loader and cache defaults. You do not need a model-specific
 entrypoint or a copied block of kernel variables.
@@ -7,16 +9,14 @@ entrypoint or a copied block of kernel variables.
 ## Select the image
 
 ```bash
-IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260919-cfc67a15ebc3daf7
 docker pull "$IMAGE"
 ```
 
 This is the Karmic Kraken integration channel: CUDA 13.4.1, PyTorch 2.14,
 vLLM, B12X, FlashInfer and LMCache. Linux x86-64, Docker, NVIDIA Container
-Toolkit and a compatible NVIDIA driver are required. For native CUDA JIT,
-`nvidia-smi` must report CUDA 13.4 or higher; installing a host CUDA toolkit
-does not upgrade the driver. The examples target 96-GB RTX PRO 6000 GPUs.
-No command changes clocks.
+Toolkit and a compatible NVIDIA driver are required. The examples target
+96-GB RTX PRO 6000 GPUs. No command changes clocks.
 
 All channels use the same build recipe and launch interface:
 
@@ -34,23 +34,18 @@ Published image versions and source manifests are available in the
 Pulling an image does not change a running container; recreate that container
 in a maintenance window to update it.
 
-The [recipe archive](../archive/serving-guides/README.md) preserves preceding
-commands and measurements with fixed image versions. Use a dated release tag
-from that archive when reproducing a result; the short channel tags move when
-another build is published.
-
 ## Choose a model
 
 Each model page has a complete copyable command:
 
 | Model | Selector before the image | GPUs | Default speculation |
 |---|---|---:|---|
-| [GLM-5.3-Flash](../models/glm-5.3-flash.md) | `-e PROFILE=glm53-flash` | 4 | Off; the page starts MTP3 explicitly |
-| [GLM Spark TP2](../models/glm-5.3-flash-spark-tp2.md) | `-e PRESET=glm53-spark-tp2` | 2 | MTP3 |
-| [Qwen3.8 Flash Next](../models/qwen38-flash-next.md) | `-e PROFILE=qwen38-flash-next` | 1 or 2 | MTP3 |
-| [DeepSeek V4 text](../models/deepseek-v4-flash.md) | `-e PROFILE=ds4-flash` | 2 | DSpark K5 |
-| [DeepSeek V4 Vision](../models/deepseek-v4-flash-vision.md) | `-e PROFILE=ds4-vision` | 2 | DSpark K3 |
-| [DeepSeek V4.1](../models/deepseek-v4.1-flash.md) | `-e PROFILE=ds41-flash` | 4 | Adaptive DSpark K7 |
+| [GLM-5.3-Flash](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/glm-5.3-flash.md) | `-e PROFILE=glm53-flash` | 4 | Off; the page starts MTP3 explicitly |
+| [GLM Spark TP2](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/glm-5.3-flash-spark-tp2.md) | `-e PRESET=glm53-spark-tp2` | 2 | MTP3 |
+| [Qwen3.8 Flash Next](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/qwen38-flash-next.md) | `-e PROFILE=qwen38-flash-next` | 1 or 2 | MTP3 |
+| [DeepSeek V4 text](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/deepseek-v4-flash.md) | `-e PROFILE=ds4-flash` | 2 | DSpark K5 |
+| [DeepSeek V4 Vision](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/deepseek-v4-flash-vision.md) | `-e PROFILE=ds4-vision` | 2 | DSpark K3 |
+| [DeepSeek V4.1](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/models/deepseek-v4.1-flash.md) | `-e PROFILE=ds41-flash` | 4 | Adaptive DSpark K7 |
 
 Profiles provide Hugging Face checkpoint names. `MODEL` overrides the checkpoint
 within that architecture; it does not select another architecture. Spark TP2
@@ -61,7 +56,7 @@ is a separate memory configuration, not the TP4 recipe with only `TP=2` changed.
 Example: GLM, four GPUs, MTP3, API port 8000:
 
 ```bash
-IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260919-cfc67a15ebc3daf7
 docker pull "$IMAGE"
 docker run -d --name glm53 --init --restart unless-stopped \
   --gpus '"device=0,1,2,3"' --network host --ipc host --shm-size 32g \
@@ -128,8 +123,7 @@ context larger and is separate from PLE/Engram model-table offload.
 Add these variables before the image for **RAM cache**:
 
 ```bash
--e CACHE_MODE=lmcache -e LMCACHE_L1_GB=16 -e LMCACHE_L1_INIT_GB=2 \
--e LMCACHE_L2_ENABLED=0
+-e CACHE_MODE=lmcache -e LMCACHE_L1_GB=16 -e LMCACHE_L1_INIT_GB=2
 ```
 
 For **RAM plus disk**, add:
@@ -141,8 +135,6 @@ For **RAM plus disk**, add:
 
 The image starts and supervises the CPU-only cache service. Its persistent
 directory is inside `/cache`; service ports derive from the model API port.
-Set `LMCACHE_L2_ENABLED` explicitly when choosing RAM-only or RAM-plus-disk;
-model profiles can have different disk-tier defaults.
 LMCache reserves API-port + 10000, + 10001 and + 10002. For simultaneous
 instances, space API ports at least three apart, for example 8000 and 8003,
 or explicitly choose non-overlapping cache-service ports.
@@ -158,7 +150,7 @@ Check host RAM, `/dev/shm` and disk capacity. With `--ipc host`, Docker's
 | DS4 Vision | Supported | Image-keyed restore supported |
 | DS4.1 | Supported | Image-keyed restore supported |
 
-See [cache test results](../benchmarks/karmic-kraken-serving.md#prefix-cache-checks).
+See [cache test results](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/benchmarks/karmic-kraken-serving.md#prefix-cache-checks).
 GLM additionally exposes native KV offload through `--cache-mode native`;
 that is not the LMCache path measured here. Other profiles reject that choice.
 
@@ -210,12 +202,8 @@ lists supported aliases. Profiles and deployment presets live in the same
 
 ## Performance evidence
 
-The [Karmic Kraken model table](../benchmarks/karmic-kraken-serving.md) records
-decode, prefill, clocks, image versions and cache checks. Compare rows with the
-same hardware, mode and sampling settings. Output speed includes speculative
-acceptance and is not a kernel-only timing.
-
-The [recipe archive](../archive/serving-guides/README.md) and
-[JJ deployment archive](unified-vllm-docker-jj-archive.md) preserve preceding
-instructions and their measurements. Canonical model URLs continue to show the
-recommended beta recipe, so users do not have to choose among competing guides.
+The [Karmic Kraken model table](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/benchmarks/karmic-kraken-serving.md) records
+stock-clock decode, prefill and cache checks. It also retains negative deltas;
+not every model is faster than JJ. The
+[JJ deployment archive](https://github.com/local-inference-lab/rtx6kpro/blob/76595579cc04c245c13537583a93d525060b8ce0/docs/unified-vllm-docker-jj-archive.md) preserves its separate
+image identities and measurements. No benchmark is rerun merely to update this guide.

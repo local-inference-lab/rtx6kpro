@@ -1,0 +1,409 @@
+{
+  "schema": "lil-public-serving-receipt/v1",
+  "status": "qualified",
+  "scope": "Spark TP2 text/vision and text RAM/restart-disk restore; not a repeated six-mode throughput matrix",
+  "publication": {
+    "alias": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta",
+    "alias_updated": true,
+    "assembly_sha256": "443d9f815c57d23bfc3a5e780409fb26b0878d1c8b0a28c4c2818d6414af5454",
+    "cache_contract_tests": {
+      "passed": 94,
+      "skipped": 0
+    },
+    "channel": "karmic-kraken",
+    "components": {
+      "b12x": {
+        "archive": "b12x-cu134-e9ce547767ff9ee6509faf294fa1b4e2380dfbf5.tar.zst",
+        "archive_asset_id": 575959356,
+        "archive_sha256": "0358a688b086b2a697bf569abf8148cae3b3f4421140581df571f3b7f47a3b87",
+        "branch": "integration/karmic-kraken-beta",
+        "manifest_sha256": "80c25736d265ed453c7c0ca43b85d4b05b0a76816056970e5b6cd09aa15c56c0",
+        "observed_branch_commit": "e9ce547767ff9ee6509faf294fa1b4e2380dfbf5",
+        "release": "b12x-cu134-beta-e9ce547767ff9ee6509faf294fa1b4e2380dfbf5",
+        "release_url": "https://github.com/local-inference-lab/b12x/releases/tag/b12x-cu134-beta-e9ce547767ff9ee6509faf294fa1b4e2380dfbf5",
+        "repository": "local-inference-lab/b12x",
+        "source_commit": "e9ce547767ff9ee6509faf294fa1b4e2380dfbf5"
+      },
+      "flashinfer": {
+        "archive": "flashinfer-cu134-sm120-2206a14e46387a56c093860a46bbbdd00596b75b.tar.zst",
+        "archive_asset_id": 562220280,
+        "archive_sha256": "099d93c14671d82dfc65318cb2c26d43688b8e2d4642fa4b5135e03cbae035e1",
+        "branch": "community/jovian-judgement-cu134-sm120",
+        "manifest_sha256": "9d58cc6beaa3548d836257fe903cdc0c3ce31bbb0c8422bf28cdcc8025458889",
+        "observed_branch_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+        "release": "flashinfer-cu134-sm120-beta-2206a14e46387a56c093860a46bbbdd00596b75b",
+        "release_url": "https://github.com/local-inference-lab/flashinfer/releases/tag/flashinfer-cu134-sm120-beta-2206a14e46387a56c093860a46bbbdd00596b75b",
+        "repository": "local-inference-lab/flashinfer",
+        "source_commit": "2206a14e46387a56c093860a46bbbdd00596b75b"
+      },
+      "instanttensor": {
+        "archive": "instanttensor-cu134-95d4729b6d6a991bb8de61877147a9d9d9100b23.tar.zst",
+        "archive_asset_id": 562221052,
+        "archive_sha256": "de27a0b9306589b33e92142b4e2de26cf6b7925117c14f8485a5ff19def01729",
+        "branch": "main",
+        "manifest_sha256": "6e58b73cf3e7775a518dd2bc0ac4f95634779d97894e23bf2a271a94bc42000f",
+        "observed_branch_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+        "release": "instanttensor-cu134-beta-95d4729b6d6a991bb8de61877147a9d9d9100b23",
+        "release_url": "https://github.com/local-inference-lab/InstantTensor/releases/tag/instanttensor-cu134-beta-95d4729b6d6a991bb8de61877147a9d9d9100b23",
+        "repository": "local-inference-lab/InstantTensor",
+        "source_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23"
+      },
+      "lmcache": {
+        "archive": "lmcache-cu134-sm120-688bee14e157b64623d93c07fc0d4db93470e12f.tar.zst",
+        "archive_asset_id": 573708820,
+        "archive_sha256": "7ccad898582a960b794536fc198b67f169f4c863f9681ca2182fccfddc3cb988",
+        "branch": "integration/local-inference-lab",
+        "manifest_sha256": "91efc0315c9d359ccebf85e3cf61f6730da7f9ca426484a75a3b3cfa60dedd88",
+        "observed_branch_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+        "release": "lmcache-cu134-sm120-beta-688bee14e157b64623d93c07fc0d4db93470e12f",
+        "release_url": "https://github.com/local-inference-lab/LMCache/releases/tag/lmcache-cu134-sm120-beta-688bee14e157b64623d93c07fc0d4db93470e12f",
+        "repository": "local-inference-lab/LMCache",
+        "source_commit": "688bee14e157b64623d93c07fc0d4db93470e12f"
+      },
+      "nccl": {
+        "archive": "local-inference-nccl-cu134-93fe05d9f9b6963ef841166a69cd0b30e4efe97b.tar.zst",
+        "archive_asset_id": 562210238,
+        "archive_sha256": "0def6cec946700d247eeb82eb35cb3404f509d554742a4547414698815792fbb",
+        "branch": "canonical/cu134-nccl2312-amd-turin",
+        "manifest_sha256": "0d7e4aee65349bde847ec4866f87033fa6ef8105f485e61bd9e86a48d62548df",
+        "observed_branch_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+        "release": "nccl-cu134-sm120-93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+        "release_url": "https://github.com/local-inference-lab/nccl-canonical/releases/tag/nccl-cu134-sm120-93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+        "repository": "local-inference-lab/nccl-canonical",
+        "source_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b"
+      },
+      "vllm": {
+        "archive": "vllm-jovian-cu134-57a80980bbf4b40398de7ed851b23e55a3a4c50e.tar.zst",
+        "archive_asset_id": 575964392,
+        "archive_sha256": "d29774c13653a81ae9a62c97633640c944390f4293f8dbf01edce598f0474ce5",
+        "branch": "integration/karmic-kraken-beta",
+        "manifest_sha256": "3d3ae07ad04d1b01696af099f2a83f42a7b2f4462b54a6f972e06730dce6961f",
+        "observed_branch_commit": "57a80980bbf4b40398de7ed851b23e55a3a4c50e",
+        "release": "vllm-jovian-cu134-beta-57a80980bbf4b40398de7ed851b23e55a3a4c50e",
+        "release_url": "https://github.com/local-inference-lab/vllm/releases/tag/vllm-jovian-cu134-beta-57a80980bbf4b40398de7ed851b23e55a3a4c50e",
+        "repository": "local-inference-lab/vllm",
+        "source_commit": "57a80980bbf4b40398de7ed851b23e55a3a4c50e"
+      }
+    },
+    "digest": "ghcr.io/local-inference-lab/vllm@sha256:55e477ad62ae15a77c9b869e8fb8e2d958f6edcc4d95e306adfa89dee9ed19df",
+    "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260920-443d9f815c57d23b",
+    "layers": 68,
+    "qualification_scope": "Native GPU smoke and LMCache checkpoint/filesystem contract tests; model-serving performance and full GLM cache E2E remain unqualified.",
+    "recipe_commit": "f0c4f9fe04267d7a83a896f1c81d390b1ece5fee",
+    "release_channel": "karmic-kraken-beta",
+    "release_tag": "karmic-kraken-beta-443d9f815c57d23bfc3a5e780409fb26b0878d1c8b0a28c4c2818d6414af5454",
+    "runtime_manifest_sha256": "35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b",
+    "schema": "local-inference-container-assembly/v1",
+    "status": "qualified"
+  },
+  "source_composition_image": "sha256:d351927666613339608da3ec6c6f227048a60cb7c2a46baff2edf8a4b1dbb84c",
+  "installed_python_source_differences": [
+    {
+      "package": "vllm",
+      "file": "_version.py",
+      "executable_ast_equal": false
+    },
+    {
+      "package": "vllm",
+      "file": "model_executor/layers/fused_moe/b12x.py",
+      "executable_ast_equal": true
+    }
+  ],
+  "python_source_audits": {
+    "source": {
+      "manifest_sha256": "53dfd059d44b58c1960ea94a0ca5e1cb564b76ce0ebe237c5d702d7c277ef0d0",
+      "package_versions": {
+        "torch": "2.14.0a0+4fdf77b940.nv26.8.63802676",
+        "triton": "3.8.0+git4c7e62b7.nv26.8",
+        "flashinfer-python": "0.6.18+lil.cu134.sm120.g2206a14e4638",
+        "flashinfer-cubin": null,
+        "lmcache": "0.5.3.dev365+lil.cu134.g688bee14e157",
+        "instanttensor": "0.1.9",
+        "nvidia-modelopt": "0.46.1",
+        "vllm": "0.1.dev21537+g67bb922f6.cu134",
+        "b12x": "1.3.0"
+      },
+      "python_file_counts": {
+        "vllm": 2749,
+        "b12x": 481
+      }
+    },
+    "public": {
+      "manifest_sha256": "e649be6b5997b8956b09af762f0e4ba2c46bca1b797abc83af235772665ac5fe",
+      "package_versions": {
+        "torch": "2.14.0a0+4fdf77b940.nv26.8.63802676",
+        "triton": "3.8.0+git4c7e62b7.nv26.8",
+        "flashinfer-python": "0.6.18+lil.cu134.sm120.g2206a14e4638",
+        "flashinfer-cubin": null,
+        "lmcache": "0.5.3.dev365+lil.cu134.g688bee14e157",
+        "instanttensor": "0.1.9",
+        "nvidia-modelopt": "0.46.1",
+        "vllm": "0.1.dev21559+g57a80980b.cu134",
+        "b12x": "1.3.0"
+      },
+      "python_file_counts": {
+        "vllm": 2749,
+        "b12x": 481
+      }
+    }
+  },
+  "public_image_id": "sha256:83f00757ff18f3c3c12de291319b1a3a5496056a3873834d0994160828a3c6ee",
+  "serving_argv": [
+    "/opt/venv/bin/python",
+    "-m",
+    "vllm.entrypoints.cli.main",
+    "serve",
+    "local-inference-lab/GLM-5.3-Flash-NVFP4-Spark",
+    "--additional-config",
+    "{\"glm53_kda_decode_backend\":\"auto\",\"kda_prefill_backend\":\"b12x\"}",
+    "--attention-backend",
+    "B12X",
+    "--block-size",
+    "256",
+    "--compilation-config",
+    "{\"cudagraph_mode\":\"FULL_AND_PIECEWISE\"}",
+    "--cp-kv-cache-interleave-size",
+    "4",
+    "--cudagraph-capture-sizes",
+    "1",
+    "2",
+    "4",
+    "8",
+    "12",
+    "16",
+    "--dcp-kv-cache-interleave-size",
+    "4",
+    "--decode-context-parallel-size",
+    "2",
+    "--default-chat-template-kwargs",
+    "{\"reasoning_effort\":\"high\",\"clear_thinking\":false}",
+    "--dtype",
+    "bfloat16",
+    "--enable-auto-tool-choice",
+    "--enable-chunked-prefill",
+    "--no-enable-flashinfer-autotune",
+    "--enable-prefix-caching",
+    "--gpu-memory-utilization",
+    "0.985",
+    "--host",
+    "0.0.0.0",
+    "--kv-cache-dtype",
+    "fp8",
+    "--kv-cache-memory-bytes",
+    "4190109696",
+    "--kv-transfer-config",
+    "{\"kv_connector\":\"LMCacheRecurrentCheckpointConnector\",\"kv_connector_module_path\":\"lmcache.integration.vllm.recurrent_checkpoint_connector\",\"kv_role\":\"kv_both\",\"kv_load_failure_policy\":\"recompute\",\"kv_connector_extra_config\":{\"lmcache.mp.host\":\"127.0.0.1\",\"lmcache.mp.port\":15059,\"lmcache.mp.mp_transfer_mode\":\"engine_driven\",\"lmcache.mp.checkpoint_identity\":{\"target_revision\":\"a608241037e4c2565356bff7ca293f2133888f88\",\"draft_revision\":\"a608241037e4c2565356bff7ca293f2133888f88\",\"source_revision\":\"35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b\"}}}",
+    "--linear-backend",
+    "b12x",
+    "--load-format",
+    "safetensors",
+    "--mamba-cache-mode",
+    "align",
+    "--max-cudagraph-capture-size",
+    "16",
+    "--max-model-len",
+    "-1",
+    "--max-num-batched-tokens",
+    "3072",
+    "--max-num-scheduled-tokens",
+    "3072",
+    "--max-num-seqs",
+    "4",
+    "--max-parallel-prefills",
+    "1",
+    "--moe-backend",
+    "b12x",
+    "--override-generation-config",
+    "{\"temperature\":1.0,\"top_p\":0.95}",
+    "--pipeline-parallel-size",
+    "1",
+    "--port",
+    "5059",
+    "--prefill-compute-share",
+    "0.4",
+    "--prefill-schedule-interval",
+    "1",
+    "--prefix-cache-retention-interval",
+    "0",
+    "--quantization",
+    "modelopt_mixed",
+    "--reasoning-parser",
+    "glm45",
+    "--recurrent-checkpoint-policy",
+    "request_boundaries",
+    "--revision",
+    "a608241037e4c2565356bff7ca293f2133888f88",
+    "--served-model-name",
+    "GLM-5.3-Flash",
+    "--speculative-config",
+    "{\"method\":\"mtp\",\"draft_sample_method\":\"probabilistic\",\"rejection_sample_method\":\"standard\",\"moe_backend\":\"b12x\",\"attention_backend\":\"B12X\",\"num_speculative_tokens\":3,\"revision\":\"a608241037e4c2565356bff7ca293f2133888f88\"}",
+    "--tensor-parallel-size",
+    "2",
+    "--tool-call-parser",
+    "glm47"
+  ],
+  "serving_environment": {
+    "VLLM_MXFP8_LM_HEAD": "0",
+    "B12X_MHC_PDL": "1",
+    "CUBLAS_VERSION": "13.7.0.27",
+    "VLLM_B12X_MLA_CKV_GATHER_MAX_TOKENS": "65536",
+    "VLLM_LM_HEAD_A16": "1",
+    "VLLM_DISABLE_SHARED_EXPERTS_STREAM": "0",
+    "VLLM_NCCL_SO_PATH": "/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2",
+    "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
+    "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b/glm53-flash-a8cefca1ce25fc79/b12x/cute",
+    "NCCL_MIN_NCHANNELS": "2",
+    "VLLM_USE_V2_MODEL_RUNNER": "1",
+    "CUDA_CACHE_PATH": "/cache/jit/35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b/glm53-flash-a8cefca1ce25fc79/cuda",
+    "VLLM_PCIE_TWOSHOT_ALLREDUCE_MAX_SIZE": "off",
+    "NCCL_NET_PLUGIN": "none",
+    "B12X_DYNAMIC_SPLIT_LOW_SMEM": "1",
+    "NCCL_VERSION": "2.30.7+cuda13.3",
+    "NCCL_SOCKET_IFNAME": "lo",
+    "VLLM_CACHE_ROOT": "/cache/jit/35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b/glm53-flash-a8cefca1ce25fc79/vllm",
+    "VLLM_PCIE_DMA_MIN_BYTES": "off",
+    "NCCL_BUFFSIZE": "1048576",
+    "VLLM_CACHE_DIR": "/cache/jit/35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b/glm53-flash-a8cefca1ce25fc79/vllm",
+    "B12X_PCIE_ONESHOT_BLOCK_LIMIT": "4",
+    "NCCL_P2P_LEVEL": "SYS",
+    "CUDA_ARCH_LIST": "7.5 8.0 8.6 9.0 10.0 12.0",
+    "B12X_DYNAMIC_SPLIT_COMPUTE_MAC": "224",
+    "VLLM_B12X_MOE_FP4_FORCE_A16": "0",
+    "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": "1",
+    "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+    "B12X_COMPILE_CACHE_DIR": "/cache/jit/35422dca688430bb903a84cd31d85664704323a2c276db10fb40be161c439e0b/glm53-flash-a8cefca1ce25fc79/b12x/compile",
+    "B12X_DYNAMIC_SKIP_SPLIT_BARRIER_RESET": "1",
+    "VLLM_MTP_NVFP4_LM_HEAD": "0",
+    "VLLM_DISABLED_KERNELS": "MarlinFP8ScaledMMLinearKernel",
+    "NCCL_PROTO": "LL,LL128,Simple",
+    "VLLM_USE_FLASHINFER_SAMPLER": "1",
+    "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+    "CUDA_VERSION": "13.4.1.012",
+    "VLLM_GLM53_L2_PREFETCH_PERSIST_MB": "0",
+    "PYTORCH_VERSION": "2.14.0a0+4fdf77b",
+    "NCCL_TUNER_PLUGIN": "none",
+    "VLLM_GLM53_SPLIT_TARGET_BLOCK_SIZE": "auto",
+    "VLLM_GLM53_MTP_DRAFT_HEAD": "nvfp4",
+    "VLLM_GLM53_ONLINE_DENSE_MXFP8": "0",
+    "PYTORCH_BUILD_NUMBER": "0",
+    "B12X_DYNAMIC_DIRECT_EXPERT_SCALES": "1",
+    "PYTORCH_CUDA_ALLOC_CONF": "expandable_segments:True,large_segment_size_mb:12",
+    "NCCL_MAX_NCHANNELS": "2",
+    "B12X_PCIE_ONESHOT_PDL": "1",
+    "VLLM_GLM53_KDA_GATE_SIDE_STREAM": "1",
+    "CUDA_PATH": "/usr/local/cuda",
+    "VLLM_GLM53_L2_PREFETCH": "1",
+    "B12X_DYNAMIC_SPLIT_FAST_PREPARE": "1",
+    "B12X_PCIE_ONESHOT_THREADS": "512",
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:1",
+    "CUDA_BINARY_LOADER_THREAD_COUNT": "8",
+    "VLLM_PLUGINS": "",
+    "CUDA_COMPONENT_LIST": "crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti",
+    "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
+    "VLLM_GLM53_DFLASH_ATTN": "1",
+    "VLLM_SERVER_DEV_MODE": "1",
+    "PYTORCH_HOME": "/opt/pytorch/pytorch",
+    "NCCL_IB_DISABLE": "1",
+    "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
+    "OMP_NUM_THREADS": "1",
+    "CUDA_DRIVER_VERSION": "615.65.02",
+    "PYTORCH_BUILD_VERSION": "2.14.0a0+4fdf77b",
+    "CUDA_HOME": "/usr/local/cuda",
+    "CUDA_MODULE_LOADING": "LAZY",
+    "B12X_DYNAMIC_WORK_SOURCE": "persistent_grid",
+    "VLLM_B12X_MLA_CKV_GATHER": "1",
+    "B12X_DYNAMIC_SPLIT_ROUTE_COMPUTE": "1"
+  },
+  "physical_gpus": [
+    6,
+    7
+  ],
+  "performance_comparison": false,
+  "logical_kv_capacity_tokens": 899435,
+  "functional_checks": [
+    {
+      "name": "arithmetic",
+      "passed": true
+    },
+    {
+      "name": "prefix_cold",
+      "passed": true
+    },
+    {
+      "name": "prefix_repeated",
+      "passed": true
+    },
+    {
+      "name": "prefix_changed",
+      "passed": true
+    },
+    {
+      "name": "vision",
+      "passed": true
+    }
+  ],
+  "cache_checks": {
+    "prime": {
+      "status": "qualified",
+      "raw_receipt_sha256": "6ff871d064b13e67c47bddd2135caf66266dc3d3ec8da566f12d2f653dd8eb82",
+      "stages": [
+        {
+          "name": "cold",
+          "status": "qualified",
+          "seconds": 1.7782825360009156,
+          "evidence": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          }
+        },
+        {
+          "name": "native_prefix",
+          "status": "qualified",
+          "seconds": 0.0849646489987208,
+          "evidence": {
+            "gpu_hit_tokens": 16287.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          }
+        },
+        {
+          "name": "external_identical",
+          "status": "qualified",
+          "seconds": 0.10634674199900473,
+          "evidence": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16287.0,
+            "l2_loaded_objects": 0.0
+          }
+        },
+        {
+          "name": "external_changed_suffix",
+          "status": "qualified",
+          "seconds": 0.1710378829993715,
+          "evidence": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16281.0,
+            "l2_loaded_objects": 0.0
+          }
+        }
+      ]
+    },
+    "restore": {
+      "status": "qualified",
+      "raw_receipt_sha256": "a01b0b2fec03604ddbaa1a406213ec4f17773f9118c03a3b0b44f20814a00994",
+      "stages": [
+        {
+          "name": "persistent_changed_suffix",
+          "status": "qualified",
+          "seconds": 0.16547579200050677,
+          "evidence": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16287.0,
+            "l2_loaded_objects": 28.0
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,1308 @@
+{
+  "scope": "Bounded kernel and serving checks; not a general model accuracy evaluation.",
+  "cache_probes": [
+    {
+      "file": "tp2-cache-response-disk.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "disk_response_continuation",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 14466.0,
+            "l2_loaded": 26.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 0.10576571999990847,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp2-cache-response.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold_generated_response",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 1.644898090999959,
+          "request_sha256": null
+        },
+        {
+          "name": "ram_response_continuation",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 14451.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 0.19240706700020382,
+          "request_sha256": null
+        },
+        {
+          "name": "cold_continuation_control",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 1.522561159000361,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp2-cache-tail-disk.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "disk_tail_DQ",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 30720.0,
+            "l2_loaded": 36.0
+          },
+          "answer": "TURQUOISE",
+          "seconds": 0.7843472139993537,
+          "request_sha256": "c160c520e4ca0d6865c63a36e2ab76dae553740e51ff8a0083cee94dc5b48d73"
+        }
+      ]
+    },
+    {
+      "file": "tp2-cache-tail.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold_AX",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 3.7106961379995482,
+          "request_sha256": "5543263ac00dd5af8075deed167db9cd73dd6eded5968e8434e58121086c07a2"
+        },
+        {
+          "name": "native_tail_BY",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 30720.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.673325840999496,
+          "request_sha256": "7e12734d89c49c7e607354ddbff91fee743c9d57b65919e12d21449025eadabe"
+        },
+        {
+          "name": "external_tail_CZ",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 30720.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "MAGENTA",
+          "seconds": 0.66693201399994,
+          "request_sha256": "baf1d797de1f7323c5deb78d07817b89a0eeaacbaf9ffc88d1ae6f6ed7c2aa8f"
+        },
+        {
+          "name": "cold_control_CZ",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "MAGENTA",
+          "seconds": 3.624275265000506,
+          "request_sha256": "bdc50038a988ec7ce7e2aa056be7d3f784c918cb0ac4dc5758d527acb61a3083"
+        },
+        {
+          "name": "early_edit_misses",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "SILVER",
+          "seconds": 3.6924225350003326,
+          "request_sha256": "d5a1e8c64ed88bb5618a2a64e4dafdd880c0d22810fab2bd484a013d496c58b1"
+        }
+      ]
+    },
+    {
+      "file": "tp2-cache-text/prime.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 2.077239432999704,
+          "request_sha256": null
+        },
+        {
+          "name": "native_prefix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 16286.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 0.43644368599962036,
+          "request_sha256": null
+        },
+        {
+          "name": "external_identical",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16286.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 0.3384813809998377,
+          "request_sha256": null
+        },
+        {
+          "name": "external_changed_suffix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16280.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.270867258999715,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp2-cache-text/restore.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "persistent_changed_suffix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16286.0,
+            "l2_loaded_objects": 28.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.6852799520002009,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp2-cache-vision/prime.json",
+      "status": "failed",
+      "error": "ValueError: External restore was not proven: GPU=0.0, external=0.0",
+      "stages": [
+        {
+          "name": "cold",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "Red",
+          "seconds": 1.850280995000503,
+          "request_sha256": null
+        },
+        {
+          "name": "native_prefix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 13824.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "Red",
+          "seconds": 0.3999695550000979,
+          "request_sha256": null
+        },
+        {
+          "name": "external_identical",
+          "status": "in_progress",
+          "cache": null,
+          "answer": "Red",
+          "seconds": 1.7565825620004034,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp4-dflash/cache-text/prime.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 1.43492351399982,
+          "request_sha256": null
+        },
+        {
+          "name": "native_prefix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 16287.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 0.21741938600007416,
+          "request_sha256": null
+        },
+        {
+          "name": "external_identical",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16287.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 0.1500252330006333,
+          "request_sha256": null
+        },
+        {
+          "name": "external_changed_suffix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16281.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.2457553750000443,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp4-dflash/cache-text/restore.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "persistent_changed_suffix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16287.0,
+            "l2_loaded_objects": 80.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.8166530590006005,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp4-dflash/response-disk.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "disk_response_continuation",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 14466.0,
+            "l2_loaded": 80.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 0.19916979699974036,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp4-dflash/response-prime.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold_generated_response",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 1.3587268260007477,
+          "request_sha256": null
+        },
+        {
+          "name": "ram_response_continuation",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 14451.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 0.294924286999958,
+          "request_sha256": null
+        },
+        {
+          "name": "cold_continuation_control",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 1.1832762950007236,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "tp4-dflash/tail-disk.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "disk_tail_DQ",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 28672.0,
+            "l2_loaded": 112.0
+          },
+          "answer": "TURQUOISE",
+          "seconds": 1.1540713300000789,
+          "request_sha256": "19ebe7e6d410a35c7514bf8be4d7d379e13c3d6233dfee45cdad2258833d0f8f"
+        }
+      ]
+    },
+    {
+      "file": "tp4-dflash/tail-prime.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold_AX",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 2.8754525700005615,
+          "request_sha256": "dd4d0e1c3513ced12b9a249e90a0989bfba8ebcdf8ff7e31b22a49721da3cd43"
+        },
+        {
+          "name": "native_tail_BY",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 28672.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.6930690059998597,
+          "request_sha256": "2ddc825c66dda11a185c3efdd5f6a732d4ce9a0ed0b5d54b9625fbbca6772760"
+        },
+        {
+          "name": "external_tail_CZ",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 28672.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "MAGENTA",
+          "seconds": 0.7455317240001023,
+          "request_sha256": "f3f0a597e594ac74acea5b0a8d93ba2a93595eea4ac754d21bccd615e8128953"
+        },
+        {
+          "name": "cold_control_CZ",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "MAGENTA",
+          "seconds": 2.811933549999594,
+          "request_sha256": "1498ba391731a9005c9bdf0811e5447c4b31f7ea5cfb677f90fd150ea70e38a1"
+        },
+        {
+          "name": "early_edit_misses",
+          "status": "qualified",
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0,
+            "l2_loaded": 0.0
+          },
+          "answer": "SILVER",
+          "seconds": 3.856966229000136,
+          "request_sha256": "ccce186765b8c10d472dbb37631d3223e499394edfacbabdae685a99f762b2d5"
+        }
+      ]
+    }
+  ],
+  "serving": [
+    {
+      "file": "tp2-serving/qualification.json",
+      "status": "completed",
+      "all_smoke_passed": true,
+      "smoke": [
+        {
+          "name": "arithmetic",
+          "passed": true,
+          "answer": "56"
+        },
+        {
+          "name": "prefix_cold",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_repeated",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_changed",
+          "passed": true,
+          "answer": "AMBER"
+        },
+        {
+          "name": "vision",
+          "passed": true,
+          "answer": "On the left there is a red square, and on the right there is a blue circle."
+        }
+      ],
+      "speculation": {
+        "method": "mtp",
+        "num_speculative_tokens": 3,
+        "draft_sample_method": "probabilistic",
+        "rejection_sample_method": "standard",
+        "moe_backend": "b12x",
+        "attention_backend": "B12X"
+      },
+      "logical_kv_capacity_tokens": 899579,
+      "invalid_decode_cells": [],
+      "missing_decode_cells": [],
+      "commands": [
+        {
+          "label": "runtime",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpHAYtBt/bin/python",
+            "/root/vllm/qwen38next/scripts/glm53-runtime-audit.py",
+            "--container",
+            "glm53-recovery-cache-mtp2",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp2-serving/runtime.json",
+            "--ssh-host",
+            "root@192.168.66.4"
+          ],
+          "start_epoch": 1790004096.7402616,
+          "returncode": 0,
+          "end_epoch": 1790004098.6065226
+        },
+        {
+          "label": "prefill",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpHAYtBt/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "899579",
+            "--prefill-only",
+            "--prefill-contexts",
+            "32k",
+            "--prefill-duration",
+            "30",
+            "--prefill-metric",
+            "client",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp2-serving/prefill.json"
+          ],
+          "start_epoch": 1790004099.4738555,
+          "returncode": 0,
+          "end_epoch": 1790004149.1134803
+        },
+        {
+          "label": "decode-1",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpHAYtBt/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "899579",
+            "--skip-prefill",
+            "--concurrency",
+            "1,4",
+            "--contexts",
+            "0",
+            "--duration",
+            "30",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp2-serving/decode-1.json"
+          ],
+          "start_epoch": 1790004149.1142278,
+          "returncode": 0,
+          "end_epoch": 1790004251.3406
+        },
+        {
+          "label": "decode-2",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpHAYtBt/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "899579",
+            "--skip-prefill",
+            "--concurrency",
+            "1,4",
+            "--contexts",
+            "0",
+            "--duration",
+            "30",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp2-serving/decode-2.json"
+          ],
+          "start_epoch": 1790004251.3413358,
+          "returncode": 0,
+          "end_epoch": 1790004353.5186777
+        },
+        {
+          "label": "decode-3",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpHAYtBt/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "899579",
+            "--skip-prefill",
+            "--concurrency",
+            "1,4",
+            "--contexts",
+            "0",
+            "--duration",
+            "30",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp2-serving/decode-3.json"
+          ],
+          "start_epoch": 1790004353.519401,
+          "returncode": 0,
+          "end_epoch": 1790004460.3124058
+        }
+      ],
+      "bench_sha256": "053989edff8c9c93e2b96e61342b2ffbd9851e03deba17e6d3fc96fcd6694c1e",
+      "decode_samples": [
+        {
+          "file": "tp2-serving/decode-1.json",
+          "concurrency": 1,
+          "context_tokens": 0,
+          "aggregate_tps": 186.9965679647191,
+          "server_steps_per_s": 68.63207369685502,
+          "server_accept_len_effective": 2.724623603691112,
+          "server_spec_accept_rate": 0.5748745345637041,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [
+            {
+              "observed_start_char": 23716,
+              "period_chars": 4,
+              "repeated_chars": 1078,
+              "complete_cycles": 269,
+              "status": "suspected",
+              "detected_at_char": 24794,
+              "coordinate_unit": "unicode_code_points_in_channel",
+              "period_sha256": "40f0c24f10575e21f2cf3ea6340678f0c6b5dd8c9f34716032f5ac81603b4462",
+              "cycle_excerpt": "OK. ",
+              "context_excerpt": "e write about the history of mathematics.\n\nHmm. OK. OK. OK. OK. OK. OK. OK. OK. Let me write about the history of mathematics.\n\nOK. ",
+              "tail_excerpt": ". OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK. OK",
+              "channel": "content",
+              "stream_index": 0,
+              "request_ordinal": 0,
+              "request_id": "chatcmpl-89e48a2ec0d042c5",
+              "observed_completion_tokens": 6625,
+              "phase": "sustained_decode"
+            }
+          ],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 30.000551,
+          "measurement_wall_seconds": 30.000587,
+          "request_count": 1,
+          "effective_concurrency": 1
+        },
+        {
+          "file": "tp2-serving/decode-1.json",
+          "concurrency": 4,
+          "context_tokens": 0,
+          "aggregate_tps": 383.47739498225343,
+          "server_steps_per_s": 152.9239128837451,
+          "server_accept_len_effective": 2.5076352530541013,
+          "server_spec_accept_rate": 0.502545084351367,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.978299,
+          "measurement_wall_seconds": 30.000402,
+          "request_count": 4,
+          "effective_concurrency": 4
+        },
+        {
+          "file": "tp2-serving/decode-2.json",
+          "concurrency": 1,
+          "context_tokens": 0,
+          "aggregate_tps": 166.89098491615098,
+          "server_steps_per_s": 68.66295764475154,
+          "server_accept_len_effective": 2.430582524271845,
+          "server_spec_accept_rate": 0.47686084142394825,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 30.001621,
+          "measurement_wall_seconds": 30.001661,
+          "request_count": 1,
+          "effective_concurrency": 1
+        },
+        {
+          "file": "tp2-serving/decode-2.json",
+          "concurrency": 4,
+          "context_tokens": 0,
+          "aggregate_tps": 382.79034402182725,
+          "server_steps_per_s": 153.8895861352338,
+          "server_accept_len_effective": 2.4874350086655115,
+          "server_spec_accept_rate": 0.4958116695551704,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.995532,
+          "measurement_wall_seconds": 30.00064,
+          "request_count": 4,
+          "effective_concurrency": 4
+        },
+        {
+          "file": "tp2-serving/decode-3.json",
+          "concurrency": 1,
+          "context_tokens": 0,
+          "aggregate_tps": 166.41460391324588,
+          "server_steps_per_s": 68.81982417890994,
+          "server_accept_len_effective": 2.4181201550387597,
+          "server_spec_accept_rate": 0.4727067183462532,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.991358,
+          "measurement_wall_seconds": 30.001482,
+          "request_count": 1,
+          "effective_concurrency": 1
+        },
+        {
+          "file": "tp2-serving/decode-3.json",
+          "concurrency": 4,
+          "context_tokens": 0,
+          "aggregate_tps": 377.2649060709331,
+          "server_steps_per_s": 153.50663964211896,
+          "server_accept_len_effective": 2.457645525629887,
+          "server_spec_accept_rate": 0.48588184187662903,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.992188,
+          "measurement_wall_seconds": 30.000293,
+          "request_count": 4,
+          "effective_concurrency": 4
+        }
+      ],
+      "decode_medians": {
+        "1": {
+          "aggregate_tps": 166.89098491615098,
+          "server_steps_per_s": 68.66295764475154,
+          "server_accept_len_effective": 2.430582524271845
+        },
+        "4": {
+          "aggregate_tps": 382.79034402182725,
+          "server_steps_per_s": 153.50663964211896,
+          "server_accept_len_effective": 2.4874350086655115
+        }
+      },
+      "prefill": [
+        {
+          "file": "tp2-serving/prefill.json",
+          "results": {
+            "32768": {
+              "ttft_seconds": 3.386,
+              "prefill_seconds": 3.386,
+              "tok_per_sec": 9678.0,
+              "client_ttft_seconds": 3.386,
+              "client_tok_per_sec": 9678.0,
+              "prompt_tokens": 32770,
+              "samples": 9,
+              "method": "client",
+              "server_validation": {
+                "method": "",
+                "tok_per_sec": 0.0,
+                "prefill_seconds": 0.0,
+                "prompt_tokens": 0,
+                "request_prompt_tokens": 0,
+                "cached_tokens": 0,
+                "token_source": "",
+                "samples": 0,
+                "invalid_reason": ""
+              },
+              "hardware_summary": {}
+            }
+          }
+        }
+      ]
+    },
+    {
+      "file": "tp2-smoke/qualification.json",
+      "status": "smoke_completed",
+      "all_smoke_passed": true,
+      "smoke": [
+        {
+          "name": "arithmetic",
+          "passed": true,
+          "answer": "56"
+        },
+        {
+          "name": "prefix_cold",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_repeated",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_changed",
+          "passed": true,
+          "answer": "AMBER"
+        },
+        {
+          "name": "vision",
+          "passed": true,
+          "answer": "On the left there is a red square, and on the right there is a blue circle."
+        }
+      ],
+      "speculation": {
+        "method": "mtp",
+        "num_speculative_tokens": 3,
+        "draft_sample_method": "probabilistic",
+        "rejection_sample_method": "standard",
+        "moe_backend": "b12x",
+        "attention_backend": "B12X"
+      },
+      "logical_kv_capacity_tokens": 899579,
+      "invalid_decode_cells": null,
+      "missing_decode_cells": null,
+      "commands": [
+        {
+          "label": "runtime",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpsDXsyG/bin/python",
+            "/root/vllm/qwen38next/scripts/glm53-runtime-audit.py",
+            "--container",
+            "glm53-recovery-cache-mtp2",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp2-smoke/runtime.json",
+            "--ssh-host",
+            "root@192.168.66.4"
+          ],
+          "start_epoch": 1790003505.802988,
+          "returncode": 0,
+          "end_epoch": 1790003507.6696734
+        }
+      ],
+      "bench_sha256": "053989edff8c9c93e2b96e61342b2ffbd9851e03deba17e6d3fc96fcd6694c1e",
+      "decode_samples": [],
+      "decode_medians": {},
+      "prefill": []
+    },
+    {
+      "file": "tp4-dflash/serving/qualification.json",
+      "status": "in_progress",
+      "all_smoke_passed": null,
+      "smoke": [
+        {
+          "name": "arithmetic",
+          "passed": true,
+          "answer": "56"
+        },
+        {
+          "name": "prefix_cold",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_repeated",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_changed",
+          "passed": true,
+          "answer": "AMBER"
+        },
+        {
+          "name": "vision",
+          "passed": true,
+          "answer": "On the left is a red square, and on the right is a blue circle."
+        }
+      ],
+      "speculation": {
+        "method": "dflash",
+        "model": "local-inference-lab/GLM-5.3-Flash-DFlash2",
+        "draft_sample_method": "probabilistic",
+        "rejection_sample_method": "standard",
+        "attention_backend": "FLASH_ATTN",
+        "kv_cache_dtype": "auto",
+        "num_speculative_tokens": 7,
+        "revision": "713226ab03bc38afdf955c7450436c2f7176f6f8"
+      },
+      "logical_kv_capacity_tokens": 1633922,
+      "invalid_decode_cells": null,
+      "missing_decode_cells": null,
+      "commands": [
+        {
+          "label": "runtime",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmppzqb1w/bin/python",
+            "/root/vllm/qwen38next/scripts/glm53-runtime-audit.py",
+            "--container",
+            "52ed6492abff26e04692d7eaf54f9da4803f89fe340f93aa878fed84ee2df443",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp4-dflash/serving/runtime.json",
+            "--ssh-host",
+            "root@192.168.66.4"
+          ],
+          "start_epoch": 1790005724.1704266,
+          "returncode": 0,
+          "end_epoch": 1790005726.5382078
+        },
+        {
+          "label": "prefill",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmppzqb1w/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "1633922",
+            "--prefill-only",
+            "--prefill-contexts",
+            "32k",
+            "--prefill-duration",
+            "30",
+            "--prefill-metric",
+            "client",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp4-dflash/serving/prefill.json"
+          ],
+          "start_epoch": 1790005727.7666714,
+          "returncode": 0,
+          "end_epoch": 1790005774.9055436
+        },
+        {
+          "label": "decode-1",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmppzqb1w/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "1633922",
+            "--skip-prefill",
+            "--concurrency",
+            "1,8",
+            "--contexts",
+            "0",
+            "--duration",
+            "30",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp4-dflash/serving/decode-1.json"
+          ],
+          "start_epoch": 1790005774.906239,
+          "returncode": 0,
+          "end_epoch": 1790005876.9363356
+        },
+        {
+          "label": "decode-2",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmppzqb1w/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "1633922",
+            "--skip-prefill",
+            "--concurrency",
+            "1,8",
+            "--contexts",
+            "0",
+            "--duration",
+            "30",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp4-dflash/serving/decode-2.json"
+          ],
+          "start_epoch": 1790005876.9370868,
+          "returncode": 0,
+          "end_epoch": 1790005978.9842255
+        },
+        {
+          "label": "decode-3",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmppzqb1w/bin/python",
+            "/root/llm-inference-bench/llm_decode_bench.py",
+            "--host",
+            "http://192.168.0.115:5571",
+            "--model",
+            "GLM-5.3-Flash",
+            "--display-mode",
+            "plain",
+            "--no-hw-monitor",
+            "--no-resume",
+            "--respect-eos",
+            "--temperature",
+            "1",
+            "--token-targeting",
+            "exact",
+            "--max-tokens",
+            "8192",
+            "--decode-warmup-seconds",
+            "15",
+            "--kv-budget",
+            "1633922",
+            "--skip-prefill",
+            "--concurrency",
+            "1,8",
+            "--contexts",
+            "0",
+            "--duration",
+            "30",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/tp4-dflash/serving/decode-3.json"
+          ],
+          "start_epoch": 1790005978.984977
+        }
+      ],
+      "bench_sha256": "053989edff8c9c93e2b96e61342b2ffbd9851e03deba17e6d3fc96fcd6694c1e",
+      "decode_samples": [
+        {
+          "file": "tp4-dflash/serving/decode-1.json",
+          "concurrency": 1,
+          "context_tokens": 0,
+          "aggregate_tps": 201.24133660066667,
+          "server_steps_per_s": 77.569751576901,
+          "server_accept_len_effective": 2.594327460249248,
+          "server_spec_accept_rate": 0.22776106574989258,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.998807,
+          "measurement_wall_seconds": 30.000913,
+          "request_count": 1,
+          "effective_concurrency": 1
+        },
+        {
+          "file": "tp4-dflash/serving/decode-1.json",
+          "concurrency": 8,
+          "context_tokens": 0,
+          "aggregate_tps": 665.912295913296,
+          "server_steps_per_s": 257.75959042413984,
+          "server_accept_len_effective": 2.5834627329192545,
+          "server_spec_accept_rate": 0.22620896184560782,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.981426,
+          "measurement_wall_seconds": 30.00054,
+          "request_count": 8,
+          "effective_concurrency": 8
+        },
+        {
+          "file": "tp4-dflash/serving/decode-2.json",
+          "concurrency": 1,
+          "context_tokens": 0,
+          "aggregate_tps": 183.3187208560793,
+          "server_steps_per_s": 78.34133369917919,
+          "server_accept_len_effective": 2.34,
+          "server_spec_accept_rate": 0.19142857142857142,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.996936,
+          "measurement_wall_seconds": 30.001058,
+          "request_count": 1,
+          "effective_concurrency": 1
+        },
+        {
+          "file": "tp4-dflash/serving/decode-2.json",
+          "concurrency": 8,
+          "context_tokens": 0,
+          "aggregate_tps": 655.0641045666048,
+          "server_steps_per_s": 256.31783570378957,
+          "server_accept_len_effective": 2.555671175858481,
+          "server_spec_accept_rate": 0.2222387394083544,
+          "num_errors": 0,
+          "failure_reason": "",
+          "loop_detected": false,
+          "loop_diagnostics": [],
+          "underfilled": false,
+          "warmup_timed_out": false,
+          "measurement_seconds": 29.994011,
+          "measurement_wall_seconds": 30.000158,
+          "request_count": 8,
+          "effective_concurrency": 8
+        }
+      ],
+      "decode_medians": {
+        "1": {
+          "aggregate_tps": 192.280028728373,
+          "server_steps_per_s": 77.9555426380401,
+          "server_accept_len_effective": 2.467163730124624
+        },
+        "8": {
+          "aggregate_tps": 660.4882002399504,
+          "server_steps_per_s": 257.0387130639647,
+          "server_accept_len_effective": 2.5695669543888675
+        }
+      },
+      "prefill": [
+        {
+          "file": "tp4-dflash/serving/prefill.json",
+          "results": {
+            "32768": {
+              "ttft_seconds": 2.578,
+              "prefill_seconds": 2.578,
+              "tok_per_sec": 12714.0,
+              "client_ttft_seconds": 2.578,
+              "client_tok_per_sec": 12714.0,
+              "prompt_tokens": 32770,
+              "samples": 10,
+              "method": "client",
+              "server_validation": {
+                "method": "",
+                "tok_per_sec": 0.0,
+                "prefill_seconds": 0.0,
+                "prompt_tokens": 0,
+                "request_prompt_tokens": 0,
+                "cached_tokens": 0,
+                "token_source": "",
+                "samples": 0,
+                "invalid_reason": ""
+              },
+              "hardware_summary": {}
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "raw_receipt_sha256": {
+    "lmcache-tp2-reservation.json": "a7afa7fa8e6c30d5263f29eedfa77256888ae5bc76a679c52e8b56ac005e8de8",
+    "tp2-cache-response-disk.json": "0393091dc04728634d9abedc863884666d567001a5f42c66197e6e5ad540e64b",
+    "tp2-cache-response.json": "643870d77950419d260c1c7ca072ae1426038e9b3a7fa833146bd3f0ec3b5d05",
+    "tp2-cache-tail-disk.json": "381c161ab70986aeec46d989064142fd8c70de79f791ef2e91a0c862f3992f1d",
+    "tp2-cache-tail.json": "7c79eaff570b7bff1f977be4ed28a05ce97c08b79072487644cdcc6e78cda9e1",
+    "tp2-cache-text/prime.json": "885df411aa7636c96e28e41a328125c151dc5d5d7135824aee7d1e64c691250c",
+    "tp2-cache-text/restore.json": "dd6bbe458d6e0a1305819ca828d5a138db1785a0b2284a425ca45f5da29865b1",
+    "tp2-cache-vision/prime.json": "06a8ac9df7fbba17454b8c2e403bbe16beda10d85d3f4f3136e664c317f11490",
+    "tp2-mixed.json": "aeda4b0421d9409b82901627343ed910c05edb7bb0da2ce405ea910a952e1f9a",
+    "tp2-smoke/qualification.json": "6e22caaea8ee6780f1f13eb432b0b6206a39549014e43ba6c2452a5b03ec6689",
+    "tp2-smoke/runtime.json": "d5d6edbfafe90fceb83d2eb6c79186cd0e75e08fd5c20609815a48a471c0f189",
+    "tp4-dflash/cache-text/prime.json": "61b169dec09e29cfead5b05bffce186772e91ab8dea496b163dcefec7b1a1a23",
+    "tp4-dflash/cache-text/restore.json": "1ba06576e6e36a058cb5e2b9b9760ec2b3f1510a4593892f229ba1736db34684",
+    "tp4-dflash/controller.json": "161ebc4f5a9a661b9bb556e10e7dc591eee53eba5d741c59ec6bbcb3154e245b",
+    "tp4-dflash/response-disk.json": "efa6109c61e893d1b974c030e22f3758728021dac035664855ffdcfe41286da7",
+    "tp4-dflash/response-prime.json": "0f3b4e388a907a4cca7a8c6626e4e01b05010a7d87ff23f1228e4c7aff04b144",
+    "tp4-dflash/tail-disk.json": "d6e328f683aa6c86b40ea4137831dabebb0767b2df2d25bd726714ddcd16c016",
+    "tp4-dflash/tail-prime.json": "8decb44829fc2c3db799ec3bcdc4a83361a5722f0fac4533fd2d4d58b4d0e27e",
+    "tp2-serving/qualification.json": "e2f7946c8c00a8f53421c6fdb553cc8171cc9f9ea64ccfea0bd118501405c7ea",
+    "tp2-serving/decode-1.json": "ef065b9a739b534e01a44bfeb97719f3b090a25590651d2488bf42fcfc93f972",
+    "tp2-serving/decode-2.json": "f0a31ce606ada68b945cb3a9ab3869d34e3b6e304a65a46fe0652c30aadf17d8",
+    "tp2-serving/decode-3.json": "197cae1675e424d8ed4fbc3456a9bb62fcec39f58195d78d9b90eddb58280fb1",
+    "tp2-serving/prefill.json": "8719dc50b93b2f164948c3d3203825791f099011c3f5eda8b1430888c5338025",
+    "tp4-dflash/serving/qualification.json": "36b23f6477c21f2c239dee37ed6c359a7e12b4350f645614635882f08b37b9fc",
+    "tp4-dflash/serving/decode-1.json": "447ef75f68d06c4ea7c3dc78beccc052c1255329ab2d0477dd072ce3e324e966",
+    "tp4-dflash/serving/decode-2.json": "bbdeeb78f4e9786f1af2288bb0d6645f403ce4ffd15e3e06e85754d746cf5215",
+    "tp4-dflash/serving/prefill.json": "48203df3763c024937217915e235b7a84ba17a1310472f6e2dc900ee4bfbc667"
+  }
+}

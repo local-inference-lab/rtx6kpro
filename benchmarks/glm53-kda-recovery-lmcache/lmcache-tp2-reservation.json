@@ -1,0 +1,47 @@
+{
+  "allocation_bytes": 4190109696,
+  "arms": [
+    {
+      "recovery": false,
+      "recurrent_page_bytes": 2244608,
+      "group_widths": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        4,
+        12
+      ],
+      "pool_block_bytes": 11227392,
+      "pool_blocks": 373,
+      "recurrent_working_blocks": 35,
+      "endpoint_restore_blocks": 45,
+      "fixed_per_request_bytes": 898191360,
+      "fitted_context": 897024,
+      "logical_capacity": 899435
+    },
+    {
+      "recovery": true,
+      "recurrent_page_bytes": 2375680,
+      "group_widths": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        4,
+        12
+      ],
+      "pool_block_bytes": 11886336,
+      "pool_blocks": 352,
+      "recurrent_working_blocks": 14,
+      "endpoint_restore_blocks": 45,
+      "fixed_per_request_bytes": 701293824,
+      "fitted_context": 897024,
+      "logical_capacity": 899579
+    }
+  ]
+}

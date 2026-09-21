@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="7.115" timestamp="2026-09-21T17:19:49.060975+00:00" hostname="3d826f970088"><testcase classname="tests.models.glm5next.test_kda_recoverssm" name="test_full_state_backends_keep_every_speculative_state_column[GDNAttentionMetadataBuilder]" time="0.021"><failure message="assert 1 == 3">builder_cls = &lt;class 'vllm.v1.attention.backends.gdn_attn.GDNAttentionMetadataBuilder'&gt;
+
+    @pytest.mark.parametrize(
+        "builder_cls", [GDNAttentionMetadataBuilder, KimiK3ROCmKDAMetadataBuilder]
+    )
+    def test_full_state_backends_keep_every_speculative_state_column(builder_cls):
+        """A global recovery flag cannot narrow metadata for full-state kernels."""
+        common = create_common_attn_metadata(
+            BatchSpec(seq_lens=[50, 30], query_lens=[3, 3]),
+            16,
+            torch.device("cpu"),
+        )
+        builder = _builder(builder_cls)
+        metadata = builder.build(
+            0,
+            common,
+            num_decode_draft_tokens_cpu=torch.tensor([2, 2]),
+            num_accepted_tokens=torch.tensor([3, 2]),
+        )
+&gt;       assert builder.spec_state_indices_tensor.shape[1] == 3
+E       assert 1 == 3
+
+tests/models/glm5next/test_kda_recoverssm.py:218: AssertionError</failure></testcase><testcase classname="tests.models.glm5next.test_kda_recoverssm" name="test_full_state_backends_keep_every_speculative_state_column[KimiK3ROCmKDAMetadataBuilder]" time="0.001"><failure message="assert 1 == 3">builder_cls = &lt;class 'vllm.models.kimi_k3.amd.kda_metadata.KimiK3ROCmKDAMetadataBuilder'&gt;
+
+    @pytest.mark.parametrize(
+        "builder_cls", [GDNAttentionMetadataBuilder, KimiK3ROCmKDAMetadataBuilder]
+    )
+    def test_full_state_backends_keep_every_speculative_state_column(builder_cls):
+        """A global recovery flag cannot narrow metadata for full-state kernels."""
+        common = create_common_attn_metadata(
+            BatchSpec(seq_lens=[50, 30], query_lens=[3, 3]),
+            16,
+            torch.device("cpu"),
+        )
+        builder = _builder(builder_cls)
+        metadata = builder.build(
+            0,
+            common,
+            num_decode_draft_tokens_cpu=torch.tensor([2, 2]),
+            num_accepted_tokens=torch.tensor([3, 2]),
+        )
+&gt;       assert builder.spec_state_indices_tensor.shape[1] == 3
+E       assert 1 == 3
+
+tests/models/glm5next/test_kda_recoverssm.py:218: AssertionError</failure></testcase></testsuite></testsuites>

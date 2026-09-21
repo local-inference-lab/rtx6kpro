@@ -65,6 +65,13 @@ no capture request in that mode; treating a synthetic logits-only/capture pair
 as a serving failure would violate the caller's contract. The final-image checks
 are recorded separately from the frozen throughput composition below.
 
+vLLM `66bcca4e462` restricts single-column speculative metadata to builders that
+implement state recovery. Generic GDN and ROCm Kimi full-state kernels retain
+one state-index column per verified token. Two CPU reproducer cases fail before
+that guard and pass afterward; the NVIDIA Kimi recovery metadata test also
+passes. This is metadata-contract coverage, not AMD GPU serving qualification.
+The GLM recovery builder retains the same selected metadata geometry.
+
 Serving uses those changes composed with the integration branches. B12X
 composition `ae981e79621a64ac3daabfd8b4875b55b86719a6` includes beta
 `f6d8b8eb94cdeb4e652652f925a494c6fc86f101`; vLLM composition
@@ -99,7 +106,7 @@ only that container and its internal LMCache sidecar:
 
 ## Kernel and runner validation
 
-Qualified: **131 B12X tests passed, 29 skipped; 28 vLLM tests passed** on the
+Qualified: **131 B12X tests passed, 29 skipped; 31 vLLM tests passed** on the
 composed beta sources. Coverage includes windows of 1/4/8 tokens, FP32 recurrence
 oracles, accepted and aligned-boundary states, unchanged verification checkpoints,
 CUDA graph replay under frozen kernel resolution, caller-owned storage,
@@ -119,6 +126,8 @@ Raw results:
 [B12X XML](glm53-kda-recovery-lmcache/b12x-final-contract-tests.xml),
 [vLLM XML](glm53-kda-recovery-lmcache/vllm-reviewed-tests.xml),
 [CPU contract XML](glm53-kda-recovery-lmcache/logits-contract-cpu-tests.xml).
+The pre-fix failure is retained in
+[metadata reproducer XML](glm53-kda-recovery-lmcache/metadata-before-fix.xml).
 
 Changed-file lint and formatting checks pass. The full vLLM mypy hook reports an
 existing `GPUModelRunner.jit_warmup_registry` attribute error, reproduced on the
@@ -315,7 +324,7 @@ review PRs against `master` and `dev/karmic-kraken` respectively.
 
 The `integration/karmic-kraken-beta` branches contain B12X
 `cb56484ee2714bc8a00d4eccd0d53816dc62928f` and vLLM
-`9e3eaac44013081b4a7859a628387503ed72e97c`. The component changelog fragments
+`44309e653eccbe309cc6be681d68a66eeb037175`. The component changelog fragments
 travel with these commits; the vLLM fragment requires both B12X fragments.
 The final B12X GPU suite used the equivalent runtime tree before the last
 fragment-only commit. Throughput used the frozen composition described above;

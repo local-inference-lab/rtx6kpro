@@ -2,6 +2,183 @@
   "scope": "Bounded kernel and serving checks; not a general model accuracy evaluation.",
   "cache_probes": [
     {
+      "file": "public-ghcr/cache-text/prime.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 1.8122723919987038,
+          "request_sha256": null
+        },
+        {
+          "name": "native_prefix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 16283.0,
+            "external_hit_tokens": 0.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 0.1019287279996206,
+          "request_sha256": null
+        },
+        {
+          "name": "external_identical",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16283.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 0.10526960299830534,
+          "request_sha256": null
+        },
+        {
+          "name": "external_changed_suffix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16277.0,
+            "l2_loaded_objects": 0.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.19371547199989436,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "public-ghcr/cache-text/restore.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "persistent_changed_suffix",
+          "status": "qualified",
+          "cache": {
+            "gpu_hit_tokens": 0.0,
+            "external_hit_tokens": 16283.0,
+            "l2_loaded_objects": 28.0
+          },
+          "answer": "AMBER",
+          "seconds": 0.49771965100080706,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
+      "file": "public-ghcr/logits-only.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "cold_prompt",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 0.0
+          },
+          "answer": "COBALT",
+          "seconds": 1.4446102779984358,
+          "request_sha256": "083fd5211f77e37f8c8dc08c5863038b52110218c103f6c80caafcab12cc5504"
+        },
+        {
+          "name": "exact_restore_one_token",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 11938.0
+          },
+          "answer": "",
+          "seconds": 0.07800494900220656,
+          "request_sha256": "59e96d683c946d54ebbbbff25783c68064e84754466dc0d1047ba5f71fc534fb"
+        },
+        {
+          "name": "truncated_response_continuation",
+          "status": null,
+          "cache": {
+            "gpu_hits": 0.0,
+            "external_hits": 11938.0
+          },
+          "answer": "</think>AMBER",
+          "seconds": 0.1986444809990644,
+          "request_sha256": "9ce70f6f7610f725ecbf874a573a38d74c657393ecb21713dc2d09df2b35067e"
+        }
+      ]
+    },
+    {
+      "file": "public-ghcr/qualification.json",
+      "status": "qualified",
+      "error": null,
+      "stages": [
+        {
+          "name": "pull",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        },
+        {
+          "name": "render",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        },
+        {
+          "name": "launch",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        },
+        {
+          "name": "smoke",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        },
+        {
+          "name": "cache-prime",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        },
+        {
+          "name": "logits-only",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        },
+        {
+          "name": "cache-disk",
+          "status": null,
+          "cache": null,
+          "answer": "",
+          "seconds": null,
+          "request_sha256": null
+        }
+      ]
+    },
+    {
       "file": "tp2-cache-response-disk.json",
       "status": "qualified",
       "error": null,
@@ -1824,6 +2001,72 @@
       ]
     },
     {
+      "file": "public-ghcr/smoke/qualification.json",
+      "status": "smoke_completed",
+      "all_smoke_passed": true,
+      "smoke": [
+        {
+          "name": "arithmetic",
+          "passed": true,
+          "answer": "56"
+        },
+        {
+          "name": "prefix_cold",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_repeated",
+          "passed": true,
+          "answer": "COBALT"
+        },
+        {
+          "name": "prefix_changed",
+          "passed": true,
+          "answer": "AMBER"
+        },
+        {
+          "name": "vision",
+          "passed": true,
+          "answer": "On the left is a red square, and on the right is a blue circle."
+        }
+      ],
+      "speculation": {
+        "method": "mtp",
+        "draft_sample_method": "probabilistic",
+        "rejection_sample_method": "standard",
+        "moe_backend": "b12x",
+        "attention_backend": "B12X",
+        "num_speculative_tokens": 3,
+        "revision": "a608241037e4c2565356bff7ca293f2133888f88"
+      },
+      "logical_kv_capacity_tokens": 899579,
+      "invalid_decode_cells": null,
+      "missing_decode_cells": null,
+      "commands": [
+        {
+          "label": "runtime",
+          "argv": [
+            "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+            "/root/vllm/qwen38next/scripts/glm53-runtime-audit.py",
+            "--container",
+            "38e0e4a85870065adcca8f10c3dd9cdddd134c1252ab18e73c85f8b32d178a5d",
+            "--output",
+            "results/glm53-recovery-lmcache-20260921/public-ghcr/smoke/runtime.json",
+            "--ssh-host",
+            "root@192.168.66.4"
+          ],
+          "start_epoch": 1790015084.8716738,
+          "returncode": 0,
+          "end_epoch": 1790015087.18852
+        }
+      ],
+      "bench_sha256": "053989edff8c9c93e2b96e61342b2ffbd9851e03deba17e6d3fc96fcd6694c1e",
+      "decode_samples": [],
+      "decode_medians": {},
+      "prefill": []
+    },
+    {
       "file": "tp2-serving/qualification.json",
       "status": "completed",
       "all_smoke_passed": true,
@@ -3030,6 +3273,15 @@
     "mtp2-full-clean-arena-controller.json": "9663cc023663ce3286f077de12ef4813d3e2b50511831704ab19d6f7d02ec61a",
     "mtp4-full-clocks.json": "b9318e100308c23c2dfd91634cdf90bc9022a8be73a6982c1a9cd28fcb91a1c9",
     "mtp4-recovery-clocks.json": "0c2976ac9c2bd6a18435e3dd272bcf2ccfdb77ea0b8d11aba0fab6aecea40766",
+    "public-ghcr/cache-text/prime.json": "eec9b832b0ac1f2a8671a792b66e8b1c5d15061127f5a51ffa1658888921c0f0",
+    "public-ghcr/cache-text/restore.json": "b61c08707608e65ad8f28e18072263523bea1776d11780ea0373b1a978f10e48",
+    "public-ghcr/launch/container.json": "5a7a804cbad5bad95146a966ba931a2a8aec482fb32b26026e0b725e48d0ff08",
+    "public-ghcr/launch/render.json": "dc15e9ccd10f789f005d703ca791f9963fcb4d5b8612f18066fb21b2fa4752c1",
+    "public-ghcr/logits-only.json": "e7048d7c9f2eae7d93bd200e46d243066f610c28b9281509b7461d22adf4830c",
+    "public-ghcr/manifest.json": "09130295da46f7629420c2ef2561f42b8cb59ae58d9874ed9e1a4a2459e035f4",
+    "public-ghcr/qualification.json": "a6cd4960a9316daa2c142cec3a4f9da16b6addc9754cf2075fa77eb815403b92",
+    "public-ghcr/smoke/qualification.json": "1114220ed8b97f01c22cd5ad352b6d970e55fc540e6c18be9ae2fba930904e35",
+    "public-ghcr/smoke/runtime.json": "a5467c21dcdee8315dac9c41f59ab0202ab4f62da1ce4e19ac8aae9b1ae45d12",
     "tp2-cache-response-disk.json": "0393091dc04728634d9abedc863884666d567001a5f42c66197e6e5ad540e64b",
     "tp2-cache-response.json": "643870d77950419d260c1c7ca072ae1426038e9b3a7fa833146bd3f0ec3b5d05",
     "tp2-cache-tail-disk.json": "381c161ab70986aeec46d989064142fd8c70de79f791ef2e91a0c862f3992f1d",

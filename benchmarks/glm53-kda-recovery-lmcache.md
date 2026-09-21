@@ -323,10 +323,39 @@ Luke merged [B12X #408](https://github.com/local-inference-lab/b12x/pull/408).
 review PRs against `master` and `dev/karmic-kraken` respectively.
 
 The `integration/karmic-kraken-beta` branches contain B12X
-`cb56484ee2714bc8a00d4eccd0d53816dc62928f` and vLLM
+`6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab` and vLLM
 `44309e653eccbe309cc6be681d68a66eeb037175`. The component changelog fragments
 travel with these commits; the vLLM fragment requires both B12X fragments.
 The final B12X GPU suite used the equivalent runtime tree before the last
 fragment-only commit. Throughput used the frozen composition described above;
-the follow-up changes no recurrent GPU program. Verification of the generated
-image and changelog remains pending.
+the follow-up changes no recurrent GPU program.
+
+Published image:
+`ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260921-3cdb720ff4239b74`,
+digest `sha256:fdd9a0bb11b0fa10a052caef38cf8c76b16721eb9f352323b447d21fb960984c`.
+[Build and publication](https://github.com/local-inference-lab/blackwell-llm-docker/actions/runs/35635326712)
+passed 483 recipe/runtime tests (one skipped) and 94 LMCache contract tests.
+The image contains 68 filesystem layers. Its installed manifest matches both
+integration revisions above and contains `b12x-408`, `b12x-409` and `vllm-821`.
+
+Qualified on the published digest, without source overlays: the image-owned
+`PRESET=glm53-spark-tp2` with MTP3, LMCache 16 GiB RAM / 64 GiB disk, and remote
+GPUs 6–7. Arithmetic, cold/repeated/changed-prefix requests and vision generation
+all pass. RAM restores reuse 16,283 tokens for an identical prompt and 16,277 for
+a changed user turn. A separate exact-prompt test restores all 11,938 prompt
+tokens, emits exactly one token, then correctly continues that truncated response.
+Every external probe requires zero GPU-cache hits.
+
+After restarting the serving container and its internal LMCache process, a
+changed-user request restores 16,283 tokens from 28 disk-loaded objects and
+answers `AMBER`, as required by the lookup fixture. The request completes in
+0.498 seconds; this is one correctness probe, not a throughput benchmark.
+Container start timestamps confirm a real restart. The qualification controller
+then stops its own container; no production container is modified.
+
+Receipts: [public-image qualification](glm53-kda-recovery-lmcache/public-ghcr/qualification.json),
+[installed manifest](glm53-kda-recovery-lmcache/public-ghcr/manifest.json),
+and [restart identities](glm53-kda-recovery-lmcache/public-ghcr/restart-identities.json).
+The compact evidence JSON includes the individual cache probes and all five
+serving checks. The throughput tables remain measurements of the frozen source
+composition; no TP4 throughput rerun on this published digest is implied.

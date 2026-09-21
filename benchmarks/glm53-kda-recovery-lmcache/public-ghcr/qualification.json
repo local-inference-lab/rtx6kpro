@@ -1,0 +1,149 @@
+{
+  "status": "qualified",
+  "image": "ghcr.io/local-inference-lab/vllm@sha256:fdd9a0bb11b0fa10a052caef38cf8c76b16721eb9f352323b447d21fb960984c",
+  "stages": [
+    {
+      "name": "pull",
+      "argv": [
+        "ssh",
+        "-o",
+        "HostKeyAlias=192.168.66.4",
+        "root@192.168.0.115",
+        "docker pull ghcr.io/local-inference-lab/vllm@sha256:fdd9a0bb11b0fa10a052caef38cf8c76b16721eb9f352323b447d21fb960984c"
+      ],
+      "started": 1790014616.3489187,
+      "returncode": 0,
+      "finished": 1790014756.9310234
+    },
+    {
+      "name": "render",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+        "/root/vllm/qwen38next/scripts/launch-public-glm-tp2-qualification.py",
+        "--image",
+        "ghcr.io/local-inference-lab/vllm@sha256:fdd9a0bb11b0fa10a052caef38cf8c76b16721eb9f352323b447d21fb960984c",
+        "--preset",
+        "--cache",
+        "disk",
+        "--suffix",
+        "kda-recovery",
+        "--port",
+        "5571",
+        "--output",
+        "results/glm53-recovery-lmcache-20260921/public-ghcr/launch"
+      ],
+      "started": 1790014766.1057615,
+      "returncode": 0,
+      "finished": 1790014768.0714643
+    },
+    {
+      "name": "launch",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+        "/root/vllm/qwen38next/scripts/launch-public-glm-tp2-qualification.py",
+        "--image",
+        "ghcr.io/local-inference-lab/vllm@sha256:fdd9a0bb11b0fa10a052caef38cf8c76b16721eb9f352323b447d21fb960984c",
+        "--preset",
+        "--cache",
+        "disk",
+        "--suffix",
+        "kda-recovery",
+        "--port",
+        "5571",
+        "--output",
+        "results/glm53-recovery-lmcache-20260921/public-ghcr/launch",
+        "--start"
+      ],
+      "started": 1790014768.071618,
+      "returncode": 0,
+      "finished": 1790014769.3867095
+    },
+    {
+      "name": "smoke",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+        "/root/vllm/qwen38next/scripts/qualify-model-endpoint.py",
+        "--container",
+        "38e0e4a85870065adcca8f10c3dd9cdddd134c1252ab18e73c85f8b32d178a5d",
+        "--docker-ssh-host",
+        "root@192.168.66.4",
+        "--base",
+        "http://192.168.0.115:5571",
+        "--model",
+        "GLM-5.3-Flash",
+        "--vision",
+        "--smoke-only",
+        "--expected-method",
+        "mtp",
+        "--expected-draft-tokens",
+        "3",
+        "--output-dir",
+        "results/glm53-recovery-lmcache-20260921/public-ghcr/smoke"
+      ],
+      "started": 1790015084.5083609,
+      "returncode": 0,
+      "finished": 1790015089.6315005
+    },
+    {
+      "name": "cache-prime",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+        "/root/vllm/worktrees/blackwell-tp4-memory-validation/tools/jovian_wheel_runtime/qualify_model_cache.py",
+        "prime",
+        "--dedicated-endpoint",
+        "--base-url",
+        "http://192.168.0.115:5571",
+        "--cache-metrics-url",
+        "http://127.0.0.1:46731/metrics",
+        "--output-dir",
+        "results/glm53-recovery-lmcache-20260921/public-ghcr/cache-text",
+        "--container",
+        "38e0e4a85870065adcca8f10c3dd9cdddd134c1252ab18e73c85f8b32d178a5d",
+        "--model",
+        "GLM-5.3-Flash",
+        "--persistent"
+      ],
+      "started": 1790015089.8327997,
+      "returncode": 0,
+      "finished": 1790015092.8015313
+    },
+    {
+      "name": "logits-only",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+        "/root/vllm/qwen38next/scripts/qualify-logits-only-checkpoint.py",
+        "--base",
+        "http://192.168.0.115:5571",
+        "--cache-metrics",
+        "http://127.0.0.1:46731/metrics",
+        "--helper",
+        "/root/vllm/worktrees/blackwell-tp4-memory-validation/tools/jovian_wheel_runtime/qualify_model_cache.py",
+        "--output",
+        "results/glm53-recovery-lmcache-20260921/public-ghcr/logits-only.json"
+      ],
+      "started": 1790015092.8017294,
+      "returncode": 0,
+      "finished": 1790015094.6187074
+    },
+    {
+      "name": "cache-disk",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpVnCeAs/bin/python",
+        "/root/vllm/worktrees/blackwell-tp4-memory-validation/tools/jovian_wheel_runtime/qualify_model_cache.py",
+        "restore",
+        "--dedicated-endpoint",
+        "--base-url",
+        "http://192.168.0.115:5571",
+        "--cache-metrics-url",
+        "http://127.0.0.1:46731/metrics",
+        "--output-dir",
+        "results/glm53-recovery-lmcache-20260921/public-ghcr/cache-text"
+      ],
+      "started": 1790015214.5242808,
+      "returncode": 0,
+      "finished": 1790015215.689813
+    }
+  ],
+  "manifest_verified": true,
+  "container_id": "38e0e4a85870065adcca8f10c3dd9cdddd134c1252ab18e73c85f8b32d178a5d"
+}

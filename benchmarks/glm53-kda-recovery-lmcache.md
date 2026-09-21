@@ -54,6 +54,17 @@ The source PR branches are based on the canonical component branches:
 | B12X master | `0f3a8cbfd1c11d27f04e3ab37a802d522f4f1c68` | `28f023427b3a93ea72c17534802cd483cc0c3067` |
 | vLLM dev/karmic-kraken | `af9e4dca109e0348323c0182e98a3aaf7282bfc3` | `4c954ffe6b97c32a64def88f12c27f66be36cb87` |
 
+Review follow-ups document buffer contracts and reduce the large-offset test's
+storage in B12X `b9ce2c05`. Follow-up [B12X #409](https://github.com/local-inference-lab/b12x/pull/409)
+corrects binding diagnostics, defines final-state precedence for aliased outputs
+and removes redundant static validation during execution. These changes do not
+alter the recurrent GPU programs. Additional
+runner coverage checks that logits-only restores reuse their existing checkpoint
+without applying recovery records or exporting a duplicate. The caller supplies
+no capture request in that mode; treating a synthetic logits-only/capture pair
+as a serving failure would violate the caller's contract. The final-image checks
+are recorded separately from the frozen throughput composition below.
+
 Serving uses those changes composed with the integration branches. B12X
 composition `ae981e79621a64ac3daabfd8b4875b55b86719a6` includes beta
 `f6d8b8eb94cdeb4e652652f925a494c6fc86f101`; vLLM composition
@@ -81,14 +92,14 @@ disabled, LMCache 16 GiB RAM and 64 GiB disk with a separate volume per mode.
 Functional requests use temperature 1 and top-p 0.95.
 
 The complete launch recipe is
-[start-glm53-recovery-cache-qualification.sh](./glm53-kda-recovery-lmcache/repro/start-glm53-recovery-cache-qualification.sh).
+[start-glm53-recovery-cache-qualification.sh](glm53-kda-recovery-lmcache/repro/start-glm53-recovery-cache-qualification.sh).
 The controller checks the container identity and assigned GPUs before restarting
 only that container and its internal LMCache sidecar:
-[qualify-glm-recovery-cache-mode.py](./glm53-kda-recovery-lmcache/repro/qualify-glm-recovery-cache-mode.py).
+[qualify-glm-recovery-cache-mode.py](glm53-kda-recovery-lmcache/repro/qualify-glm-recovery-cache-mode.py).
 
 ## Kernel and runner validation
 
-Qualified: **130 B12X tests passed, 29 skipped; 26 vLLM tests passed** on the
+Qualified: **131 B12X tests passed, 29 skipped; 28 vLLM tests passed** on the
 composed beta sources. Coverage includes windows of 1/4/8 tokens, FP32 recurrence
 oracles, accepted and aligned-boundary states, unchanged verification checkpoints,
 CUDA graph replay under frozen kernel resolution, caller-owned storage,
@@ -96,18 +107,24 @@ interleaved state fields, null entries, and pool offsets exceeding 2^31 elements
 Runner tests cover both capture orders and copying an already committed state
 without speculative bias. Config tests cover automatic LMCache eligibility,
 explicit opt-out and unsupported configurations.
+The B12X suite also exercises capacity errors through public bindings, final
+state precedence when destinations alias, and execution without repeated static
+validation. Four CPU runner cases verify the logits-only checkpoint contract.
 
 Maximum observed errors in the GPU suite: output relative L2 `7.995e-6`,
 accepted-state absolute error `2.236e-8`, persistent-state absolute error after
 16 windows `1.908e-6`.
 
 Raw results:
-[B12X XML](./glm53-kda-recovery-lmcache/b12x-recovery-beta-tests.xml),
-[vLLM XML](./glm53-kda-recovery-lmcache/vllm-recovery-beta-tests.xml).
+[B12X XML](glm53-kda-recovery-lmcache/b12x-final-contract-tests.xml),
+[vLLM XML](glm53-kda-recovery-lmcache/vllm-reviewed-tests.xml),
+[CPU contract XML](glm53-kda-recovery-lmcache/logits-contract-cpu-tests.xml).
 
 Changed-file lint and formatting checks pass. The full vLLM mypy hook reports an
 existing `GPUModelRunner.jit_warmup_registry` attribute error, reproduced on the
-untouched base. It is not reported as a passing hook for this feature.
+untouched base. B12X's GDN test file also has an existing Ruff F821 warning for
+a closure over `recurrent_state`, reproduced at its unmodified master base.
+Neither existing failure is reported as a passing hook for this feature.
 
 ## TP2 MTP3 external-cache qualification
 
@@ -138,7 +155,7 @@ GPU prefix caching, but **external multimodal checkpoint reuse is unsupported**;
 the failed external-image hit probe is retained in the evidence directory.
 
 Raw evidence is under
-[glm53-recovery-lmcache-20260921](./glm53-kda-recovery-lmcache/).
+[glm53-recovery-lmcache-20260921](glm53-kda-recovery-lmcache/).
 
 ## TP2 throughput and limits
 
@@ -165,6 +182,23 @@ Research-only: comparing these rates with historical VRAM-only or autotuning-off
 runs. Different cache geometry, autotuning, clocks and measurement windows prevent
 attributing those differences to recovery.
 
+The matched full-state control uses the same TP2 image, frozen sources, GPUs,
+LMCache allocation and serving configuration, with `--no-use-replayssm` added.
+All six control decode cells and all five serving checks passed without errors
+or repetition flags. Both prefill windows contain nine uncached requests.
+
+| Measurement | Full speculative states | Recovery | Recovery / full change |
+|---|---:|---:|---:|
+| C1 output, tok/s | 167.202 | 166.891 | −0.19% |
+| C1 verifier, steps/s | 69.754 | 68.663 | −1.56% |
+| C4 aggregate output, tok/s | 382.685 | 382.790 | +0.03% |
+| C4 verifier, steps/s | 154.919 | 153.507 | −0.91% |
+| 32k API prefill, tok/s | 9,539 | 9,678 | +1.46% |
+
+These medians retain every measured window, including the flagged recovery
+sample described above. Similar output throughput does not imply identical
+execution cost or a general model-quality qualification.
+
 ## TP2 LMCache reservation accounting
 
 An integer-planner comparison changes only the recurrent-state layout in the
@@ -187,7 +221,7 @@ shared block; that reduces the number of blocks in the fixed pool from 373 to
 but does **not** increase the fitted maximum context of one long request. It
 must not be advertised as a 21.9% increase in token capacity.
 
-Reproducer: [account-glm-recovery-lmcache.py](./glm53-kda-recovery-lmcache/repro/account-glm-recovery-lmcache.py).
+Reproducer: [account-glm-recovery-lmcache.py](glm53-kda-recovery-lmcache/repro/account-glm-recovery-lmcache.py).
 
 ## TP4 DFlash2 external-cache qualification
 
@@ -208,11 +242,82 @@ Qualified text RAM/disk restores use the same zero-GPU-hit controls as TP2:
 | Continue generated response | 14,451 | 14,466 |
 
 Disk loads transferred 80 / 112 / 80 objects respectively. All lookup answers
-and five text/prefix/vision serving checks passed. Throughput collection and
-the matched full-state control are recorded separately when complete.
+and five text/prefix/vision serving checks passed.
 
-## Outstanding release gates
+The matched full-state control uses the same image, source overlays, GPUs and
+launch settings with only `--no-use-replayssm` added. Each arm has three warmed
+30-second decode windows per concurrency and one warmed 30-second prefill window
+containing ten uncached 32,770-token requests.
 
-TP4 MTP3 text RAM/disk restore, serving measurements, matched full-state controls,
-PR publication, beta integration and verification of the generated image/changelog
-remain pending.
+| Measurement | Full speculative states | Recovery | Recovery / full change |
+|---|---:|---:|---:|
+| C1 output, tok/s | 198.906 | 201.241 | +1.17% |
+| C1 verifier, steps/s | 78.549 | 77.670 | −1.12% |
+| C8 aggregate output, tok/s | 653.452 | 665.912 | +1.91% |
+| C8 verifier, steps/s | 256.195 | 257.760 | +0.61% |
+| 32k API prefill, tok/s | 12,725 | 12,714 | −0.09% |
+
+All twelve decode cells had no errors or repetition flags. Output throughput
+also reflects stochastic acceptance; these samples do not establish an isolated
+speedup. The C1 execution delta is negative and retained explicitly. The bounded
+comparison shows similar throughput while using the recovery layout.
+
+## TP4 MTP3 external-cache qualification
+
+The TP4 target and serving/cache settings match the DFlash2 arm, with MTP depth
+three and the profile's Marlin draft MoE replacing the DFlash model. Recovery
+is selected automatically; target attention and MoE remain B12X.
+
+| Check | RAM external tokens | Restart/disk external tokens |
+|---|---:|---:|
+| Identical prompt / different user turn | 16,289 / 16,283 | 16,289 |
+| Changed tail of one long prompt | 28,672 | 28,672 |
+| Continue generated response | 14,456 | 14,471 |
+
+All external probes had zero native GPU-cache hits and correct lookup answers.
+Disk loads transferred 72 / 108 / 72 objects respectively. Text, prefix and
+vision serving checks passed. Each throughput arm contains three warmed
+30-second decode windows per concurrency. Each prefill window contains twelve
+uncached 32,770-token requests.
+
+| Measurement | Full speculative states | Recovery | Recovery / full change |
+|---|---:|---:|---:|
+| C1 output, tok/s | 247.130 | 239.376 | −3.14% |
+| C1 verifier, steps/s | 99.014 | 96.770 | −2.27% |
+| C8 aggregate output, tok/s | 839.817 | 824.829 | −1.78% |
+| C8 verifier, steps/s | 337.155 | 334.615 | −0.75% |
+| 32k API prefill, tok/s | 13,607 | 13,569 | −0.28% |
+
+All twelve decode cells had no errors or repetition flags. This memory
+optimization has a measured throughput cost for this MTP3 configuration; it is
+not qualified as a speedup or as zero-regression. Output rates include acceptance
+variation. Single under-load clock snapshots show P1, 13,365 MHz VRAM and event
+mask `0x400` in both arms; observed SM clocks were 2,272–2,302 MHz for recovery
+and 2,287–2,317 MHz for full states. The comparison is an end-to-end serving
+measurement, not an isolated kernel timing claim.
+
+## Container shutdown limitation
+
+The original TP2 full-state startup refused an existing named LMCache RAM
+arena after the preceding TP4 control exited with code 143. No process held
+the arena; it was renamed, preserving its data, and the separately recorded
+TP2 continuation completed all checks. The original failure receipt remains
+in the evidence. This is a launcher shutdown-cleanup limitation, not a failed
+recurrent-state calculation. The successful RAM and real-restart disk probes
+do not establish recovery from arbitrary forced process termination.
+
+## Publication
+
+Luke merged [B12X #408](https://github.com/local-inference-lab/b12x/pull/408).
+[B12X #409](https://github.com/local-inference-lab/b12x/pull/409) and
+[vLLM #821](https://github.com/local-inference-lab/vllm/pull/821) remain non-draft
+review PRs against `master` and `dev/karmic-kraken` respectively.
+
+The `integration/karmic-kraken-beta` branches contain B12X
+`cb56484ee2714bc8a00d4eccd0d53816dc62928f` and vLLM
+`9e3eaac44013081b4a7859a628387503ed72e97c`. The component changelog fragments
+travel with these commits; the vLLM fragment requires both B12X fragments.
+The final B12X GPU suite used the equivalent runtime tree before the last
+fragment-only commit. Throughput used the frozen composition described above;
+the follow-up changes no recurrent GPU program. Verification of the generated
+image and changelog remains pending.

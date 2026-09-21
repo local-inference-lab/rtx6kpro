@@ -1,0 +1,32 @@
+{
+  "status": "qualified",
+  "original_receipt": "controls-controller.json",
+  "started": 1790008796.8325737,
+  "container_id": "867bfca41232dbb04e0336fe58205a5a40ed5aa0de9e479ee31c243b159a4a6f",
+  "argv": [
+    "/root/.cache/uv/builds-v0/.tmpiHsEgZ/bin/python",
+    "/root/vllm/qwen38next/scripts/qualify-model-endpoint.py",
+    "--container",
+    "867bfca41232dbb04e0336fe58205a5a40ed5aa0de9e479ee31c243b159a4a6f",
+    "--docker-ssh-host",
+    "root@192.168.66.4",
+    "--base",
+    "http://192.168.0.115:5571",
+    "--model",
+    "GLM-5.3-Flash",
+    "--vision",
+    "--expected-method",
+    "mtp",
+    "--expected-draft-tokens",
+    "3",
+    "--decode-runs",
+    "3",
+    "--prefill-runs",
+    "1",
+    "--concurrency",
+    "1,4",
+    "--output-dir",
+    "/root/vllm/qwen38next/results/glm53-recovery-lmcache-20260921/mtp2-full-clean-arena-serving"
+  ],
+  "finished": 1790009366.7673147
+}

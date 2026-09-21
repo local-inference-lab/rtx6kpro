@@ -1,0 +1,165 @@
+{
+  "status": "failed",
+  "commands": [
+    {
+      "label": "start-dflash4-full",
+      "argv": [
+        "ssh",
+        "-o",
+        "HostKeyAlias=192.168.66.4",
+        "root@192.168.0.115",
+        "RECOVERY_LAYOUT=full bash /root/glm53-recovery-lmcache-qualification/start.sh dflash4"
+      ],
+      "started": 1790006089.0135481,
+      "returncode": 0,
+      "finished": 1790006089.77864
+    },
+    {
+      "label": "dflash4-full-serving",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpxeqJ0L/bin/python",
+        "/root/vllm/qwen38next/scripts/qualify-model-endpoint.py",
+        "--container",
+        "glm53-recovery-cache-dflash4-full",
+        "--docker-ssh-host",
+        "root@192.168.66.4",
+        "--base",
+        "http://192.168.0.115:5571",
+        "--model",
+        "GLM-5.3-Flash",
+        "--vision",
+        "--expected-method",
+        "dflash",
+        "--expected-draft-tokens",
+        "7",
+        "--decode-runs",
+        "3",
+        "--prefill-runs",
+        "1",
+        "--concurrency",
+        "1,8",
+        "--output-dir",
+        "/root/vllm/qwen38next/results/glm53-recovery-lmcache-20260921/dflash4-full-serving"
+      ],
+      "started": 1790006089.7787812,
+      "returncode": 0,
+      "finished": 1790006697.6477513
+    },
+    {
+      "label": "start-mtp4",
+      "argv": [
+        "ssh",
+        "-o",
+        "HostKeyAlias=192.168.66.4",
+        "root@192.168.0.115",
+        "bash /root/glm53-recovery-lmcache-qualification/start.sh mtp4"
+      ],
+      "started": 1790006702.0592935,
+      "returncode": 0,
+      "finished": 1790006702.8242803
+    },
+    {
+      "label": "mtp4-cache-qualification",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpxeqJ0L/bin/python",
+        "/root/vllm/qwen38next/scripts/qualify-glm-recovery-cache-mode.py",
+        "--mode",
+        "mtp4",
+        "--output-dir",
+        "/root/vllm/qwen38next/results/glm53-recovery-lmcache-20260921/tp4-mtp"
+      ],
+      "started": 1790006702.8245683,
+      "returncode": 0,
+      "finished": 1790007727.0032043
+    },
+    {
+      "label": "start-mtp4-full",
+      "argv": [
+        "ssh",
+        "-o",
+        "HostKeyAlias=192.168.66.4",
+        "root@192.168.0.115",
+        "RECOVERY_LAYOUT=full bash /root/glm53-recovery-lmcache-qualification/start.sh mtp4"
+      ],
+      "started": 1790007731.4020941,
+      "returncode": 0,
+      "finished": 1790007732.2172282
+    },
+    {
+      "label": "mtp4-full-serving",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpxeqJ0L/bin/python",
+        "/root/vllm/qwen38next/scripts/qualify-model-endpoint.py",
+        "--container",
+        "glm53-recovery-cache-mtp4-full",
+        "--docker-ssh-host",
+        "root@192.168.66.4",
+        "--base",
+        "http://192.168.0.115:5571",
+        "--model",
+        "GLM-5.3-Flash",
+        "--vision",
+        "--expected-method",
+        "mtp",
+        "--expected-draft-tokens",
+        "3",
+        "--decode-runs",
+        "3",
+        "--prefill-runs",
+        "1",
+        "--concurrency",
+        "1,8",
+        "--output-dir",
+        "/root/vllm/qwen38next/results/glm53-recovery-lmcache-20260921/mtp4-full-serving"
+      ],
+      "started": 1790007732.2174253,
+      "returncode": 0,
+      "finished": 1790008316.937178
+    },
+    {
+      "label": "start-mtp2-full",
+      "argv": [
+        "ssh",
+        "-o",
+        "HostKeyAlias=192.168.66.4",
+        "root@192.168.0.115",
+        "RECOVERY_LAYOUT=full bash /root/glm53-recovery-lmcache-qualification/start.sh mtp2"
+      ],
+      "started": 1790008327.8712122,
+      "returncode": 0,
+      "finished": 1790008328.786678
+    },
+    {
+      "label": "mtp2-full-serving",
+      "argv": [
+        "/root/.cache/uv/builds-v0/.tmpxeqJ0L/bin/python",
+        "/root/vllm/qwen38next/scripts/qualify-model-endpoint.py",
+        "--container",
+        "glm53-recovery-cache-mtp2-full",
+        "--docker-ssh-host",
+        "root@192.168.66.4",
+        "--base",
+        "http://192.168.0.115:5571",
+        "--model",
+        "GLM-5.3-Flash",
+        "--vision",
+        "--expected-method",
+        "mtp",
+        "--expected-draft-tokens",
+        "3",
+        "--decode-runs",
+        "3",
+        "--prefill-runs",
+        "1",
+        "--concurrency",
+        "1,4",
+        "--output-dir",
+        "/root/vllm/qwen38next/results/glm53-recovery-lmcache-20260921/mtp2-full-serving"
+      ],
+      "started": 1790008328.7868662,
+      "returncode": 1,
+      "finished": 1790008420.4028802
+    }
+  ],
+  "error": "CalledProcessError(1, ['/root/.cache/uv/builds-v0/.tmpxeqJ0L/bin/python', '/root/vllm/qwen38next/scripts/qualify-model-endpoint.py', '--container', 'glm53-recovery-cache-mtp2-full', '--docker-ssh-host', 'root@192.168.66.4', '--base', 'http://192.168.0.115:5571', '--model', 'GLM-5.3-Flash', '--vision', '--expected-method', 'mtp', '--expected-draft-tokens', '3', '--decode-runs', '3', '--prefill-runs', '1', '--concurrency', '1,4', '--output-dir', '/root/vllm/qwen38next/results/glm53-recovery-lmcache-20260921/mtp2-full-serving'], None, None)"
+}

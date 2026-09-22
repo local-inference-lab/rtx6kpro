@@ -2,6 +2,20 @@
 # Reconstruct the reviewed source trees and verify their immutable identities.
 set -euo pipefail
 readonly destination=${1:?Provide an absent destination directory}
+readonly profile=${2:-control}
+case "$profile" in
+  control)
+    vllm_tree=311a3e608e0a217ddcd88ac92aed5abb98556c2c
+    vllm_commit=9367f3712c2290cc9c6df1b12f4c5a5b7bc082e0
+    model_head=1cb34efae87ba351fdbf892da9c895b174d2fc3e
+    ;;
+  projection-stream)
+    vllm_tree=d707a4125f953444e8024afd3cf88ee4239eaf65
+    vllm_commit=e777269b4045256d5b4ec2e690d73c2c0aa0000c
+    model_head=537b4020ec3b47a75e9dbb954ceb72d1e99da2e7
+    ;;
+  *) echo 'Profile must be control or projection-stream.' >&2; exit 2 ;;
+esac
 if [[ -e $destination ]]; then
   echo 'The source destination must not exist; existing checkouts are never modified.' >&2
   exit 1
@@ -34,12 +48,12 @@ compose() {
 # vLLM #798 supplies caller-owned workspace lanes. The other PRs are disjoint.
 compose vllm dev/karmic-kraken \
   9e5d1793fa34db4e672664711690e8a68d90fcd3 \
-  311a3e608e0a217ddcd88ac92aed5abb98556c2c \
-  9367f3712c2290cc9c6df1b12f4c5a5b7bc082e0 \
+  "$vllm_tree" \
+  "$vllm_commit" \
   3e7b8f223d9adfac967377f3e578d90d76c0b81e \
   ff32297843360093447d671f08b7b4e522aa2c4c \
   c49ef2e733bd6cbfdae71881e053d6539e75d33f \
-  1cb34efae87ba351fdbf892da9c895b174d2fc3e \
+  "$model_head" \
   15b7b3c68de54ebfe7121829a38c26fa1e7727ee \
   120805fb4c0e69573181bf08c4d1a50df413e430 \
   3e3c24a8cee83e672a94560b162b8f0e4e64a71d

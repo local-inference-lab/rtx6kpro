@@ -7,6 +7,10 @@ Reusable prefill projection/attention buffers reduce peak live allocation by
 **1.015 GiB per rank** at 256k input tokens; their isolated throughput effect is
 small. [Launch instructions](qsrt-tp9-dspark.md) are separate from this report.
 
+This report identifies the `20260922-r1` control image. The
+[split KDA projection report](kda-projection-qualification.md) covers the
+additional opt-in decode overlap in `20260922-r2` and the updated #843 head.
+
 The source changes are **implemented** and the TP9 configuration below is
 **qualified**. Other tensor-parallel sizes, higher request concurrency and
 other checkpoints are not covered by these measurements.
@@ -37,7 +41,7 @@ intermediate Docker rebuild is required. Build and qualify the combined tree.
 
 vLLM #798 is common ancestry of the six vLLM review units. Until #798 merges,
 GitHub also displays its changes in those PRs; each PR links its feature-only
-commit. The six feature commits have disjoint file sets. B12X's FA2-compatible
+commit. Source reconstruction verifies the combined tree. B12X's FA2-compatible
 normalization from #400 is already in the base and is not duplicated.
 
 ## Runtime and precision

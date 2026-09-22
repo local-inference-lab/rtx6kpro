@@ -3,8 +3,8 @@
 Run `lukealonso/Kimi-K3-QSRT-K2` with Red Hat DSpark K5 on **nine RTX PRO 6000
 Blackwell 96 GiB GPUs**, using TP9/DCP9. The profile enables vision,
 InstantTensor loading, native CPU KV offload, 4,096-token prefill scheduling,
-shared-expert overlap and L2 prefetch. No source checkout is mounted into the
-container.
+shared-expert overlap, split KDA projection overlap and L2 prefetch. No source
+checkout is mounted into the container.
 
 ## Start the server
 
@@ -35,7 +35,8 @@ docker run -d --init --name kimi-k3-qsrt-tp9 --gpus all \
   -e KIMI_SPECULATOR=dspark-redhat \
   -e KIMI_TP=9 -e KIMI_DCP=9 -e KIMI_MAX_SEQS=1 \
   -e KIMI_KV_BYTES=0 -e KIMI_PORT=8012 \
-  voipmonitor/vllm:kimi-k3-kk-cu134-tp9-dspark-k5-20260922-r1 \
+  -e VLLM_KIMI_KDA_PROJECTION_STREAM_TOKEN_THRESHOLD=6 \
+  voipmonitor/vllm:kimi-k3-kk-cu134-tp9-dspark-k5-20260922-r2 \
   bash /opt/lil/runtime/serve-kimi-k3.sh
 ```
 
@@ -63,6 +64,7 @@ default differs. Other settings belong to the `dspark-redhat` TP9 profile:
 | `KIMI_NATIVE_KV_GIB` | **32** | `-e KIMI_NATIVE_KV_GIB=16` halves native CPU offload capacity |
 | `VLLM_KIMI_L2_PREFETCH` | **1** in this profile; source default is 0 | `-e VLLM_KIMI_L2_PREFETCH=0` disables cache hints for an A/B test |
 | `VLLM_DISABLE_SHARED_EXPERTS_STREAM` | **0** in this profile | `-e VLLM_DISABLE_SHARED_EXPERTS_STREAM=1` disables shared-expert overlap |
+| `VLLM_KIMI_KDA_PROJECTION_STREAM_TOKEN_THRESHOLD` | **0**; set **6** as above for DSpark K5 | `-e VLLM_KIMI_KDA_PROJECTION_STREAM_TOKEN_THRESHOLD=0` disables split KDA projection overlap; eager and larger batches remain serial |
 
 DSpark uses five proposals, with target CUDA graphs for five/six rows and a
 five-row draft graph. The draft retains a 32,768-token tail. The target's
@@ -84,19 +86,23 @@ slots do not mean that several 950k requests can be admitted with
 
 | Workload | Result |
 | --- | ---: |
-| Single coding request, 183 input / 4,096 output tokens | **109.72 tok/s median decode** |
+| Single coding request, 183 input / 4,096 output tokens | **109.67 tok/s median decode** |
 | Draft acceptance on that coding request | **46.0645%**, 3.303 emitted tokens per target cycle |
-| Cold prefill, 8k / 32k / 64k inputs | **2,329 / 2,585 / 2,504 tok/s** |
-| Native host-KV replay, 78,114-token input + 64-token output | **1.95 s**, versus 31.13 s cold |
+| Cold prefill, 8k / 32k / 64k inputs | **2,123 / 2,584 / 2,501 tok/s** |
+| Cold-cache 8k prefill after kernel warmup, three runs | **2,588 tok/s median** |
+| Native host-KV replay, 78,114-token input + 64-token output | **1.94 s**, versus 31.03 s cold |
 
 Measured on nine RTX PRO 6000 Blackwell GPUs, 600 W power limits, driver
 615.71.09, using the image and settings above. Clock policy was left unchanged;
 frequency was not recorded during timing. Decode is the median of three
 repeated runs; prefill numbers are one cold sample per length. The initial
-post-startup decode measurement was 104.74 tok/s. The controlled resident A/B
-shows **+7.72%** from overlap + L2 hints. See the
-[qualification report](qsrt-tp9-dspark-qualification.md) for both measurements,
-exact parity checks and validation limits.
+post-startup decode measurement was 105.93 tok/s. The first 8k prefill includes
+logged kernel JIT activity. Repeated absolute decode is essentially unchanged
+from r1's 109.72 tok/s; the controlled resident A/B isolates a small **+1.15%**
+gain from split KDA projection overlap. See the
+[projection qualification report](kda-projection-qualification.md) for exact
+parity checks and timing limits. The earlier **+7.72%** shared-expert/L2 gain
+is documented in the [control report](qsrt-tp9-dspark-qualification.md).
 
 ## Reproduce the benchmark
 
@@ -125,7 +131,8 @@ directory:
 
 ```bash
 git clone https://github.com/local-inference-lab/rtx6kpro.git
-bash rtx6kpro/models/kimi-k3/tools/reproduce-qsrt-tp9-sources.sh ./kimi-sources
+bash rtx6kpro/models/kimi-k3/tools/reproduce-qsrt-tp9-sources.sh \
+  ./kimi-sources projection-stream
 ```
 
 The script starts from pinned `dev/karmic-kraken` and B12X `master` commits,
@@ -134,15 +141,21 @@ those used in the image. It does not change either remote mainline.
 
 Download `kimi-k3-tp9-components.tar.zst` and its `.sha256` file from the
 [artifact release](https://github.com/local-inference-lab/rtx6kpro/releases/tag/kimi-k3-qsrt-tp9-dspark-20260922).
-The archive contains the exact component wheels and manifests, not model
-weights. Assemble and build them without recompiling unchanged dependencies:
+Also download `kimi-k3-tp9-kda-stream.tar.zst` and its checksum from the
+[KDA projection artifact release](https://github.com/local-inference-lab/rtx6kpro/releases/tag/kimi-k3-qsrt-tp9-kda-stream-20260922).
+The archives contain exact component wheels and manifests, not model weights.
+The smaller archive supplies the projection-stream vLLM wheel; the other
+components are unchanged. Assemble without recompiling those dependencies:
 
 ```bash
 sha256sum --check kimi-k3-tp9-components.tar.zst.sha256
+sha256sum --check kimi-k3-tp9-kda-stream.tar.zst.sha256
 tar --zstd -xf kimi-k3-tp9-components.tar.zst
+tar --zstd -xf kimi-k3-tp9-kda-stream.tar.zst
 bash rtx6kpro/models/kimi-k3/tools/assemble-qsrt-tp9-runtime.sh \
   ./kimi-sources ./kimi-k3-tp9-components ./kimi-runtime-bundle \
-  local/kimi-k3:qsrt-tp9-reproduced
+  local/kimi-k3:qsrt-tp9-reproduced \
+  ./kimi-k3-tp9-kda-stream/components/vllm
 ```
 
 This verifies every component checksum and the composed runtime manifest
@@ -153,3 +166,10 @@ require the Buildx builder `lil-wheel-cu134-sm120`. vLLM supports
 `VLLM_PRECOMPILED_BUNDLE` only when all native inputs and ABI fields match;
 otherwise it must rebuild its native extensions. Requalify changed sources;
 the exact-manifest assembly script intentionally rejects a different build.
+Set `KIMI_BUILD_IMAGE=0` to verify and assemble the runtime bundle without
+building an image; its default is `1`.
+
+The `r1` image remains available for rollback. Use `control` instead of
+`projection-stream` in source reconstruction and omit the fifth assembly
+argument to reproduce it. Its measurements and source identities remain in the
+[control qualification report](qsrt-tp9-dspark-qualification.md).

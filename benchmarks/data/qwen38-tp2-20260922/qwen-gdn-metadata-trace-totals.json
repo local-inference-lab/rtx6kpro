@@ -1,0 +1,390 @@
+{
+  "qwen-vllm-b12x-tp2-c8-rank0-20260922.trace.json.gz": {
+    "profile_steps": [],
+    "observed_target_metadata_preparations": 8,
+    "operations": {
+      "aten::fill_": {
+        "calls": 1808,
+        "total_us": 6853.878000000009
+      },
+      "aten::_foreach_copy_": {
+        "calls": 840,
+        "total_us": 4443.048000000003
+      },
+      "qwen_attention_metadata_host_inclusive": {
+        "calls": 8,
+        "total_us": 50851.974
+      },
+      "b12x_mixed_group_refresh_host_inclusive": {
+        "calls": 288,
+        "total_us": 10334.308999999997
+      },
+      "gdn_group_refresh_host_inclusive": {
+        "calls": 280,
+        "total_us": 37308.70400000001
+      },
+      "cudaGraphLaunch": {
+        "calls": 24,
+        "total_us": 75527.863
+      },
+      "cudaLaunchKernel": {
+        "calls": 3136,
+        "total_us": 8983.946000000027
+      }
+    },
+    "top_gpu_kernel_totals_not_wall_time": [
+      {
+        "name": "kernel_cutlass_kernel_b12xmoe_sharedkernelssiluMoEDynamicKernelSilu_object_at__tensorptrbf16gmemalign16o256025601_tensorptri32gmemo1_tensorptrf32gmemo1_tensorptri8gmemalign16o1_tensorptri_0",
+        "calls": 384,
+        "total_us": 65738.30200000003
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12x_libdense_gemmDenseGemmKernel_object_at__CopyAtom_ThrID10_TVLayoutSrc1102401_TVLayoutDst1102401_Valuetypebf16_tensor00o2560111100_tensorptrbf16gmemalign16o256012_0",
+        "calls": 1080,
+        "total_us": 12394.652000000004
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xcommpcie_oneshot_cute_OneshotLaunch_object_at__ptri64gmem_ptri64gmem_ptri32gmemalign16_ptri32gmemalign16________0",
+        "calls": 856,
+        "total_us": 10114.868000000006
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xsequencegdn_decode_cute_kernels_PackedRecurrentQwenKernel_object_at__ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrf32gmem_ptrbf16gmem_ptrf32gmem_ptri32gmem_ptri32gmem__0",
+        "calls": 288,
+        "total_us": 7746.457999999998
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_32x32x128_6_32x8x128_tmaAB_alignCD4_splitK_TNNN",
+        "calls": 800,
+        "total_us": 5566.606999999989
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_64x32x128_4_16x32x128_tmaAB_alignCD4_bz_TNNN",
+        "calls": 808,
+        "total_us": 5470.933999999994
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xattentionqsa_score_cute_RepresentativeScoreKernel_object_at__cutlasscutecore_Pointerobjectatutlasscutecore_Pointerobjectatutlasscutecore_Pointerobjectatutlasscut_0",
+        "calls": 208,
+        "total_us": 4022.804999999998
+      },
+      {
+        "name": "ncclDevKernel_AllGather_RING(ncclDevKernelArgsStorage<4096ul>)",
+        "calls": 32,
+        "total_us": 3500.0250000000005
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_256x96x64_2_64x48x64_tmaAB_alignCD4_bz_TNNN",
+        "calls": 8,
+        "total_us": 3316.734
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12x_libdense_gemmDenseGemmKernel_object_at__CopyAtom_ThrID10_TVLayoutSrc1102401_TVLayoutDst1102401_Valuetypebf16_tensor00o3072111100_tensorptrbf16gmemalign16o307213_0",
+        "calls": 384,
+        "total_us": 3301.4790000000044
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xmoe_sharedkernelsw4a16kernelW4A16FusedMoeKernel_object_at__tensorptrbf16gmemalign16oi641_tensorptrbf16gmemalign16oi641_tensorptrbf16gmemalign16oi641_tensorptri32_0",
+        "calls": 24,
+        "total_us": 2621.9040000000005
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xattentionpaged_selected_forward_SelectedPositionPagedForwardKernel_object_at__ptrbf16gmem_ptrf8E4M3FNgmem_ptrf8E4M3FNgmem_ptrf32gmem_ptrf32gmem_ptri32gmem_ptri32_0",
+        "calls": 120,
+        "total_us": 2526.1599999999994
+      },
+      {
+        "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul>, false>(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
+        "calls": 2296,
+        "total_us": 2456.6330000000216
+      },
+      {
+        "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __nv_bfloat16, float, __nv_bfloat16, false, float, __nv_bfloat16, __nv_bfloat16, true, false, false, false>(cublasLt::cublasSplitKParams<float>, float const*, __nv_bfloat16 const*, float*, __nv_bfloat16*, float const*, float const*, __nv_bfloat16 const*, float const*, __nv_bfloat16*, void*, long, float*, int*, float*, float*, float const*, float const*, float const*, float const*, float const*)",
+        "calls": 1336,
+        "total_us": 2335.8510000000038
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xnormhyperconnection_cute_PackedCombineNorm_object_at__ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrbf16gmem___0",
+        "calls": 808,
+        "total_us": 2326.3860000000054
+      },
+      {
+        "name": "std::enable_if<!(false), void>::type internal::gemvx::kernel<int, int, __nv_bfloat16, __nv_bfloat16, __nv_bfloat16, float, false, true, true, false, 7, false, cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16>, float> >(cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16>, float>)",
+        "calls": 408,
+        "total_us": 2263.955
+      },
+      {
+        "name": "_topp_sb_step_kernel",
+        "calls": 40,
+        "total_us": 2100.0800000000004
+      },
+      {
+        "name": "_gate_mean_kernel",
+        "calls": 848,
+        "total_us": 1996.3080000000054
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_64x32x128_4_16x32x128_tmaAB_alignCD4_splitK_TNNN",
+        "calls": 416,
+        "total_us": 1945.4850000000033
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xgemmblockscaled_reduceWeightOnlySplitKReduce_object_at__ptrf32gmemalign16_ptrbf16gmemalign16__0",
+        "calls": 1152,
+        "total_us": 1486.3009999999929
+      }
+    ]
+  },
+  "qwen-vllm-gdn-uniform-tp2-c8-rank0-20260922.trace.json.gz": {
+    "profile_steps": [],
+    "observed_target_metadata_preparations": 8,
+    "operations": {
+      "aten::fill_": {
+        "calls": 272,
+        "total_us": 1117.0630000000003
+      },
+      "qwen_attention_metadata_host_inclusive": {
+        "calls": 8,
+        "total_us": 23209.032999999996
+      },
+      "gdn_group_refresh_host_inclusive": {
+        "calls": 280,
+        "total_us": 12259.201000000003
+      },
+      "cudaGraphLaunch": {
+        "calls": 24,
+        "total_us": 21045.196000000004
+      },
+      "cudaLaunchKernel": {
+        "calls": 464,
+        "total_us": 1602.556999999998
+      }
+    },
+    "top_gpu_kernel_totals_not_wall_time": [
+      {
+        "name": "kernel_cutlass_kernel_b12xmoe_sharedkernelssiluMoEDynamicKernelSilu_object_at__tensorptrbf16gmemalign16o256025601_tensorptri32gmemo1_tensorptrf32gmemo1_tensorptri8gmemalign16o1_tensorptri_0",
+        "calls": 384,
+        "total_us": 63915.505000000005
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12x_libdense_gemmDenseGemmKernel_object_at__CopyAtom_ThrID10_TVLayoutSrc1102401_TVLayoutDst1102401_Valuetypebf16_tensor00o2560111100_tensorptrbf16gmemalign16o256012_0",
+        "calls": 1080,
+        "total_us": 12396.700000000015
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xcommpcie_oneshot_cute_OneshotLaunch_object_at__ptri64gmem_ptri64gmem_ptri32gmemalign16_ptri32gmemalign16________0",
+        "calls": 856,
+        "total_us": 9994.469999999992
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xsequencegdn_decode_cute_kernels_PackedRecurrentQwenKernel_object_at__ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrf32gmem_ptrbf16gmem_ptrf32gmem_ptri32gmem_ptri32gmem__0",
+        "calls": 288,
+        "total_us": 7731.499
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_32x32x128_6_32x8x128_tmaAB_alignCD4_splitK_TNNN",
+        "calls": 800,
+        "total_us": 5578.597999999998
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_64x32x128_4_16x32x128_tmaAB_alignCD4_bz_TNNN",
+        "calls": 808,
+        "total_us": 5465.979000000002
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xattentionqsa_score_cute_RepresentativeScoreKernel_object_at__cutlasscutecore_Pointerobjectatutlasscutecore_Pointerobjectatutlasscutecore_Pointerobjectatutlasscut_0",
+        "calls": 208,
+        "total_us": 4014.3109999999947
+      },
+      {
+        "name": "ncclDevKernel_AllGather_RING(ncclDevKernelArgsStorage<4096ul>)",
+        "calls": 32,
+        "total_us": 3498.7550000000006
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_256x96x64_2_64x48x64_tmaAB_alignCD4_bz_TNNN",
+        "calls": 8,
+        "total_us": 3318.629
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12x_libdense_gemmDenseGemmKernel_object_at__CopyAtom_ThrID10_TVLayoutSrc1102401_TVLayoutDst1102401_Valuetypebf16_tensor00o3072111100_tensorptrbf16gmemalign16o307213_0",
+        "calls": 384,
+        "total_us": 3307.1100000000047
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xattentionpaged_selected_forward_SelectedPositionPagedForwardKernel_object_at__ptrbf16gmem_ptrf8E4M3FNgmem_ptrf8E4M3FNgmem_ptrf32gmem_ptrf32gmem_ptri32gmem_ptri32_0",
+        "calls": 120,
+        "total_us": 2541.4429999999998
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xmoe_sharedkernelsw4a16kernelW4A16FusedMoeKernel_object_at__tensorptrbf16gmemalign16oi641_tensorptrbf16gmemalign16oi641_tensorptrbf16gmemalign16oi641_tensorptri32_0",
+        "calls": 24,
+        "total_us": 2471.9069999999997
+      },
+      {
+        "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __nv_bfloat16, float, __nv_bfloat16, false, float, __nv_bfloat16, __nv_bfloat16, true, false, false, false>(cublasLt::cublasSplitKParams<float>, float const*, __nv_bfloat16 const*, float*, __nv_bfloat16*, float const*, float const*, __nv_bfloat16 const*, float const*, __nv_bfloat16*, void*, long, float*, int*, float*, float*, float const*, float const*, float const*, float const*, float const*)",
+        "calls": 1336,
+        "total_us": 2334.5770000000066
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xnormhyperconnection_cute_PackedCombineNorm_object_at__ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrbf16gmem_ptrbf16gmem___0",
+        "calls": 808,
+        "total_us": 2331.7270000000026
+      },
+      {
+        "name": "std::enable_if<!(false), void>::type internal::gemvx::kernel<int, int, __nv_bfloat16, __nv_bfloat16, __nv_bfloat16, float, false, true, true, false, 7, false, cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16>, float> >(cublasGemvParamsEx<int, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16 const>, cublasGemvTensorStridedBatched<__nv_bfloat16>, float>)",
+        "calls": 408,
+        "total_us": 2323.9369999999994
+      },
+      {
+        "name": "_topp_sb_step_kernel",
+        "calls": 40,
+        "total_us": 2017.3810000000003
+      },
+      {
+        "name": "_gate_mean_kernel",
+        "calls": 848,
+        "total_us": 1995.9880000000037
+      },
+      {
+        "name": "nvjet_sm120_tst_mma_64x32x128_4_16x32x128_tmaAB_alignCD4_splitK_TNNN",
+        "calls": 416,
+        "total_us": 1949.7380000000014
+      },
+      {
+        "name": "kernel_cutlass_kernel_b12xgemmblockscaled_reduceWeightOnlySplitKReduce_object_at__ptrf32gmemalign16_ptrbf16gmemalign16__0",
+        "calls": 1152,
+        "total_us": 1483.150999999995
+      },
+      {
+        "name": "void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<int>, std::array<char*, 1ul>, false>(int, at::native::FillFunctor<int>, std::array<char*, 1ul>)",
+        "calls": 1088,
+        "total_us": 1418.0559999999984
+      }
+    ]
+  },
+  "qwen-sglang-tp2-c8-rank0-20260922.trace.json.gz": {
+    "profile_steps": [],
+    "observed_target_metadata_preparations": 0,
+    "operations": {
+      "aten::fill_": {
+        "calls": 82,
+        "total_us": 543.839
+      },
+      "aten::_foreach_copy_": {
+        "calls": 56,
+        "total_us": 795.9570000000001
+      },
+      "cudaLaunchKernel": {
+        "calls": 596,
+        "total_us": 2025.414
+      },
+      "cudaGraphLaunch": {
+        "calls": 36,
+        "total_us": 19267.213999999996
+      }
+    },
+    "top_gpu_kernel_totals_not_wall_time": [
+      {
+        "name": "_ZN7cutlass13device_kernelINS_4gemm6kernel13GemmUniversalINS1_17GroupProblemShapeIN4cute5tupleIJlllEEEEENS1_10collective13CollectiveMmaINS1_47MainloopSm120ArrayTmaWarpSpecializedBlockScaledILi3ELi3ENS6_IJNS5_1CILi1EEESD_SD_EEENS1_59KernelPtrArrayTmaWarpSpecializedCooperativeBlockScaledSm120ILi3EEEEENS6_IJNSC_ILi128EEENSC_ILi32EEENSC_ILi256EEEEEENS6_IJNS_12float_e2m1_tENS_13float_ue4m3_tEEEENS6_IJPNS6_IJlSD_NSC_ILi0EEEEEEPNS5_6LayoutINS6_IJNS6_IJNS6_IJSJ_NSC_ILi4EEEEEEiEEENS6_IJNS6_IJNSC_ILi16EEEST_EEEiEEENS6_IJSD_iEEEEEENS6_IJSY_NS6_IJNS6_IJSP_SD_EEENSC_ILi512EEEEEENS6_IJSP_iEEEEEEEEEEESO_S18_NS5_8TiledMMAINS5_8MMA_AtomIJNS5_5SM12011BLOCKSCALED19SM120_16x8x64_TN_VSISM_SM_fSN_Li16EEEEEENSS_INS6_IJST_NSC_ILi2EEESD_EEENS6_IJSD_ST_SP_EEEEENS6_IJSI_NSS_INS6_IJNSC_ILi8EEES1G_S1G_EEENS6_IJSD_SW_S1K_EEEEENSC_ILi64EEEEEEEENS6_IJNS5_13SM90_TMA_LOADES1R_EEENS6_IJNS5_14ComposedLayoutINS5_7SwizzleILi3ELi4ELi3EEENS5_18smem_ptr_flag_bitsILi4EEENSS_INS6_IJS1K_SK_EEENS6_IJSK_SD_EEEEEEENSS_INS6_IJNS6_IJSU_SD_EEENS6_IJSX_SD_ST_EEEEEENS6_IJNS6_IJSX_S12_EEENS6_IJS11_ST_S12_EEEEEEEEEEENS6_IJNS5_9Copy_AtomIJNS5_17SM75_U32x4_LDSM_NENS_15integer_subbyteILi4ELb0EEEEEENS2A_IJNS5_13UniversalCopyISN_SN_EESN_EEEEEENS5_8identityES1S_S29_S2I_S2J_EENS_8epilogue10collective18CollectiveEpilogueINS2L_30Sm90PtrArrayTmaWarpSpecializedILi3ELi2ELi4ELb1ELb0ELi2EEEJSL_NS6_IJS1O_SJ_EEENS_10bfloat16_tEPNS6_IJSD_lSP_EEES2R_S2T_NS2L_6fusion15FusionCallbacksINS2L_31Sm120PtrArrayTmaWarpSpecializedILi3ELi2ELi4ELb1ELb0ELi2EEENS2U_17LinearCombinationIS2R_fS2R_fLNS_15FloatRoundStyleE2EEESL_S2Q_JEEES1R_NS1T_IS1V_NS1W_ILi16EEENSS_INS6_IJS1O_S1K_EEENS6_IJSD_S1O_EEEEEEENS5_17SM75_U16x4_LDSM_TENS5_14SM90_TMA_STOREES36_NS5_17SM90_U16x4_STSM_TENS2A_IJNS5_17SM90_U32x2_STSM_NENS_6half_tEEEEvEEEvvEEEEvNT_6ParamsE",
+        "calls": 384,
+        "total_us": 31446.08299999999
+      },
+      {
+        "name": "_ZN7cutlass13device_kernelINS_4gemm6kernel13GemmUniversalINS1_17GroupProblemShapeIN4cute5tupleIJlllEEEEENS1_10collective13CollectiveMmaINS1_47MainloopSm120ArrayTmaWarpSpecializedBlockScaledILi5ELi3ENS6_IJNS5_1CILi1EEESD_SD_EEENS1_59KernelPtrArrayTmaWarpSpecializedCooperativeBlockScaledSm120ILi3EEEEENS6_IJNSC_ILi128EEENSC_ILi64EEESI_EEENS6_IJNS_12float_e2m1_tENS_13float_ue4m3_tEEEENS6_IJPNS6_IJlSD_NSC_ILi0EEEEEEPNS5_6LayoutINS6_IJNS6_IJNS6_IJNSC_ILi32EEENSC_ILi4EEEEEEiEEENS6_IJNS6_IJNSC_ILi16EEEST_EEEiEEENS6_IJSD_iEEEEEENS6_IJSY_NS6_IJNS6_IJSO_SD_EEENSC_ILi512EEEEEENS6_IJSO_iEEEEEEEEEEESN_S18_NS5_8TiledMMAINS5_8MMA_AtomIJNS5_5SM12011BLOCKSCALED19SM120_16x8x64_TN_VSISL_SL_fSM_Li16EEEEEENSR_INS6_IJST_NSC_ILi2EEESD_EEENS6_IJSD_ST_SO_EEEEENS6_IJSI_NSR_INS6_IJNSC_ILi8EEES1G_S1G_EEENS6_IJSD_SW_S1K_EEEEESJ_EEEEENS6_IJNS5_13SM90_TMA_LOADES1Q_EEENS6_IJNS5_14ComposedLayoutINS5_7SwizzleILi2ELi4ELi3EEENS5_18smem_ptr_flag_bitsILi4EEENSR_INS6_IJS1K_SI_EEENS6_IJSI_SD_EEEEEEENSR_INS6_IJNS6_IJSU_SD_EEENS6_IJSX_SD_S1G_EEEEEENS6_IJNS6_IJSX_S12_EEENS6_IJS11_ST_S12_EEEEEEEEEEENS6_IJNS5_9Copy_AtomIJNS5_17SM75_U32x4_LDSM_NENS_15integer_subbyteILi4ELb0EEEEEENS29_IJNS5_13UniversalCopyISM_SM_EESM_EEEEEENS5_8identityES1R_S28_S2H_S2I_EENS_8epilogue10collective18CollectiveEpilogueINS2K_30Sm90PtrArrayTmaWarpSpecializedILi3ELi2ELi4ELb1ELb0ELi2EEEJSK_NS6_IJSJ_SS_EEENS_10bfloat16_tEPNS6_IJSD_lSO_EEES2Q_S2S_NS2K_6fusion15FusionCallbacksINS2K_31Sm120PtrArrayTmaWarpSpecializedILi3ELi2ELi4ELb1ELb0ELi2EEENS2T_17LinearCombinationIS2Q_fS2Q_fLNS_15FloatRoundStyleE2EEESK_S2P_JEEES1Q_NS1S_INS1T_ILi3ELi4ELi3EEENS1V_ILi16EEENSR_INS6_IJSJ_S1K_EEENS6_IJSD_SJ_EEEEEEENS5_17SM75_U16x4_LDSM_TENS5_14SM90_TMA_STOREES36_NS5_17SM90_U16x4_STSM_TENS29_IJNS5_17SM90_U32x2_STSM_NENS_6half_tEEEEvEEEvvEEEEvNT_6ParamsE",
+        "calls": 384,
+        "total_us": 21255.27500000001
+      },
+      {
+        "name": "_ZN7cutlass13device_kernelIN10flashinfer4gemm53DeviceGemmMxfp8GemmSm120___nv_bfloat16_128_32_128true9Sm12xOnlyINS_4gemm6kernel13GemmUniversalIN4cute5tupleIJiiiiEEENS5_10collective13CollectiveMmaINS5_42MainloopSm120TmaWarpSpecializedBlockScaledILi4ELi3ENS9_IJNS8_1CILi1EEESF_SF_EEENS5_51KernelTmaWarpSpecializedCooperativeBlockScaledSm120ILi3EEEEENS9_IJNSE_ILi128EEENSE_ILi32EEESK_EEENS9_IJNS_12float_e4m3_tENS_13float_ue8m0_tEEEENS9_IJNS9_IJlSF_lEEENS8_6LayoutINS9_IJNS9_IJNS9_IJSL_NSE_ILi4EEEEEEiEEESU_NS9_IJSF_iEEEEEENS9_IJNS9_IJNS9_IJNSE_ILi16EEESS_EEEiEEENS9_IJNS9_IJNSE_ILi0EEESF_EEENSE_ILi512EEEEEENS9_IJS10_iEEEEEEEEEEESP_S17_NS8_8TiledMMAINS8_8MMA_AtomIJNS8_5SM12011BLOCKSCALED19SM120_16x8x32_TN_VSISN_SN_fSO_Li32EEEEEENSR_INS9_IJSS_NSE_ILi2EEESF_EEENS9_IJSF_SS_S10_EEEEENS9_IJSK_NSR_INS9_IJNSE_ILi8EEES1F_S1F_EEENS9_IJSF_SX_S1J_EEEEESL_EEEEENS9_IJNS8_13SM90_TMA_LOADES1P_EEENS9_IJNS8_14ComposedLayoutINS8_7SwizzleILi3ELi4ELi3EEENS8_18smem_ptr_flag_bitsILi8EEENSR_INS9_IJS1J_SK_EEENS9_IJSK_SF_EEEEEEENSR_INS9_IJNS9_IJST_SF_EEENS9_IJNS9_IJSL_SF_EEESS_SF_EEEEEENS9_IJNS9_IJSY_S12_EEENS9_IJS11_SF_S12_EEEEEEEEEEENS9_IJNS8_9Copy_AtomIJNS8_17SM75_U32x4_LDSM_NEhEEENS29_IJNS8_13UniversalCopyISO_SO_EESO_EEEEEENS8_8identityES1Q_S28_S2F_S2G_EENS_8epilogue10collective18CollectiveEpilogueINS2I_22Sm90TmaWarpSpecializedILi2ELi2ELi4ELb0ELb1EEEJSM_NS9_IJNSE_ILi64EEESL_EEEvNS9_IJSF_llEEENS_10bfloat16_tES2P_NS2I_6fusion15FusionCallbacksINS2I_23Sm120TmaWarpSpecializedILi2ELi2ELi4ELb0ELb1EEENS2R_17LinearCombinationIS2Q_fvfLNS_15FloatRoundStyleE2EEESM_S2O_JEEES1P_NS1R_IS1T_NS1U_ILi16EEENSR_INS9_IJS2N_S1J_EEENS9_IJSF_S2N_EEEEEEENS8_17SM75_U16x4_LDSM_TENS8_14SM90_TMA_STOREES33_NS8_17SM90_U16x4_STSM_TENS29_IJNS8_17SM90_U32x2_STSM_NENS_6half_tEEEEvEEENS5_19PersistentSchedulerEvEEEEEEvNT_6ParamsE",
+        "calls": 1632,
+        "total_us": 17481.26600000002
+      },
+      {
+        "name": "ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+        "calls": 856,
+        "total_us": 12799.591999999993
+      },
+      {
+        "name": "ncclDevKernel_AllGather_RING_LL(ncclDevKernelArgsStorage<4096ul>)",
+        "calls": 32,
+        "total_us": 5785.758999999999
+      },
+      {
+        "name": "void cutlass::Kernel2<cutlass_80_wmma_tensorop_s161616gemm_bf16_32x32_128x2_tn_align8>(cutlass_80_wmma_tensorop_s161616gemm_bf16_32x32_128x2_tn_align8::Params)",
+        "calls": 800,
+        "total_us": 5579.707999999998
+      },
+      {
+        "name": "kernel_cutlass_gdn_wide_vec_kernel_tensorptrbf16gmemalign32o24128128393216163841281_tensorptrbf16gmemalign32o111128393216163841281_tensorptrf32gmemalign32o241_tensorptrbf16gmemalign32oi64_0",
+        "calls": 432,
+        "total_us": 5371.174
+      },
+      {
+        "name": "void cutlass::Kernel2<cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_32x32_128x1_tn_align8>(cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_32x32_128x1_tn_align8::Params)",
+        "calls": 800,
+        "total_us": 5338.423999999997
+      },
+      {
+        "name": "void tensorrt_llm::kernels::cutlass_kernels::finalizeMoeRoutingKernel<__nv_bfloat16, __nv_bfloat16, __nv_bfloat16, (tensorrt_llm::kernels::cutlass_kernels::ScaleMode)1>(__nv_bfloat16 const*, __nv_bfloat16*, __nv_bfloat16 const*, float const*, int const*, int const*, long, long, long, int, int)",
+        "calls": 384,
+        "total_us": 4901.042000000001
+      },
+      {
+        "name": "void cublasLt::splitKreduce_kernel<32, 16, int, float, __nv_bfloat16, float, __nv_bfloat16, false, __nv_bfloat16, __nv_bfloat16, __nv_bfloat16, true, false, false, false>(cublasLt::cublasSplitKParams<float>, float const*, __nv_bfloat16 const*, __nv_bfloat16*, __nv_bfloat16*, float const*, float const*, __nv_bfloat16 const*, float const*, __nv_bfloat16*, void*, long, float*, int*, float*, float*, float const*, float const*, float const*, float const*, float const*)",
+        "calls": 1152,
+        "total_us": 3946.9319999999852
+      },
+      {
+        "name": "kernel_kernel",
+        "calls": 104,
+        "total_us": 3818.514000000002
+      },
+      {
+        "name": "void cutlass::Kernel2<cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_32x32_32x1_tn_align8>(cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_32x32_32x1_tn_align8::Params)",
+        "calls": 24,
+        "total_us": 3586.3879999999995
+      },
+      {
+        "name": "_fused_gate_sigmoid_mul_add_kernel",
+        "calls": 408,
+        "total_us": 2559.519999999997
+      },
+      {
+        "name": "kernel_mha(unsigned int, float, float const*, Vec<__nv_bfloat16, 256u>*, Vec<__nv_bfloat16, 256u> const*, float const*, KVCacheList<true>, unsigned int, float, float const*, unsigned int, unsigned int, unsigned int, unsigned int*, void*)",
+        "calls": 120,
+        "total_us": 2371.1789999999996
+      },
+      {
+        "name": "_compact_kv",
+        "calls": 120,
+        "total_us": 2330.9270000000006
+      },
+      {
+        "name": "void tensorrt_llm::kernels::cutlass_kernels::expandInputRowsKernel<__nv_bfloat16, __nv_fp4_e2m1, (tensorrt_llm::kernels::cutlass_kernels::TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType)1, false, false, std::integral_constant<bool, false> >(__nv_bfloat16 const*, __nv_fp4_e2m1*, float const*, float*, int const*, long, long, long, float const*, bool, long const*, unsigned char*, unsigned char const*, bool, long, __nv_bfloat16 const*)",
+        "calls": 408,
+        "total_us": 2288.4929999999995
+      },
+      {
+        "name": "void sglang::hc_combine_gate_kernel<4l, 2560l, true, __nv_bfloat16>(sglang::HcCombineSplitParams)",
+        "calls": 816,
+        "total_us": 2097.226000000007
+      },
+      {
+        "name": "void sglang::device::marlin::Marlin<__nv_bfloat16, 562949953487106l, 256, 1, 8, 8, true, 4, 1, false>(int4 const*, int4 const*, int4*, int4*, int4 const*, unsigned short const*, int4 const*, int const*, int, int, int, int, int, int*, bool, bool, int)",
+        "calls": 16,
+        "total_us": 1970.538
+      },
+      {
+        "name": "void tensorrt_llm::kernels::cutlass_kernels::doActivationKernel<__nv_fp4_e2m1, __nv_bfloat16, __nv_bfloat16, tensorrt_llm::kernels::cutlass_kernels::GLUAdaptor<cutlass::epilogue::thread::SiLu>, (tensorrt_llm::kernels::cutlass_kernels::TmaWarpSpecializedGroupedGemmInput::FpXBlockScalingType)1, false, std::integral_constant<bool, false> >(__nv_fp4_e2m1*, __nv_bfloat16 const*, float const*, __nv_bfloat16 const*, bool, long const*, int, long, float const*, bool, unsigned char*, tensorrt_llm::kernels::cutlass_kernels::ActivationParams)",
+        "calls": 408,
+        "total_us": 1833.0240000000026
+      },
+      {
+        "name": "kernel_cutlass_kernel_flashinfergdn_kernelsgdn_decode_bf16_wy_output_onlyGdnDecodeKernel_object_at__tensorptrbf16gmemalign16o48128409610241281_tensorptrbf16gmemalign16o48128409610241281_t_0",
+        "calls": 288,
+        "total_us": 1816.2710000000004
+      }
+    ]
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "sglang": {
+    "cells": {
+      "1": {
+        "output_tps_max": 203.9111559045966,
+        "output_tps_median": 200.8253239662472,
+        "output_tps_min": 198.56341213244343,
+        "output_tps_samples": [
+          199.30508113629259,
+          198.56341213244343,
+          200.8253239662472,
+          203.9111559045966,
+          201.76837507984212
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.3770140600718097,
+          "server_engine_steps": 2529.892909589336,
+          "server_spec_accept_length": 2.2,
+          "server_spec_accept_rate": 0.4,
+          "server_spec_accepted_tokens": 0,
+          "server_steps_per_s": 84.33437674338572
+        }
+      },
+      "8": {
+        "output_tps_max": 902.2109499467662,
+        "output_tps_median": 891.6693938855086,
+        "output_tps_min": 882.1307693829729,
+        "output_tps_samples": [
+          891.2666731997335,
+          891.6693938855086,
+          901.464313716814,
+          902.2109499467662,
+          882.1307693829729
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.3231127598608436,
+          "server_engine_steps": 11504.798262276723,
+          "server_spec_accept_length": 2.365625,
+          "server_spec_accept_rate": 0.4552083333333333,
+          "server_spec_accepted_tokens": 0,
+          "server_steps_per_s": 383.6661297895653
+        }
+      }
+    },
+    "files": [
+      "sglang-tp2-matched-1.json",
+      "sglang-tp2-matched-2.json",
+      "sglang-tp2-matched-3.json",
+      "sglang-tp2-matched-4.json",
+      "sglang-tp2-matched-5.json"
+    ]
+  },
+  "vllm-b12x": {
+    "cells": {
+      "1": {
+        "output_tps_max": 215.397640955142,
+        "output_tps_median": 211.0010486479364,
+        "output_tps_min": 194.8449278240643,
+        "output_tps_samples": [
+          203.69867383162855,
+          211.1590449326578,
+          211.0010486479364,
+          215.397640955142,
+          194.8449278240643
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.380737396538751,
+          "server_engine_steps": 2647.0,
+          "server_spec_accept_length": 2.380737396538751,
+          "server_spec_accept_rate": 0.46024579884625033,
+          "server_spec_accepted_tokens": 3670,
+          "server_steps_per_s": 88.24719961249113
+        }
+      },
+      "8": {
+        "output_tps_max": 874.0398749683105,
+        "output_tps_median": 866.3505831270849,
+        "output_tps_min": 849.1592837542046,
+        "output_tps_samples": [
+          874.0398749683105,
+          849.1592837542046,
+          862.7686391246951,
+          866.3505831270849,
+          866.3803860668678
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.3308506819813353,
+          "server_engine_steps": 11144.0,
+          "server_spec_accept_length": 2.3308506819813353,
+          "server_spec_accept_rate": 0.4436168939937784,
+          "server_spec_accepted_tokens": 14831,
+          "server_steps_per_s": 371.7013675583898
+        }
+      }
+    },
+    "files": [
+      "vllm-b12x-tp2-matched-1.json",
+      "vllm-b12x-tp2-matched-2.json",
+      "vllm-b12x-tp2-matched-3.json",
+      "vllm-b12x-tp2-matched-4.json",
+      "vllm-b12x-tp2-matched-5.json"
+    ]
+  },
+  "vllm-gdn-uniform": {
+    "cells": {
+      "1": {
+        "output_tps_max": 229.14031658944018,
+        "output_tps_median": 226.86517617964208,
+        "output_tps_min": 212.50384823928712,
+        "output_tps_samples": [
+          226.86517617964208,
+          226.0155442684318,
+          212.50384823928712,
+          229.14031658944018,
+          228.86902393182044
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.368823938761308,
+          "server_engine_steps": 2875.0,
+          "server_spec_accept_length": 2.3688239387613086,
+          "server_spec_accept_rate": 0.4562746462537694,
+          "server_spec_accepted_tokens": 3934,
+          "server_steps_per_s": 95.85406251242682
+        }
+      },
+      "8": {
+        "output_tps_max": 920.3788848818656,
+        "output_tps_median": 907.2805675659336,
+        "output_tps_min": 899.3476981646905,
+        "output_tps_samples": [
+          905.9543228152567,
+          899.3476981646905,
+          907.2805675659336,
+          910.9729400652376,
+          920.3788848818656
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.3399243466299864,
+          "server_engine_steps": 11632.0,
+          "server_spec_accept_length": 2.339924346629986,
+          "server_spec_accept_rate": 0.4466414488766621,
+          "server_spec_accepted_tokens": 15586,
+          "server_steps_per_s": 387.7392740806429
+        }
+      }
+    },
+    "files": [
+      "vllm-gdn-uniform-tp2-matched-1.json",
+      "vllm-gdn-uniform-tp2-matched-2.json",
+      "vllm-gdn-uniform-tp2-matched-3.json",
+      "vllm-gdn-uniform-tp2-matched-4.json",
+      "vllm-gdn-uniform-tp2-matched-5.json"
+    ]
+  },
+  "vllm-pynccl": {
+    "cells": {
+      "1": {
+        "output_tps_max": 209.37666655371495,
+        "output_tps_median": 205.79118349185396,
+        "output_tps_min": 202.76409075523233,
+        "output_tps_samples": [
+          207.80848396788468,
+          202.76409075523233,
+          209.37666655371495,
+          202.81722270622475,
+          205.79118349185396
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.3284313725490198,
+          "server_engine_steps": 2652.0,
+          "server_spec_accept_length": 2.3284313725490193,
+          "server_spec_accept_rate": 0.44281045751633985,
+          "server_spec_accepted_tokens": 3523,
+          "server_steps_per_s": 88.40750733348258
+        }
+      },
+      "8": {
+        "output_tps_max": 867.4418513217729,
+        "output_tps_median": 853.0248297924911,
+        "output_tps_min": 851.0164593101122,
+        "output_tps_samples": [
+          851.0164593101122,
+          853.0248297924911,
+          852.6466501456583,
+          860.6677502891266,
+          867.4418513217729
+        ],
+        "runs": 5,
+        "speculative_metrics": {
+          "accept_norm_ref_len": 0.0,
+          "accept_norm_tps": 0.0,
+          "server_accept_len_effective": 2.3224400871459694,
+          "server_engine_steps": 11016.0,
+          "server_spec_accept_length": 2.3224400871459694,
+          "server_spec_accept_rate": 0.4408133623819898,
+          "server_spec_accepted_tokens": 14568,
+          "server_steps_per_s": 367.2968075748156
+        }
+      }
+    },
+    "files": [
+      "vllm-pynccl-tp2-matched-1.json",
+      "vllm-pynccl-tp2-matched-2.json",
+      "vllm-pynccl-tp2-matched-3.json",
+      "vllm-pynccl-tp2-matched-4.json",
+      "vllm-pynccl-tp2-matched-5.json"
+    ]
+  }
+}

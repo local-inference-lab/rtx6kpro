@@ -1,0 +1,4 @@
+{"stage": "prime", "prompt_tokens": 6543, "cached_tokens": 0, "content": "\n\n13", "reasoning": "We need to respond to user: \"What is 11 plus 2? Answer with just the number.\" Simple arithmetic 13. Need final just number. Ensure no extra.\n", "finish_reason": "stop", "external_hits_delta": 0.0, "native_hits_delta": 0.0}
+{"stage": "reset", "result": {"success": true}}
+{"stage": "restore", "prompt_tokens": 6543, "cached_tokens": 2880, "content": "\n\n13", "reasoning": "We need to answer user's question: \"What is 11 plus 2? Answer with just the number.\" Need final just number. No need use access code? Maybe irrelevant. Ensure final only 13.\n", "finish_reason": "stop", "external_hits_delta": 2880.0, "native_hits_delta": 0.0}
+{"health": true}

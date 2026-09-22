@@ -60,6 +60,33 @@ RAM/disk restart tests and memory-saving implementation.
 
 ## Qwen CPU offload investigation
 
+The maintained `SimpleCPUOffloadConnector` passes genuine external-restore
+checks with TP2/DCP1/MTP3. [vLLM #834](https://github.com/local-inference-lab/vllm/pull/834)
+propagates target CuMem permission to the draft configuration; it preserves
+connector safety checks rather than disabling the expandable-segments guard.
+The allocator fix is attributed to llitz's Qwen serving bundle.
+[Launcher #63](https://github.com/local-inference-lab/blackwell-llm-docker/pull/63)
+exposes this path through `CACHE_MODE=native`, without an LMCache service.
+
+Qualified conditions: Qwen NVFP4 QAD snapshot
+`7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd`, two stock Max-Q GPUs,
+TP2/DCP1/MTP3, context8192, four sequences, 1 GiB GPU KV per rank and 4 GiB
+total CPU cache. Temperature 1 and top-p .95. The serving image is the pinned
+beta above plus the indicated source changes; registry validation is separate.
+
+| Check | Result |
+|---|---|
+| Unmodified beta, SimpleCPU connector, no CuMem, explicit native-cache reset | Two real 2880-token external restores, zero native hits; arithmetic and prefix-code recall pass. |
+| Allocator fix, CuMem plus expandable segments, explicit native-cache reset | Two real 2880-token external restores, zero native hits; arithmetic and prefix-code recall pass. |
+| Unified launcher with `CACHE_MODE=native`, CuMem enabled, ten intervening prompts | A 6551-token request restores 2880 tokens externally with zero native hits; recalls TEAL-428 and answers 13. Full/piecewise capture and engine health pass. |
+
+Five intervening prompts were insufficient to evict the prefix in a preceding
+control: that response was a GPU hit and is not counted as CPU-restore evidence.
+The native CPU cache is volatile across restart and is not the persistent
+LMCache implementation. DCP2/4 native Qwen offload is unsupported by the launcher.
+[Raw restore responses and counter deltas](data/qwen38-tp2-20260922/README.md)
+distinguish external hits from native GPU hits.
+
 A local port of upstream vLLM #54743 excludes non-prefix-cacheable QSA
 scratch groups while preserving the scheduler/worker group-index contract.
 Its CPU tests pass, but the composed GPU path is **research-only**: with
@@ -68,6 +95,6 @@ repetitive, incorrect output. This source overlay is not in the published
 beta and is not a qualified workaround for the community offload report.
 
 Native-prefix or zero-hit responses do not validate CPU restore. The
-investigation separately checks no-speculation restore and host-memory
-registration; neither successful cold responses nor larger CPU allocation
-alone close the correctness issue.
+generic path remains unsupported by the Qwen launcher; neither successful cold
+responses nor larger CPU allocation alone close its correctness issue. The
+working SimpleCPU path does not validate the generic connector.

@@ -24,14 +24,22 @@ does not change GPU clocks. Check startup with `docker logs -f qwen38`.
 
 ## Start on two GPUs: TP2
 
-Use the same command with `--gpus '"device=0,1"'` and `-e TP=2`.
-Change the container name or stop the overlapping instance before starting it.
-The checkpoint and PLE placement stay the same.
-Keep DCP at 1: Qwen's QSA attention backend rejects context parallelism.
-TP2 splits model weights across two GPUs; it does not require DCP2.
+```bash
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name qwen38-tp2 --init --restart unless-stopped \
+  --gpus '"device=0,1"' --network host --ipc host --shm-size 32g \
+  -v lil-huggingface:/root/.cache/huggingface -v qwen38-runtime:/cache \
+  -e PROFILE=qwen38-flash-next -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=2 -e DCP=1 -e PORT=8000 "$IMAGE"
+```
+
+Stop an overlapping TP1 instance first. The checkpoint and PLE placement stay
+the same. TP2 splits model weights across two GPUs; it does not require DCP2.
+Use DCP1 for the measured configuration and for external prefix-cache modes.
 TP2 with MTP3 and vision passes text/image checks and text-prefix recovery
-from RAM and disk after restart. These are functionality checks; the measured
-speed table below uses TP1.
+from RAM and disk after restart. TP1 and TP2 speed measurements below identify
+their GPU clocks and image separately.
 
 Optional arguments go **after `"$IMAGE"`**:
 
@@ -88,7 +96,7 @@ Stop: `docker compose -f qwen38-tp1.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp1
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260920-443d9f815c57d23b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
     container_name: qwen38-tp1
     init: true
     network_mode: host
@@ -122,8 +130,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/cute
       B12X_DENSE_SPLITK_TURBO: '1'
       B12X_DYNAMIC_DETERMINISTIC_OUTPUT: '0'
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
@@ -144,7 +152,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -162,7 +170,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -231,10 +239,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -242,7 +250,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -256,8 +264,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_DENSE_ACTIVATION_MODE: auto
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_COMPUTE_NANS_IN_LOGITS: '0'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
@@ -274,7 +282,7 @@ services:
       VLLM_SSM_CONV_STATE_LAYOUT: DS
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-be6d1a6af3105c67
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -315,6 +323,7 @@ configs:
         kv-cache-dtype: fp8
         load-format: instanttensor
         enable-prefix-caching: true
+        enable-prompt-tokens-details: true
         enable-chunked-prefill: true
         enable-auto-tool-choice: true
         cache-mode: vram
@@ -342,7 +351,7 @@ configs:
         enable-flashinfer-autotune: false
         mm-encoder-tp-mode: data
         mm-processor-cache-gb: 0.0
-        language-model-only: true
+        language-model-only: false
         reasoning-parser: qwen3
         tool-call-parser: qwen3_xml
         speculative-config:
@@ -362,10 +371,10 @@ configs:
       - default-chat-template-kwargs
       - disable-custom-all-reduce
       - enable-force-include-usage
-      - enable-prompt-tokens-details
       - enable-request-id-headers
       - engram-config
       - generation-config
+      - hf-overrides
       - jit-monitor-mode
       - kv-cache-memory-bytes
       - max-parallel-prefills
@@ -558,11 +567,12 @@ above also supplies its environment and persistent volumes.
   --enable-chunked-prefill \
   --no-enable-flashinfer-autotune \
   --enable-prefix-caching \
+  --enable-prompt-tokens-details \
   --gdn-decode-kernel b12x \
   --gpu-memory-utilization 0.96 \
   --host 0.0.0.0 \
   --kv-cache-dtype fp8 \
-  --language-model-only \
+  --no-language-model-only \
   --linear-backend b12x \
   --load-format instanttensor \
   --mamba-cache-mode align \
@@ -605,7 +615,7 @@ Stop: `docker compose -f qwen38-tp2.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260920-443d9f815c57d23b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
     container_name: qwen38-tp2
     init: true
     network_mode: host
@@ -640,8 +650,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/cute
       B12X_DENSE_SPLITK_TURBO: '1'
       B12X_DYNAMIC_DETERMINISTIC_OUTPUT: '0'
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
@@ -662,7 +672,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -680,7 +690,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -749,10 +759,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -760,7 +770,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -774,8 +784,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_DENSE_ACTIVATION_MODE: auto
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_COMPUTE_NANS_IN_LOGITS: '0'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
@@ -792,7 +802,7 @@ services:
       VLLM_SSM_CONV_STATE_LAYOUT: DS
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-f4cd7c441ed6d33c
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -833,6 +843,7 @@ configs:
         kv-cache-dtype: fp8
         load-format: instanttensor
         enable-prefix-caching: true
+        enable-prompt-tokens-details: true
         enable-chunked-prefill: true
         enable-auto-tool-choice: true
         cache-mode: vram
@@ -860,7 +871,7 @@ configs:
         enable-flashinfer-autotune: false
         mm-encoder-tp-mode: data
         mm-processor-cache-gb: 0.0
-        language-model-only: true
+        language-model-only: false
         reasoning-parser: qwen3
         tool-call-parser: qwen3_xml
         speculative-config:
@@ -880,10 +891,10 @@ configs:
       - default-chat-template-kwargs
       - disable-custom-all-reduce
       - enable-force-include-usage
-      - enable-prompt-tokens-details
       - enable-request-id-headers
       - engram-config
       - generation-config
+      - hf-overrides
       - jit-monitor-mode
       - kv-cache-memory-bytes
       - max-parallel-prefills
@@ -1076,11 +1087,12 @@ above also supplies its environment and persistent volumes.
   --enable-chunked-prefill \
   --no-enable-flashinfer-autotune \
   --enable-prefix-caching \
+  --enable-prompt-tokens-details \
   --gdn-decode-kernel b12x \
   --gpu-memory-utilization 0.96 \
   --host 0.0.0.0 \
   --kv-cache-dtype fp8 \
-  --language-model-only \
+  --no-language-model-only \
   --linear-backend b12x \
   --load-format instanttensor \
   --mamba-cache-mode align \
@@ -1139,14 +1151,41 @@ For vision, append `--no-language-model-only` after the image name. Image-bearin
 requests do not restore recurrent checkpoints through external LMCache; their
 uncached vision path remains available.
 
-Request sampling in the recorded tests is temperature 1/top-p .95/top-k 20.
+The TP1 measurements use temperature 1/top-p .95/top-k 20; the TP2 comparison
+uses temperature 1/top-p .95 with top-k disabled.
 The profile leaves checkpoint generation configuration authoritative rather
 than claiming all checkpoint revisions have identical server defaults.
 For a non-thinking request, use
 `"chat_template_kwargs":{"enable_thinking":false}`; it is a different
 workload from a reasoning benchmark.
 
+## CPU prefix cache without LMCache
+
+To reuse evicted text prefixes from host RAM, start Qwen with vLLM's built-in
+CPU offload. This is separate from the PLE weight tables and from LMCache:
+
+```bash
+IMAGE=ghcr.io/local-inference-lab/vllm:karmic-kraken-beta
+docker pull "$IMAGE"
+docker run -d --name qwen38-cpu-cache --init --restart unless-stopped \
+  --gpus '"device=0,1"' --network host --ipc host --shm-size 32g \
+  -v lil-huggingface:/root/.cache/huggingface -v qwen38-runtime:/cache \
+  -e PROFILE=qwen38-flash-next -e HARDWARE_PROFILE=rtx-pro-6000-pcie \
+  -e TP=2 -e DCP=1 -e PORT=8000 \
+  -e CACHE_MODE=native -e NATIVE_KV_OFFLOADING_SIZE_GB=64 "$IMAGE"
+```
+
+The 64 GiB CPU allocation is total across ranks; reserve additional host RAM
+for PLE tables, loading and the OS. MTP3 stays enabled. The launcher selects
+the SimpleCPU connector and aligned checkpoints. Keep DCP1 and do not override
+`VLLM_USE_SIMPLE_KV_OFFLOAD=0`: the generic Qwen offload path has an unresolved
+restore-correctness problem. CPU prefixes disappear when the server stops;
+use `CACHE_MODE=lmcache` when you need the separate persistent RAM/disk service.
+[CPU-restore checks](../benchmarks/karmic-public-feedback.md#qwen-cpu-offload-investigation).
+
 ## Measured performance
+
+### One GPU, VRAM +6000
 
 One RTX PRO 6000 **Max-Q**, **VRAM +6000**, automatic graphics clocks;
 TP1/MTP3, CPU PLE, FP8 KV, 6019-token budget, 16 slots and explicit eight-GiB
@@ -1174,6 +1213,26 @@ the R35 report's 517,581-token estimate omitted those reserves. The physical
 eight-GiB budget did not shrink. See the
 [capacity accounting](../benchmarks/qwen-boundary-capacity-accounting.md).
 
+### Two GPUs, stock clocks
+
+Two RTX PRO 6000 **Max-Q**, **no overclock**, TP2/DCP1/MTP3, CPU PLE,
+FP8 KV, 6019-token batch budget, 16 slots and eight GiB KV per rank.
+Temperature 1/top-p .95, top-k disabled, reasoning effort `medium`.
+Decode is the median of five warmed 30-second context-zero runs; C8 is
+aggregate output. The 32k figure uses 12 uncached requests and client TTFT.
+
+| Measurement | vLLM | Community SGLang |
+|---|---:|---:|
+| C1 output | 225.2 tok/s | 200.8 tok/s |
+| C8 aggregate output | 898.4 tok/s | 891.7 tok/s |
+| 32k prefill | 14,855 tok/s | Not measured in this comparison |
+
+vLLM image: `karmic-kraken-beta-20260922-97197f5085f4798b`, without local
+source changes. This is +12.1% C1; C8 is approximately matched. Both engines
+use the same QAD checkpoint, but their runtime versions and recurrent-state
+precision differ. [Configuration and repeated comparison](../benchmarks/qwen38-tp2-sglang.md)
+and [published-image confirmation](../benchmarks/karmic-integration-merge-audit.md#qwen-tp2-performance-gate).
+
 ### TP4 memory option
 
 For TP4/MTP3, use four GPU IDs and `-e TP=4` in the launch command. The
@@ -1195,5 +1254,5 @@ be copied into every model's configuration.
 - [Versioned guide archive](../archive/serving-guides/README.md): preceding
   stock Workstation tables and complete launch instructions.
 
-Sieve and TP2 speed were not remeasured in the Max-Q matrix.
+Sieve was not remeasured in the Max-Q matrix.
 Source review and integration checklist: [issue #808](https://github.com/local-inference-lab/vllm/issues/808).

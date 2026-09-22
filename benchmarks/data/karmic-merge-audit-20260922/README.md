@@ -1,0 +1,35 @@
+# Canonical merge and registry validation evidence
+
+These artifacts support the [canonical PR audit](../../karmic-integration-merge-audit.md)
+and the [public-report validation](../../karmic-public-feedback.md).
+
+## Source composition
+
+`vllm-expected.json` and `b12x-expected.json` contain canonical commits,
+actual PR heads, ordered merge simulations and complete-tree comparisons.
+The `qwen-canonical-matched-*` cells use sharded HyperConnection projections;
+`qwen-replicated-matched-*` uses the same composition with replication enabled.
+The matching rank-0 traces capture eight C8 target steps. Their source overlays
+are diagnostic, not a published image.
+
+## Published image
+
+The `qwen-registry-*` files use the unmodified image
+`ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b`,
+digest `sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51`.
+No model source bind mounts or in-container source edits were used.
+
+- `qwen-registry-matched-{1..5}.json`: five warmed C1/C8 decode repeats.
+- `qwen-registry-prefill32k.json`: uncached 32k prefill, 30-second window.
+- `qwen-registry-mixed-smoke.jsonl`: 16 text/JSON-schema checks at C4.
+- `qwen-registry-native-restore.jsonl`: real CPU-prefix restore after ten
+  other prompts; 2880 external hits, zero native GPU hits, correct code and sum.
+- `start_qwen_registry_perf.sh` and `start_qwen_registry_native_cache.sh`:
+  launch configurations, parameterized by the immutable registry image.
+
+Hardware is the same pair of RTX PRO 6000 Blackwell Max-Q GPUs at stock clocks.
+Decode uses TP2/DCP1/MTP3, temperature 1, top-p .95, top-k disabled and reasoning
+effort medium. Native-cache correctness uses a separate, smaller cache budget
+and the checkpoint's top-k default. It is not a cache performance benchmark.
+The JSON's hardware inventory belongs to the benchmark client; server clocks
+and devices are specified in the linked reports.

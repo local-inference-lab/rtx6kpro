@@ -61,7 +61,7 @@ Stop: `docker compose -f ds4-vision-tp2.compose.yaml down` (keeps model/cache vo
 name: ds4-vision-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260920-443d9f815c57d23b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
     container_name: ds4-vision-tp2
     init: true
     network_mode: host
@@ -96,8 +96,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/b12x/cute
       BASH_ENV: /etc/bash.bashrc
       CCCL_VERSION: 13.3.4.2.1
       COCOAPI_VERSION: 2.0+nv0.8.1
@@ -105,7 +105,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -123,7 +123,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -191,10 +191,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -202,7 +202,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -216,8 +216,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/vllm
       VLLM_ENABLE_PCIE_ALLREDUCE: '1'
       VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: '1'
       VLLM_MULTI_STREAM_GEMM_TOKEN_THRESHOLD: '1024'
@@ -229,7 +229,7 @@ services:
       VLLM_USE_MEGA_AOT_ARTIFACT: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds4-vision-1d5a0da78eb5eefb
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -270,6 +270,7 @@ configs:
         kv-cache-dtype: fp8
         load-format: instanttensor
         enable-prefix-caching: true
+        enable-prompt-tokens-details: true
         enable-chunked-prefill: true
         enable-auto-tool-choice: true
         cache-mode: vram
@@ -297,7 +298,6 @@ configs:
         tokenizer-mode: deepseek_v4
         reasoning-parser: deepseek_v4
         tool-call-parser: deepseek_v4
-        enable-prompt-tokens-details: true
         enable-force-include-usage: true
         enable-request-id-headers: true
         default-chat-template-kwargs:
@@ -327,6 +327,7 @@ configs:
       - engram-config
       - gdn-decode-kernel
       - generation-config
+      - hf-overrides
       - jit-monitor-mode
       - kv-cache-memory-bytes
       - language-model-only

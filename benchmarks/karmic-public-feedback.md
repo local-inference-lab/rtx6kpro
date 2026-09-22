@@ -79,6 +79,14 @@ beta above plus the indicated source changes; registry validation is separate.
 | Unmodified beta, SimpleCPU connector, no CuMem, explicit native-cache reset | Two real 2880-token external restores, zero native hits; arithmetic and prefix-code recall pass. |
 | Allocator fix, CuMem plus expandable segments, explicit native-cache reset | Two real 2880-token external restores, zero native hits; arithmetic and prefix-code recall pass. |
 | Unified launcher with `CACHE_MODE=native`, CuMem enabled, ten intervening prompts | A 6551-token request restores 2880 tokens externally with zero native hits; recalls TEAL-428 and answers 13. Full/piecewise capture and engine health pass. |
+| Published `karmic-kraken-beta-20260922-97197f5085f4798b`, no source mounts or edits, ten intervening prompts | A 6883-token request restores 2880 tokens externally with zero native hits, recalls TEAL-428 and answers 13; healthy engine. |
+
+The registry confirmation uses digest
+`sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51`,
+vLLM `96b79aa073c2059462b613876366cf693d1c0c27`, B12X
+`6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab` and runtime
+`f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6`.
+[Raw registry restore responses and cache counters](data/karmic-merge-audit-20260922/qwen-registry-native-restore.jsonl).
 
 Five intervening prompts were insufficient to evict the prefix in a preceding
 control: that response was a GPU hit and is not counted as CPU-restore evidence.

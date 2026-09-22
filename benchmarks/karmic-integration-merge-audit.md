@@ -104,6 +104,7 @@ on the comparison's CUDA 13.4.1 image, preserving compiled native extensions.
 | Source/configuration | C1 output tok/s | C1 steps/s | C8 output tok/s | C8 steps/s |
 |---|---:|---:|---:|---:|
 | Uniform-graph metadata fix on the comparison image | 226.87 | 95.85 | 907.28 | 387.74 |
+| Published metadata-fix image, no source overlays | 225.17 | 95.29 | 898.41 | 387.12 |
 | Canonical + audited PRs, sharded residual projections | 187.73 | 82.30 | 805.65 | 347.40 |
 | Same sources, replicated projections (`VLLM_QWEN3_8_FLASH_NEXT_HC_TP=0`) | 204.82 | 87.66 | 855.43 | 369.39 |
 
@@ -119,9 +120,21 @@ metadata fix remains active in both arms: zero foreach-copy calls and 464 host
 kernel launches. These profile counts establish the extra work; nested trace
 durations are not end-to-end latency.
 
-The remaining gap is under investigation. The silicon-based tuning identity
-causes a different set of cached decisions; a diagnostic control tests those
-decisions separately without reverting attention normalization or QSA fixes.
+The published metadata-fix image is
+`ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b`,
+digest `sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51`.
+It contains vLLM `96b79aa073c2059462b613876366cf693d1c0c27`, B12X
+`6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab` and recipe
+`f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6`. Five warmed repeats and 16 mixed
+requests pass without source mounts or edits. Uncached 32k prefill measures
+14,855 tok/s over 12 samples, with 32,120 median input tokens.
+
+The remaining canonical-refresh gap is under investigation. Two-run controls
+with the earlier tuning-cache identity (203.32/858.02 tok/s at C1/C8) and with
+the comparison image's untouched B12X (200.21/851.56) do not recover it. These
+controls do not establish B12X or its cache identity as the cause. The
+source-unmodified registry result retains the earlier verifier rate, narrowing
+the investigation to the source-composed refresh and its execution environment.
 No performance-preserving canonical-refresh claim is qualified yet.
 
 [Raw decode cells, source audits and diagnostic traces](data/karmic-merge-audit-20260922/)

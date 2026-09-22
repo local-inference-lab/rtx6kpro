@@ -157,6 +157,13 @@ Qualification includes:
 
 ## Source and artifact identities
 
+The published image is
+`voipmonitor/vllm:kimi-k3-kk-cu134-tp9-dspark-k5-20260922-r1`.
+Its registry manifest digest is
+`sha256:50752698ae56e2bfe033226c51df71c283213bbf98eefff60d2e5a08d0424b07`.
+The remote configuration digest matches the tested local image ID:
+`sha256:8550fc2f2b85fb730d2969e7d847b7c6391ed751854f9a585362b93d358c0767`.
+
 The image installs wheels, not source overlays. The source composition is:
 
 | Component | Base | Composed commit |

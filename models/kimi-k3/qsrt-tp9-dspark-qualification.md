@@ -170,6 +170,13 @@ the pinned PR heads onto the bases and asserts the exact Git trees. Both
 composition orders with dependencies first have been verified. The composed
 source commits are published in their respective repositories.
 
+The reconstruction commands were run against fresh GitHub clones. Rebuilding
+from the component archive reproduces the runtime manifest and all **5,689
+checked vLLM, B12X and launcher source/native files** exactly. The
+`reproduced-runtime-payload.json` release asset contains the per-file hashes.
+The rebuilt image has a different image ID; the equality claim covers those
+installed payloads and the manifest, not every filesystem byte or image timestamp.
+
 Runtime: CUDA 13.4.1, NVIDIA PyTorch 26.08
 `2.14.0a0+4fdf77b940.nv26.8.63802676`, NCCL 2.31.2, CuTeDSL 4.6.2 and
 FlashInfer 0.6.18. All twelve vLLM native payloads match the reused, ABI-checked

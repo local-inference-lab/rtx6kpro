@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-09-22](2026-09/2026-09-22.md) | vLLM v0.30.0 was released on GitHub (vllm-project/vllm). |
 | [2026-09-21](2026-09/2026-09-21.md) | D-Rock published qad-kk-mtp3-20260920 and -r3 (digest sha256:2ce695acaf709e7d77d15035a6282957398aedc |
 | [2026-09-20](2026-09/2026-09-20.md) | GLM-5.3-Flash NVFP4-Spark on vLLM karmic-kraken-beta 5927520c, 2x RTX 6000 Pro Blackwell WS 96GB TP2 |
 | [2026-09-19](2026-09/2026-09-19.md) | kanadaj/sglang pull request 18 added the --prefill-batches-before-decode option (0.5 = one prefill t |

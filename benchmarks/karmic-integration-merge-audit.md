@@ -10,16 +10,16 @@ tests. Serving qualification is recorded separately because canonical Qwen
 projection sharding changes the measured TP2 execution path.
 
 Both `integration/karmic-kraken-beta` branches contain the audited trees:
-vLLM `4717b12198ade83fca11222c95a3cad1d2a9ecc2` and B12X
-`2879cb0234c1479c3d5b1f25f48ca0a6508ef440`. The corresponding container is
+vLLM `47cb3450b11aac466f03a933de576a37f970da53` and B12X
+`c4349457b13905f9f1689240fcda5991e133de44`. The corresponding container is
 building. Source publication is not qualification of that registry artifact.
 
 ## Frozen inputs and merge order
 
 | Component | Canonical input | PR order |
 |---|---|---|
-| vLLM | `dev/karmic-kraken`, `9e5d1793fa34db4e672664711690e8a68d90fcd3` | #798, #805, #813, #821, #822, #837, #834, #835, #836, #838 |
-| B12X | `master`, `c2dc1cf02295b8241fc6a7728be7b6e8c23dda2f` | #393, #406, #409 |
+| vLLM | `dev/karmic-kraken`, `a18246b0626414b5a198bc63ffffb15625208bb7` | #798, #805, #813, #821, #822, #837, #834, #835, #836, #838 |
+| B12X | `master`, `b294e69d8eba2ea56d2aed7cc359c0df4bcaa57d` | #393, #406, #409 |
 
 The machine-readable audit records every PR head, author, base branch, merge
 tree and residual diff. It performs ordinary merge-commit composition, preserving
@@ -51,8 +51,8 @@ or PR head requires another audit.
 
 | Component | Canonical + PR tree | Remaining file differences |
 |---|---|---:|
-| vLLM | `34ef1e77a0b3285a8cfd2c6cb3e90164109289ec` | 0 |
-| B12X | `82794e6465b630cf08a7c51c9701ebf36ef04ee0` | 0 |
+| vLLM | `2c3073c5554acaf6265f23151602bb034320cd8d` | 0 |
+| B12X | `aa4ab95732b1eef1f63e5daee515d67b03b2df20` | 0 |
 
 The reconstruction and published integration trees are identical. A fresh audit
 of all actual PR heads found no conflicts or residual files immediately before
@@ -63,6 +63,13 @@ projections, per-head GDN warmup and QSA capacity compatibility. B12X retains
 contiguous-attention normalization, silicon-based tuning identity and switched
 RoCE traffic-class handling from master. None is silently reverted to obtain
 source equality or a benchmark number.
+
+The composition also retains Luke Alonso's cross-group GDN metadata fusion,
+compact NVFP4 decode tiles, expanded runtime grid tuning and IQ2_XS support.
+The GDN fusion complements #835: mixed batches refresh worklists in one launch;
+uniform graph decode skips worklists it does not consume. Both changes coexist
+without a conflict. Their release fragments preserve the canonical author's
+attribution.
 
 ## Focused validation
 
@@ -78,6 +85,13 @@ not validation of an unpublished container digest.
 | B12X contiguous normalization on CUDA, including graph replay | 8 tests | Pass |
 | GLM selector release and rebinding, both pool lifetimes | 2 tests | Pass |
 | Qwen TP2/MTP3, temperature 1, mixed text/JSON-schema requests at C4 | 16 requests, inputs up to approximately 31k tokens | All answers correct |
+
+The matrix above was collected on the preceding source composition
+`4717b12198a` / `2879cb0234`. After importing the canonical metadata/MoE changes,
+the published `47cb3450b11` / `c4349457` composition passes 61 GDN tests and
+183 B12X tuning/swapped-NVFP4 tests, including CUDA execution on the assigned
+Max-Q test GPU. Those focused results do not substitute for the pending
+source-unmodified container serving check.
 
 The source audit does not establish that every open PR in the repositories is
 required by beta. MiMo-specific changes and independent experiments outside
@@ -97,8 +111,9 @@ the image payload. Source equality does not remove these documented limits.
 Conditions match the [Qwen TP2 comparison](qwen38-tp2-sglang.md): the same
 Max-Q GPU pair at stock clocks, QAD checkpoint, TP2/DCP1/MTP3, temperature 1,
 top-p .95, reasoning medium, 6019-token batch budget and 8 GiB KV per rank.
-Each decode cell is the median of five warmed 30-second windows. The canonical
-composition uses the two reconstruction trees above as Python source overlays
+Each decode cell is the median of five warmed 30-second windows. The serving
+composition in this table is `4717b12198a` / `2879cb0234`, before the additional
+canonical metadata/MoE commits. It uses Python source overlays
 on the comparison's CUDA 13.4.1 image, preserving compiled native extensions.
 
 | Source/configuration | C1 output tok/s | C1 steps/s | C8 output tok/s | C8 steps/s |
@@ -144,13 +159,29 @@ rate stays between 95.88 and 96.00. Its 32k prefill is 14,589 tok/s, 1.79% below
 the published-image confirmation; this difference remains visible rather than
 being described as an unconditional no-regression result.
 
-Moving only this already-loaded engine's CPU threads to the remote NUMA node
-retains 95.66 C1 and 388.62 C8 steps/s in two repeats. The host allocations stay
-on the GPU-local node. Thus CPU affinity alone does not explain the slower
-startup series. A separate two-run substitution of the preceding HyperConnection
-file also retained the fast rate, but that correlation is not proof of a defect
-in the replicated implementation. A default-placement restart and final registry
-qualification remain the release checks.
+Moving the already-loaded engine and both workers together to the remote CPU
+NUMA node retains 95.66 C1 and 388.62 C8 steps/s. This compares two constrained
+CPU placements, not constrained versus unrestricted placement; it does not
+rule out CPU scheduling as the cause. The host allocations stay GPU-local.
+
+Two allocation controls do not recover the rate: placing only the 13.41-GiB
+mapped PLE tables per rank on the GPU-local node yields 87.00/366.55 C1/C8
+steps/s; restricting all container memory to that node yields 88.08/369.44.
+Neither allocation experiment is included as an implementation change.
+
+On that same memory-restricted running server, constraining the engine and both
+workers' CPU threads to one NUMA node, without restarting or changing weights,
+kernels or cache, yields 219.87/903.82 output tok/s and 95.89/388.66 steps/s.
+Moving the constrained group together to the other CPU node retains 95.67 C1
+steps/s. Releasing the affinity mask alone also retains 95.58 C1 steps/s; it
+does not force threads to migrate. Explicitly splitting the workers across
+CPU nodes retains 95.72 C1 steps/s; splitting their main and auxiliary threads
+retains 95.67. The affinity changes restore this running instance, but these
+controls do not fully localize the startup-sensitive mechanism. The measured
+GPU-local NUMA startup configuration and the unmodified registry image are
+qualified separately. No PLE placement patch is proposed. A separate
+two-run substitution of the preceding HyperConnection file is not evidence
+that its replicated arithmetic is faster: CPU placement was not controlled.
 
 [Raw decode cells, source audits and diagnostic traces](data/karmic-merge-audit-20260922/)
 are separate from the earlier comparison's measurements.

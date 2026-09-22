@@ -12,6 +12,14 @@ The `qwen-canonical-matched-*` cells use sharded HyperConnection projections;
 The matching rank-0 traces capture eight C8 target steps. Their source overlays
 are diagnostic, not a published image.
 
+`vllm-metadata-refresh-check.json` and `b12x-moe-refresh-check.json` record
+the composition after importing canonical commits `a18246b0626` and
+`b294e69d`. These are the source-equality checks for published integration
+heads `47cb3450b11` and `c4349457`. The corresponding focused test log records
+61 GDN and 183 B12X tests, including CUDA execution. The standalone
+`audit_integration_prs.py` script requires Python, Git and authenticated `gh`;
+it creates audit objects without changing the checkout or any branch.
+
 `qwen-numa-matched-*` uses the same complete source composition with replicated
 projections and GPU-local CPU/host-memory binding at startup. Five repeats,
 mixed-request checks and prefill are retained. `qwen-remote-cpu-matched-*` moves
@@ -19,6 +27,18 @@ only the loaded engine's CPU threads to the remote NUMA node; host memory stays
 GPU-local. `qwen-reference-hc-matched-*` is a separate two-run file-substitution
 diagnostic, not an implementation proposed for merge. These controls must not
 be silently combined into one benchmark configuration.
+
+The `qwen-local-allocation-matched-*` control constrains CPU affinity only
+during the mapped PLE allocation and restores it immediately. The
+`qwen-membind-matched-*` control instead uses Docker `--cpuset-mems 1` with
+unrestricted CPU scheduling. Neither restores the fast rate. Both use the
+same `4717b12198a` / `2879cb0234` Python sources.
+
+The `qwen-membind-cpu-node1-matched-1.json` cell then constrains the engine
+and worker threads on that same loaded server. The `cpu-all`, `cpu-0`,
+`cpu-split` and `thread-split` C1 files record subsequent affinity controls;
+they must not be interpreted as separate source changes or as repeated
+independent startups. The complete NUMA startup recipe remains distinct.
 
 ## Published image
 

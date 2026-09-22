@@ -1,6 +1,6 @@
 # Karmic integration: reproducible canonical PR composition
 
-The prepared vLLM and B12X integration updates can be reconstructed from the canonical
+The published vLLM and B12X integration branches can be reconstructed from the canonical
 branches plus the PRs below. This audit compares complete Git trees, including
 tests, CI, documentation and immutable release fragments; commit ancestry alone
 is not considered evidence of source equivalence.
@@ -9,10 +9,10 @@ Status: **implemented** and **qualified** for source reconstruction and focused
 tests. Serving qualification is recorded separately because canonical Qwen
 projection sharding changes the measured TP2 execution path.
 
-The audited integration updates are not published yet: Qwen TP2 serving has a
-measured performance regression. The public integration branches still use
-vLLM `96b79aa073c2059462b613876366cf693d1c0c27` and B12X
-`6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab`.
+Both `integration/karmic-kraken-beta` branches contain the audited trees:
+vLLM `4717b12198ade83fca11222c95a3cad1d2a9ecc2` and B12X
+`2879cb0234c1479c3d5b1f25f48ca0a6508ef440`. The corresponding container is
+building. Source publication is not qualification of that registry artifact.
 
 ## Frozen inputs and merge order
 
@@ -54,9 +54,9 @@ or PR head requires another audit.
 | vLLM | `34ef1e77a0b3285a8cfd2c6cb3e90164109289ec` | 0 |
 | B12X | `82794e6465b630cf08a7c51c9701ebf36ef04ee0` | 0 |
 
-These are the reviewed reconstruction trees. Integration publication identities
-and registry validation must be appended after the serving gate, not inferred
-from this equality check.
+The reconstruction and published integration trees are identical. A fresh audit
+of all actual PR heads found no conflicts or residual files immediately before
+publication. Registry validation is recorded separately from this equality check.
 
 The integration refresh keeps canonical Qwen tensor-parallel HyperConnection
 projections, per-head GDN warmup and QSA capacity compatibility. B12X retains
@@ -107,6 +107,7 @@ on the comparison's CUDA 13.4.1 image, preserving compiled native extensions.
 | Published metadata-fix image, no source overlays | 225.17 | 95.29 | 898.41 | 387.12 |
 | Canonical + audited PRs, sharded residual projections | 187.73 | 82.30 | 805.65 | 347.40 |
 | Same sources, replicated projections (`VLLM_QWEN3_8_FLASH_NEXT_HC_TP=0`) | 204.82 | 87.66 | 855.43 | 369.39 |
+| Same sources, replicated projections, GPU-local CPU/host-memory binding at startup | 222.49 | 95.97 | 903.23 | 389.22 |
 
 Disabling projection sharding improves C1 output by 9.1% and C8 by 6.2% against
 the same-source sharded control. It does **not** recover the full earlier
@@ -129,13 +130,27 @@ It contains vLLM `96b79aa073c2059462b613876366cf693d1c0c27`, B12X
 requests pass without source mounts or edits. Uncached 32k prefill measures
 14,855 tok/s over 12 samples, with 32,120 median input tokens.
 
-The remaining canonical-refresh gap is under investigation. Two-run controls
+The restart-sensitive performance difference is under investigation. Two-run controls
 with the earlier tuning-cache identity (203.32/858.02 tok/s at C1/C8) and with
 the comparison image's untouched B12X (200.21/851.56) do not recover it. These
 controls do not establish B12X or its cache identity as the cause. The
 source-unmodified registry result retains the earlier verifier rate, narrowing
 the investigation to the source-composed refresh and its execution environment.
-No performance-preserving canonical-refresh claim is qualified yet.
+The complete canonical composition with replication and GPU-local NUMA binding
+passes five warmed repeats and 16 mixed requests without reverting any canonical
+source. It restores the verifier rate. C1 output ranges from 213.54 to 236.89
+tok/s as effective accepted length varies from 2.227 to 2.468, while the step
+rate stays between 95.88 and 96.00. Its 32k prefill is 14,589 tok/s, 1.79% below
+the published-image confirmation; this difference remains visible rather than
+being described as an unconditional no-regression result.
+
+Moving only this already-loaded engine's CPU threads to the remote NUMA node
+retains 95.66 C1 and 388.62 C8 steps/s in two repeats. The host allocations stay
+on the GPU-local node. Thus CPU affinity alone does not explain the slower
+startup series. A separate two-run substitution of the preceding HyperConnection
+file also retained the fast rate, but that correlation is not proof of a defect
+in the replicated implementation. A default-placement restart and final registry
+qualification remain the release checks.
 
 [Raw decode cells, source audits and diagnostic traces](data/karmic-merge-audit-20260922/)
 are separate from the earlier comparison's measurements.

@@ -1,7 +1,7 @@
 {
   "github_repository": "local-inference-lab/vllm",
   "canonical_commit": "9e5d1793fa34db4e672664711690e8a68d90fcd3",
-  "integration_commit": "d5bf488aaa4a59573a6752f50d39cfbb9d216b09",
+  "integration_commit": "4717b12198ade83fca11222c95a3cad1d2a9ecc2",
   "pull_requests": [
     {
       "number": 798,
@@ -18,7 +18,7 @@
       "merge_tree_output": "5246526d75bd1d837bee46fe341378e8f4040ddf\n",
       "simulation_parent": "9e5d1793fa34db4e672664711690e8a68d90fcd3",
       "tree": "5246526d75bd1d837bee46fe341378e8f4040ddf",
-      "simulation_commit": "181c53e53a7f821cf8dd96d7a33d97cf4f2b9042"
+      "simulation_commit": "9d433077b1895dda9927b0b4391b88d7830d28e0"
     },
     {
       "number": 805,
@@ -33,9 +33,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "10bf49e3ae80b664aab706097eeb6441d09df1ea\n",
-      "simulation_parent": "181c53e53a7f821cf8dd96d7a33d97cf4f2b9042",
+      "simulation_parent": "9d433077b1895dda9927b0b4391b88d7830d28e0",
       "tree": "10bf49e3ae80b664aab706097eeb6441d09df1ea",
-      "simulation_commit": "6fd9ab1c0ac00e2807ac33e8ce2b5673cada1c36"
+      "simulation_commit": "c6e11e3cd30a91910d3dd011d7cd009da393c077"
     },
     {
       "number": 813,
@@ -50,9 +50,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "360f5fdb23ca2752827dbe46c75bc9bcd945c5be\n",
-      "simulation_parent": "6fd9ab1c0ac00e2807ac33e8ce2b5673cada1c36",
+      "simulation_parent": "c6e11e3cd30a91910d3dd011d7cd009da393c077",
       "tree": "360f5fdb23ca2752827dbe46c75bc9bcd945c5be",
-      "simulation_commit": "e663f0b8ba32d7fdfd0dacf3f162052d3571d4a0"
+      "simulation_commit": "6db692b3ca7ca1ca82bd833efedc310463d27cea"
     },
     {
       "number": 821,
@@ -67,9 +67,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "0c20c211342d08fdf8eae1aaeec53f1eadbb543e\n",
-      "simulation_parent": "e663f0b8ba32d7fdfd0dacf3f162052d3571d4a0",
+      "simulation_parent": "6db692b3ca7ca1ca82bd833efedc310463d27cea",
       "tree": "0c20c211342d08fdf8eae1aaeec53f1eadbb543e",
-      "simulation_commit": "d9039a93742e9fe38be2fdd21dbca7ef4d6ecd98"
+      "simulation_commit": "53efd2b979b083ce56c7d4a9a21df91222946515"
     },
     {
       "number": 822,
@@ -84,9 +84,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "2b2fb97ec0b8e936f760a6087969f5dde0f1cbd2\n",
-      "simulation_parent": "d9039a93742e9fe38be2fdd21dbca7ef4d6ecd98",
+      "simulation_parent": "53efd2b979b083ce56c7d4a9a21df91222946515",
       "tree": "2b2fb97ec0b8e936f760a6087969f5dde0f1cbd2",
-      "simulation_commit": "75b80d079993fd672601a80991f24ca04706bd72"
+      "simulation_commit": "53776be456691e0527a55766f2f9622a6168e960"
     },
     {
       "number": 837,
@@ -101,9 +101,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "e5d7397a8089f9ddd351946dd174911a72f090fa\n",
-      "simulation_parent": "75b80d079993fd672601a80991f24ca04706bd72",
+      "simulation_parent": "53776be456691e0527a55766f2f9622a6168e960",
       "tree": "e5d7397a8089f9ddd351946dd174911a72f090fa",
-      "simulation_commit": "58b4cf6d525446db204e4cc242792465eb3725d2"
+      "simulation_commit": "789780c1a205bdd6e41bf9ab99d1ab551065c7d6"
     },
     {
       "number": 834,
@@ -118,9 +118,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "f5ec94dbaf9abd1c24d347d125bf6982a6c925f7\n",
-      "simulation_parent": "58b4cf6d525446db204e4cc242792465eb3725d2",
+      "simulation_parent": "789780c1a205bdd6e41bf9ab99d1ab551065c7d6",
       "tree": "f5ec94dbaf9abd1c24d347d125bf6982a6c925f7",
-      "simulation_commit": "b25f7b93884f78a3d698bfcadaa398fe2404f1e3"
+      "simulation_commit": "46ea6521b726571b368d763439dd489ab35cc180"
     },
     {
       "number": 835,
@@ -135,9 +135,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "b34a8063bd77252b463da9eac3a044aad85ba391\n",
-      "simulation_parent": "b25f7b93884f78a3d698bfcadaa398fe2404f1e3",
+      "simulation_parent": "46ea6521b726571b368d763439dd489ab35cc180",
       "tree": "b34a8063bd77252b463da9eac3a044aad85ba391",
-      "simulation_commit": "2a2e24cf60134dbddab006b6acfb3f1f4e9a4655"
+      "simulation_commit": "42a5ccf1ed708026d94afef70a1260d068e0c16b"
     },
     {
       "number": 836,
@@ -152,9 +152,9 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "98948d3daa9ed5fe78da341ed5812a96dd974f00\n",
-      "simulation_parent": "2a2e24cf60134dbddab006b6acfb3f1f4e9a4655",
+      "simulation_parent": "42a5ccf1ed708026d94afef70a1260d068e0c16b",
       "tree": "98948d3daa9ed5fe78da341ed5812a96dd974f00",
-      "simulation_commit": "e46f48748095df9eb944b5f406f6098fcebd0986"
+      "simulation_commit": "4c05cf5e7a8b9b5af6544db894756d3c98b3a0be"
     },
     {
       "number": 838,
@@ -169,12 +169,12 @@
       "state": "open",
       "clean": true,
       "merge_tree_output": "34ef1e77a0b3285a8cfd2c6cb3e90164109289ec\n",
-      "simulation_parent": "e46f48748095df9eb944b5f406f6098fcebd0986",
+      "simulation_parent": "4c05cf5e7a8b9b5af6544db894756d3c98b3a0be",
       "tree": "34ef1e77a0b3285a8cfd2c6cb3e90164109289ec",
-      "simulation_commit": "f17fafa454c74f26c4e23aa67d6f810fc7292dbd"
+      "simulation_commit": "f9d611c8615b4b08a41792b7b6f6c3271047401a"
     }
   ],
-  "simulation_commit": "f17fafa454c74f26c4e23aa67d6f810fc7292dbd",
+  "simulation_commit": "f9d611c8615b4b08a41792b7b6f6c3271047401a",
   "simulation_tree": "34ef1e77a0b3285a8cfd2c6cb3e90164109289ec",
   "integration_tree": "34ef1e77a0b3285a8cfd2c6cb3e90164109289ec",
   "unresolved_prs": [],

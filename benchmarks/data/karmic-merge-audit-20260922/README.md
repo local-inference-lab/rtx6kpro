@@ -12,6 +12,14 @@ The `qwen-canonical-matched-*` cells use sharded HyperConnection projections;
 The matching rank-0 traces capture eight C8 target steps. Their source overlays
 are diagnostic, not a published image.
 
+`qwen-numa-matched-*` uses the same complete source composition with replicated
+projections and GPU-local CPU/host-memory binding at startup. Five repeats,
+mixed-request checks and prefill are retained. `qwen-remote-cpu-matched-*` moves
+only the loaded engine's CPU threads to the remote NUMA node; host memory stays
+GPU-local. `qwen-reference-hc-matched-*` is a separate two-run file-substitution
+diagnostic, not an implementation proposed for merge. These controls must not
+be silently combined into one benchmark configuration.
+
 ## Published image
 
 The `qwen-registry-*` files use the unmodified image

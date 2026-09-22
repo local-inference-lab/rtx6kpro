@@ -242,7 +242,7 @@ Stop: `docker compose -f glm53-tp4-off.compose.yaml down` (keeps model/cache vol
 name: glm53-tp4-off
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: glm53-tp4-off
     init: true
     network_mode: host
@@ -279,8 +279,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/cute
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
       B12X_DYNAMIC_SKIP_SPLIT_BARRIER_RESET: '1'
       B12X_DYNAMIC_SPLIT_COMPUTE_MAC: '224'
@@ -299,7 +299,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -317,7 +317,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -385,10 +385,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -396,7 +396,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -412,8 +412,8 @@ services:
       VLLM_B12X_MLA_CKV_GATHER: '0'
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
       VLLM_B12X_NVFP4_ACTIVATION_MODE: quantized
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
       VLLM_DISABLE_SHARED_EXPERTS_STREAM: '0'
@@ -436,7 +436,7 @@ services:
       VLLM_USE_FLASHINFER_SAMPLER: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -796,7 +796,7 @@ Stop: `docker compose -f glm53-tp4-mtp3.compose.yaml down` (keeps model/cache vo
 name: glm53-tp4-mtp3
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: glm53-tp4-mtp3
     init: true
     network_mode: host
@@ -833,8 +833,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/cute
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
       B12X_DYNAMIC_SKIP_SPLIT_BARRIER_RESET: '1'
       B12X_DYNAMIC_SPLIT_COMPUTE_MAC: '224'
@@ -853,7 +853,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -871,7 +871,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -939,10 +939,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -950,7 +950,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -965,8 +965,8 @@ services:
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_MLA_CKV_GATHER: '0'
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
       VLLM_DISABLE_SHARED_EXPERTS_STREAM: '0'
@@ -989,7 +989,7 @@ services:
       VLLM_USE_FLASHINFER_SAMPLER: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -1355,7 +1355,7 @@ Stop: `docker compose -f glm53-tp4-dflash2.compose.yaml down` (keeps model/cache
 name: glm53-tp4-dflash2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: glm53-tp4-dflash2
     init: true
     network_mode: host
@@ -1392,8 +1392,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/cute
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
       B12X_DYNAMIC_SKIP_SPLIT_BARRIER_RESET: '1'
       B12X_DYNAMIC_SPLIT_COMPUTE_MAC: '224'
@@ -1412,7 +1412,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -1430,7 +1430,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -1498,10 +1498,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -1509,7 +1509,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -1524,8 +1524,8 @@ services:
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_MLA_CKV_GATHER: '0'
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
       VLLM_DISABLE_SHARED_EXPERTS_STREAM: '0'
@@ -1548,7 +1548,7 @@ services:
       VLLM_USE_FLASHINFER_SAMPLER: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-19900f0b0720c70d
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-59dc36a79e6582cb
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -1915,7 +1915,7 @@ Stop: `docker compose -f glm53-spark-tp2.compose.yaml down` (keeps model/cache v
 name: glm53-spark-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: glm53-spark-tp2
     init: true
     network_mode: host
@@ -1950,8 +1950,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/b12x/cute
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
       B12X_DYNAMIC_SKIP_SPLIT_BARRIER_RESET: '1'
       B12X_DYNAMIC_SPLIT_COMPUTE_MAC: '224'
@@ -1971,7 +1971,7 @@ services:
       CUBLAS_WORKSPACE_CONFIG: :4096:1
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -1989,7 +1989,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -2060,10 +2060,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -2071,7 +2071,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -2087,8 +2087,8 @@ services:
       VLLM_B12X_MLA_CKV_GATHER: '1'
       VLLM_B12X_MLA_CKV_GATHER_MAX_TOKENS: '65536'
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
       VLLM_DISABLE_SHARED_EXPERTS_STREAM: '0'
@@ -2111,7 +2111,7 @@ services:
       VLLM_USE_FLASHINFER_SAMPLER: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f0d27d45bf2fd279
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/glm53-flash-f997c73b160489ac
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -2476,7 +2476,7 @@ Stop: `docker compose -f qwen38-tp1.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp1
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: qwen38-tp1
     init: true
     network_mode: host
@@ -2510,8 +2510,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/b12x/cute
       B12X_DENSE_SPLITK_TURBO: '1'
       B12X_DYNAMIC_DETERMINISTIC_OUTPUT: '0'
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
@@ -2532,7 +2532,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -2550,7 +2550,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -2619,10 +2619,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -2630,7 +2630,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -2644,8 +2644,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_DENSE_ACTIVATION_MODE: auto
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_COMPUTE_NANS_IN_LOGITS: '0'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
@@ -2657,12 +2657,13 @@ services:
       VLLM_MXFP8_LM_HEAD: '0'
       VLLM_PCIE_ALLREDUCE_BACKEND: b12x
       VLLM_PLE_CPU_OFFLOAD: '1'
+      VLLM_QWEN3_8_FLASH_NEXT_HC_TP: '0'
       VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT: '1'
       VLLM_QWEN3_8_FLASH_NEXT_OVERLAP: '1'
       VLLM_SSM_CONV_STATE_LAYOUT: DS
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -2923,6 +2924,7 @@ configs:
       - VLLM_MXFP8_LM_HEAD
       - VLLM_PCIE_ALLREDUCE_BACKEND
       - VLLM_PLE_CPU_OFFLOAD
+      - VLLM_QWEN3_8_FLASH_NEXT_HC_TP
       - VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT
       - VLLM_QWEN3_8_FLASH_NEXT_OVERLAP
       - VLLM_SSM_CONV_STATE_LAYOUT
@@ -2995,7 +2997,7 @@ Stop: `docker compose -f qwen38-tp2.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: qwen38-tp2
     init: true
     network_mode: host
@@ -3030,8 +3032,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/b12x/cute
       B12X_DENSE_SPLITK_TURBO: '1'
       B12X_DYNAMIC_DETERMINISTIC_OUTPUT: '0'
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
@@ -3052,7 +3054,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -3070,7 +3072,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -3139,10 +3141,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -3150,7 +3152,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -3164,8 +3166,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_DENSE_ACTIVATION_MODE: auto
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_COMPUTE_NANS_IN_LOGITS: '0'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
@@ -3177,12 +3179,13 @@ services:
       VLLM_MXFP8_LM_HEAD: '0'
       VLLM_PCIE_ALLREDUCE_BACKEND: b12x
       VLLM_PLE_CPU_OFFLOAD: '1'
+      VLLM_QWEN3_8_FLASH_NEXT_HC_TP: '0'
       VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT: '1'
       VLLM_QWEN3_8_FLASH_NEXT_OVERLAP: '1'
       VLLM_SSM_CONV_STATE_LAYOUT: DS
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -3443,6 +3446,7 @@ configs:
       - VLLM_MXFP8_LM_HEAD
       - VLLM_PCIE_ALLREDUCE_BACKEND
       - VLLM_PLE_CPU_OFFLOAD
+      - VLLM_QWEN3_8_FLASH_NEXT_HC_TP
       - VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT
       - VLLM_QWEN3_8_FLASH_NEXT_OVERLAP
       - VLLM_SSM_CONV_STATE_LAYOUT
@@ -3515,7 +3519,7 @@ Stop: `docker compose -f ds4-flash-tp2.compose.yaml down` (keeps model/cache vol
 name: ds4-flash-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: ds4-flash-tp2
     init: true
     network_mode: host
@@ -3550,8 +3554,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/b12x/cute
       BASH_ENV: /etc/bash.bashrc
       CCCL_VERSION: 13.3.4.2.1
       COCOAPI_VERSION: 2.0+nv0.8.1
@@ -3559,7 +3563,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -3577,7 +3581,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -3645,10 +3649,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -3656,7 +3660,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -3670,8 +3674,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f/vllm
       VLLM_ENABLE_PCIE_ALLREDUCE: '1'
       VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: '1'
       VLLM_MULTI_STREAM_GEMM_TOKEN_THRESHOLD: '1024'
@@ -3683,7 +3687,7 @@ services:
       VLLM_USE_MEGA_AOT_ARTIFACT: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds4-flash-249dae9ffd8bb4bf
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds4-flash-9e54cc9c81edfc7f
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -4007,7 +4011,7 @@ Stop: `docker compose -f ds4-vision-tp2.compose.yaml down` (keeps model/cache vo
 name: ds4-vision-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: ds4-vision-tp2
     init: true
     network_mode: host
@@ -4042,8 +4046,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/b12x/cute
       BASH_ENV: /etc/bash.bashrc
       CCCL_VERSION: 13.3.4.2.1
       COCOAPI_VERSION: 2.0+nv0.8.1
@@ -4051,7 +4055,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -4069,7 +4073,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -4137,10 +4141,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -4148,7 +4152,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -4162,8 +4166,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_MOE_FP4_FORCE_A16: '0'
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a/vllm
       VLLM_ENABLE_PCIE_ALLREDUCE: '1'
       VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: '1'
       VLLM_MULTI_STREAM_GEMM_TOKEN_THRESHOLD: '1024'
@@ -4175,7 +4179,7 @@ services:
       VLLM_USE_MEGA_AOT_ARTIFACT: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds4-vision-927d33395e579661
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds4-vision-c0a4ec767f78e66a
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -4499,7 +4503,7 @@ Stop: `docker compose -f ds41-flash-tp4.compose.yaml down` (keeps model/cache vo
 name: ds41-flash-tp4
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: ds41-flash-tp4
     init: true
     network_mode: host
@@ -4538,8 +4542,8 @@ services:
     security_opt:
     - seccomp=unconfined
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/b12x/cute
       BASH_ENV: /etc/bash.bashrc
       CCCL_VERSION: 13.3.4.2.1
       COCOAPI_VERSION: 2.0+nv0.8.1
@@ -4547,7 +4551,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_MAX_CONNECTIONS: '32'
       CUDA_DEVICE_ORDER: PCI_BUS_ID
@@ -4566,7 +4570,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -4634,10 +4638,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -4645,7 +4649,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -4658,8 +4662,8 @@ services:
       UCC_CL_BASIC_TLS: ^sharp
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/vllm
       VLLM_ENABLE_PCIE_ALLREDUCE: '1'
       VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: '1'
       VLLM_MULTI_STREAM_GEMM_TOKEN_THRESHOLD: '1024'
@@ -4675,7 +4679,7 @@ services:
       VLLM_USE_STANDALONE_COMPILE: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch

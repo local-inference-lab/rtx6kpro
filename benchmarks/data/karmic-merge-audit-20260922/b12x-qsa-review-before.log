@@ -1,0 +1,300 @@
+FFFFFFF                                                                  [100%]
+=================================== FAILURES ===================================
+________ test_qsa_dcp_rejects_plan_without_local_compressed_capacity[1] ________
+
+rank = 1
+
+    @pytest.mark.parametrize("rank", [1, 2, 3])
+    def test_qsa_dcp_rejects_plan_without_local_compressed_capacity(rank: int) -> None:
+        # Live empty ranks are valid; this checks a plan that can never score a
+        # complete local group, for which the score workspace has no chunk width.
+        with pytest.raises(ValueError, match="at least one local compressed group"):
+            caps = Caps(
+                device="cuda:0", max_batch=1, max_raw_state_slots=1, max_q_rows=1,
+                max_seq_len=4, num_main_cache_pages=1, num_compressed_cache_pages=1,
+                main_page_size=64, compressed_page_size=16,
+                dcp_size=4, dcp_rank=rank, cp_kv_cache_interleave_size=4,
+            )
+>           contract._scratch_layout(caps)
+
+tests/attention/test_qsa_dcp_geometry.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+caps = Caps(device=device(type='cuda', index=0), max_batch=1, max_raw_state_slots=1, max_q_rows=1, max_seq_len=4, num_main_ca...s_norm_eps=1e-06, dtype=torch.bfloat16, kv_dtype=torch.bfloat16, dcp_size=4, dcp_rank=1, cp_kv_cache_interleave_size=4)
+
+    def _scratch_layout(
+        caps: Caps,
+    ) -> tuple[_ScratchLayout, int, int, int, int, int]:
+        workspace_q_rows = int(caps.max_q_rows)
+        score_width_limit = max(
+            1,
+            _SCORE_WORKSPACE_LIMIT_BYTES // (workspace_q_rows * torch.float32.itemsize),
+        )
+        score_width_limit = min(
+            score_width_limit,
+            int(caps.group_budget) + _MAX_SCORE_CHUNK_GROUPS,
+        )
+        if int(caps.max_groups) <= score_width_limit:
+            score_chunk_groups = int(caps.max_groups)
+            score_workspace_width = score_chunk_groups
+        else:
+            score_chunk_groups = score_width_limit - int(caps.group_budget)
+            if score_chunk_groups <= 0:
+                raise ValueError(
+                    "QSA 128 MiB score workspace cannot hold one top-k carry row"
+                )
+            score_workspace_width = int(caps.group_budget) + score_chunk_groups
+>       num_score_chunks = math.ceil(int(caps.max_groups) / score_chunk_groups)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ZeroDivisionError: division by zero
+
+b12x/attention/qsa/_contract.py:824: ZeroDivisionError
+________ test_qsa_dcp_rejects_plan_without_local_compressed_capacity[2] ________
+
+rank = 2
+
+    @pytest.mark.parametrize("rank", [1, 2, 3])
+    def test_qsa_dcp_rejects_plan_without_local_compressed_capacity(rank: int) -> None:
+        # Live empty ranks are valid; this checks a plan that can never score a
+        # complete local group, for which the score workspace has no chunk width.
+        with pytest.raises(ValueError, match="at least one local compressed group"):
+            caps = Caps(
+                device="cuda:0", max_batch=1, max_raw_state_slots=1, max_q_rows=1,
+                max_seq_len=4, num_main_cache_pages=1, num_compressed_cache_pages=1,
+                main_page_size=64, compressed_page_size=16,
+                dcp_size=4, dcp_rank=rank, cp_kv_cache_interleave_size=4,
+            )
+>           contract._scratch_layout(caps)
+
+tests/attention/test_qsa_dcp_geometry.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+caps = Caps(device=device(type='cuda', index=0), max_batch=1, max_raw_state_slots=1, max_q_rows=1, max_seq_len=4, num_main_ca...s_norm_eps=1e-06, dtype=torch.bfloat16, kv_dtype=torch.bfloat16, dcp_size=4, dcp_rank=2, cp_kv_cache_interleave_size=4)
+
+    def _scratch_layout(
+        caps: Caps,
+    ) -> tuple[_ScratchLayout, int, int, int, int, int]:
+        workspace_q_rows = int(caps.max_q_rows)
+        score_width_limit = max(
+            1,
+            _SCORE_WORKSPACE_LIMIT_BYTES // (workspace_q_rows * torch.float32.itemsize),
+        )
+        score_width_limit = min(
+            score_width_limit,
+            int(caps.group_budget) + _MAX_SCORE_CHUNK_GROUPS,
+        )
+        if int(caps.max_groups) <= score_width_limit:
+            score_chunk_groups = int(caps.max_groups)
+            score_workspace_width = score_chunk_groups
+        else:
+            score_chunk_groups = score_width_limit - int(caps.group_budget)
+            if score_chunk_groups <= 0:
+                raise ValueError(
+                    "QSA 128 MiB score workspace cannot hold one top-k carry row"
+                )
+            score_workspace_width = int(caps.group_budget) + score_chunk_groups
+>       num_score_chunks = math.ceil(int(caps.max_groups) / score_chunk_groups)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ZeroDivisionError: division by zero
+
+b12x/attention/qsa/_contract.py:824: ZeroDivisionError
+________ test_qsa_dcp_rejects_plan_without_local_compressed_capacity[3] ________
+
+rank = 3
+
+    @pytest.mark.parametrize("rank", [1, 2, 3])
+    def test_qsa_dcp_rejects_plan_without_local_compressed_capacity(rank: int) -> None:
+        # Live empty ranks are valid; this checks a plan that can never score a
+        # complete local group, for which the score workspace has no chunk width.
+        with pytest.raises(ValueError, match="at least one local compressed group"):
+            caps = Caps(
+                device="cuda:0", max_batch=1, max_raw_state_slots=1, max_q_rows=1,
+                max_seq_len=4, num_main_cache_pages=1, num_compressed_cache_pages=1,
+                main_page_size=64, compressed_page_size=16,
+                dcp_size=4, dcp_rank=rank, cp_kv_cache_interleave_size=4,
+            )
+>           contract._scratch_layout(caps)
+
+tests/attention/test_qsa_dcp_geometry.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+caps = Caps(device=device(type='cuda', index=0), max_batch=1, max_raw_state_slots=1, max_q_rows=1, max_seq_len=4, num_main_ca...s_norm_eps=1e-06, dtype=torch.bfloat16, kv_dtype=torch.bfloat16, dcp_size=4, dcp_rank=3, cp_kv_cache_interleave_size=4)
+
+    def _scratch_layout(
+        caps: Caps,
+    ) -> tuple[_ScratchLayout, int, int, int, int, int]:
+        workspace_q_rows = int(caps.max_q_rows)
+        score_width_limit = max(
+            1,
+            _SCORE_WORKSPACE_LIMIT_BYTES // (workspace_q_rows * torch.float32.itemsize),
+        )
+        score_width_limit = min(
+            score_width_limit,
+            int(caps.group_budget) + _MAX_SCORE_CHUNK_GROUPS,
+        )
+        if int(caps.max_groups) <= score_width_limit:
+            score_chunk_groups = int(caps.max_groups)
+            score_workspace_width = score_chunk_groups
+        else:
+            score_chunk_groups = score_width_limit - int(caps.group_budget)
+            if score_chunk_groups <= 0:
+                raise ValueError(
+                    "QSA 128 MiB score workspace cannot hold one top-k carry row"
+                )
+            score_workspace_width = int(caps.group_budget) + score_chunk_groups
+>       num_score_chunks = math.ceil(int(caps.max_groups) / score_chunk_groups)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ZeroDivisionError: division by zero
+
+b12x/attention/qsa/_contract.py:824: ZeroDivisionError
+________ test_qsa_dcp_attend_rejects_position_rows_before_expansion[0] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cb254abf2f0>
+position_rows = 0
+
+    @pytest.mark.parametrize("position_rows", [0, 2, 3])
+    def test_qsa_dcp_attend_rejects_position_rows_before_expansion(
+        monkeypatch: pytest.MonkeyPatch, position_rows: int,
+    ) -> None:
+        from b12x.attention.qsa import _kernels
+    
+        def unexpected_launch(**kwargs):
+            pytest.fail("invalid query positions reached global selection expansion")
+    
+        monkeypatch.setattr(_kernels, "launch_expand_global_selected_groups", unexpected_launch)
+        binding = _boundary_binding(dcp_size=2)
+        selection = contract.LocalSelection(
+            group_ids=torch.zeros(1, 512, dtype=torch.int32),
+            scores=torch.empty(1, 512),
+        )
+        with pytest.raises(ValueError, match="query_positions must have shape"):
+>           contract.attend(
+                binding, query=torch.empty(1, 24, 256, dtype=torch.bfloat16),
+                request_ids=torch.zeros(1, dtype=torch.int32),
+                query_positions=torch.zeros(position_rows, dtype=torch.int64),
+                selection=selection,
+            )
+
+tests/attention/test_qsa_dcp_geometry.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+b12x/attention/qsa/_contract.py:3813: in attend
+    launch_expand_global_selected_groups(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kwargs = {'_prepared': {}, 'caps': namespace(device=device(type='cpu'), dcp_size=2, max_q_rows=2, max_batch=2, q_heads=24, head...sor([[  11770080,          0, 1418944816,  ...,          0,          0,
+                219]], dtype=torch.int32), ...}
+
+    def unexpected_launch(**kwargs):
+>       pytest.fail("invalid query positions reached global selection expansion")
+E       Failed: invalid query positions reached global selection expansion
+
+tests/attention/test_qsa_dcp_geometry.py:132: Failed
+________ test_qsa_dcp_attend_rejects_position_rows_before_expansion[2] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cb2544c2390>
+position_rows = 2
+
+    @pytest.mark.parametrize("position_rows", [0, 2, 3])
+    def test_qsa_dcp_attend_rejects_position_rows_before_expansion(
+        monkeypatch: pytest.MonkeyPatch, position_rows: int,
+    ) -> None:
+        from b12x.attention.qsa import _kernels
+    
+        def unexpected_launch(**kwargs):
+            pytest.fail("invalid query positions reached global selection expansion")
+    
+        monkeypatch.setattr(_kernels, "launch_expand_global_selected_groups", unexpected_launch)
+        binding = _boundary_binding(dcp_size=2)
+        selection = contract.LocalSelection(
+            group_ids=torch.zeros(1, 512, dtype=torch.int32),
+            scores=torch.empty(1, 512),
+        )
+        with pytest.raises(ValueError, match="query_positions must have shape"):
+>           contract.attend(
+                binding, query=torch.empty(1, 24, 256, dtype=torch.bfloat16),
+                request_ids=torch.zeros(1, dtype=torch.int32),
+                query_positions=torch.zeros(position_rows, dtype=torch.int64),
+                selection=selection,
+            )
+
+tests/attention/test_qsa_dcp_geometry.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+b12x/attention/qsa/_contract.py:3813: in attend
+    launch_expand_global_selected_groups(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kwargs = {'_prepared': {}, 'caps': namespace(device=device(type='cpu'), dcp_size=2, max_q_rows=2, max_batch=2, q_heads=24, head...sor([[         0,          0,          0,  ..., 1412179760,      31922,
+         1412329776]], dtype=torch.int32), ...}
+
+    def unexpected_launch(**kwargs):
+>       pytest.fail("invalid query positions reached global selection expansion")
+E       Failed: invalid query positions reached global selection expansion
+
+tests/attention/test_qsa_dcp_geometry.py:132: Failed
+________ test_qsa_dcp_attend_rejects_position_rows_before_expansion[3] _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cb2544c1ee0>
+position_rows = 3
+
+    @pytest.mark.parametrize("position_rows", [0, 2, 3])
+    def test_qsa_dcp_attend_rejects_position_rows_before_expansion(
+        monkeypatch: pytest.MonkeyPatch, position_rows: int,
+    ) -> None:
+        from b12x.attention.qsa import _kernels
+    
+        def unexpected_launch(**kwargs):
+            pytest.fail("invalid query positions reached global selection expansion")
+    
+        monkeypatch.setattr(_kernels, "launch_expand_global_selected_groups", unexpected_launch)
+        binding = _boundary_binding(dcp_size=2)
+        selection = contract.LocalSelection(
+            group_ids=torch.zeros(1, 512, dtype=torch.int32),
+            scores=torch.empty(1, 512),
+        )
+        with pytest.raises(ValueError, match="query_positions must have shape"):
+>           contract.attend(
+                binding, query=torch.empty(1, 24, 256, dtype=torch.bfloat16),
+                request_ids=torch.zeros(1, dtype=torch.int32),
+                query_positions=torch.zeros(position_rows, dtype=torch.int64),
+                selection=selection,
+            )
+
+tests/attention/test_qsa_dcp_geometry.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+b12x/attention/qsa/_contract.py:3813: in attend
+    launch_expand_global_selected_groups(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kwargs = {'_prepared': {}, 'caps': namespace(device=device(type='cpu'), dcp_size=2, max_q_rows=2, max_batch=2, q_heads=24, head...-1359920592,       31923, -1359920592,  ...,  1412272912,
+               31922,        6769]], dtype=torch.int32), ...}
+
+    def unexpected_launch(**kwargs):
+>       pytest.fail("invalid query positions reached global selection expansion")
+E       Failed: invalid query positions reached global selection expansion
+
+tests/attention/test_qsa_dcp_geometry.py:132: Failed
+_____________ test_qsa_dcp_attend_reuse_rejects_unsharded_binding ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7cb2544c3ad0>
+
+    def test_qsa_dcp_attend_reuse_rejects_unsharded_binding(
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        from b12x.attention.qsa import _draft_selection
+    
+        monkeypatch.setattr(_draft_selection, "validate_buffers", lambda *args: None)
+        monkeypatch.setattr(_draft_selection, "prepare_selection", lambda *args: None)
+        monkeypatch.setattr(contract, "_run_attention", lambda binding, **kwargs: binding.output[:1])
+>       with pytest.raises(ValueError, match="context-parallel QSA"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/attention/test_qsa_dcp_geometry.py:157: Failed
+=========================== short test summary info ============================
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_rejects_plan_without_local_compressed_capacity[1]
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_rejects_plan_without_local_compressed_capacity[2]
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_rejects_plan_without_local_compressed_capacity[3]
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_attend_rejects_position_rows_before_expansion[0]
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_attend_rejects_position_rows_before_expansion[2]
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_attend_rejects_position_rows_before_expansion[3]
+FAILED tests/attention/test_qsa_dcp_geometry.py::test_qsa_dcp_attend_reuse_rejects_unsharded_binding
+7 failed, 8 deselected in 1.35s

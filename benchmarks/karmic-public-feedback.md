@@ -29,7 +29,8 @@ accepts a 39,026-token input. The checkpoint revision is
 
 ## B12X gate/output alias and text restore
 
-[vLLM #824](https://github.com/local-inference-lab/vllm/pull/824) preserves
+[vLLM #821](https://github.com/local-inference-lab/vllm/pull/821), including
+the alias correction consolidated from closed #824, preserves
 the binding contract that the mutable output must not overlap the live
 read-only GDN gate. Only that exact alias case computes into a separate
 destination and copies the result back after the gate has been consumed.
@@ -54,7 +55,7 @@ to the conditions in the table.
 
 Image-bearing requests remain excluded from GLM's external checkpoint
 connector because image identity is not yet safe for external reuse. Native
-GPU prefix reuse and image generation are separate supported paths.
+GPU prefix reuse and ordinary vision inference are separate supported paths.
 The [recurrent recovery report](glm53-kda-recovery-lmcache.md) records the
 RAM/disk restart tests and memory-saving implementation.
 
@@ -80,6 +81,8 @@ beta above plus the indicated source changes; registry validation is separate.
 | Allocator fix, CuMem plus expandable segments, explicit native-cache reset | Two real 2880-token external restores, zero native hits; arithmetic and prefix-code recall pass. |
 | Unified launcher with `CACHE_MODE=native`, CuMem enabled, ten intervening prompts | A 6551-token request restores 2880 tokens externally with zero native hits; recalls TEAL-428 and answers 13. Full/piecewise capture and engine health pass. |
 | Published `karmic-kraken-beta-20260922-97197f5085f4798b`, no source mounts or edits, ten intervening prompts | A 6883-token request restores 2880 tokens externally with zero native hits, recalls TEAL-428 and answers 13; healthy engine. |
+| Published `karmic-kraken-beta-20260922-04a3c00a18b9d45f`, no source changes, ten intervening prompts with distinct access codes | The 6883-token original request restores 2880 tokens externally with zero native hits; it recovers TEAL-428 rather than an intervening code and answers 13. All twelve requests pass; engine remains healthy. |
+| Published `karmic-kraken-beta-20260922-4d9905b931656635`, including reviewed QSA guards | All twelve distinct-code requests pass; the original prompt restores 2880 external tokens with zero GPU hits and returns TEAL-428 and 13. |
 
 The registry confirmation uses digest
 `sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51`,
@@ -87,6 +90,12 @@ vLLM `96b79aa073c2059462b613876366cf693d1c0c27`, B12X
 `6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab` and runtime
 `f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6`.
 [Raw registry restore responses and cache counters](data/karmic-merge-audit-20260922/qwen-registry-native-restore.jsonl).
+
+The distinct-code confirmations retain
+[responses from `04a3c00a18b9d45f`](data/karmic-merge-audit-20260922/qwen-final-registry-native-restore.jsonl)
+and [responses from `4d9905b931656635`](data/karmic-merge-audit-20260922/qwen-qsa-guards-registry-native-restore.jsonl)
+separately. Their [image receipts and conditions](data/karmic-merge-audit-20260922/README.md)
+identify the exact runtime for each run.
 
 Five intervening prompts were insufficient to evict the prefix in a preceding
 control: that response was a GPU hit and is not counted as CPU-restore evidence.

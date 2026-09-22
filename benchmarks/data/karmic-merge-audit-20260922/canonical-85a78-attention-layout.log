@@ -1,0 +1,20 @@
+feedback-canonical-85a78-two-gpu-tests-20260922
+..............                                                           [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:365: 14 warnings
+  /usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/v1/attention/test_b12x.py::test_b12x_causal_backend_correctness[64-auto-None-mixed_small]
+  /usr/local/lib/python3.12/dist-packages/torch/nn/attention/flex_attention.py:2568: UserWarning: flex_attention called without torch.compile() - this will use an unfused implementation that materializes the full scores matrix instead of generating a fused kernel.
+  
+  SOLUTION: Use torch.compile(flex_attention)(...)
+  
+  If you want to debug your score_mod/mask_mod, you can set:
+  torch.nn.attention.flex_attention._FLEX_ATTENTION_DISABLE_COMPILE_DEBUG = True
+  
+  This will allow you to use print statements or breakpoints. Note: This doesn't work with the backwards pass and may produce incorrect results.
+    _warn_once(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+14 passed, 152 deselected, 15 warnings in 47.42s

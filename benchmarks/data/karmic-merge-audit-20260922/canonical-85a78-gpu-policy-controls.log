@@ -1,0 +1,16 @@
+Using Python 3.12.3 environment at: /opt/venv
+Resolved 9 packages in 86ms
+Prepared 4 packages in 18ms
+Installed 4 packages in 15ms
+ + pytest-asyncio==1.4.0
+ + pytest-mock==3.15.1
+ + tblib==3.2.2
+ + typing-extensions==4.16.0
+.............                                                            [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:365: 14 warnings
+  /usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+13 passed, 14 warnings in 42.33s

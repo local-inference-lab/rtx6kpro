@@ -96,7 +96,7 @@ Stop: `docker compose -f qwen38-tp1.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp1
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: qwen38-tp1
     init: true
     network_mode: host
@@ -130,8 +130,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/b12x/cute
       B12X_DENSE_SPLITK_TURBO: '1'
       B12X_DYNAMIC_DETERMINISTIC_OUTPUT: '0'
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
@@ -152,7 +152,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -170,7 +170,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -239,10 +239,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -250,7 +250,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -264,8 +264,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_DENSE_ACTIVATION_MODE: auto
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_COMPUTE_NANS_IN_LOGITS: '0'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
@@ -277,12 +277,13 @@ services:
       VLLM_MXFP8_LM_HEAD: '0'
       VLLM_PCIE_ALLREDUCE_BACKEND: b12x
       VLLM_PLE_CPU_OFFLOAD: '1'
+      VLLM_QWEN3_8_FLASH_NEXT_HC_TP: '0'
       VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT: '1'
       VLLM_QWEN3_8_FLASH_NEXT_OVERLAP: '1'
       VLLM_SSM_CONV_STATE_LAYOUT: DS
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-b3a076e3e6f56b5f
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-ab35f5750b0aca04
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -543,6 +544,7 @@ configs:
       - VLLM_MXFP8_LM_HEAD
       - VLLM_PCIE_ALLREDUCE_BACKEND
       - VLLM_PLE_CPU_OFFLOAD
+      - VLLM_QWEN3_8_FLASH_NEXT_HC_TP
       - VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT
       - VLLM_QWEN3_8_FLASH_NEXT_OVERLAP
       - VLLM_SSM_CONV_STATE_LAYOUT
@@ -615,7 +617,7 @@ Stop: `docker compose -f qwen38-tp2.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: qwen38-tp2
     init: true
     network_mode: host
@@ -650,8 +652,8 @@ services:
             capabilities:
             - gpu
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/b12x/cute
       B12X_DENSE_SPLITK_TURBO: '1'
       B12X_DYNAMIC_DETERMINISTIC_OUTPUT: '0'
       B12X_DYNAMIC_DIRECT_EXPERT_SCALES: '1'
@@ -672,7 +674,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_ORDER: PCI_BUS_ID
       CUDA_DRIVER_VERSION: 615.65.02
@@ -690,7 +692,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -759,10 +761,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -770,7 +772,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -784,8 +786,8 @@ services:
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
       VLLM_B12X_DENSE_ACTIVATION_MODE: auto
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c/vllm
       VLLM_CAUSAL_CONV1D_UPDATE_HOIST: '1'
       VLLM_COMPUTE_NANS_IN_LOGITS: '0'
       VLLM_DISABLED_KERNELS: MarlinFP8ScaledMMLinearKernel
@@ -797,12 +799,13 @@ services:
       VLLM_MXFP8_LM_HEAD: '0'
       VLLM_PCIE_ALLREDUCE_BACKEND: b12x
       VLLM_PLE_CPU_OFFLOAD: '1'
+      VLLM_QWEN3_8_FLASH_NEXT_HC_TP: '0'
       VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT: '1'
       VLLM_QWEN3_8_FLASH_NEXT_OVERLAP: '1'
       VLLM_SSM_CONV_STATE_LAYOUT: DS
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-cebf4b89ede5e0d2
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/qwen38-flash-next-c5051345ff7dfc2c
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch
@@ -1063,6 +1066,7 @@ configs:
       - VLLM_MXFP8_LM_HEAD
       - VLLM_PCIE_ALLREDUCE_BACKEND
       - VLLM_PLE_CPU_OFFLOAD
+      - VLLM_QWEN3_8_FLASH_NEXT_HC_TP
       - VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT
       - VLLM_QWEN3_8_FLASH_NEXT_OVERLAP
       - VLLM_SSM_CONV_STATE_LAYOUT
@@ -1219,19 +1223,26 @@ Two RTX PRO 6000 **Max-Q**, **no overclock**, TP2/DCP1/MTP3, CPU PLE,
 FP8 KV, 6019-token batch budget, 16 slots and eight GiB KV per rank.
 Temperature 1/top-p .95, top-k disabled, reasoning effort `medium`.
 Decode is the median of five warmed 30-second context-zero runs; C8 is
-aggregate output. The 32k figure uses 12 uncached requests and client TTFT.
+aggregate output. The 32k figure is the median of three uncached windows,
+twelve requests each, using client TTFT.
 
 | Measurement | vLLM | Community SGLang |
 |---|---:|---:|
-| C1 output | 225.2 tok/s | 200.8 tok/s |
-| C8 aggregate output | 898.4 tok/s | 891.7 tok/s |
-| 32k prefill | 14,855 tok/s | Not measured in this comparison |
+| C1 output | 229.3 tok/s | 200.8 tok/s |
+| C8 aggregate output | 902.4 tok/s | 891.7 tok/s |
+| 32k prefill | 14,680 tok/s | Not measured in this comparison |
 
-vLLM image: `karmic-kraken-beta-20260922-97197f5085f4798b`, without local
-source changes. This is +12.1% C1; C8 is approximately matched. Both engines
+vLLM image: `karmic-kraken-beta-20260922-4d9905b931656635`, without local
+source changes. This is +14.2% C1 and +1.2% C8; C8 is approximately matched.
+The three prefill windows span 14,544–15,000 tok/s. Both engines
 use the same QAD checkpoint, but their runtime versions and recurrent-state
 precision differ. [Configuration and repeated comparison](../benchmarks/qwen38-tp2-sglang.md)
 and [published-image confirmation](../benchmarks/karmic-integration-merge-audit.md#qwen-tp2-performance-gate).
+
+One additional C8 test on image `04a3c00a18b9d45f`, with EOS stopping disabled, triggered the loop
+guard; that failed cell is not a speed result. Two controls with normal EOS
+handling passed, but the cause is not established. The report preserves the
+failure alongside the successful five-run series.
 
 ### TP4 memory option
 

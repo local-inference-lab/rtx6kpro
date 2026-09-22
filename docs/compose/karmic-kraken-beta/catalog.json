@@ -1,17 +1,17 @@
 {
   "schema": "lil-wiki-compose-reference/v1",
   "release": {
-    "id": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
-    "tag": "karmic-kraken-beta-20260922-97197f5085f4798b",
-    "published": "2026-09-22T02:35:56Z",
-    "url": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
-    "release_notes_html": "<h1>Wheel-built runtime: karmic-kraken / karmic-kraken-beta</h1>\n<p>Image: <code>ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b</code></p>\n<p>Digest: <code>ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51</code></p>\n<p>Native GPU smoke and LMCache checkpoint/filesystem contract tests; model-serving performance and full GLM cache E2E remain unqualified.</p>\n<h2>Changes since <a href=\"https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-e04971fc8af238b1af0372b0b8200e15987e96e8233c5858c7771b37da4f5efb\"><code>ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260921-e04971fc8af238b1</code></a></h2>\n<h3>Correctness and reliability</h3>\n<ul>\n<li><strong>Keep long GLM DCP profile prefills out of bounded KDA decode</strong> (<a href=\"https://github.com/local-inference-lab/vllm/pull/822\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/822/hovercard\">vllm #822</a>; by <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/voipmonitor/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/voipmonitor\">@voipmonitor</a>, Local Inference Lab)\n<ul>\n<li>Models: GLM-5.3-Flash</li>\n<li>Compatibility: No configuration change is required. Valid MTP decode rows retain the B12X KDA decode path.</li>\n<li>A row enters speculative KDA decode only when its length is one target token plus its declared draft count.</li>\n<li>This prevents a zero-draft marker on a long memory-profile prefill from exceeding the decode kernel capacity during TP4/DCP4 startup.</li>\n<li><a href=\"https://github.com/local-inference-lab/vllm/pull/822\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/822/hovercard\">Validation evidence</a></li>\n</ul>\n</li>\n<li><strong>Preserve the GLM KDA gate when a decode output aliases it</strong> (<a href=\"https://github.com/local-inference-lab/vllm/pull/824\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/824/hovercard\">vllm #824</a>; by <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/voipmonitor/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/voipmonitor\">@voipmonitor</a>, Local Inference Lab)\n<ul>\n<li>Models: GLM-5.3-Flash</li>\n<li>Compatibility: No configuration change is required. Non-overlapping KDA outputs retain the allocation-free path.</li>\n<li>When B12X rejects an output overlapping the read-only gate, vLLM binds a disjoint caller-owned output and copies the result back after recurrence.</li>\n<li>Other B12X binding errors still propagate without a fallback.</li>\n<li><a href=\"https://github.com/local-inference-lab/vllm/pull/824\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/824/hovercard\">Validation evidence</a></li>\n</ul>\n</li>\n<li><strong>Preserve the target CuMem allocator setting for speculative drafts</strong> (<a href=\"https://github.com/local-inference-lab/vllm/pull/834\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/834/hovercard\">vllm #834</a>; by <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/voipmonitor/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/voipmonitor\">@voipmonitor</a>)\n<ul>\n<li>Models: all</li>\n<li>MTP can use native CPU KV offload with expandable segments when the target enables the CuMem allocator.</li>\n<li>Connector safety checks remain enabled; this does not qualify generic Qwen CPU offload.</li>\n<li><a href=\"https://github.com/local-inference-lab/vllm/pull/834\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/834/hovercard\">Validation evidence</a></li>\n</ul>\n</li>\n</ul>\n<h3>Performance</h3>\n<ul>\n<li><strong>Reduce CPU preparation for Qwen MTP CUDA graphs</strong> (<a href=\"https://github.com/local-inference-lab/vllm/pull/835\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/835/hovercard\">vllm #835</a>; by <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/voipmonitor/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/voipmonitor\">@voipmonitor</a>)\n<ul>\n<li>Models: Qwen3.8-Flash-Next</li>\n<li>Uniform speculative decode skips unused B12X mixed-prefill worklists while keeping live recurrent state and acceptance inputs.</li>\n<li>Mixed batches and prefill retain complete metadata staging. No precision, quantization or all-reduce setting changes.</li>\n<li><a href=\"https://github.com/local-inference-lab/vllm/pull/835\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/vllm/pull/835/hovercard\">Validation evidence</a></li>\n</ul>\n</li>\n</ul>\n<h2>Reproducible component inputs</h2>\n<table>\n<thead>\n<tr>\n<th>Component</th>\n<th>Source commit</th>\n<th>Wheel release</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b12x</td>\n<td><code>6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab</code></td>\n<td><a href=\"https://github.com/local-inference-lab/b12x/releases/tag/b12x-cu134-beta-6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab\">b12x-cu134-beta-6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab</a></td>\n</tr>\n<tr>\n<td>flashinfer</td>\n<td><code>2206a14e46387a56c093860a46bbbdd00596b75b</code></td>\n<td><a href=\"https://github.com/local-inference-lab/flashinfer/releases/tag/flashinfer-cu134-sm120-beta-2206a14e46387a56c093860a46bbbdd00596b75b\">flashinfer-cu134-sm120-beta-2206a14e46387a56c093860a46bbbdd00596b75b</a></td>\n</tr>\n<tr>\n<td>instanttensor</td>\n<td><code>95d4729b6d6a991bb8de61877147a9d9d9100b23</code></td>\n<td><a href=\"https://github.com/local-inference-lab/InstantTensor/releases/tag/instanttensor-cu134-beta-95d4729b6d6a991bb8de61877147a9d9d9100b23\">instanttensor-cu134-beta-95d4729b6d6a991bb8de61877147a9d9d9100b23</a></td>\n</tr>\n<tr>\n<td>lmcache</td>\n<td><code>688bee14e157b64623d93c07fc0d4db93470e12f</code></td>\n<td><a href=\"https://github.com/local-inference-lab/LMCache/releases/tag/lmcache-cu134-sm120-beta-688bee14e157b64623d93c07fc0d4db93470e12f\">lmcache-cu134-sm120-beta-688bee14e157b64623d93c07fc0d4db93470e12f</a></td>\n</tr>\n<tr>\n<td>nccl</td>\n<td><code>93fe05d9f9b6963ef841166a69cd0b30e4efe97b</code></td>\n<td><a href=\"https://github.com/local-inference-lab/nccl-canonical/releases/tag/nccl-cu134-sm120-93fe05d9f9b6963ef841166a69cd0b30e4efe97b\">nccl-cu134-sm120-93fe05d9f9b6963ef841166a69cd0b30e4efe97b</a></td>\n</tr>\n<tr>\n<td>vllm</td>\n<td><code>96b79aa073c2059462b613876366cf693d1c0c27</code></td>\n<td><a href=\"https://github.com/local-inference-lab/vllm/releases/tag/vllm-jovian-cu134-beta-96b79aa073c2059462b613876366cf693d1c0c27\">vllm-jovian-cu134-beta-96b79aa073c2059462b613876366cf693d1c0c27</a></td>\n</tr>\n</tbody>\n</table>",
-    "receipt": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/download/karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92/container-release.json"
+    "id": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
+    "tag": "karmic-kraken-beta-20260922-4d9905b931656635",
+    "published": "2026-09-22T06:34:52Z",
+    "url": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
+    "release_notes_html": "<h1>Wheel-built runtime: karmic-kraken / karmic-kraken-beta</h1>\n<p>Image: <code>ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635</code></p>\n<p>Digest: <code>ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575</code></p>\n<p>Native GPU smoke and LMCache checkpoint/filesystem contract tests; model-serving performance and full GLM cache E2E remain unqualified.</p>\n<h2>Changes since <a href=\"https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\"><code>ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b</code></a></h2>\n<h3>Correctness and reliability</h3>\n<ul>\n<li><strong>Align contiguous attention normalization and tuning identities with master</strong> (<a href=\"https://github.com/local-inference-lab/b12x/pull/400\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/b12x/pull/400/hovercard\">b12x #400</a>, <a href=\"https://github.com/local-inference-lab/b12x/pull/407\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/b12x/pull/407/hovercard\">b12x #407</a>; by <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/acronjob/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/acronjob\">@acronjob</a>, <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/voipmonitor/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/voipmonitor\">@voipmonitor</a>, acronjob, lukealonso, voipmonitor)\n<ul>\n<li>Models: all</li>\n<li>Preserve the native scale and FlashAttention 2 reduction order in contiguous attention normalization.</li>\n<li>Share tuning identity across product labels with the same compute capability and SM count.</li>\n<li>Retain configured traffic class in the switched-RoCE proxy.</li>\n</ul>\n</li>\n<li><strong>Validate distributed QSA capacity and query metadata before launching kernels</strong> (<a href=\"https://github.com/local-inference-lab/b12x/pull/406\" data-hovercard-type=\"pull_request\" data-hovercard-url=\"/local-inference-lab/b12x/pull/406/hovercard\">b12x #406</a>; by <a class=\"user-mention notranslate\" data-hovercard-type=\"user\" data-hovercard-url=\"/users/voipmonitor/hovercard\" data-octo-click=\"hovercard-link-click\" data-octo-dimensions=\"link_type:self\" href=\"https://github.com/voipmonitor\">@voipmonitor</a>)\n<ul>\n<li>Models: Qwen3.8-Flash-Next</li>\n<li>Compatibility: DCP plans must reserve at least one complete compressed group on each rank. Valid serving configurations are unchanged.</li>\n<li>Reject an empty planned local score domain before workspace preparation can divide by zero; live requests may still have no local groups.</li>\n<li>Check query positions and destination row capacity before global selection expansion writes to caller-owned scratch.</li>\n<li>Reject non-DCP draft-selection reuse before returning an unwritten log-sum-exp buffer.</li>\n</ul>\n</li>\n</ul>\n<h3>Performance</h3>\n<ul>\n<li><strong>Refine NVFP4 decode tiles and expand supported dense and MoE quantization</strong> (by lukealonso)\n<ul>\n<li>Models: all</li>\n<li>Use compact N16 token layouts and paired input producers for eligible NVFP4 decode kernels.</li>\n<li>Include half-resident and three-quarter-resident grids in runtime tuning while enforcing the device residency limit.</li>\n<li>Add safetensors IQ2_XS dense and expert-weight support without changing existing checkpoint formats.</li>\n</ul>\n</li>\n<li><strong>Fuse recurrent metadata copies across cache groups</strong> (by lukealonso)\n<ul>\n<li>Models: Qwen3.8-Flash-Next</li>\n<li>Retain captured buffer addresses while copying worklists and refreshing recurrent-state indices in one GPU launch.</li>\n<li>Mixed batches use the fused refresh; uniform decode graphs retain the separate metadata-elision optimization.</li>\n</ul>\n</li>\n</ul>\n<h3>Compatibility</h3>\n<ul>\n<li><strong>Carry canonical Qwen tensor-parallel preparation and Spark launch contracts into beta</strong> (by lukealonso)\n<ul>\n<li>Models: Qwen3.8-Flash-Next, DeepSeek-V4-Flash, DeepSeek-V4.1-Flash, GLM-5.3-Flash</li>\n<li>Distribute eligible Qwen residual-mixing projections across tensor-parallel ranks.</li>\n<li>Preserve per-head GDN normalization geometry during warmup and use the declared B12X QSA capacity API.</li>\n<li>Retain canonical Spark switched-RoCE and DeepSeek TP3 launcher settings.</li>\n</ul>\n</li>\n</ul>\n<h2>Reproducible component inputs</h2>\n<table>\n<thead>\n<tr>\n<th>Component</th>\n<th>Source commit</th>\n<th>Wheel release</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>b12x</td>\n<td><code>d16e71c3da2a13c2d73370fba5b1149c95428fbd</code></td>\n<td><a href=\"https://github.com/local-inference-lab/b12x/releases/tag/b12x-cu134-beta-d16e71c3da2a13c2d73370fba5b1149c95428fbd\">b12x-cu134-beta-d16e71c3da2a13c2d73370fba5b1149c95428fbd</a></td>\n</tr>\n<tr>\n<td>flashinfer</td>\n<td><code>2206a14e46387a56c093860a46bbbdd00596b75b</code></td>\n<td><a href=\"https://github.com/local-inference-lab/flashinfer/releases/tag/flashinfer-cu134-sm120-beta-2206a14e46387a56c093860a46bbbdd00596b75b\">flashinfer-cu134-sm120-beta-2206a14e46387a56c093860a46bbbdd00596b75b</a></td>\n</tr>\n<tr>\n<td>instanttensor</td>\n<td><code>95d4729b6d6a991bb8de61877147a9d9d9100b23</code></td>\n<td><a href=\"https://github.com/local-inference-lab/InstantTensor/releases/tag/instanttensor-cu134-beta-95d4729b6d6a991bb8de61877147a9d9d9100b23\">instanttensor-cu134-beta-95d4729b6d6a991bb8de61877147a9d9d9100b23</a></td>\n</tr>\n<tr>\n<td>lmcache</td>\n<td><code>688bee14e157b64623d93c07fc0d4db93470e12f</code></td>\n<td><a href=\"https://github.com/local-inference-lab/LMCache/releases/tag/lmcache-cu134-sm120-beta-688bee14e157b64623d93c07fc0d4db93470e12f\">lmcache-cu134-sm120-beta-688bee14e157b64623d93c07fc0d4db93470e12f</a></td>\n</tr>\n<tr>\n<td>nccl</td>\n<td><code>93fe05d9f9b6963ef841166a69cd0b30e4efe97b</code></td>\n<td><a href=\"https://github.com/local-inference-lab/nccl-canonical/releases/tag/nccl-cu134-sm120-93fe05d9f9b6963ef841166a69cd0b30e4efe97b\">nccl-cu134-sm120-93fe05d9f9b6963ef841166a69cd0b30e4efe97b</a></td>\n</tr>\n<tr>\n<td>vllm</td>\n<td><code>47cb3450b11aac466f03a933de576a37f970da53</code></td>\n<td><a href=\"https://github.com/local-inference-lab/vllm/releases/tag/vllm-jovian-cu134-beta-47cb3450b11aac466f03a933de576a37f970da53\">vllm-jovian-cu134-beta-47cb3450b11aac466f03a933de576a37f970da53</a></td>\n</tr>\n</tbody>\n</table>",
+    "receipt": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/download/karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271/container-release.json"
   },
   "image": {
-    "reference": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-    "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
-    "runtime_identity": "3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38",
+    "reference": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+    "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
+    "runtime_identity": "19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179",
     "cuda": "13.4.1.012",
     "driver_requirement": "cuda>=9.0"
   },
@@ -390,11 +390,11 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_DYNAMIC_DIRECT_EXPERT_SCALES": {
@@ -442,7 +442,7 @@
             "source": "model:glm53-flash"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -454,7 +454,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -506,15 +506,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_MLA_CKV_GATHER": {
@@ -530,11 +530,11 @@
             "source": "derived:GLM non-speculative activation policy"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": {
@@ -626,7 +626,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -635,10 +635,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "glm53-flash",
         "options": {
           "mode": "off"
@@ -654,8 +654,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name glm53-tp4-off \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-tp4-off-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  -- \\\n  --mode off",
-      "compose": "name: glm53-tp4-off\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: glm53-tp4-off\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-tp4-off-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    - --mode\n    - 'off'\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-tp4-off-runtime:\n    name: glm53-tp4-off-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: glm53-flash\n    options:\n      mode: 'off'\n    environment: {}\n    argv: []\n    name: glm53-tp4-off\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: aa82777428b26b182da9365c1d21b63c804e419b0ba4cce52561afee2346ea36\n",
+      "docker": "docker run \\\n  -d \\\n  --name glm53-tp4-off \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-tp4-off-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  -- \\\n  --mode off",
+      "compose": "name: glm53-tp4-off\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: glm53-tp4-off\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-tp4-off-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    - --mode\n    - 'off'\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-tp4-off-runtime:\n    name: glm53-tp4-off-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: glm53-flash\n    options:\n      mode: 'off'\n    environment: {}\n    argv: []\n    name: glm53-tp4-off\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: de6985321fd3fef5e9e076ae35c88fe0064330e041eebc402a5f2ff9974c643f\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "glm53-flash",
@@ -899,16 +899,16 @@
           "VLLM_B12X_MLA_CKV_GATHER": "0",
           "VLLM_B12X_NVFP4_ACTIVATION_MODE": "quantized",
           "VLLM_PCIE_DMA_MIN_BYTES": "6MB",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -1097,16 +1097,16 @@
         "VLLM_B12X_MLA_CKV_GATHER": "0",
         "VLLM_B12X_NVFP4_ACTIVATION_MODE": "quantized",
         "VLLM_PCIE_DMA_MIN_BYTES": "6MB",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -1499,11 +1499,11 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_DYNAMIC_DIRECT_EXPERT_SCALES": {
@@ -1551,7 +1551,7 @@
             "source": "model:glm53-flash"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -1563,7 +1563,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -1615,15 +1615,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_MLA_CKV_GATHER": {
@@ -1635,11 +1635,11 @@
             "source": "model:glm53-flash"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": {
@@ -1731,7 +1731,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -1740,10 +1740,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "glm53-flash",
         "options": {
           "mode": "mtp",
@@ -1760,8 +1760,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name glm53-tp4-mtp3 \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-tp4-mtp3-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  -- \\\n  --mode mtp \\\n  --draft-tokens 3",
-      "compose": "name: glm53-tp4-mtp3\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: glm53-tp4-mtp3\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-tp4-mtp3-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    - --mode\n    - mtp\n    - --draft-tokens\n    - '3'\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-tp4-mtp3-runtime:\n    name: glm53-tp4-mtp3-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: glm53-flash\n    options:\n      mode: mtp\n      draft-tokens: 3\n    environment: {}\n    argv: []\n    name: glm53-tp4-mtp3\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 8974c18fededb2bbdcf0612c3b43488a4ecbbb7c83b8427d684a404280897609\n",
+      "docker": "docker run \\\n  -d \\\n  --name glm53-tp4-mtp3 \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-tp4-mtp3-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  -- \\\n  --mode mtp \\\n  --draft-tokens 3",
+      "compose": "name: glm53-tp4-mtp3\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: glm53-tp4-mtp3\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-tp4-mtp3-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    - --mode\n    - mtp\n    - --draft-tokens\n    - '3'\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-tp4-mtp3-runtime:\n    name: glm53-tp4-mtp3-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: glm53-flash\n    options:\n      mode: mtp\n      draft-tokens: 3\n    environment: {}\n    argv: []\n    name: glm53-tp4-mtp3\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: 5a06efea0edab5640fcfb034f3fdb0f4e14a34974c6d89e05070e6ce8b0b0a33\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "glm53-flash",
@@ -2012,16 +2012,16 @@
           "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
           "VLLM_B12X_MLA_CKV_GATHER": "0",
           "VLLM_PCIE_DMA_MIN_BYTES": "6MB",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -2208,16 +2208,16 @@
         "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
         "VLLM_B12X_MLA_CKV_GATHER": "0",
         "VLLM_PCIE_DMA_MIN_BYTES": "6MB",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -2611,11 +2611,11 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_DYNAMIC_DIRECT_EXPERT_SCALES": {
@@ -2663,7 +2663,7 @@
             "source": "model:glm53-flash"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -2675,7 +2675,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -2727,15 +2727,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_MLA_CKV_GATHER": {
@@ -2747,11 +2747,11 @@
             "source": "model:glm53-flash"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": {
@@ -2843,7 +2843,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -2852,10 +2852,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "glm53-flash",
         "options": {
           "mode": "dflash2",
@@ -2872,8 +2872,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name glm53-tp4-dflash2 \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-tp4-dflash2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  -- \\\n  --mode dflash2 \\\n  --draft-tokens 7",
-      "compose": "name: glm53-tp4-dflash2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: glm53-tp4-dflash2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-tp4-dflash2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    - --mode\n    - dflash2\n    - --draft-tokens\n    - '7'\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-tp4-dflash2-runtime:\n    name: glm53-tp4-dflash2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: glm53-flash\n    options:\n      mode: dflash2\n      draft-tokens: 7\n    environment: {}\n    argv: []\n    name: glm53-tp4-dflash2\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: a713413ec284521e0e7655a7abf727b29e95b8e8d40d3ebcdd4a29c89c26405d\n",
+      "docker": "docker run \\\n  -d \\\n  --name glm53-tp4-dflash2 \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-tp4-dflash2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  -- \\\n  --mode dflash2 \\\n  --draft-tokens 7",
+      "compose": "name: glm53-tp4-dflash2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: glm53-tp4-dflash2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-tp4-dflash2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    - --mode\n    - dflash2\n    - --draft-tokens\n    - '7'\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-tp4-dflash2-runtime:\n    name: glm53-tp4-dflash2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: glm53-flash\n    options:\n      mode: dflash2\n      draft-tokens: 7\n    environment: {}\n    argv: []\n    name: glm53-tp4-dflash2\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: 2c7692339c9657dae9490ff0fa58fd410d7a775a7aea60fe84433cea9507165c\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "glm53-flash",
@@ -3125,16 +3125,16 @@
           "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
           "VLLM_B12X_MLA_CKV_GATHER": "0",
           "VLLM_PCIE_DMA_MIN_BYTES": "6MB",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -3321,16 +3321,16 @@
         "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
         "VLLM_B12X_MLA_CKV_GATHER": "0",
         "VLLM_PCIE_DMA_MIN_BYTES": "6MB",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-19900f0b0720c70d/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-59dc36a79e6582cb/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -3715,11 +3715,11 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_DYNAMIC_DIRECT_EXPERT_SCALES": {
@@ -3771,7 +3771,7 @@
             "source": "preset:glm53-spark-tp2"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -3783,7 +3783,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "GLOO_SOCKET_IFNAME": {
@@ -3847,15 +3847,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_MLA_CKV_GATHER": {
@@ -3871,11 +3871,11 @@
             "source": "model:glm53-flash"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": {
@@ -3967,7 +3967,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -3976,10 +3976,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "glm53-flash",
         "options": {},
         "environment": {},
@@ -3992,8 +3992,8 @@
         "restart": "unless-stopped",
         "preset": "glm53-spark-tp2"
       },
-      "docker": "docker run \\\n  -d \\\n  --name glm53-spark-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-spark-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  --preset glm53-spark-tp2 \\\n  --",
-      "compose": "name: glm53-spark-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: glm53-spark-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-spark-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --preset\n    - glm53-spark-tp2\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-spark-tp2-runtime:\n    name: glm53-spark-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: glm53-flash\n    options: {}\n    environment: {}\n    argv: []\n    name: glm53-spark-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n    preset: glm53-spark-tp2\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 6c77e466819cfd6d71506341cdd6fa80496bb4384156b4abb8088af38cc211a3\n",
+      "docker": "docker run \\\n  -d \\\n  --name glm53-spark-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v glm53-spark-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile glm53-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  --preset glm53-spark-tp2 \\\n  --",
+      "compose": "name: glm53-spark-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: glm53-spark-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - glm53-spark-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - glm53-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --preset\n    - glm53-spark-tp2\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  glm53-spark-tp2-runtime:\n    name: glm53-spark-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: glm53-flash\n    options: {}\n    environment: {}\n    argv: []\n    name: glm53-spark-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n    preset: glm53-spark-tp2\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: 037b0d398b9a0a4cdd6c3ffe3fdb3ea842f48c3d27a9c6449f045411449f7750\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "glm53-flash",
@@ -4243,16 +4243,16 @@
           "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
           "VLLM_B12X_MLA_CKV_GATHER": "1",
           "VLLM_PCIE_DMA_MIN_BYTES": "off",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -4443,16 +4443,16 @@
         "VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE": "auto",
         "VLLM_B12X_MLA_CKV_GATHER": "1",
         "VLLM_PCIE_DMA_MIN_BYTES": "off",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/glm53-flash-f0d27d45bf2fd279/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/glm53-flash-f997c73b160489ac/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -4762,11 +4762,11 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_DENSE_SPLITK_TURBO": {
@@ -4822,7 +4822,7 @@
             "source": "model:qwen38-flash-next"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -4834,7 +4834,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -4890,15 +4890,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_DENSE_ACTIVATION_MODE": {
@@ -4906,11 +4906,11 @@
             "source": "model:qwen38-flash-next"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": {
@@ -4957,6 +4957,10 @@
             "value": "1",
             "source": "model:qwen38-flash-next"
           },
+          "VLLM_QWEN3_8_FLASH_NEXT_HC_TP": {
+            "value": "0",
+            "source": "hardware:rtx-pro-6000-pcie/qwen38-flash-next"
+          },
           "VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT": {
             "value": "1",
             "source": "model:qwen38-flash-next"
@@ -4978,7 +4982,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -4987,10 +4991,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "qwen38-flash-next",
         "options": {},
         "environment": {},
@@ -5001,8 +5005,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name qwen38-tp1 \\\n  --init \\\n  --gpus '\"device=0\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v qwen38-tp1-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile qwen38-flash-next \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
-      "compose": "name: qwen38-tp1\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: qwen38-tp1\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - qwen38-tp1-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - qwen38-flash-next\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  qwen38-tp1-runtime:\n    name: qwen38-tp1-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: qwen38-flash-next\n    options: {}\n    environment: {}\n    argv: []\n    name: qwen38-tp1\n    gpus:\n    - '0'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 389a8254c4ab5e0fc9a22b6fe347599a8f16e55efb413ca6ed43c4a4ccf92cec\n",
+      "docker": "docker run \\\n  -d \\\n  --name qwen38-tp1 \\\n  --init \\\n  --gpus '\"device=0\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v qwen38-tp1-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile qwen38-flash-next \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
+      "compose": "name: qwen38-tp1\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: qwen38-tp1\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - qwen38-tp1-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - qwen38-flash-next\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  qwen38-tp1-runtime:\n    name: qwen38-tp1-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: qwen38-flash-next\n    options: {}\n    environment: {}\n    argv: []\n    name: qwen38-tp1\n    gpus:\n    - '0'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: 6f3be0e6f4849e06150c950c1a5f2fe3999c8fb31a2f650b32f60dbf737a2bf6\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "qwen38-flash-next",
@@ -5217,16 +5221,17 @@
           "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
           "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
           "NCCL_CUMEM_ENABLE": "0",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/cuda"
+          "VLLM_QWEN3_8_FLASH_NEXT_HC_TP": "0",
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -5414,16 +5419,17 @@
         "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
         "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
         "NCCL_CUMEM_ENABLE": "0",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-b3a076e3e6f56b5f/cuda"
+        "VLLM_QWEN3_8_FLASH_NEXT_HC_TP": "0",
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-ab35f5750b0aca04/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -5733,11 +5739,11 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_DENSE_SPLITK_TURBO": {
@@ -5793,7 +5799,7 @@
             "source": "model:qwen38-flash-next"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -5805,7 +5811,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -5861,15 +5867,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_DENSE_ACTIVATION_MODE": {
@@ -5877,11 +5883,11 @@
             "source": "model:qwen38-flash-next"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CAUSAL_CONV1D_UPDATE_HOIST": {
@@ -5928,6 +5934,10 @@
             "value": "1",
             "source": "model:qwen38-flash-next"
           },
+          "VLLM_QWEN3_8_FLASH_NEXT_HC_TP": {
+            "value": "0",
+            "source": "hardware:rtx-pro-6000-pcie/qwen38-flash-next"
+          },
           "VLLM_QWEN3_8_FLASH_NEXT_MTP_COMPACT": {
             "value": "1",
             "source": "model:qwen38-flash-next"
@@ -5949,7 +5959,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -5958,10 +5968,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "qwen38-flash-next",
         "options": {},
         "environment": {},
@@ -5974,8 +5984,8 @@
         "restart": "unless-stopped",
         "preset": "qwen38-tp2"
       },
-      "docker": "docker run \\\n  -d \\\n  --name qwen38-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v qwen38-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile qwen38-flash-next \\\n  --hardware rtx-pro-6000-pcie \\\n  --preset qwen38-tp2 \\\n  --",
-      "compose": "name: qwen38-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: qwen38-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - qwen38-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - qwen38-flash-next\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --preset\n    - qwen38-tp2\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  qwen38-tp2-runtime:\n    name: qwen38-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: qwen38-flash-next\n    options: {}\n    environment: {}\n    argv: []\n    name: qwen38-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n    preset: qwen38-tp2\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 8ab77e450e1147f976521c16024bb496ac3e52a6cb60650734cb4edb5096b5de\n",
+      "docker": "docker run \\\n  -d \\\n  --name qwen38-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v qwen38-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile qwen38-flash-next \\\n  --hardware rtx-pro-6000-pcie \\\n  --preset qwen38-tp2 \\\n  --",
+      "compose": "name: qwen38-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: qwen38-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - qwen38-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - qwen38-flash-next\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --preset\n    - qwen38-tp2\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  qwen38-tp2-runtime:\n    name: qwen38-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: qwen38-flash-next\n    options: {}\n    environment: {}\n    argv: []\n    name: qwen38-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n    preset: qwen38-tp2\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: a9128fa709d894f5ea0660548bbd54c6405ad16e02e6e43ccf3601753a0e8d94\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "qwen38-flash-next",
@@ -6190,16 +6200,17 @@
           "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
           "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
           "NCCL_CUMEM_ENABLE": "0",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/cuda"
+          "VLLM_QWEN3_8_FLASH_NEXT_HC_TP": "0",
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -6387,16 +6398,17 @@
         "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
         "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
         "NCCL_CUMEM_ENABLE": "0",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/qwen38-flash-next-cebf4b89ede5e0d2/cuda"
+        "VLLM_QWEN3_8_FLASH_NEXT_HC_TP": "0",
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/qwen38-flash-next-c5051345ff7dfc2c/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -6730,15 +6742,15 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -6750,7 +6762,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -6802,15 +6814,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_MOE_FP4_FORCE_A16": {
@@ -6818,11 +6830,11 @@
             "source": "model:ds4-flash"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_ENABLE_PCIE_ALLREDUCE": {
@@ -6870,7 +6882,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -6880,10 +6892,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "ds4-flash",
         "options": {},
         "environment": {},
@@ -6895,8 +6907,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name ds4-flash-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v ds4-flash-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile ds4-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
-      "compose": "name: ds4-flash-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: ds4-flash-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - ds4-flash-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - ds4-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  ds4-flash-tp2-runtime:\n    name: ds4-flash-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: ds4-flash\n    options: {}\n    environment: {}\n    argv: []\n    name: ds4-flash-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 7e89ad3bb88f083856e31edf926652a4b4726dcaaf2fc7c5546f89f39f3547c3\n",
+      "docker": "docker run \\\n  -d \\\n  --name ds4-flash-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v ds4-flash-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile ds4-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
+      "compose": "name: ds4-flash-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: ds4-flash-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - ds4-flash-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - ds4-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  ds4-flash-tp2-runtime:\n    name: ds4-flash-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: ds4-flash\n    options: {}\n    environment: {}\n    argv: []\n    name: ds4-flash-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: 47a0143c69a0c5dde5a42a95fb85de661d32a2d638728b6e78670fad2398b5d8\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "ds4-flash",
@@ -7104,16 +7116,16 @@
           "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
           "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
           "VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE": "64KB",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -7279,16 +7291,16 @@
         "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
         "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
         "VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE": "64KB",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-flash-249dae9ffd8bb4bf/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-flash-9e54cc9c81edfc7f/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -7622,15 +7634,15 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_ORDER": {
@@ -7642,7 +7654,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -7694,15 +7706,15 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_B12X_MOE_FP4_FORCE_A16": {
@@ -7710,11 +7722,11 @@
             "source": "model:ds4-vision"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_ENABLE_PCIE_ALLREDUCE": {
@@ -7762,7 +7774,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -7772,10 +7784,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "ds4-vision",
         "options": {},
         "environment": {},
@@ -7787,8 +7799,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name ds4-vision-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v ds4-vision-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile ds4-vision \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
-      "compose": "name: ds4-vision-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: ds4-vision-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - ds4-vision-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - ds4-vision\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  ds4-vision-tp2-runtime:\n    name: ds4-vision-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: ds4-vision\n    options: {}\n    environment: {}\n    argv: []\n    name: ds4-vision-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 4f3ea759446b49294bc3982a507a6ac598797c125c36fb927f63d96810dad3e1\n",
+      "docker": "docker run \\\n  -d \\\n  --name ds4-vision-tp2 \\\n  --init \\\n  --gpus '\"device=0,1\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v ds4-vision-tp2-runtime:/cache \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile ds4-vision \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
+      "compose": "name: ds4-vision-tp2\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: ds4-vision-tp2\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - ds4-vision-tp2-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - ds4-vision\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            capabilities:\n            - gpu\nvolumes:\n  lil-hf:\n    name: lil-hf\n  ds4-vision-tp2-runtime:\n    name: ds4-vision-tp2-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: ds4-vision\n    options: {}\n    environment: {}\n    argv: []\n    name: ds4-vision-tp2\n    gpus:\n    - '0'\n    - '1'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: c6c96bb0599b1f8ae608c80515e72d7cfd9548ef37b1756b2348981d1e1d7804\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "ds4-vision",
@@ -7996,16 +8008,16 @@
           "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
           "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
           "VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE": "64KB",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -8171,16 +8183,16 @@
         "VLLM_ENABLE_PCIE_ALLREDUCE": "1",
         "VLLM_PCIE_ALLREDUCE_BACKEND": "b12x",
         "VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE": "64KB",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds4-vision-927d33395e579661/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds4-vision-c0a4ec767f78e66a/cuda"
       },
       "cache_service": null,
       "security": [],
@@ -8576,15 +8588,15 @@
         },
         "environment": {
           "B12X_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "B12X_CUTE_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/cute",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/cute",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_CACHE_PATH": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/cuda",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/cuda",
             "source": "derived:runtime-lock and profile identity"
           },
           "CUDA_DEVICE_MAX_CONNECTIONS": {
@@ -8600,7 +8612,7 @@
             "source": "hardware:rtx-pro-6000-pcie"
           },
           "CUTE_DSL_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/cute-dsl",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/cute-dsl",
             "source": "derived:runtime-lock and profile identity"
           },
           "HF_HOME": {
@@ -8652,23 +8664,23 @@
             "source": "common:single-node-vllm"
           },
           "SPARKINFER_COMPILE_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/compile",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/compile",
             "source": "derived:runtime-lock and profile identity"
           },
           "TORCHINDUCTOR_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/torchinductor",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/torchinductor",
             "source": "derived:runtime-lock and profile identity"
           },
           "TRITON_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/triton",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/triton",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_DIR": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_CACHE_ROOT": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/vllm",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/vllm",
             "source": "derived:runtime-lock and profile identity"
           },
           "VLLM_ENABLE_PCIE_ALLREDUCE": {
@@ -8732,7 +8744,7 @@
             "source": "common:single-node-vllm"
           },
           "XDG_CACHE_HOME": {
-            "value": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2",
+            "value": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526",
             "source": "derived:runtime-lock and profile identity"
           }
         },
@@ -8741,10 +8753,10 @@
         ],
         "cache_service": null
       },
-      "image": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
-      "recipe": "f67ab3f21c5a21472bd8aebb2eeb76f5b5c73eb6",
+      "image": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+      "recipe": "2057ca2708f9cfdc3d45814ad84a7ced742df05b",
       "setup": {
-        "image": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+        "image": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
         "profile": "ds41-flash",
         "options": {},
         "environment": {},
@@ -8758,8 +8770,8 @@
         ],
         "restart": "unless-stopped"
       },
-      "docker": "docker run \\\n  -d \\\n  --name ds41-flash-tp4 \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v ds41-flash-tp4-runtime:/cache \\\n  --security-opt seccomp=unconfined \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51 \\\n  --profile ds41-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
-      "compose": "name: ds41-flash-tp4\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n    container_name: ds41-flash-tp4\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - ds41-flash-tp4-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - ds41-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\n    security_opt:\n    - seccomp=unconfined\nvolumes:\n  lil-hf:\n    name: lil-hf\n  ds41-flash-tp4-runtime:\n    name: ds41-flash-tp4-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92\n    profile: ds41-flash\n    options: {}\n    environment: {}\n    argv: []\n    name: ds41-flash-tp4\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51\n  service_sha256: 736dd70f109873c2e731f818b511bef0bb218f08a7b3367e4a17e1dc7b32f7ea\n",
+      "docker": "docker run \\\n  -d \\\n  --name ds41-flash-tp4 \\\n  --init \\\n  --gpus '\"device=0,1,2,3\"' \\\n  --network host \\\n  --ipc host \\\n  --shm-size 32g \\\n  --restart unless-stopped \\\n  --ulimit memlock=-1 \\\n  --ulimit stack=67108864:67108864 \\\n  -v lil-hf:/root/.cache/huggingface \\\n  -v ds41-flash-tp4-runtime:/cache \\\n  --security-opt seccomp=unconfined \\\n  --entrypoint /usr/local/bin/lil-serve ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575 \\\n  --profile ds41-flash \\\n  --hardware rtx-pro-6000-pcie \\\n  --",
+      "compose": "name: ds41-flash-tp4\nservices:\n  model:\n    image: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n    container_name: ds41-flash-tp4\n    init: true\n    network_mode: host\n    ipc: host\n    shm_size: 32g\n    restart: unless-stopped\n    ulimits:\n      memlock:\n        soft: -1\n        hard: -1\n      stack:\n        soft: 67108864\n        hard: 67108864\n    volumes:\n    - lil-hf:/root/.cache/huggingface\n    - ds41-flash-tp4-runtime:/cache\n    entrypoint:\n    - /usr/local/bin/lil-serve\n    command:\n    - --profile\n    - ds41-flash\n    - --hardware\n    - rtx-pro-6000-pcie\n    - --\n    deploy:\n      resources:\n        reservations:\n          devices:\n          - driver: nvidia\n            device_ids:\n            - '0'\n            - '1'\n            - '2'\n            - '3'\n            capabilities:\n            - gpu\n    security_opt:\n    - seccomp=unconfined\nvolumes:\n  lil-hf:\n    name: lil-hf\n  ds41-flash-tp4-runtime:\n    name: ds41-flash-tp4-runtime\nx-lil-configurator:\n  schema: lil-web-deployment/v1\n  setup:\n    image: karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271\n    profile: ds41-flash\n    options: {}\n    environment: {}\n    argv: []\n    name: ds41-flash-tp4\n    gpus:\n    - '0'\n    - '1'\n    - '2'\n    - '3'\n    restart: unless-stopped\n  image_digest: ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575\n  service_sha256: a7ee1dc00d4e1fa1026ea41de0b3c412b14eb8eb62ffdd34bb239f6f5f55d465\n",
       "explicit": {
         "schema": "lil-explicit-launch/v1",
         "profile": "ds41-flash",
@@ -8986,16 +8998,16 @@
           "VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE": "96KB",
           "VLLM_PCIE_ONESHOT_FUSED_ADD_RMS_NORM_MAX_SIZE": "96KB",
           "VLLM_PCIE_TWOSHOT_ALLREDUCE_MAX_SIZE": "off",
-          "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2",
-          "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/vllm",
-          "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/vllm",
-          "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/triton",
-          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/torchinductor",
-          "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/cute-dsl",
-          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/cute",
-          "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/compile",
-          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/compile",
-          "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/cuda"
+          "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526",
+          "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/vllm",
+          "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/vllm",
+          "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/triton",
+          "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/torchinductor",
+          "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/cute-dsl",
+          "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/cute",
+          "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/compile",
+          "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/compile",
+          "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/cuda"
         },
         "passthrough": [],
         "vllm_defaults": [
@@ -9159,16 +9171,16 @@
         "VLLM_PCIE_ONESHOT_ALLREDUCE_MAX_SIZE": "96KB",
         "VLLM_PCIE_ONESHOT_FUSED_ADD_RMS_NORM_MAX_SIZE": "96KB",
         "VLLM_PCIE_TWOSHOT_ALLREDUCE_MAX_SIZE": "off",
-        "XDG_CACHE_HOME": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2",
-        "VLLM_CACHE_ROOT": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/vllm",
-        "VLLM_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/vllm",
-        "TRITON_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/triton",
-        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/torchinductor",
-        "CUTE_DSL_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/cute-dsl",
-        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/cute",
-        "B12X_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/compile",
-        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/b12x/compile",
-        "CUDA_CACHE_PATH": "/cache/jit/3e6489be14afd1a6a49e3a94cc1eeb12404c9916ae6132e83340bacf975f3c38/ds41-flash-6524809fa88459c2/cuda"
+        "XDG_CACHE_HOME": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526",
+        "VLLM_CACHE_ROOT": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/vllm",
+        "VLLM_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/vllm",
+        "TRITON_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/triton",
+        "TORCHINDUCTOR_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/torchinductor",
+        "CUTE_DSL_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/cute-dsl",
+        "B12X_CUTE_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/cute",
+        "B12X_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/compile",
+        "SPARKINFER_COMPILE_CACHE_DIR": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/b12x/compile",
+        "CUDA_CACHE_PATH": "/cache/jit/19820c42019302b0f696bcd01ffc7047ab1e1c1d85b0ea979235f0ae9debd179/ds41-flash-a1764596b72ae526/cuda"
       },
       "cache_service": null,
       "security": [

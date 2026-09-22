@@ -126,3 +126,24 @@ padded/mixed batches and existing GLM classification regressions. Sixteen
 TP2/MTP3 requests at C4, including inputs up to 31,242 tokens and eight JSON
 schema requests, correctly preserve a prefix access code and compute a sum.
 All five scored C1/C8 repeats finish without loop detection or request errors.
+
+## Published canonical composition
+
+The separately qualified registry image
+`karmic-kraken-beta-20260922-04a3c00a18b9d45f` includes the canonical metadata
+and B12X updates plus the audited PR stack. Five unprofiled repeats with no
+source overlays measure 228.80 C1 and 909.26 C8 tok/s; three uncached 32k
+windows measure a median 14,619 tok/s. The shared PCIe profile keeps the
+small residual-mixing projections replicated to avoid extra collectives.
+
+These results do not replace the metadata-only A/B above. A separate restart
+check contains one invalid C8 repetition cell; the
+[registry report](karmic-integration-merge-audit.md#qwen-tp2-performance-gate)
+retains that failure, EOS controls, source identities and all raw samples.
+
+The QSA-guard registry image `karmic-kraken-beta-20260922-4d9905b931656635`
+has five valid repeats at 229.27 C1 and 902.43 C8 tok/s, with 96.31/388.14
+verifier steps/s. Its three uncached prefill windows give a median 14,680 tok/s.
+Sixteen mixed requests and twelve distinct-code CPU-restore requests pass.
+The comparison remains scoped to the identical GPU pair and checkpoint,
+not a claim that all request distributions or stopping policies are loop-free.

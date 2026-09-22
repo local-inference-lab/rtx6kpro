@@ -1,0 +1,92 @@
+[
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "3e7b8f223d9adfac967377f3e578d90d76c0b81e",
+    "isDraft": false,
+    "number": 798,
+    "state": "OPEN",
+    "title": "Port caller-owned serving workspaces and DS4.1 API contracts to Karmic Kraken",
+    "url": "https://github.com/local-inference-lab/vllm/pull/798"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "a5bab53f7bfe005823bbea57e074708c84bbafdc",
+    "isDraft": false,
+    "number": 805,
+    "state": "OPEN",
+    "title": "fix(quantization): bound NVFP4 loader scale memory on Karmic",
+    "url": "https://github.com/local-inference-lab/vllm/pull/805"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "7d8bda56179dcc18d5a051307137638ed8f547b7",
+    "isDraft": false,
+    "number": 813,
+    "state": "OPEN",
+    "title": "perf(b12x): tune routed MoE with concurrent shared experts",
+    "url": "https://github.com/local-inference-lab/vllm/pull/813"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "ceba0ea68330e04a9ac68a6a55f72eae08a028c6",
+    "isDraft": false,
+    "number": 821,
+    "state": "OPEN",
+    "title": "feat(glm5next): reduce speculative state memory with atomic LMCache recovery",
+    "url": "https://github.com/local-inference-lab/vllm/pull/821"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "e36edd0ee43e839fc5cebae9dbd7ce05a3210b73",
+    "isDraft": false,
+    "number": 822,
+    "state": "OPEN",
+    "title": "fix(glm): classify long DCP profile rows as prefill",
+    "url": "https://github.com/local-inference-lab/vllm/pull/822"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "6235b993c0267a98201fc9776b1511f2514c6a49",
+    "isDraft": false,
+    "number": 837,
+    "state": "OPEN",
+    "title": "fix(qwen): preserve MTP positional overrides on Karmic",
+    "url": "https://github.com/local-inference-lab/vllm/pull/837"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "f07d0d676c0bd46367cb397471109f16676cfab4",
+    "isDraft": false,
+    "number": 834,
+    "state": "OPEN",
+    "title": "fix(spec-decode): inherit target CuMem allocator permission",
+    "url": "https://github.com/local-inference-lab/vllm/pull/834"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "6bce997226fc683b911644226f629d59f925ddab",
+    "isDraft": false,
+    "number": 835,
+    "state": "OPEN",
+    "title": "perf(gdn): skip unused mixed metadata for uniform decode graphs",
+    "url": "https://github.com/local-inference-lab/vllm/pull/835"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "5ca070bd94493de74623c6eeba961a051fc04818",
+    "isDraft": false,
+    "number": 836,
+    "state": "OPEN",
+    "title": "fix(kv-offload): exclude QSA scratch groups from SimpleCPU transfers",
+    "url": "https://github.com/local-inference-lab/vllm/pull/836"
+  },
+  {
+    "baseRefName": "dev/karmic-kraken",
+    "headRefOid": "a3dd23009f26f02ea66f388680511ece5d873646",
+    "isDraft": false,
+    "number": 838,
+    "state": "OPEN",
+    "title": "docs(release): preserve the integration changelog contract on Karmic",
+    "url": "https://github.com/local-inference-lab/vllm/pull/838"
+  }
+]

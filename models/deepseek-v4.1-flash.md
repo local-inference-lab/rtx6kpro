@@ -73,7 +73,7 @@ Stop: `docker compose -f ds41-flash-tp4.compose.yaml down` (keeps model/cache vo
 name: ds41-flash-tp4
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
     container_name: ds41-flash-tp4
     init: true
     network_mode: host
@@ -112,8 +112,8 @@ services:
     security_opt:
     - seccomp=unconfined
     environment:
-      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/b12x/compile
-      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/b12x/cute
+      B12X_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/b12x/compile
+      B12X_CUTE_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/b12x/cute
       BASH_ENV: /etc/bash.bashrc
       CCCL_VERSION: 13.3.4.2.1
       COCOAPI_VERSION: 2.0+nv0.8.1
@@ -121,7 +121,7 @@ services:
       CUBLAS_VERSION: 13.7.0.27
       CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0
       CUDA_BINARY_LOADER_THREAD_COUNT: '8'
-      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/cuda
+      CUDA_CACHE_PATH: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/cuda
       CUDA_COMPONENT_LIST: crt nvrtc driver-dev culibos-dev cudart cudart-dev nvcc tileiras cupti
       CUDA_DEVICE_MAX_CONNECTIONS: '32'
       CUDA_DEVICE_ORDER: PCI_BUS_ID
@@ -140,7 +140,7 @@ services:
       CUSPARSELT_VERSION: 0.9.1.1
       CUSPARSE_VERSION: 12.8.6.49
       CUTE_DSL_ARCH: sm_120a
-      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/cute-dsl
+      CUTE_DSL_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/cute-dsl
       CUTILE_PYTHON_VERSION: 1.5.0
       CUTLASS_DSL_VERSION: 4.6.2
       DALI_BUILD: ''
@@ -208,10 +208,10 @@ services:
       RDMACORE_VERSION: '63.0'
       SAFETENSORS_FAST_GPU: '1'
       SHELL: /bin/bash
-      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/b12x/compile
+      SPARKINFER_COMPILE_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/b12x/compile
       TENSORBOARD_PORT: '6006'
       TORCHAO_BUILD_VERSION: +gitdd0efc75
-      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/torchinductor
+      TORCHINDUCTOR_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/torchinductor
       TORCHINDUCTOR_CUTLASS_DIR: /opt/pytorch/pytorch/third_party/cutlass
       TORCHINDUCTOR_LOOP_ORDERING_AFTER_FUSION: '0'
       TORCHTITAN_BUILD_VERSION: 0.2.2+gitbadf21a1
@@ -219,7 +219,7 @@ services:
       TORCH_CUDA_ARCH_LIST: 7.5 8.0 8.6 9.0 10.0 12.0+PTX
       TORCH_NCCL_USE_COMM_NONBLOCKING: '0'
       TRANSFORMER_ENGINE_VERSION: '2.18'
-      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/triton
+      TRITON_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/triton
       TRITON_CUDACRT_PATH: /usr/local/cuda/include
       TRITON_CUDART_PATH: /usr/local/cuda/include
       TRITON_CUOBJDUMP_PATH: /usr/local/cuda/bin/cuobjdump
@@ -232,8 +232,8 @@ services:
       UCC_CL_BASIC_TLS: ^sharp
       UCC_EC_CUDA_EXEC_NUM_THREADS: '256'
       VIRTUAL_ENV: /opt/venv
-      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/vllm
-      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2/vllm
+      VLLM_CACHE_DIR: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/vllm
+      VLLM_CACHE_ROOT: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526/vllm
       VLLM_ENABLE_PCIE_ALLREDUCE: '1'
       VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS: '1'
       VLLM_MULTI_STREAM_GEMM_TOKEN_THRESHOLD: '1024'
@@ -249,7 +249,7 @@ services:
       VLLM_USE_STANDALONE_COMPILE: '1'
       VLLM_USE_V2_MODEL_RUNNER: '1'
       VLLM_WORKER_MULTIPROC_METHOD: spawn
-      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds41-flash-6524809fa88459c2
+      XDG_CACHE_HOME: /cache/jit/UNBOUND-RUNTIME/ds41-flash-a1764596b72ae526
       _CUDA_COMPAT_PATH: /usr/local/cuda/compat
     configs:
     - source: lil-launch

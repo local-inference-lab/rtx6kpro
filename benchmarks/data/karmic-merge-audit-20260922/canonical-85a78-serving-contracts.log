@@ -1,0 +1,391 @@
+.....................FFFF............................................... [ 31%]
+............................F........................................... [ 63%]
+........................................................................ [ 95%]
+...........                                                              [100%]
+=================================== FAILURES ===================================
+__ test_block_diffusion_depth_does_not_follow_mtp_layer_count[dspark-5-True] ___
+
+method = 'dspark', depth = 5, valid = True
+
+    @pytest.mark.cpu_test
+    @pytest.mark.parametrize(
+        "method,depth,valid",
+        [("dspark", 5, True), ("dspark", 7, True), ("mtp", 6, True), ("mtp", 7, False)],
+    )
+    def test_block_diffusion_depth_does_not_follow_mtp_layer_count(method, depth, valid):
+        """DSpark predicts a block independently of its three draft transformer layers."""
+        model = "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+        revision = "6821d6ad3681a4b137b066b76094fa82ebd0a380"
+        target = ModelConfig(
+            model=model,
+            revision=revision,
+            tokenizer_revision=revision,
+            tokenizer_mode="deepseek_v4",
+            trust_remote_code=True,
+            max_model_len=32768,
+        )
+        expected = (
+            nullcontext()
+            if valid
+            else pytest.raises(ValueError, match="must be divisible by n_predict=3")
+        )
+        with expected:
+            config = SpeculativeConfig(
+                target_model_config=target,
+>               target_parallel_config=ParallelConfig(tensor_parallel_size=2),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                model=model,
+                revision=revision,
+                method=method,
+                num_speculative_tokens=depth,
+                draft_sample_method="probabilistic",
+                enable_adaptive_verification=method == "dspark",
+            )
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for ParallelConfig
+E             Value error, World size (2) is larger than the number of available GPUs (1) in this node. If this is intentional and you are using:
+E           - ray, set '--distributed-executor-backend ray'.
+E           - multiprocessing, set '--nnodes' appropriately. [type=value_error, input_value=ArgsKwargs((), {'tensor_parallel_size': 2}), input_type=ArgsKwargs]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/config/test_speculative_draft_hf_overrides.py:147: ValidationError
+----------------------------- Captured stdout call -----------------------------
+INFO 09-22 07:06:44 [config.py:852] Detected quantization_config.scale_fmt=ue8m0; enabling UE8M0 for DeepGEMM.
+INFO 09-22 07:06:52 [model.py:693] Resolved architecture: DeepseekV4ForConditionalGeneration
+INFO 09-22 07:06:52 [model.py:2054] Using max model len 32768
+ERROR 09-22 07:06:52 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+__ test_block_diffusion_depth_does_not_follow_mtp_layer_count[dspark-7-True] ___
+
+method = 'dspark', depth = 7, valid = True
+
+    @pytest.mark.cpu_test
+    @pytest.mark.parametrize(
+        "method,depth,valid",
+        [("dspark", 5, True), ("dspark", 7, True), ("mtp", 6, True), ("mtp", 7, False)],
+    )
+    def test_block_diffusion_depth_does_not_follow_mtp_layer_count(method, depth, valid):
+        """DSpark predicts a block independently of its three draft transformer layers."""
+        model = "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+        revision = "6821d6ad3681a4b137b066b76094fa82ebd0a380"
+        target = ModelConfig(
+            model=model,
+            revision=revision,
+            tokenizer_revision=revision,
+            tokenizer_mode="deepseek_v4",
+            trust_remote_code=True,
+            max_model_len=32768,
+        )
+        expected = (
+            nullcontext()
+            if valid
+            else pytest.raises(ValueError, match="must be divisible by n_predict=3")
+        )
+        with expected:
+            config = SpeculativeConfig(
+                target_model_config=target,
+>               target_parallel_config=ParallelConfig(tensor_parallel_size=2),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                model=model,
+                revision=revision,
+                method=method,
+                num_speculative_tokens=depth,
+                draft_sample_method="probabilistic",
+                enable_adaptive_verification=method == "dspark",
+            )
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for ParallelConfig
+E             Value error, World size (2) is larger than the number of available GPUs (1) in this node. If this is intentional and you are using:
+E           - ray, set '--distributed-executor-backend ray'.
+E           - multiprocessing, set '--nnodes' appropriately. [type=value_error, input_value=ArgsKwargs((), {'tensor_parallel_size': 2}), input_type=ArgsKwargs]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/config/test_speculative_draft_hf_overrides.py:147: ValidationError
+----------------------------- Captured stdout call -----------------------------
+INFO 09-22 07:06:53 [model.py:693] Resolved architecture: DeepseekV4ForConditionalGeneration
+INFO 09-22 07:06:53 [model.py:2054] Using max model len 32768
+____ test_block_diffusion_depth_does_not_follow_mtp_layer_count[mtp-6-True] ____
+
+method = 'mtp', depth = 6, valid = True
+
+    @pytest.mark.cpu_test
+    @pytest.mark.parametrize(
+        "method,depth,valid",
+        [("dspark", 5, True), ("dspark", 7, True), ("mtp", 6, True), ("mtp", 7, False)],
+    )
+    def test_block_diffusion_depth_does_not_follow_mtp_layer_count(method, depth, valid):
+        """DSpark predicts a block independently of its three draft transformer layers."""
+        model = "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+        revision = "6821d6ad3681a4b137b066b76094fa82ebd0a380"
+        target = ModelConfig(
+            model=model,
+            revision=revision,
+            tokenizer_revision=revision,
+            tokenizer_mode="deepseek_v4",
+            trust_remote_code=True,
+            max_model_len=32768,
+        )
+        expected = (
+            nullcontext()
+            if valid
+            else pytest.raises(ValueError, match="must be divisible by n_predict=3")
+        )
+        with expected:
+            config = SpeculativeConfig(
+                target_model_config=target,
+>               target_parallel_config=ParallelConfig(tensor_parallel_size=2),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                model=model,
+                revision=revision,
+                method=method,
+                num_speculative_tokens=depth,
+                draft_sample_method="probabilistic",
+                enable_adaptive_verification=method == "dspark",
+            )
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for ParallelConfig
+E             Value error, World size (2) is larger than the number of available GPUs (1) in this node. If this is intentional and you are using:
+E           - ray, set '--distributed-executor-backend ray'.
+E           - multiprocessing, set '--nnodes' appropriately. [type=value_error, input_value=ArgsKwargs((), {'tensor_parallel_size': 2}), input_type=ArgsKwargs]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/config/test_speculative_draft_hf_overrides.py:147: ValidationError
+----------------------------- Captured stdout call -----------------------------
+INFO 09-22 07:06:53 [model.py:693] Resolved architecture: DeepseekV4ForConditionalGeneration
+INFO 09-22 07:06:53 [model.py:2054] Using max model len 32768
+___ test_block_diffusion_depth_does_not_follow_mtp_layer_count[mtp-7-False] ____
+
+method = 'mtp', depth = 7, valid = False
+
+    @pytest.mark.cpu_test
+    @pytest.mark.parametrize(
+        "method,depth,valid",
+        [("dspark", 5, True), ("dspark", 7, True), ("mtp", 6, True), ("mtp", 7, False)],
+    )
+    def test_block_diffusion_depth_does_not_follow_mtp_layer_count(method, depth, valid):
+        """DSpark predicts a block independently of its three draft transformer layers."""
+        model = "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+        revision = "6821d6ad3681a4b137b066b76094fa82ebd0a380"
+        target = ModelConfig(
+            model=model,
+            revision=revision,
+            tokenizer_revision=revision,
+            tokenizer_mode="deepseek_v4",
+            trust_remote_code=True,
+            max_model_len=32768,
+        )
+        expected = (
+            nullcontext()
+            if valid
+            else pytest.raises(ValueError, match="must be divisible by n_predict=3")
+        )
+        with expected:
+            config = SpeculativeConfig(
+                target_model_config=target,
+>               target_parallel_config=ParallelConfig(tensor_parallel_size=2),
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                model=model,
+                revision=revision,
+                method=method,
+                num_speculative_tokens=depth,
+                draft_sample_method="probabilistic",
+                enable_adaptive_verification=method == "dspark",
+            )
+E           pydantic_core._pydantic_core.ValidationError: 1 validation error for ParallelConfig
+E             Value error, World size (2) is larger than the number of available GPUs (1) in this node. If this is intentional and you are using:
+E           - ray, set '--distributed-executor-backend ray'.
+E           - multiprocessing, set '--nnodes' appropriately. [type=value_error, input_value=ArgsKwargs((), {'tensor_parallel_size': 2}), input_type=ArgsKwargs]
+E               For further information visit https://errors.pydantic.dev/2.13/v/value_error
+
+tests/config/test_speculative_draft_hf_overrides.py:147: ValidationError
+
+During handling of the above exception, another exception occurred:
+
+method = 'mtp', depth = 7, valid = False
+
+    @pytest.mark.cpu_test
+    @pytest.mark.parametrize(
+        "method,depth,valid",
+        [("dspark", 5, True), ("dspark", 7, True), ("mtp", 6, True), ("mtp", 7, False)],
+    )
+    def test_block_diffusion_depth_does_not_follow_mtp_layer_count(method, depth, valid):
+        """DSpark predicts a block independently of its three draft transformer layers."""
+        model = "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+        revision = "6821d6ad3681a4b137b066b76094fa82ebd0a380"
+        target = ModelConfig(
+            model=model,
+            revision=revision,
+            tokenizer_revision=revision,
+            tokenizer_mode="deepseek_v4",
+            trust_remote_code=True,
+            max_model_len=32768,
+        )
+        expected = (
+            nullcontext()
+            if valid
+            else pytest.raises(ValueError, match="must be divisible by n_predict=3")
+        )
+>       with expected:
+E       AssertionError: Regex pattern did not match.
+E        Regex: 'must be divisible by n_predict=3'
+E        Input: "1 validation error for ParallelConfig\n  Value error, World size (2) is larger than the number of available GPUs (1) in this node. If this is intentional and you are using:\n- ray, set '--distributed-executor-backend ray'.\n- multiprocessing, set '--nnodes' appropriately. [type=value_error, input_value=ArgsKwargs((), {'tensor_parallel_size': 2}), input_type=ArgsKwargs]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+
+tests/config/test_speculative_draft_hf_overrides.py:144: AssertionError
+----------------------------- Captured stdout call -----------------------------
+INFO 09-22 07:06:54 [model.py:693] Resolved architecture: DeepseekV4ForConditionalGeneration
+INFO 09-22 07:06:54 [model.py:2054] Using max model len 32768
+_______________ test_disk_ple_preparation_refreshes_graph_output _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-0/test_disk_ple_preparation_refr0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1474377080>
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA")
+    def test_disk_ple_preparation_refreshes_graph_output(tmp_path, monkeypatch) -> None:
+        """Real file reads precede replay, including accepted history and padding."""
+        pytest.importorskip("b12x.sequence.ple_embedding")
+        from safetensors.torch import save_file
+    
+        from vllm.model_executor.model_loader.weight_utils import (
+            file_source_tensor,
+            safetensors_file_sources,
+        )
+        from vllm.models.qwen4_exp.nvidia.model_state import (
+            Qwen4ExpModelState,
+        )
+        from vllm.v1.worker.gpu.model_states.mamba_hybrid import MambaHybridModelState
+    
+        monkeypatch.setattr(
+            ple_embedding_module, "get_tensor_model_parallel_world_size", lambda: 1
+        )
+        monkeypatch.setattr(
+            ple_embedding_module, "get_tensor_model_parallel_rank", lambda: 0
+        )
+        config = SimpleNamespace(
+            ngram_size=3,
+            heads_per_ngram=1,
+            eos_token_id=0,
+            split_ngram_parts=4,
+            ple_embedding_dtype="bfloat16",
+            vocab_size=128,
+            ngram_vocab_size_base=31,
+            make_ngram_vocab_size_divisible_by=16,
+        )
+    
+        def make_embedding(memory):
+            return ple_embedding_module.B12xNGramEmbedding(
+                config,
+                64,
+                0,
+                32,
+                2,
+                f"test.{memory}.ple",
+                f"test.{memory}.embedding",
+                torch.bfloat16,
+                memory,
+            )
+    
+        monkeypatch.delenv("VLLM_PLE_TABLE_MEMORY", raising=False)
+        monkeypatch.delenv("VLLM_PLE_CPU_OFFLOAD", raising=False)
+>       embedding = make_embedding(
+            ple_embedding_module._resolve_ple_table_memory({}, config.ple_embedding_dtype)
+        )
+
+tests/models/qwen4_exp/test_b12x_model.py:779: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen4_exp/test_b12x_model.py:765: in make_embedding
+    return ple_embedding_module.B12xNGramEmbedding(
+vllm/models/qwen4_exp/nvidia/b12x_ple.py:273: in __init__
+    self.ngram_embedding = _NGramEmbeddingStorage(self._table_layout, shard_rows)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+vllm/models/qwen4_exp/nvidia/b12x_ple.py:138: in __init__
+    self.disk_table = api.DiskTable(layout, shard_rows)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/venv/lib/python3.12/site-packages/b12x/sequence/ple_embedding/_disk.py:26: in __init__
+    self._cache = DiskRowCache(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <b12x.sequence._shared.disk_table.DiskRowCache object at 0x7f1444715070>
+
+    def __init__(
+        self,
+        *,
+        device: torch.device | str,
+        max_lookups: int,
+        table_rows: int,
+        shard_start: int,
+        shard_end: int,
+        shard_rows: int,
+        weight_row_bytes: int,
+        scale_row_bytes: int = 0,
+        queue_depth: int = 64,
+    ) -> None:
+        from b12x.loader._native import load
+    
+        device = torch.device(device)
+        if device.type != "cuda":
+            raise ValueError("disk row staging requires CUDA")
+        if device.index is None:
+            device = torch.device("cuda", torch.cuda.current_device())
+        self.device = device
+        self.max_lookups = operator.index(max_lookups)
+        self.table_rows = operator.index(table_rows)
+        self.shard_start = operator.index(shard_start)
+        self.shard_end = operator.index(shard_end)
+        self.shard_rows = operator.index(shard_rows)
+        self.weight_row_bytes = operator.index(weight_row_bytes)
+        self.scale_row_bytes = operator.index(scale_row_bytes)
+        queue_depth = operator.index(queue_depth)
+        if not 0 < self.shard_rows <= (1 << 63) - 1:
+            raise ValueError("shard_rows must be a positive signed int64")
+        self._backend = os.environ.get("B12X_DISK_BACKEND", "io_uring")
+        if self._backend not in ("io_uring", "gds"):
+            raise ValueError("B12X_DISK_BACKEND must be io_uring or gds")
+        self._gds = None
+        self._native = None
+        self._reader = None
+        if self._backend == "io_uring":
+            self._native = load()
+>           self._reader = self._native.ple_reader(
+                self.shard_rows,
+                self.table_rows,
+                self.shard_start,
+                self.shard_end,
+                self.weight_row_bytes,
+                self.scale_row_bytes,
+                self.max_lookups,
+                queue_depth,
+            )
+E           RuntimeError: io_uring initialization failed: Operation not permitted; enable io_uring in the kernel/container policy
+
+/opt/venv/lib/python3.12/site-packages/b12x/sequence/_shared/disk_table.py:174: RuntimeError
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:365: 14 warnings
+  /usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[gdn-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[gdn-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[gdn-4]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[qsa-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[qsa-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[qsa-4]
+  /opt/venv/lib/python3.12/site-packages/b12x/_lib/dense_gemm.py:4716: DeprecationWarning: Migrated to examples/CuTeDSL/helpers/static_persistent_tile_scheduler.py (BSD-3). The wheel copy will be removed in a future release.
+    tile_sched_params = utils.PersistentTileSchedulerParams(
+
+tests/models/qwen4_exp/test_b12x_model.py: 24 warnings
+  /opt/venv/lib/python3.12/site-packages/nvidia_cutlass_dsl/dsl_packages/cutlass/_mlir_helpers/op.py:294: DeprecationWarning: FastDivmodDivisor is deprecated in favor of cute.FastDivmodDivisorV2 / cute.fast_divmod_create_divisor_v2. V2 additionally carries the scalar divisor across kernel boundaries (2 MLIR values per object instead of 1), so '.divisor' is readable inside kernels; arithmetic (divmod, //, %) is unchanged.
+    res_or_list = opFunc(*args, **kwargs, loc=loc)
+
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[gdn-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[gdn-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[gdn-4]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[qsa-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[qsa-1]
+tests/models/qwen4_exp/test_b12x_model.py::test_b12x_projection_overlap_preserves_scratch[qsa-4]
+  /opt/venv/lib/python3.12/site-packages/nvidia_cutlass_dsl/dsl_packages/cutlass/utils/static_persistent_tile_scheduler.py:292: DeprecationWarning: Migrated to examples/CuTeDSL/helpers/static_persistent_tile_scheduler.py (BSD-3). The wheel copy will be removed in a future release.
+    new_params = PersistentTileSchedulerParams(*(tuple(obj_list)), loc=self._loc)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/config/test_speculative_draft_hf_overrides.py::test_block_diffusion_depth_does_not_follow_mtp_layer_count[dspark-5-True]
+FAILED tests/config/test_speculative_draft_hf_overrides.py::test_block_diffusion_depth_does_not_follow_mtp_layer_count[dspark-7-True]
+FAILED tests/config/test_speculative_draft_hf_overrides.py::test_block_diffusion_depth_does_not_follow_mtp_layer_count[mtp-6-True]
+FAILED tests/config/test_speculative_draft_hf_overrides.py::test_block_diffusion_depth_does_not_follow_mtp_layer_count[mtp-7-False]
+FAILED tests/models/qwen4_exp/test_b12x_model.py::test_disk_ple_preparation_refreshes_graph_output
+5 failed, 222 passed, 50 warnings in 156.63s (0:02:36)

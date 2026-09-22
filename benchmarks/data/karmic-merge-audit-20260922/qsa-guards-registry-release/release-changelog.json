@@ -1,0 +1,196 @@
+{
+  "assembly_sha256": "4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
+  "changes": [
+    {
+      "authors": [
+        "voipmonitor",
+        "acronjob",
+        "lukealonso"
+      ],
+      "category": "fix",
+      "compatibility": "No user action required.",
+      "component": "b12x",
+      "details": [
+        "Preserve the native scale and FlashAttention 2 reduction order in contiguous attention normalization.",
+        "Share tuning identity across product labels with the same compute capability and SM count.",
+        "Retain configured traffic class in the switched-RoCE proxy."
+      ],
+      "fragment_blob_sha": "0c12430f56fd95669978d304c4d641d250157221",
+      "fragment_path": ".lil/changes/b12x-master-sync-20260922.json",
+      "id": "b12x-master-sync-20260922",
+      "models": [
+        "all"
+      ],
+      "pull_requests": [
+        {
+          "author": "@voipmonitor",
+          "number": 400,
+          "title": "Align contiguous attention normalization with FlashAttention 2",
+          "url": "https://github.com/local-inference-lab/b12x/pull/400"
+        },
+        {
+          "author": "@acronjob",
+          "number": 407,
+          "title": "Key tuning cache identity on silicon, not product label",
+          "url": "https://github.com/local-inference-lab/b12x/pull/407"
+        }
+      ],
+      "repository": "local-inference-lab/b12x",
+      "requires": [],
+      "schema": "local-inference-release-change/v1",
+      "summary": "Align contiguous attention normalization and tuning identities with master"
+    },
+    {
+      "category": "fix",
+      "compatibility": "DCP plans must reserve at least one complete compressed group on each rank. Valid serving configurations are unchanged.",
+      "component": "b12x",
+      "details": [
+        "Reject an empty planned local score domain before workspace preparation can divide by zero; live requests may still have no local groups.",
+        "Check query positions and destination row capacity before global selection expansion writes to caller-owned scratch.",
+        "Reject non-DCP draft-selection reuse before returning an unwritten log-sum-exp buffer."
+      ],
+      "fragment_blob_sha": "5983deb8a7a83200f142a0a361feff74eff05ba0",
+      "fragment_path": ".lil/changes/b12x-qsa-dcp-boundary-validation.json",
+      "id": "b12x-qsa-dcp-boundary-validation",
+      "models": [
+        "Qwen3.8-Flash-Next"
+      ],
+      "pull_requests": [
+        {
+          "author": "@voipmonitor",
+          "number": 406,
+          "title": "feat(qsa): add context-parallel selection and attention",
+          "url": "https://github.com/local-inference-lab/b12x/pull/406"
+        }
+      ],
+      "repository": "local-inference-lab/b12x",
+      "requires": [
+        "b12x-402"
+      ],
+      "schema": "local-inference-release-change/v1",
+      "summary": "Validate distributed QSA capacity and query metadata before launching kernels"
+    },
+    {
+      "authors": [
+        "lukealonso"
+      ],
+      "category": "performance",
+      "compatibility": "No user action required.",
+      "component": "b12x",
+      "details": [
+        "Use compact N16 token layouts and paired input producers for eligible NVFP4 decode kernels.",
+        "Include half-resident and three-quarter-resident grids in runtime tuning while enforcing the device residency limit.",
+        "Add safetensors IQ2_XS dense and expert-weight support without changing existing checkpoint formats."
+      ],
+      "fragment_blob_sha": "0c7db0b2c648072c048046606d96defee30b2fe6",
+      "fragment_path": ".lil/changes/b12x-karmic-nvfp4-grid-and-iq2-xs.json",
+      "id": "b12x-karmic-nvfp4-grid-and-iq2-xs",
+      "models": [
+        "all"
+      ],
+      "pull_requests": [],
+      "repository": "local-inference-lab/b12x",
+      "requires": [],
+      "schema": "local-inference-release-change/v1",
+      "summary": "Refine NVFP4 decode tiles and expand supported dense and MoE quantization"
+    },
+    {
+      "authors": [
+        "lukealonso"
+      ],
+      "category": "performance",
+      "compatibility": "No user action required.",
+      "component": "vllm",
+      "details": [
+        "Retain captured buffer addresses while copying worklists and refreshing recurrent-state indices in one GPU launch.",
+        "Mixed batches use the fused refresh; uniform decode graphs retain the separate metadata-elision optimization."
+      ],
+      "fragment_blob_sha": "8d21b527aa658ee69247c75501f8d3bd684d3142",
+      "fragment_path": ".lil/changes/vllm-karmic-gdn-metadata-fusion.json",
+      "id": "vllm-karmic-gdn-metadata-fusion",
+      "models": [
+        "Qwen3.8-Flash-Next"
+      ],
+      "pull_requests": [],
+      "repository": "local-inference-lab/vllm",
+      "requires": [],
+      "schema": "local-inference-release-change/v1",
+      "summary": "Fuse recurrent metadata copies across cache groups"
+    },
+    {
+      "authors": [
+        "lukealonso"
+      ],
+      "category": "compatibility",
+      "compatibility": "No user action required.",
+      "component": "vllm",
+      "details": [
+        "Distribute eligible Qwen residual-mixing projections across tensor-parallel ranks.",
+        "Preserve per-head GDN normalization geometry during warmup and use the declared B12X QSA capacity API.",
+        "Retain canonical Spark switched-RoCE and DeepSeek TP3 launcher settings."
+      ],
+      "fragment_blob_sha": "553bf740dfbedba64dd9fc062c6359c831449ce0",
+      "fragment_path": ".lil/changes/vllm-karmic-canonical-sync-20260922.json",
+      "id": "vllm-karmic-canonical-sync-20260922",
+      "models": [
+        "Qwen3.8-Flash-Next",
+        "DeepSeek-V4-Flash",
+        "DeepSeek-V4.1-Flash",
+        "GLM-5.3-Flash"
+      ],
+      "pull_requests": [],
+      "repository": "local-inference-lab/vllm",
+      "requires": [],
+      "schema": "local-inference-release-change/v1",
+      "summary": "Carry canonical Qwen tensor-parallel preparation and Spark launch contracts into beta"
+    }
+  ],
+  "channel": "karmic-kraken",
+  "components": {
+    "b12x": {
+      "change_count": 3,
+      "current_commit": "d16e71c3da2a13c2d73370fba5b1149c95428fbd",
+      "previous_commit": "6b80ac55b93bb3684fc35ff3f2dc34424e9f9eab",
+      "repository": "local-inference-lab/b12x"
+    },
+    "flashinfer": {
+      "change_count": 0,
+      "current_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+      "previous_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+      "repository": "local-inference-lab/flashinfer"
+    },
+    "instanttensor": {
+      "change_count": 0,
+      "current_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+      "previous_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+      "repository": "local-inference-lab/InstantTensor"
+    },
+    "lmcache": {
+      "change_count": 0,
+      "current_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+      "previous_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+      "repository": "local-inference-lab/LMCache"
+    },
+    "nccl": {
+      "change_count": 0,
+      "current_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+      "previous_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+      "repository": "local-inference-lab/nccl-canonical"
+    },
+    "vllm": {
+      "change_count": 2,
+      "current_commit": "47cb3450b11aac466f03a933de576a37f970da53",
+      "previous_commit": "96b79aa073c2059462b613876366cf693d1c0c27",
+      "repository": "local-inference-lab/vllm"
+    }
+  },
+  "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635",
+  "previous_release": {
+    "digest": "ghcr.io/local-inference-lab/vllm@sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51",
+    "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-97197f5085f4798b",
+    "tag": "karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92",
+    "url": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-97197f5085f4798bdc674da83c65d59c5fa27d24a46ac2d48dd200d0d6bfdf92"
+  },
+  "release_channel": "karmic-kraken-beta",
+  "schema": "local-inference-container-changelog/v1"
+}

@@ -1,0 +1,81 @@
+FF.F..........                                                           [100%]
+=================================== FAILURES ===================================
+________ test_previous_publication_uses_publication_time_not_api_order _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x776f5b88fad0>
+
+    def test_previous_publication_uses_publication_time_not_api_order(monkeypatch):
+        entries = [
+            publication("published-at-two", "2026-09-22T02:00:00Z"),
+            publication("published-at-five", "2026-09-22T05:00:00Z"),
+            publication("published-at-three", "2026-09-22T03:00:00Z"),
+        ]
+        install_release_pages(monkeypatch, [entries])
+        result = changelog.previous_publication("example/runtime", assembly())
+>       assert result["tag"] == "published-at-five"
+E       AssertionError: assert 'published-at-two' == 'published-at-five'
+E         
+E         - published-at-five
+E         ?              ^^^^
+E         + published-at-two
+E         ?              ^^^
+
+tools/jovian_wheel_runtime/tests/test_release_changelog.py:124: AssertionError
+________ test_previous_publication_checks_later_pages_before_selecting _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x776f5b88f620>
+
+    def test_previous_publication_checks_later_pages_before_selecting(monkeypatch):
+        first_page = [publication("published-at-two", "2026-09-22T02:00:00Z")]
+        first_page.extend({"draft": True} for _ in range(99))
+        second_page = [publication("published-at-five", "2026-09-22T05:00:00Z")]
+        requests = install_release_pages(monkeypatch, [first_page, second_page])
+        result = changelog.previous_publication("example/runtime", assembly())
+>       assert result["tag"] == "published-at-five"
+E       AssertionError: assert 'published-at-two' == 'published-at-five'
+E         
+E         - published-at-five
+E         ?              ^^^^
+E         + published-at-two
+E         ?              ^^^
+
+tools/jovian_wheel_runtime/tests/test_release_changelog.py:133: AssertionError
+_____ test_previous_publication_skips_ineligible_publications[unpublished] _____
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x776f5babbad0>
+unavailable = 'unpublished'
+
+    @pytest.mark.parametrize("unavailable", [
+        "draft", "unpublished", "assembly", "incomplete", "unqualified", "channel",
+    ])
+    def test_previous_publication_skips_ineligible_publications(monkeypatch, unavailable):
+        candidate = publication("ineligible", "2026-09-22T06:00:00Z")
+        if unavailable == "draft":
+            candidate["draft"] = True
+        elif unavailable == "unpublished":
+            candidate["published_at"] = None
+        elif unavailable == "assembly":
+            candidate["tag_name"] = assembly()["release_tag"]
+        elif unavailable == "incomplete":
+            candidate["assets"][1]["state"] = "new"
+        elif unavailable == "unqualified":
+            candidate["assets"][1]["payload"]["status"] = "failed"
+        elif unavailable == "channel":
+            candidate["assets"][0]["payload"]["release_channel"] = "beta"
+        install_release_pages(monkeypatch, [[
+            candidate, publication("eligible", "2026-09-22T05:00:00Z"),
+        ]])
+        result = changelog.previous_publication("example/runtime", assembly())
+>       assert result["tag"] == "eligible"
+E       AssertionError: assert 'ineligible' == 'eligible'
+E         
+E         - eligible
+E         + ineligible
+E         ? ++
+
+tools/jovian_wheel_runtime/tests/test_release_changelog.py:158: AssertionError
+=========================== short test summary info ============================
+FAILED tools/jovian_wheel_runtime/tests/test_release_changelog.py::test_previous_publication_uses_publication_time_not_api_order
+FAILED tools/jovian_wheel_runtime/tests/test_release_changelog.py::test_previous_publication_checks_later_pages_before_selecting
+FAILED tools/jovian_wheel_runtime/tests/test_release_changelog.py::test_previous_publication_skips_ineligible_publications[unpublished]
+3 failed, 11 passed in 0.03s

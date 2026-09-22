@@ -1,0 +1,6 @@
+{
+  "tag": "karmic-kraken-beta-04a3c00a18b9d45f959cd6c702e2dd13730caf37bd8eca005b679078df8bb771",
+  "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-04a3c00a18b9d45f",
+  "digest": "ghcr.io/local-inference-lab/vllm@sha256:f30243cff149bdde2cc7eb43e90e2839a6c89c0d30f9364935267570a145fc45",
+  "url": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-04a3c00a18b9d45f959cd6c702e2dd13730caf37bd8eca005b679078df8bb771"
+}

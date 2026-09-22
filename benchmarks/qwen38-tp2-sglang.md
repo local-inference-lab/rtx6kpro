@@ -21,7 +21,9 @@ include both engines and the vLLM before/after pair.
   during scored windows. Memory clock under load: 13365 MHz; no VRAM overclock.
 - Temperature 1, top-p .95, top-k disabled, reasoning effort `medium`.
   Both servers tokenize the context-0 chat prompt to 77 input tokens.
-- llm-inference-bench 0.6.2, commit `bdc96c125b522ec65ef29f01570f443fffae1cdc`:
+- llm-inference-bench 0.6.2 working copy based on
+  `bdc96c125b522ec65ef29f01570f443fffae1cdc`, with the
+  [error-cell reporting patch](data/qwen38-tp2-20260922/llmbench-error-cells.patch):
   30-second windows, 10-second decode warmup, maximum 32768 output tokens,
   concurrency 1 and 8, context 0, loop detection enabled. An HTTP wrapper
   sends the explicit sampling settings above to both servers. Five runs per arm.

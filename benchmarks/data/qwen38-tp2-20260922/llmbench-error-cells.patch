@@ -1,0 +1,186 @@
+diff --git a/llm_decode_bench.py b/llm_decode_bench.py
+index ec72f56..ad2afcd 100644
+--- a/llm_decode_bench.py
++++ b/llm_decode_bench.py
+@@ -63,7 +63,7 @@ from rich.text import Text
+ # Constants
+ # ---------------------------------------------------------------------------
+ 
+-VERSION = "0.6.0"
++VERSION = "0.6.2"
+ 
+ # Bumped whenever the answer extraction / scoring rules change in a way that can
+ # move a pass/fail verdict. Recorded in result metadata so old and new reports
+@@ -4542,6 +4542,7 @@ class CellResult:
+     server_output_tokens: int = 0
+     aggregate_source: str = ""
+     aggregate_tps: float = 0.0
++    failure_reason: str = ""
+     per_request_avg_tps: float = 0.0
+     ttft_avg: float = 0.0
+     ttft_p50: float = 0.0
+@@ -9393,6 +9394,7 @@ class NullLive:
+ # ---------------------------------------------------------------------------
+ 
+ LOOP_CELL_TPS = -3.0
++ERROR_CELL_TPS = -4.0
+ LOOP_CHECK_CHARS = 256
+ LOOP_MAX_PERIOD_CHARS = 32768
+ LOOP_WINDOW_CHARS = 4 * LOOP_MAX_PERIOD_CHARS
+@@ -9543,6 +9545,8 @@ def apply_loop_diagnostics(cell: CellResult, check: LoopCheckState) -> None:
+ def invalid_decode_label(cell: CellResult) -> str:
+     if cell.loop_detected:
+         return "ERROR: loop"
++    if cell.failure_reason:
++        return "ERROR"
+     return capacity_limit_cell() if cell.capacity_limited else "skip"
+ 
+ 
+@@ -10273,6 +10277,41 @@ async def run_one_cell(
+             add_event(state, f"loop cell scheduler drain failed: {exc}")
+         return cell
+ 
++    async def finish_error_cell(stream_results, phase):
++        errors = [r.error for r in stream_results if r.error]
++        reason = "; ".join(dict.fromkeys(errors)) or "streams ended before measurement"
++        cell = CellResult(
++            concurrency=concurrency, context_tokens=context_tokens,
++            benchmark_mode="request-count" if request_count > 0 else "duration",
++            request_count_target=request_count,
++            warmup_request_count=warmup_request_count,
++            aggregate_tps=ERROR_CELL_TPS, failure_reason=reason,
++            aggregate_source="invalid_stream_failure",
++            ready_reason=f"stream_failure_during_{phase}",
++            num_errors=max(1, len(errors)),
++            wall_time=time.monotonic() - state.cell_start,
++        )
++        apply_loop_diagnostics(cell, loop_check)
++        state.cell_running = state.cell_warmup = False
++        state.cell_live_tps = 0.0
++        state.cell_tps_history = []
++        key = (context_tokens, concurrency)
++        state.results[key] = ERROR_CELL_TPS
++        state.errors[key] = cell.num_errors
++        state.client_info.pop(key, None)
++        state.queue_info.pop(key, None)
++        add_event(state, f"ERROR C={concurrency} ctx={format_context(context_tokens)}: {reason}")
++        live.update(build_display(state))
++        await cell_client.aclose()
++        try:
++            await require_decode_server_idle(
++                client, base_url, engine, state, live,
++                boundary=f"after stream error C={concurrency} ctx={format_context(context_tokens)}",
++            )
++        except RuntimeError as exc:
++            cell.timeout_reason = str(exc)
++        return cell
++
+     # Scout request: ensure prefix cache is warm before launching full concurrency.
+     # Send one request with max_tokens=1 to populate/refresh prefix cache,
+     # then all C requests will get cache hits instead of competing for prefill.
+@@ -10577,6 +10616,8 @@ async def run_one_cell(
+             warmup_results, *_ = await run_fixed_request_batch(warmup_request_count, record_samples=False)
+             if loop_check.confirmed:
+                 return await finish_loop_cell(warmup_results, "warmup")
++            if any(r.error for r in warmup_results):
++                return await finish_error_cell(warmup_results, "warmup")
+ 
+         state.cell_warmup = False
+         state.output_viewer.phase = "measurement"
+@@ -10758,6 +10799,8 @@ async def run_one_cell(
+                 stream_results.append(StreamResult(error="cancelled"))
+         if loop_check.confirmed:
+             return await finish_loop_cell(stream_results, "measurement")
++        if any(r.error for r in stream_results):
++            return await finish_error_cell(stream_results, "measurement")
+         request_samples = []
+         for stream_result in stream_results:
+             request_samples.extend(stream_result.request_samples)
+@@ -11258,6 +11301,8 @@ async def run_one_cell(
+             stream_results.append(StreamResult(error="cancelled", total_time=wall_time))
+     if loop_check.confirmed:
+         return await finish_loop_cell(stream_results, "measurement" if warmup_done else "warmup")
++    if measurement_start is None or any(r.error for r in stream_results):
++        return await finish_error_cell(stream_results, "measurement" if warmup_done else "warmup")
+     request_samples = []
+     for stream_result in stream_results:
+         request_samples.extend(stream_result.request_samples)
+@@ -11311,12 +11356,12 @@ async def run_one_cell(
+     aggregate_source = ""
+     usage_measure_end = (
+         shared_usage_last_time[0]
+-        if measurement_usage_tokens > 0 and shared_usage_last_time[0] > measurement_start
++        if measurement_start is not None and measurement_usage_tokens > 0 and shared_usage_last_time[0] > measurement_start
+         else measurement_end
+     )
+     token_measure_end = (
+         shared_token_last_time[0]
+-        if measurement_tokens > 0 and shared_token_last_time[0] > measurement_start
++        if measurement_start is not None and measurement_tokens > 0 and shared_token_last_time[0] > measurement_start
+         else measurement_end
+     )
+     usage_measure_duration = (
+@@ -11808,6 +11853,9 @@ def build_display(state: TUIState) -> Layout:
+             key = (ctx, conc)
+             if key in state.results:
+                 val = state.results[key]
++                if val == ERROR_CELL_TPS:
++                    row.append(f"[{PHOSPHOR_WARN}]ERROR[/{PHOSPHOR_WARN}]")
++                    continue
+                 if val == LOOP_CELL_TPS:
+                     label = "ERROR: loop" if col_width >= len("ERROR: loop") else "ERROR\nloop"
+                     row.append(f"[{PHOSPHOR_WARN}]{label}[/{PHOSPHOR_WARN}]")
+@@ -15282,11 +15330,13 @@ async def run_benchmark(args):
+                         write_resume_checkpoint(args, all_results, burst_results, state.prefill_results)
+                     except Exception as e:
+                         console.print(f"[red]Cell C={conc} ctx={format_context(ctx)} failed: {e}[/red]")
+-                        cell = CellResult(concurrency=conc, context_tokens=ctx)
++                        cell = CellResult(concurrency=conc, context_tokens=ctx,
++                                          aggregate_tps=ERROR_CELL_TPS,
++                                          failure_reason=str(e), num_errors=conc)
+                         all_results.append(cell)
+                         _partial_results = all_results
+                         write_resume_checkpoint(args, all_results, burst_results, state.prefill_results)
+-                        state.results[(ctx, conc)] = 0.0
++                        state.results[(ctx, conc)] = ERROR_CELL_TPS
+                         state.errors[(ctx, conc)] = conc
+ 
+                     cell_time = time.monotonic() - cell_start
+@@ -15366,10 +15416,12 @@ async def run_benchmark(args):
+                             concurrency=conc,
+                             context_tokens=ctx,
+                             benchmark_mode="burst-e2e",
++                            aggregate_tps=ERROR_CELL_TPS,
++                            failure_reason=str(e), num_errors=conc,
+                         )
+                         burst_results.append(cell)
+                         write_resume_checkpoint(args, all_results, burst_results, state.prefill_results)
+-                        state.results[(ctx, conc)] = 0.0
++                        state.results[(ctx, conc)] = ERROR_CELL_TPS
+                         state.errors[(ctx, conc)] = conc
+ 
+                     cell_time = time.monotonic() - cell_start
+@@ -15960,19 +16012,19 @@ def save_results(results: list, args, filepath: str, prefill_results: dict = Non
+ 
+     # Build summary table (exclude skipped)
+     summary = {}
+-    actual_results = [r for r in results if r.aggregate_tps >= 0 or r.loop_detected]
++    actual_results = [r for r in results if r.aggregate_tps >= 0 or r.loop_detected or r.failure_reason]
+     for r in actual_results:
+         ctx_key = str(r.context_tokens)
+         if ctx_key not in summary:
+             summary[ctx_key] = {}
+-        summary[ctx_key][str(r.concurrency)] = None if r.loop_detected else r.aggregate_tps
++        summary[ctx_key][str(r.concurrency)] = None if r.aggregate_tps < 0 else r.aggregate_tps
+     burst_summary = {}
+-    actual_burst_results = [r for r in (burst_results or []) if r.aggregate_tps >= 0 or r.loop_detected]
++    actual_burst_results = [r for r in (burst_results or []) if r.aggregate_tps >= 0 or r.loop_detected or r.failure_reason]
+     for r in actual_burst_results:
+         ctx_key = str(r.context_tokens)
+         if ctx_key not in burst_summary:
+             burst_summary[ctx_key] = {}
+-        burst_summary[ctx_key][str(r.concurrency)] = None if r.loop_detected else r.aggregate_tps
++        burst_summary[ctx_key][str(r.concurrency)] = None if r.aggregate_tps < 0 else r.aggregate_tps
+ 
+     # Prefill summary
+     prefill_summary = {}

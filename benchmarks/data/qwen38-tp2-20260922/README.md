@@ -20,7 +20,15 @@ machine, **not** the remote two-GPU server. Use the server conditions in the
 report. `server_accept_len_effective` measures output per engine step during
 the scored window; SGLang's final instantaneous acceptance gauge does not.
 
-`run-qwen-matched-llmbench-20260922.py` runs the unchanged benchmark while
+The client is the working copy based on benchmark commit
+`bdc96c125b522ec65ef29f01570f443fffae1cdc` with
+`llmbench-error-cells.patch` applied. The patch labels failed streams as errors
+and changes the displayed version to 0.6.2; it does not change successful
+throughput calculation. All compared arms used this same client. The resulting
+`llm_decode_bench.py` SHA-256 is
+`053989edff8c9c93e2b96e61342b2ffbd9851e03deba17e6d3fc96fcd6694c1e`.
+
+`run-qwen-matched-llmbench-20260922.py` runs that benchmark while
 setting temperature 1, top-p .95, top-k disabled and medium reasoning in both
 engines' chat requests. Install the benchmark dependencies and set
 `LLM_BENCH_PATH` to its `llm_decode_bench.py` when it is not at the recorded

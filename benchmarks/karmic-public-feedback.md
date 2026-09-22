@@ -83,6 +83,7 @@ beta above plus the indicated source changes; registry validation is separate.
 | Published `karmic-kraken-beta-20260922-97197f5085f4798b`, no source mounts or edits, ten intervening prompts | A 6883-token request restores 2880 tokens externally with zero native hits, recalls TEAL-428 and answers 13; healthy engine. |
 | Published `karmic-kraken-beta-20260922-04a3c00a18b9d45f`, no source changes, ten intervening prompts with distinct access codes | The 6883-token original request restores 2880 tokens externally with zero native hits; it recovers TEAL-428 rather than an intervening code and answers 13. All twelve requests pass; engine remains healthy. |
 | Published `karmic-kraken-beta-20260922-4d9905b931656635`, including reviewed QSA guards | All twelve distinct-code requests pass; the original prompt restores 2880 external tokens with zero GPU hits and returns TEAL-428 and 13. |
+| Published `karmic-kraken-beta-20260922-3221ccacf71002ea`, canonical draft/PLE synchronization and tuning-result compatibility | All twelve distinct-code requests pass; 2880 external tokens, zero GPU hits, original TEAL-428 and sum 13, healthy engine. The registry digest resolves to the exact tested image config. |
 
 The registry confirmation uses digest
 `sha256:9d2431fa46c10b429fd98eeeb8aea013ba12e2010303402203c569ea09ab7e51`,

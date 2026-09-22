@@ -61,7 +61,7 @@ Stop: `docker compose -f ds4-vision-tp2.compose.yaml down` (keeps model/cache vo
 name: ds4-vision-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: ds4-vision-tp2
     init: true
     network_mode: host

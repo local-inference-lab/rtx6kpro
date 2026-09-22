@@ -3,6 +3,73 @@
 These artifacts support the [canonical PR audit](../../karmic-integration-merge-audit.md)
 and the [public-report validation](../../karmic-public-feedback.md).
 
+## Registry composition with distributed tuning compatibility
+
+The `qwen-tuning-registry-*` files identify
+`ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea`,
+digest `sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522`.
+The official assembly, publication receipt, manifest and generated changelog
+are under `tuning-registry-release/`. They contain vLLM `622912b9b2c`,
+B12X `3113aa0b859` and recipe `338546b0e79`.
+
+The exact image was transferred from the automatic builder while its registry
+upload ran. `tuning-registry-pull-identity.log` records the subsequent immutable
+registry pull and matching config ID in both serving containers.
+`builder-oci-manifest.json` maps the OCI digest to Docker config
+`sha256:5cb7de41ecce821b2c33880b2787254c602aed86637c64ee58c77e701fd68db9`.
+All 68 rootfs layers match; the different image IDs reported by containerd and
+classic Docker refer to the manifest and its config, not different images.
+No serving sources were mounted or edited.
+
+The five `qwen-tuning-registry-matched-*.json` repeats give initial medians
+222.330/906.795 output tok/s and 95.738/389.077 verifier steps/s at C1/C8.
+Every cell passes its error, loop and occupancy checks. Three uncached prefill
+windows contain twelve requests each, measuring 14547/14570/14586 tok/s.
+All sixteen mixed text/JSON-schema requests and twelve distinct-code cache
+requests pass. The original prompt restores 2880 external tokens with zero
+native hits, returning TEAL-428 and the sum 13.
+
+The fixed five-run `qwen-tuning-registry-confirmation-*` series follows the
+prefill and correctness checks on the unchanged server. It is recorded
+separately rather than replacing initial lower valid samples or pooling two
+different startup states. `qualify_glm_after_qwen.sh` defines this ordering
+and stops Qwen before the four-GPU GLM text/vision check.
+All ten confirmation cells pass; medians are 222.565/905.134 output tok/s
+and 95.809/389.319 verifier steps/s. Prefill warmup does not remove the lower
+C1 output observation relative to the preceding measured image.
+
+`glm-tuning-registry-smoke/` contains seven passing text/prefix/vision checks
+on the same immutable digest. GLM uses TP4/DCP1/DFlash2 K7, a 65,536-token
+context, eight sequences and twelve GiB GPU KV per rank. The process audit
+verifies the probabilistic draft/standard rejection configuration and the
+checkpoint snapshots. The startup log records graph capture. This is not
+a GLM throughput benchmark or external-LMCache test.
+
+`vllm-handoff-pr-status.json` and `b12x-handoff-pr-status.json` confirm that the
+ten vLLM and four B12X PRs remain open, non-draft, correctly targeted and at
+the exact heads used in the complete-tree proofs. The corresponding canonical
+branches also remained at the audited commits during this confirmation.
+
+## Distributed tuning result compatibility
+
+`qwen-ple-registry-*-startup.log` records failed TP2/MTP3 starts of image
+`e5fef1d4361a77ea`, whose immutable receipts are in `ple-registry-release/`.
+The image's package tests passed, but actual serving found that canonical
+vLLM expects `TuningRequirement.rejected_count` and B12X did not expose it.
+These files are failure evidence, not throughput measurements.
+
+B12X #414 supplies a validated default-zero result field without changing
+kernel arithmetic or winner selection. The `tuning-result-contract-before.log`
+contains five failing contract tests. The separate B12X and vLLM `*-after.log`
+files contain 61 and 29 passing host tests. The `tuning-package-gate-*` records
+show the installed-package mismatch failing, both compatible field protocols
+passing, and 506 publisher/launcher tests passing with one skip.
+
+`b12x-tuning-contract-final-check.json` adds #414 to the ordered PR composition.
+Its integration commit is `3113aa0b8596fe55a96a28d58efd40f4dfa9955c`; the exact
+tree is `67c96e44da899e4660c38905724cb1943f8ab768`. The matching vLLM audit is
+`vllm-handoff-final-check.json`. Both have zero residual differences.
+
 ## Registry composition with QSA pre-launch guards
 
 The `qwen-qsa-guards-registry-*` artifacts use

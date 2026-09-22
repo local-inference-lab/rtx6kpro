@@ -1,0 +1,46 @@
+╭──────────────────────────── NVIDIA P2P Override ─────────────────────────────╮
+│ Effective: yes                                                               │
+│ Configured file: yes (/etc/modprobe.d/nvidia-p2p-override.conf)              │
+│ Runtime: ForceP2P=0x11; RMForceP2PType=1; RMPcieP2PType=2;                   │
+│ GrdmaPciTopoCheckOverride=1; EnableResizableBar=1; DmaRemapPeerMmio=1        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────── Configuration ────────────────────────────────╮
+│ LLM Inference Benchmark                                                      │
+│ Model: Qwen3.8-Flash-Next @ 192.168.0.115:5071                               │
+│ Decode concurrency: [1]                                                      │
+│ Decode contexts: ['0']                                                       │
+│ Decode: skipped (--prefill-only) | Max tokens: 32768                         │
+│ Pre-decode warmup: C=1 max-runnable context for 10s                          │
+│ Exact-loop guard: enabled | Output preview: unavailable in plain mode        │
+│ Prefill-only: standalone cold profile (client) | Sustained decode: 0 cells   │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Engine: vLLM 0.1.dev21691+g622912b9b  Models: ['Qwen3.8-Flash-Next']
+KV cache budget (vLLM metrics): 14,912,640 tokens (5178 blocks × 2880)
+Model context length: 524,288 tokens
+Prefill tests: standalone cold profile ['32k']
+Calibrating padding text (run=onvqnebyxjkl, up to 32k)...
+  Token targeting: single-point estimate from 8k (use --token-targeting exact 
+for /tokenize binary search)
+  Calibrated: 6.17 chars/token (cached, source=8k)
+  32k: 202,096 chars (~32,767 tokens)
+Done.
+
+
+
+llm-decode-bench v0.6.2
+Prefill Speed (C=1, client ISL / TTFT)                                          
+                                                                                
+                                                               PCIe rx/tx       
+  Context   Tokens   TTFT (s)   Client tok/s   Server tok/s           avg    N  
+ ────────────────────────────────────────────────────────────────────────────── 
+  32k       32,120       2.20         14,586              —   252322/261…   12  
+                                                                                
+Client tok/s = prompt_tokens / TTFT. Integrated scout rows come from the 
+prefix-cache scout request that decode needs anyway. Server tok/s is optional 
+Prometheus validation when the engine exports prefill counters and the exact 
+counter delta is uncontaminated; for vLLM this uses newly computed KV tokens, 
+not request prompt tokens.
+
+
+Results saved to 
+results/integration-audit-20260922/qwen-tuning-registry-prefill32k-3.json

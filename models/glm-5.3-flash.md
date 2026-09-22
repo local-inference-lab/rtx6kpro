@@ -80,7 +80,7 @@ Stop: `docker compose -f glm53-tp4-off.compose.yaml down` (keeps model/cache vol
 name: glm53-tp4-off
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-tp4-off
     init: true
     network_mode: host
@@ -634,7 +634,7 @@ Stop: `docker compose -f glm53-tp4-mtp3.compose.yaml down` (keeps model/cache vo
 name: glm53-tp4-mtp3
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-tp4-mtp3
     init: true
     network_mode: host
@@ -1193,7 +1193,7 @@ Stop: `docker compose -f glm53-tp4-dflash2.compose.yaml down` (keeps model/cache
 name: glm53-tp4-dflash2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-tp4-dflash2
     init: true
     network_mode: host

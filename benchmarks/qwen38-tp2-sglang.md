@@ -147,3 +147,15 @@ verifier steps/s. Its three uncached prefill windows give a median 14,680 tok/s.
 Sixteen mixed requests and twelve distinct-code CPU-restore requests pass.
 The comparison remains scoped to the identical GPU pair and checkpoint,
 not a claim that all request distributions or stopping policies are loop-free.
+
+The complete audited PR composition is published as
+`karmic-kraken-beta-20260922-3221ccacf71002ea`. Its initial five-run medians
+are 222.33 C1 / 906.80 C8 tok/s and 95.74/389.08 verifier steps/s; three
+uncached prefill windows give a median 14,570 tok/s. Relative to the QSA-guard
+image, output changes by −3.03% C1 / +0.48% C8, verifier rate by −0.59% /
++0.24%, and prefill by −0.75%. The lower C1 result is retained alongside
+its accepted-length change and separately identified post-prefill confirmation
+series in the [registry report](karmic-integration-merge-audit.md#qwen-tp2-performance-gate).
+All initial decode cells, sixteen mixed requests and twelve strict CPU-restore
+requests pass. Source reconstruction, image identity and serving correctness
+are separate gates; none substitutes for the throughput measurements.

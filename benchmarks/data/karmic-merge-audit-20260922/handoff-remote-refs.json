@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-09-22 09:18:51 UTC",
+  "branches": {
+    "vllm_canonical": "85a78f57a0e4d825f19b9cff243068d9a3aac7b2",
+    "vllm_integration": "622912b9b2cfd04784da5b0dfc69ce8aa5aee02d",
+    "b12x_canonical": "b294e69d8eba2ea56d2aed7cc359c0df4bcaa57d",
+    "b12x_integration": "3113aa0b8596fe55a96a28d58efd40f4dfa9955c"
+  },
+  "conclusion": "Both canonical and integration branch tips remain at the exact revisions used in the PR merge-tree proofs."
+}

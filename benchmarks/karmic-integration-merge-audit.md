@@ -12,38 +12,48 @@ they are not substituted for the published-image measurements.
 
 ## Artifact boundary
 
-The source audit below targets vLLM integration `622912b9b2c` after the
-canonical draft/PLE update. The registry measurements in this section use
-the preceding `47cb3450b11` integration; their identities are not interchangeable.
+The source audit targets vLLM integration `622912b9b2c` and B12X
+`3113aa0b859`, packaged together after the canonical draft/PLE update and
+tuning-result repair. Historical comparison rows retain their own image
+identities; they are not interchangeable with this artifact.
 
 Image:
-`ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635`
+`ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea`
 
 Digest:
-`sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575`
+`sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522`
 
 | Component | Published revision |
 |---|---|
-| vLLM integration | `47cb3450b11aac466f03a933de576a37f970da53` |
-| B12X integration | `d16e71c3da2a13c2d73370fba5b1149c95428fbd` |
-| Shared runtime recipe | `2057ca2708f9cfdc3d45814ad84a7ced742df05b` |
+| vLLM integration | `622912b9b2cfd04784da5b0dfc69ce8aa5aee02d` |
+| B12X integration | `3113aa0b8596fe55a96a28d58efd40f4dfa9955c` |
+| Shared runtime recipe | `338546b0e79ff765dd3031b671bef5e476b4e883` |
 
 Both source branches are `integration/karmic-kraken-beta`; the branch named
 `integration/beta` belongs to Jovian Judgement and is not the audit target.
-The [registry receipt and component manifest](data/karmic-merge-audit-20260922/qsa-guards-registry-release/)
+The [registry receipt and component manifest](data/karmic-merge-audit-20260922/tuning-registry-release/)
 bind the complete native dependencies and runtime to this image.
 
-The beta publication job in [build 35694181770](https://github.com/local-inference-lab/blackwell-llm-docker/actions/runs/35694181770)
+The beta publication job in [build 35703163862](https://github.com/local-inference-lab/blackwell-llm-docker/actions/runs/35703163862)
 succeeded, including 94 cache/packaging tests and native GPU smoke. The separate canonical KK publication failed because canonical
-B12X does not yet include #406. Merge the listed dependency before treating
+B12X does not yet include the required integration contracts. Merge the listed dependencies before treating
 the canonical channel as equivalent to this beta.
+
+The serving host received the exact builder artifact over LAN while the
+registry upload completed. Pulling the immutable registry digest then returned
+the identical Docker config
+`sha256:5cb7de41ecce821b2c33880b2787254c602aed86637c64ee58c77e701fd68db9`,
+also used by both Qwen containers. The archived OCI manifest maps the registry
+digest to that config; all 68 filesystem layers match. This verifies artifact
+identity across containerd and classic Docker stores, which expose different
+objects through their image-ID fields. No serving source overlays were used.
 
 ## Frozen inputs and merge order
 
 | Component | Canonical input | PR order |
 |---|---|---|
 | vLLM | `dev/karmic-kraken`, `85a78f57a0e4d825f19b9cff243068d9a3aac7b2` | #798, #805, #813, #821, #822, #837, #834, #835, #836, #838 |
-| B12X | `master`, `b294e69d8eba2ea56d2aed7cc359c0df4bcaa57d` | #393, #406, #409 |
+| B12X | `master`, `b294e69d8eba2ea56d2aed7cc359c0df4bcaa57d` | #393, #406, #409, #414 |
 
 Ordinary merge-commit composition preserves contributor histories and produces
 these complete Git trees:
@@ -51,10 +61,10 @@ these complete Git trees:
 | Component | Canonical + PR tree, identical to integration | Remaining differences |
 |---|---|---:|
 | vLLM | `c38e7c35300f96d016ddd2611019bf55a435b624` | 0 |
-| B12X | `895617e7f076eb6b099f450a947f36627d42356f` | 0 |
+| B12X | `67c96e44da899e4660c38905724cb1943f8ab768` | 0 |
 
 The [vLLM](data/karmic-merge-audit-20260922/vllm-canonical-85a78-final-check.json) and
-[B12X](data/karmic-merge-audit-20260922/b12x-final-review-check.json) audit
+[B12X](data/karmic-merge-audit-20260922/b12x-tuning-contract-final-check.json) audit
 records include every actual PR head, author, canonical base and intermediate
 merge tree. All merges are conflict-free at these revisions. Commit IDs need
 not match because the integration histories differ; all tracked file contents
@@ -85,6 +95,10 @@ Squash/rebase is not the merge operation simulated here.
   pooled draft loading and mixed-page cache layouts. The fused DFlash context
   projection still owns its quantization method independently of the query
   projection. Both loader selections have regression coverage.
+- B12X #414 adds the rejection-count field consumed by canonical vLLM's
+  distributed tuning coordinator. The five-argument result constructor remains
+  valid. No candidate skipping, kernel arithmetic or winner-selection policy
+  changes; failed launch candidates are not silently discarded.
 
 Luke Alonso's metadata-copy fusion, Qwen projection-sharding capability,
 NVFP4 decode tiles, runtime grid tuning and IQ2_XS support remain present.
@@ -99,6 +113,8 @@ in the frozen canonical base remains present.
 |---|---|---|
 | PR #798 synchronized with canonical `85a78f57a0e`: DFlash, PLE, configuration, warmup, mixed-page packing and MHC replay | 235 distinct tests | Pass; five require two GPUs or disk-I/O permission and pass with those capabilities |
 | Canonical noncausal/mixed/asymmetric attention, runtime layout and pooled-weight paths | 14 selected tests | Pass |
+| B12X tuning-result contract and canonical vLLM rank coordination | Five focused tests fail before; 61 B12X and 29 vLLM tests pass after | Qualified host protocol |
+| Installed-package tuning exchange and publisher gate | Mismatched packages fail; compatible five/six-field pairs pass; 506 publisher/launcher tests pass, one skip | Qualified without a GPU or model |
 | Published composition: GDN metadata and graph contracts | 61 tests | Pass |
 | Published composition: B12X tuning and swapped NVFP4, including CUDA | 183 tests | Pass |
 | QSA boundary correction: invalid capacity, pre-write validation and live-empty DCP ranks | Seven negative reproducers fail before; 19 contract/oracle tests pass after | Qualified |
@@ -125,6 +141,25 @@ Each intervening prompt has a different access code; restoration must recover
 `TEAL-428` and the sum 13, rather than reuse an intervening request's state.
 This qualifies live CPU restoration, not persistence after server shutdown.
 
+### Distributed-startup failure caught by serving qualification
+
+Image `e5fef1d4361a77ea`, digest
+`sha256:37a1aeeaddad12f395eec8735e56b62443a0c091a0657cc97bda22e55d276d88`,
+contains vLLM `622912b9b2c`, B12X `d16e71c3da2` and recipe `95cc14ef046`.
+Both TP2/MTP3 deployments fail during distributed autotuning: canonical vLLM
+reads `TuningRequirement.rejected_count`, absent from the selected B12X package.
+This is a startup failure, not a valid benchmark arm. The published release is
+marked with the failure; no throughput is assigned to it.
+
+[B12X #414](https://github.com/local-inference-lab/b12x/pull/414) supplies the
+validated result field. [Publisher #66](https://github.com/local-inference-lab/blackwell-llm-docker/pull/66)
+executes the installed packages' host-side exchange before publication, so an
+import-only package check can no longer miss this schema mismatch. The source
+proof above includes #414. Both rebuilt Qwen TP2/MTP3 servers start, capture
+graphs and pass the distinct-code CPU-restore check. These serving results
+remain separate from the 90 passing host tests. Complete receipts and failed
+startup logs are retained in the raw evidence directory.
+
 ## Qwen TP2 performance gate
 
 Same physical pair of RTX PRO 6000 Blackwell Max-Q GPUs at stock clocks,
@@ -141,6 +176,32 @@ of five warmed 30-second windows. C8 is aggregate output.
 | Metadata-fix registry image `97197f5085f4798b` | 225.17 | 95.29 | 898.41 | 387.12 |
 | Canonical-update registry image `04a3c00a18b9d45f` | 228.80 | 96.35 | 909.26 | 387.84 |
 | QSA-guard registry image `4d9905b931656635` | 229.27 | 96.31 | 902.43 | 388.14 |
+| Audited PR composition `3221ccacf71002ea`, initial series | 222.33 | 95.74 | 906.80 | 389.08 |
+| Same `3221ccacf71002ea` server, fixed post-prefill confirmation | 222.57 | 95.81 | 905.13 | 389.32 |
+
+The audited PR composition measures **+10.71% C1 / +1.70% C8** against the
+saved SGLang deployment. Relative to the QSA-guard image, measured output is
+**−3.03% C1 / +0.48% C8**, while verifier rate is **−0.59% / +0.24%**.
+The C1 accepted-length median changes from 2.380 to 2.321. The lower output
+result is retained, not relabeled as zero regression; five stochastic runs do
+not isolate a source-induced acceptance change. C1 output ranges from 213.03
+to 234.24 tok/s, whereas verifier rates remain within 95.70–95.78 steps/s.
+
+All ten initial decode cells pass the error, loop and occupancy guards.
+Three uncached prefill windows measure **14,547 / 14,570 / 14,586 tok/s**,
+each with twelve requests: **median 14,570**, −0.75% against the QSA-guard
+image. Sixteen mixed text/JSON-schema requests and all twelve distinct-code
+CPU-restore requests pass. Restoration returns 2,880 external tokens and zero
+native GPU hits. The profiler was configured but never activated.
+
+A second, fixed five-run series follows the prefill and mixed-request checks
+without changing or restarting the server. All ten additional decode cells
+pass, with medians **222.57 / 905.13 output tok/s** and **95.81 / 389.32
+steps/s**. C1 accepted length is 2.324. This confirms the lower C1 observation;
+prefill warmup does not restore the preceding image's output median. The
+two series remain separate, and neither invalidates or replaces the initial
+results. The verifier difference remains below 1%, but an acceptance-related
+output difference must not be described as zero throughput regression.
 
 The QSA-guard image measures **+14.16% C1 / +1.21% C8** against SGLang.
 All five C1/C8 repeats pass the error, loop and occupancy guards. Three uncached
@@ -160,7 +221,8 @@ and no CPU/NUMA binding was applied.
 
 The canonical-update comparison uses digest
 `sha256:f30243cff149bdde2cc7eb43e90e2839a6c89c0d30f9364935267570a145fc45`,
-the same vLLM/runtime revisions as the artifact boundary above, and B12X
+vLLM `47cb3450b11aac466f03a933de576a37f970da53`, recipe
+`2057ca2708f9cfdc3d45814ad84a7ced742df05b`, and B12X
 `c4349457b13905f9f1689240fcda5991e133de44`. The QSA boundary guards, associated
 tests and release-policy wording distinguish the B12X revisions; no valid
 DCP1 kernel arithmetic was changed by those guards.
@@ -210,6 +272,26 @@ the deployment evidence.
 
 ## Compatibility limits and merge handoff
 
+### GLM DFlash2 loader and vision check
+
+The same immutable `3221ccacf71002ea` image passes all seven bounded checks
+on four stock Max-Q GPUs: arithmetic, cold/repeated/changed text prefixes,
+single-image shape recognition, and ordered two/four-image color lookup.
+The actual process uses DFlash2 K7 with probabilistic drafts and standard
+rejection, TP4/DCP1, B12X target serving and full/piecewise graph capture.
+The draft attention backend is `FLASH_ATTN` with automatic cache dtype.
+
+Target snapshot: `520de24eabf507659eaef7c70f14fd584527facc`;
+MXFP8 draft snapshot: `713226ab03bc38afdf955c7450436c2f7176f6f8`.
+The bounded launch sets a 65,536-token context, eight sequences and twelve GiB
+GPU KV per rank; the scheduler budget remains 4096. No source overlays are
+used. These are correctness/startup checks, not a repeated GLM throughput or
+external-LMCache qualification on this digest.
+[Launch, process audit, responses and server log](data/karmic-merge-audit-20260922/glm-tuning-registry-smoke/)
+record the conditions independently of the Qwen measurements.
+
+### Outstanding limits
+
 - Compact GLM recovery #821 reduces TP2 recovery storage from 856.58 to
   668.81 MiB per rank. Its recorded TP4 MTP output cost is about 3.1% at
   C1 and 1.8% at C8; this tradeoff remains visible.
@@ -222,6 +304,6 @@ the deployment evidence.
   the bounded test; a reporter payload is still needed. It is not marked fixed.
 
 [Luke's merge checklist](https://github.com/local-inference-lab/vllm/issues/808)
-lists the purpose and order of all 13 PRs.
+lists the purpose and order of all 14 PRs.
 [Raw evidence and reproducers](data/karmic-merge-audit-20260922/) retain exact
 image identities, individual cells, source audits and historical controls.

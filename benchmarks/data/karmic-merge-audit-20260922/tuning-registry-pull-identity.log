@@ -1,0 +1,7 @@
+ghcr.io/local-inference-lab/vllm@sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522: Pulling from local-inference-lab/vllm
+Digest: sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522
+Status: Downloaded newer image for ghcr.io/local-inference-lab/vllm@sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522
+ghcr.io/local-inference-lab/vllm@sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522
+sha256:5cb7de41ecce821b2c33880b2787254c602aed86637c64ee58c77e701fd68db9 ["ghcr.io/local-inference-lab/vllm@sha256:bf2c8f5da6f1de82b345367102b528692231a23eadc1b49c180c82c397c77522"]
+/qwen-tuning-registry-perf sha256:5cb7de41ecce821b2c33880b2787254c602aed86637c64ee58c77e701fd68db9
+/qwen-tuning-registry-native sha256:5cb7de41ecce821b2c33880b2787254c602aed86637c64ee58c77e701fd68db9

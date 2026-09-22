@@ -1,0 +1,414 @@
+W0922 07:53:02.358000 7 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:53:02.358000 7 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:53:02.358000 7 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:53:06.018000 7 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 07:53:06.034000 7 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+ERROR 09-22 07:53:10 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+INFO 09-22 07:53:10 [__init__.py:112] Registered model loader `<class 'b12x.integration.vllm.loader.B12xModelLoader'>` with load format `b12x`
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:347] 
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.1.dev21691+g622912b9b
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /root/.cache/huggingface/hub/models--local-inference-lab--Qwen3.8-Flash-Next-NVFP4/snapshots/7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:347] 
+(APIServer pid=7) INFO 09-22 07:53:10 [api_utils.py:286] non-default args: {'model_tag': '/root/.cache/huggingface/hub/models--local-inference-lab--Qwen3.8-Flash-Next-NVFP4/snapshots/7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd', 'enable_auto_tool_choice': True, 'tool_call_parser': 'qwen3_xml', 'enable_prompt_tokens_details': True, 'host': '0.0.0.0', 'port': 5075, 'model': '/root/.cache/huggingface/hub/models--local-inference-lab--Qwen3.8-Flash-Next-NVFP4/snapshots/7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd', 'dtype': 'bfloat16', 'max_model_len': 8192, 'quantization': 'modelopt_mixed', 'served_model_name': ['Qwen3.8-Flash-Next'], 'enable_cumem_allocator': True, 'load_format': 'instanttensor', 'reasoning_parser': 'qwen3', 'tensor_parallel_size': 2, 'block_size': 64, 'gpu_memory_utilization': 0.96, 'kv_cache_memory_bytes': 1073741824, 'kv_cache_dtype': 'fp8', 'enable_prefix_caching': True, 'recurrent_checkpoint_policy': 'aligned', 'mamba_cache_mode': 'align', 'kv_offloading_size': 4.0, 'mm_processor_cache_gb': 0.0, 'mm_encoder_tp_mode': 'data', 'max_num_batched_tokens': 6019, 'max_num_seqs': 4, 'enable_chunked_prefill': True, 'async_scheduling': True, 'max_cudagraph_capture_size': 64, 'enable_flashinfer_autotune': False, 'moe_backend': 'b12x', 'linear_backend': 'b12x', 'speculative_config': {'method': 'mtp', 'moe_backend': 'b12x', 'num_speculative_tokens': 3}, 'compilation_config': {'mode': None, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': None, 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}, 'gdn_decode_kernel': 'b12x'}
+(APIServer pid=7) WARNING 09-22 07:53:10 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_CACHE_DIR
+(APIServer pid=7) WARNING 09-22 07:53:10 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_CAUSAL_CONV1D_UPDATE_HOIST
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) INFO 09-22 07:53:19 [model.py:693] Resolved architecture: Qwen4ExpForConditionalGeneration
+(APIServer pid=7) INFO 09-22 07:53:19 [model.py:2054] Using max model len 8192
+(APIServer pid=7) [ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(APIServer pid=7) [ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(APIServer pid=7) WARNING 09-22 07:53:19 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) ERROR 09-22 07:53:19 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(APIServer pid=7) INFO 09-22 07:53:19 [cache.py:369] Using fp8 data type to store kv cache. It reduces the GPU memory footprint and boosts the performance. Meanwhile, it may cause accuracy drop without a proper scaling factor
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) INFO 09-22 07:53:28 [model.py:693] Resolved architecture: Qwen4ExpMTP
+(APIServer pid=7) INFO 09-22 07:53:28 [model.py:2054] Using max model len 262144
+(APIServer pid=7) WARNING 09-22 07:53:28 [speculative.py:1497] Enabling num_speculative_tokens > 1 will run multiple times of forward on same MTP layer,which may result in lower acceptance rate
+(APIServer pid=7) INFO 09-22 07:53:28 [speculative.py:1807] Overriding draft model max model len from 262144 to 8192
+(APIServer pid=7) INFO 09-22 07:53:28 [scheduler.py:385] Chunked prefill is enabled with max_num_batched_tokens=6019.
+(APIServer pid=7) INFO 09-22 07:53:28 [vllm.py:1426] Resolved Engram configuration: EngramConfig(cpu_offload=True, embedding_across_dp=False, dp_shared_memory=False, table_memory='device', disk_resident_scales=False, projection_tp=False)
+(APIServer pid=7) INFO 09-22 07:53:28 [vllm.py:920] Auto-enabling VLLM_USE_BREAKABLE_CUDAGRAPH=1. Set VLLM_USE_BREAKABLE_CUDAGRAPH=0 to opt out.
+(APIServer pid=7) INFO 09-22 07:53:28 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(APIServer pid=7) WARNING 09-22 07:53:28 [vllm.py:2318] max_num_scheduled_tokens is set to 6019 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+(APIServer pid=7) INFO 09-22 07:53:29 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+W0922 07:53:36.914000 817 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:53:36.915000 817 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:53:36.915000 817 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:53:39.432000 817 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 07:53:39.447000 817 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+ERROR 09-22 07:53:41 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(EngineCore pid=817) INFO 09-22 07:53:42 [__init__.py:112] Registered model loader `<class 'b12x.integration.vllm.loader.B12xModelLoader'>` with load format `b12x`
+(EngineCore pid=817) INFO 09-22 07:53:42 [core.py:123] Initializing a V1 LLM engine (v0.1.dev21691+g622912b9b) with config: model='/root/.cache/huggingface/hub/models--local-inference-lab--Qwen3.8-Flash-Next-NVFP4/snapshots/7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd', speculative_config=SpeculativeConfig(method='mtp', model='/root/.cache/huggingface/hub/models--local-inference-lab--Qwen3.8-Flash-Next-NVFP4/snapshots/7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd', num_spec_tokens=3), tokenizer='/root/.cache/huggingface/hub/models--local-inference-lab--Qwen3.8-Flash-Next-NVFP4/snapshots/7c4f1bc1a2d6847e0cbc01ac6b823f00251de8dd', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=8192, download_dir=None, load_format=instanttensor, tensor_parallel_size=2, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=modelopt_mixed, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='qwen3', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=Qwen3.8-Flash-Next, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [6019], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': True, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 64, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=False, enable_b12x_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, enable_bf16x3_router_gemm=False, moe_backend='b12x', sparse_indexer_topk_backend='auto', linear_backend='b12x', linear_backend_per_quant=None)
+(EngineCore pid=817) INFO 09-22 07:53:42 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=192.168.0.115 (local), world_size=2, local_world_size=2
+W0922 07:53:43.375000 834 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:53:43.375000 834 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:53:43.375000 834 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:53:46.124000 834 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 07:53:46.139000 834 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(APIServer pid=7) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+ERROR 09-22 07:53:48 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+INFO 09-22 07:53:48 [__init__.py:112] Registered model loader `<class 'b12x.integration.vllm.loader.B12xModelLoader'>` with load format `b12x`
+[ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+[ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+WARNING 09-22 07:53:49 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+W0922 07:53:49.128000 845 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:53:49.129000 845 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:53:49.129000 845 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+(Worker pid=834) INFO 09-22 07:53:49 [parallel_state.py:1859] world_size=2 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_ce67ff6a6ded4ab9b6cc43e54b31610e backend=nccl
+(APIServer pid=7) INFO 09-22 07:53:51 [base.py:261] Multi-modal warmup completed in 10.584s
+W0922 07:53:51.923000 845 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 07:53:51.939000 845 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+ERROR 09-22 07:53:53 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+INFO 09-22 07:53:54 [__init__.py:112] Registered model loader `<class 'b12x.integration.vllm.loader.B12xModelLoader'>` with load format `b12x`
+[ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+[ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+WARNING 09-22 07:53:54 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+[transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(Worker pid=845) INFO 09-22 07:53:55 [parallel_state.py:1859] world_size=2 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_ce67ff6a6ded4ab9b6cc43e54b31610e backend=nccl
+(Worker pid=845) INFO 09-22 07:53:56 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=834) INFO 09-22 07:53:56 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=834) INFO 09-22 07:53:56 [pynccl.py:148] vLLM is using nccl==2.31.2
+(Worker pid=834) INFO 09-22 07:53:57 [b12x_pcie_all_reduce.py:319] Using B12X PCIe all-reduce (algorithm=oneshot, one-shot max=524288, fused max=86016, two-shot bf16 max=off, DMA min=6291456).
+(Worker pid=834) WARNING 09-22 07:53:57 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+(Worker pid=845) WARNING 09-22 07:53:57 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+(Worker pid=834) INFO 09-22 07:53:57 [cuda_communicator.py:365] Using ['B12X_PCIE', 'PYNCCL'] all-reduce backends (in dispatch order) for group 'tp:0' out of potential backends: ['FLASHINFER_PCIE_IPC', 'B12X_PCIE', 'B12X_ROCENANTE', 'FLASHINFER', 'NCCL_SYMM_MEM', 'QUICK_REDUCE', 'AITER_CUSTOM', 'CUSTOM', 'SYMM_MEM', 'PYNCCL'].
+(Worker pid=834) INFO 09-22 07:53:57 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=845) INFO 09-22 07:53:57 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=834) INFO 09-22 07:53:57 [cuda_communicator.py:365] Using ['PYNCCL'] all-reduce backends (in dispatch order) for group 'ep:0' out of potential backends: ['FLASHINFER_PCIE_IPC', 'B12X_PCIE', 'B12X_ROCENANTE', 'FLASHINFER', 'NCCL_SYMM_MEM', 'QUICK_REDUCE', 'AITER_CUSTOM', 'CUSTOM', 'SYMM_MEM', 'PYNCCL'].
+(Worker pid=834) INFO 09-22 07:53:57 [parallel_state.py:2299] rank 0 in world size 2 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank 0, EPLB rank N/A
+(Worker pid=834) INFO 09-22 07:53:57 [gpu_worker.py:472] Using V2 Model Runner
+(Worker_TP1 pid=845) /opt/venv/lib/python3.12/site-packages/vllm/device_allocator/cumem.py:382: FutureWarning: torch.cuda._set_allocator_settings is deprecated. Use torch._C._accelerator_setAllocatorSettings instead.
+(Worker_TP1 pid=845)   torch.cuda.memory._set_allocator_settings("expandable_segments:False")
+(Worker_TP0 pid=834) /opt/venv/lib/python3.12/site-packages/vllm/device_allocator/cumem.py:382: FutureWarning: torch.cuda._set_allocator_settings is deprecated. Use torch._C._accelerator_setAllocatorSettings instead.
+(Worker_TP0 pid=834)   torch.cuda.memory._set_allocator_settings("expandable_segments:False")
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [model_runner.py:412] Loading model from scratch...
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [__init__.py:923] Using B12xMxfp8LinearKernel for MXFP8 GEMM
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [cuda.py:597] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [__init__.py:1181] Using B12xNvFp4LinearKernel for NVFP4 GEMM
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [qwen_gdn_linear_attn.py:426] Using b12x CuTeDSL GDN prefill kernel (requested=b12x, head_k_dim=128).
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [qwen_gdn_linear_attn.py:823] GDN decode kernel: b12x
+(Worker_TP0 pid=834) ERROR 09-22 07:54:00 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(Worker_TP1 pid=845) ERROR 09-22 07:54:00 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [nvfp4.py:261] Using 'B12X' NvFp4 MoE backend out of potential backends: ['FLASHINFER_TRTLLM', 'FLASHINFER_CUTEDSL', 'FLASHINFER_CUTEDSL_BATCHED', 'FLASHINFER_CUTLASS', 'VLLM_CUTLASS', 'MARLIN', 'HUMMING', 'EMULATION'].
+(Worker_TP0 pid=834) INFO 09-22 07:54:00 [mamba_utils.py:38] VLLM_SSM_CONV_STATE_LAYOUT env detected. Setting SSM conv state layout to DS.
+(Worker_TP1 pid=845) INFO 09-22 07:54:03 [b12x_ple.py:275] Using 13.41 GiB of CUDA-mapped host memory for this TP rank's PLE table
+(Worker_TP0 pid=834) INFO 09-22 07:54:03 [b12x_ple.py:275] Using 13.41 GiB of CUDA-mapped host memory for this TP rank's PLE table
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:   0% Completed | 0.00/98.5G [00:00<?, ?B/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:   2% Completed | 2.31G/98.5G [00:01<00:41, 2.48GB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:   5% Completed | 4.70G/98.5G [00:08<03:02, 551MB/s]
+(Worker_TP0 pid=834)  Loading safetensors using InstantTensor loader:  11% Completed | 11.0G/98.5G [00:09<01:02, 1.51GB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  15% Completed | 14.5G/98.5G [00:16<01:42, 876MB/s]
+(Worker_TP0 pid=834)  Loading safetensors using InstantTensor loader:  17% Completed | 16.9G/98.5G [00:18<01:31, 955MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  19% Completed | 18.8G/98.5G [00:24<02:03, 695MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  23% Completed | 22.5G/98.5G [00:26<01:29, 916MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  24% Completed | 24.1G/98.5G [00:31<01:57, 682MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  29% Completed | 28.2G/98.5G [00:34<01:24, 897MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  30% Completed | 29.6G/98.5G [00:39<01:52, 660MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  34% Completed | 33.8G/98.5G [00:42<01:17, 897MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  36% Completed | 35.0G/98.5G [00:47<01:45, 648MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  40% Completed | 39.4G/98.5G [00:50<01:10, 897MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  41% Completed | 40.6G/98.5G [00:55<01:35, 652MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  46% Completed | 45.1G/98.5G [00:57<01:03, 899MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  47% Completed | 46.3G/98.5G [01:03<01:25, 654MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  51% Completed | 50.7G/98.5G [01:05<00:57, 900MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  53% Completed | 51.9G/98.5G [01:10<01:16, 654MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  57% Completed | 56.3G/98.5G [01:13<00:50, 900MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  58% Completed | 57.5G/98.5G [01:18<01:07, 655MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  63% Completed | 61.9G/98.5G [01:21<00:43, 900MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  64% Completed | 63.2G/98.5G [01:26<00:57, 658MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  69% Completed | 67.6G/98.5G [01:29<00:36, 904MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  70% Completed | 68.8G/98.5G [01:34<00:48, 660MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  74% Completed | 73.2G/98.5G [01:37<00:30, 906MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  76% Completed | 74.4G/98.5G [01:42<00:39, 661MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  80% Completed | 78.9G/98.5G [01:44<00:23, 909MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  81% Completed | 80.1G/98.5G [01:49<00:29, 661MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  86% Completed | 84.5G/98.5G [01:52<00:16, 909MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  87% Completed | 85.7G/98.5G [01:57<00:20, 661MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  91% Completed | 90.1G/98.5G [02:00<00:09, 911MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:  93% Completed | 91.3G/98.5G [02:05<00:11, 662MB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader: 100% Completed | 98.5G/98.5G [02:06<00:00, 1.33GB/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader: 100% Completed | 98.5G/98.5G [02:08<00:00, 821MB/s]
+(Worker_TP0 pid=834)  
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [default_loader.py:510] Loading weights took 131.43 seconds
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [nvfp4.py:618] Using MoEPrepareAndFinalizeNoDPEPModular
+(Worker_TP1 pid=845) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP1 pid=845) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP1 pid=845) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [vllm.py:1426] Resolved Engram configuration: EngramConfig(cpu_offload=True, embedding_across_dp=False, dp_shared_memory=False, table_memory='device', disk_resident_scales=False, projection_tp=False)
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=834) WARNING 09-22 07:56:15 [vllm.py:2318] max_num_scheduled_tokens is set to 6019 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [vllm.py:2853] EC/KV consumer: accepting pre-computed-embedding inputs, which this role is sent by definition.
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [vllm.py:2857] EC/KV consumer: pre-computed-embedding inputs may omit the embedding tensor.
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP1 pid=845) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [vocab_parallel_embedding.py:437] Quantizing LM head shards to NVFP4 with BF16 activations.
+(Worker_TP0 pid=834) INFO 09-22 07:56:15 [weight_utils.py:704] Safetensors index filter selected 1/36 checkpoint shards.
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader:   0% Completed | 0.00/4.24G [00:00<?, ?B/s]
+(Worker_TP0 pid=834) Loading safetensors using InstantTensor loader: 100% Completed | 4.24G/4.24G [00:00<00:00, 13.7GB/s]
+(Worker_TP0 pid=834) 
+(Worker_TP0 pid=834) INFO 09-22 07:56:16 [default_loader.py:510] Loading weights took 0.67 seconds
+(Worker_TP0 pid=834) WARNING 09-22 07:56:17 [speculator.py:240] Draft model Qwen4ExpMTP does not support external multimodal embeddings. Embeddings from the target model will not be passed to the drafter; using text-only draft inputs instead.
+(Worker_TP0 pid=834) INFO 09-22 07:56:18 [model_runner.py:444] Model loading took 39.24 GiB memory and 138.571579 seconds
+(Worker_TP1 pid=845) INFO 09-22 07:56:18 [model_runner.py:444] Model loading took 39.24 GiB memory and 138.573506 seconds
+(Worker_TP0 pid=834) INFO 09-22 07:56:18 [topk_topp_sampler.py:80] Using FlashInfer for top-p & top-k sampling.
+(Worker_TP1 pid=845) /opt/venv/lib/python3.12/site-packages/vllm/device_allocator/cumem.py:416: FutureWarning: torch.cuda._set_allocator_settings is deprecated. Use torch._C._accelerator_setAllocatorSettings instead.
+(Worker_TP1 pid=845)   torch.cuda.memory._set_allocator_settings("expandable_segments:True")
+(Worker_TP0 pid=834) /opt/venv/lib/python3.12/site-packages/vllm/device_allocator/cumem.py:416: FutureWarning: torch.cuda._set_allocator_settings is deprecated. Use torch._C._accelerator_setAllocatorSettings instead.
+(Worker_TP0 pid=834)   torch.cuda.memory._set_allocator_settings("expandable_segments:True")
+(Worker_TP0 pid=834) INFO 09-22 07:56:18 [interface.py:1050] Setting attention block size to 2880 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=834) INFO 09-22 07:56:18 [interface.py:1083] Padding mamba page size by 1.50% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP1 pid=845) INFO 09-22 07:56:18 [interface.py:1050] Setting attention block size to 2880 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=845) INFO 09-22 07:56:18 [interface.py:1083] Padding mamba page size by 1.50% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=817) WARNING 09-22 07:56:18 [torch_utils.py:275] OMP_NUM_THREADS=2 is set; leaving Torch threads at 2 for serving. Multi-threaded torch CPU ops during serving can degrade performance through spin-wait contention and cgroup CPU-quota throttling.
+(EngineCore pid=817) INFO 09-22 07:56:18 [utils.py:405] Using BLHNC KV cache layout.
+(Worker_TP0 pid=834) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+(Worker_TP0 pid=834) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+(Worker_TP1 pid=845) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(Worker_TP1 pid=845) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(Worker_TP0 pid=834) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP1 pid=845) [transformers] The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+(Worker_TP0 pid=834) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+(Worker_TP0 pid=834) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_interleaved', 'mrope_section'}
+(Worker_TP1 pid=845) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(Worker_TP1 pid=845) [transformers] Unrecognized keys in `rope_parameters` for 'rope_type'='default': {'mrope_section', 'mrope_interleaved'}
+(Worker_TP1 pid=845) INFO 09-22 07:56:23 [b12x_prepare.py:570] b12x weights preparation uses 8 compiler workers
+(Worker_TP0 pid=834) INFO 09-22 07:56:23 [b12x_prepare.py:570] b12x weights preparation uses 8 compiler workers
+b12x waiting for ranks: 0/2647 ready, 0 measured, 0 cached, 0 compilations, 0:00
+b12x planning moe.decode: 0/166 ready, candidates 0/4 prepared, 0 measured, 0 cached, 0 compilations, 0:00
+b12x preparing candidates gemm.blockscaled_precision: 0/166 ready, candidates 0/7 prepared, 0 measured, 0 cached, 0 compilations, 0:00
+b12x compiling gemm.blockscaled_precision: 0/166 ready, candidates 0/7 prepared, rank 0 batch 1, 0 measured, 0 cached, 0 compilations, 0:01
+W0922 07:56:24.962000 1108 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:24.962000 1108 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:24.963000 1108 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:24.974000 1120 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:24.974000 1120 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:24.974000 1120 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:24.992000 1121 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:24.993000 1121 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:24.993000 1121 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.012000 1114 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.013000 1114 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.013000 1114 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.020000 1111 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.020000 1111 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.021000 1111 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.023000 1107 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.023000 1107 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.024000 1107 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.024000 1109 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.024000 1110 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.025000 1109 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.025000 1109 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.025000 1110 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.025000 1110 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.032000 1105 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.032000 1105 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.033000 1105 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.036000 1112 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.037000 1112 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.037000 1112 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.045000 1122 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.045000 1122 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.046000 1122 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.049000 1115 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.049000 1115 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.050000 1115 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.058000 1118 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.059000 1118 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.059000 1118 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.060000 1106 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.060000 1123 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.060000 1106 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.060000 1123 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.061000 1123 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.061000 1106 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 07:56:25.060000 1113 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 07:56:25.061000 1113 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 07:56:25.061000 1113 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+b12x autotuning gemm.blockscaled_precision: 0/166 ready, candidates 9/9 prepared, rank 0 batch 1, round 2/3, 13 measured, 0 cached, 36 compilations, 0:08
+b12x compiling gemm.blockscaled_precision: 0/166 ready, candidates 17/27 prepared, rank 0 batch 1, 57 measured, 0 cached, 121 compilations, 0:18
+b12x calibrating gemm.blockscaled_precision: 0/166 ready, candidates 5/5 prepared, rank 0 batch 1, 403 measured, 0 cached, 167 compilations, 0:25
+b12x compiling moe.decode: 0/166 ready, candidates 0/7 prepared, rank 0 batch 1, 1011 measured, 0 cached, 247 compilations, 0:35
+b12x compiling moe.decode: 0/166 ready, candidates 0/8 prepared, rank 0 batch 1, 1089 measured, 0 cached, 306 compilations, 0:45
+b12x autotuning moe.decode: 0/166 ready, candidates 9/9 prepared, rank 0 batch 1, round 0/3, 1214 measured, 0 cached, 363 compilations, 0:55
+b12x autotuning norm.hyperconnection: 0/166 ready, candidates 4/4 prepared, rank 0 batch 1, round 0/3, 1251 measured, 0 cached, 363 compilations, 0:55
+b12x compiling norm.hyperconnection: 1/166 ready, candidates 1/4 prepared, rank 0 batch 1, 1255 measured, 0 cached, 364 compilations, 0:55
+b12x compiling sequence.ple_embedding: 3/166 ready, candidates 0/1 prepared, 1259 measured, 0 cached, 366 compilations, 0:55
+b12x compiling sequence.mtp_feedback: 31/166 ready, candidates 0/8 prepared, rank 0 batch 1, 1378 measured, 0 cached, 409 compilations, 0:59
+(EngineCore pid=817) INFO 09-22 07:57:24 [shm_broadcast.py:813] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+b12x autotuning sequence.mtp_feedback: 31/166 ready, candidates 8/8 prepared, rank 0 batch 1, round 0/3, 1378 measured, 0 cached, 431 compilations, 1:01
+b12x compiling gemm.blockscaled_precision: 40/166 ready, candidates 10/12 prepared, rank 0 batch 1, 1589 measured, 0 cached, 476 compilations, 1:11
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057] WorkerProc hit an exception.
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057] Traceback (most recent call last):
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1049, in _execute_worker_rpc
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     output = func(*args, **kwargs)
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]              ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 184, in run_b12x_preparation
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     outcome = self.advance_b12x_preparation(
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 592, in advance_b12x_preparation
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     outcome = coordinator.advance(cancel_tuning=cancel_tuning)
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 116, in advance
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     return self._advance(cancel_tuning=cancel_tuning)
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 164, in _advance
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     or self._ready_tuning()
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]        ^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 347, in _ready_tuning
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     return tuple(
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]            ^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 354, in <genexpr>
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     item.rejected_count,
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     ^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057] AttributeError: 'TuningRequirement' object has no attribute 'rejected_count'
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057] Traceback (most recent call last):
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1049, in _execute_worker_rpc
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     output = func(*args, **kwargs)
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]              ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 184, in run_b12x_preparation
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     outcome = self.advance_b12x_preparation(
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 592, in advance_b12x_preparation
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     outcome = coordinator.advance(cancel_tuning=cancel_tuning)
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 116, in advance
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     return self._advance(cancel_tuning=cancel_tuning)
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 164, in _advance
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     or self._ready_tuning()
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]        ^^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 347, in _ready_tuning
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     return tuple(
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]            ^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 354, in <genexpr>
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     item.rejected_count,
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057]     ^^^^^^^^^^^^^^^^^^^
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057] AttributeError: 'TuningRequirement' object has no attribute 'rejected_count'
+(Worker_TP1 pid=845) ERROR 09-22 07:57:40 [multiproc_executor.py:1057] 
+b12x compiling gemm.blockscaled_precision: 40/166 ready, candidates 34/36 prepared, rank 0 batch 2, 1793 measured, 0 cached, 511 compilations, 1:22
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057] WorkerProc hit an exception.
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057] Traceback (most recent call last):
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1049, in _execute_worker_rpc
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     output = func(*args, **kwargs)
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]              ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 184, in run_b12x_preparation
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     outcome = self.advance_b12x_preparation(
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 592, in advance_b12x_preparation
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     outcome = coordinator.advance(cancel_tuning=cancel_tuning)
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 116, in advance
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     return self._advance(cancel_tuning=cancel_tuning)
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 164, in _advance
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     or self._ready_tuning()
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]        ^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 347, in _ready_tuning
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     return tuple(
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]            ^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 354, in <genexpr>
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     item.rejected_count,
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     ^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057] AttributeError: 'TuningRequirement' object has no attribute 'rejected_count'
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057] Traceback (most recent call last):
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 1049, in _execute_worker_rpc
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     output = func(*args, **kwargs)
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]              ^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/worker_base.py", line 184, in run_b12x_preparation
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     outcome = self.advance_b12x_preparation(
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 592, in advance_b12x_preparation
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     outcome = coordinator.advance(cancel_tuning=cancel_tuning)
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 116, in advance
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     return self._advance(cancel_tuning=cancel_tuning)
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 164, in _advance
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     or self._ready_tuning()
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]        ^^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 347, in _ready_tuning
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     return tuple(
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]            ^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/worker/b12x_startup.py", line 354, in <genexpr>
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     item.rejected_count,
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057]     ^^^^^^^^^^^^^^^^^^^
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057] AttributeError: 'TuningRequirement' object has no attribute 'rejected_count'
+(Worker_TP0 pid=834) ERROR 09-22 07:57:47 [multiproc_executor.py:1057] 
+b12x failed gemm.blockscaled_precision: 40/166 ready, candidates 9/9 prepared, rank 0 batch 1, round 0/3, 1797 measured, 0 cached, 513 compilations, 1:25
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482] EngineCore failed to start.
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482] Traceback (most recent call last):
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1444, in run_engine_core
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     return func(*args, **kwargs)
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1201, in __init__
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     super().__init__(
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 146, in __init__
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     kv_cache_config = self._initialize_kv_caches(vllm_config)
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     return func(*args, **kwargs)
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 318, in _initialize_kv_caches
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     available_gpu_memory = self.model_executor.determine_available_memory()
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 401, in determine_available_memory
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     self._run_b12x_preparation(stage="weights")
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 344, in _run_b12x_preparation
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     outcomes = self.collective_rpc(
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]                ^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 448, in collective_rpc
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     return future if non_block else future.result()
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]                                     ^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 99, in result
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     return super().result()
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]            ^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     return self.__get_result()
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]            ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     raise self._exception
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 103, in _wait_for_response
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     response = self.aggregate(self.get_response())
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]                               ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]   File "/opt/venv/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 437, in get_response
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482]     raise RuntimeError(
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482] RuntimeError: Worker failed with error ''TuningRequirement' object has no attribute 'rejected_count'', please check the stack trace above for the root cause
+(EngineCore pid=817) ERROR 09-22 07:57:49 [core.py:1482] b12x preparation abort failed: RuntimeError("Worker failed with error ''TuningRequirement' object has no attribute 'rejected_count'', please check the stack trace above for the root cause")

@@ -96,7 +96,7 @@ Stop: `docker compose -f qwen38-tp1.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp1
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: qwen38-tp1
     init: true
     network_mode: host
@@ -617,7 +617,7 @@ Stop: `docker compose -f qwen38-tp2.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: qwen38-tp2
     init: true
     network_mode: host
@@ -1149,6 +1149,12 @@ leave additional host RAM for loading and the server. Keep offload enabled for
 the one-96-GB-GPU recipe. Disk mode requires fast local storage and still uses
 host working memory; the performance table uses RAM, not disk placement.
 
+Native disk reads need io_uring permission. The [Docker configurator](https://local-inference-lab.ai/docker)
+adds the required setting when you select disk tables. When editing a command
+manually, also add `--security-opt seccomp=unconfined` before the image, or use
+a custom seccomp profile that permits io_uring. The unconfined option disables
+Docker's default syscall filter for that container; RAM placement does not need it.
+
 The shared guide explains [prefix retention](../docs/unified-vllm-docker.md#prefix-cache-defaults).
 Do not add a global `--prefix-cache-retention-interval 4096` override.
 For vision, append `--no-language-model-only` after the image name. Image-bearing
@@ -1228,13 +1234,16 @@ twelve requests each, using client TTFT.
 
 | Measurement | vLLM | Community SGLang |
 |---|---:|---:|
-| C1 output | 229.3 tok/s | 200.8 tok/s |
-| C8 aggregate output | 902.4 tok/s | 891.7 tok/s |
-| 32k prefill | 14,680 tok/s | Not measured in this comparison |
+| C1 output | 222.3 tok/s | 200.8 tok/s |
+| C8 aggregate output | 906.8 tok/s | 891.7 tok/s |
+| 32k prefill | 14,570 tok/s | Not measured in this comparison |
 
-vLLM image: `karmic-kraken-beta-20260922-4d9905b931656635`, without local
-source changes. This is +14.2% C1 and +1.2% C8; C8 is approximately matched.
-The three prefill windows span 14,544–15,000 tok/s. Both engines
+vLLM image: `karmic-kraken-beta-20260922-3221ccacf71002ea`, without local
+source changes. This is +10.7% C1 and +1.7% C8; C8 is approximately matched.
+Against the preceding measured beta, output is −3.0% C1 / +0.5% C8 and
+prefill is −0.75%; verifier rates differ by −0.6% / +0.2%.
+A separate five-run confirmation gives 222.6 / 905.1 tok/s at C1/C8.
+The three prefill windows span 14,547–14,586 tok/s. Both engines
 use the same QAD checkpoint, but their runtime versions and recurrent-state
 precision differ. [Configuration and repeated comparison](../benchmarks/qwen38-tp2-sglang.md)
 and [published-image confirmation](../benchmarks/karmic-integration-merge-audit.md#qwen-tp2-performance-gate).

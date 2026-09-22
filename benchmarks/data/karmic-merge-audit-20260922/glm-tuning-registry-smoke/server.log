@@ -1,0 +1,664 @@
+W0922 09:09:35.003000 7 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:09:35.003000 7 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:09:35.004000 7 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:09:38.627000 7 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:09:38.643000 7 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:347] 
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:347]        █     █     █▄   ▄█
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:347]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.1.dev21691+g622912b9b
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:347]   █▄█▀ █     █     █     █  model   /root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-NVFP4/snapshots/520de24eabf507659eaef7c70f14fd584527facc
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:347]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:347] 
+(APIServer pid=7) INFO 09-22 09:09:42 [api_utils.py:286] non-default args: {'model_tag': '/root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-NVFP4/snapshots/520de24eabf507659eaef7c70f14fd584527facc', 'default_chat_template_kwargs': {'reasoning_effort': 'high', 'clear_thinking': False}, 'enable_auto_tool_choice': True, 'tool_call_parser': 'glm47', 'enable_prompt_tokens_details': True, 'host': '0.0.0.0', 'port': 5075, 'model': '/root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-NVFP4/snapshots/520de24eabf507659eaef7c70f14fd584527facc', 'dtype': 'bfloat16', 'max_model_len': 65536, 'quantization': 'modelopt_mixed', 'served_model_name': ['GLM-5.3-Flash-NVFP4'], 'override_generation_config': {'temperature': 1.0, 'top_p': 0.95}, 'load_format': 'instanttensor', 'attention_backend': 'B12X', 'reasoning_parser': 'glm45', 'tensor_parallel_size': 4, 'dcp_kv_cache_interleave_size': 4, 'cp_kv_cache_interleave_size': 4, 'block_size': 256, 'gpu_memory_utilization': 0.93, 'kv_cache_memory_bytes': 12884901888, 'kv_cache_dtype': 'fp8', 'enable_prefix_caching': True, 'recurrent_checkpoint_policy': 'request_boundaries', 'mamba_cache_mode': 'align', 'max_num_batched_tokens': 4096, 'max_num_seqs': 8, 'enable_chunked_prefill': True, 'prefill_compute_share': 0.4, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 32, 40, 48, 64, 96, 128, 192, 256], 'max_cudagraph_capture_size': 256, 'enable_flashinfer_autotune': False, 'moe_backend': 'b12x', 'linear_backend': 'b12x', 'speculative_config': {'method': 'dflash', 'model': '/root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-DFlash2/snapshots/713226ab03bc38afdf955c7450436c2f7176f6f8', 'draft_sample_method': 'probabilistic', 'rejection_sample_method': 'standard', 'attention_backend': 'FLASH_ATTN', 'kv_cache_dtype': 'auto', 'num_speculative_tokens': 7}, 'compilation_config': {'mode': None, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': [], 'ir_enable_torch_wrap': None, 'splitting_ops': None, 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': None, 'compile_ranges_endpoints': None, 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': None, 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': None, 'pass_config': {}, 'max_cudagraph_capture_size': None, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': None, 'static_all_moe_layers': []}, 'additional_config': {'glm53_kda_decode_backend': 'auto', 'kda_prefill_backend': 'b12x'}}
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_CACHE_DIR
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_CAUSAL_CONV1D_UPDATE_HOIST
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_L2_PREFETCH_PERSIST_MB
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_SPLIT_TARGET_BLOCK_SIZE
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_ONLINE_DENSE_MXFP8
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_KDA_GATE_SIDE_STREAM
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_L2_PREFETCH
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_DFLASH_ATTN
+(APIServer pid=7) WARNING 09-22 09:09:42 [envs.py:2393] Unknown vLLM environment variable detected: VLLM_GLM53_SPLIT_MAMBA_BLOCK_SIZE
+(APIServer pid=7) INFO 09-22 09:09:52 [model.py:693] Resolved architecture: Glm5NextForConditionalGeneration
+(APIServer pid=7) INFO 09-22 09:09:52 [model.py:2054] Using max model len 65536
+(APIServer pid=7) ERROR 09-22 09:09:52 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(APIServer pid=7) WARNING 09-22 09:09:52 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(APIServer pid=7) ERROR 09-22 09:09:52 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(APIServer pid=7) INFO 09-22 09:09:54 [cache.py:369] Using fp8 data type to store kv cache. It reduces the GPU memory footprint and boosts the performance. Meanwhile, it may cause accuracy drop without a proper scaling factor
+(APIServer pid=7) INFO 09-22 09:10:03 [model.py:693] Resolved architecture: DFlash2DraftModel
+(APIServer pid=7) INFO 09-22 09:10:03 [model.py:2054] Using max model len 1048576
+(APIServer pid=7) INFO 09-22 09:10:03 [speculative.py:1807] Overriding draft model max model len from 1048576 to 65536
+(APIServer pid=7) INFO 09-22 09:10:03 [scheduler.py:385] Chunked prefill is enabled with max_num_batched_tokens=4096.
+(APIServer pid=7) INFO 09-22 09:10:03 [vllm.py:920] Auto-enabling VLLM_USE_BREAKABLE_CUDAGRAPH=1. Set VLLM_USE_BREAKABLE_CUDAGRAPH=0 to opt out.
+(APIServer pid=7) INFO 09-22 09:10:03 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(APIServer pid=7) WARNING 09-22 09:10:03 [vllm.py:2318] max_num_scheduled_tokens is set to 4096 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+(APIServer pid=7) INFO 09-22 09:10:03 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(APIServer pid=7) INFO 09-22 09:10:04 [vllm.py:3443] GLM speculative KDA uses B12X checkpoint recovery with FP32 recurrent state. Use --no-use-replayssm to retain full speculative states.
+W0922 09:10:07.930000 813 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:10:07.931000 813 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:10:07.931000 813 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+(APIServer pid=7) INFO 09-22 09:10:10 [base.py:261] Multi-modal warmup completed in 1.207s
+W0922 09:10:10.359000 813 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:10:10.374000 813 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+(APIServer pid=7) INFO 09-22 09:10:11 [base.py:261] Readonly multi-modal warmup completed in 1.280s
+ERROR 09-22 09:10:12 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(EngineCore pid=813) INFO 09-22 09:10:13 [core.py:123] Initializing a V1 LLM engine (v0.1.dev21691+g622912b9b) with config: model='/root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-NVFP4/snapshots/520de24eabf507659eaef7c70f14fd584527facc', speculative_config=SpeculativeConfig(method='dflash', model='/root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-DFlash2/snapshots/713226ab03bc38afdf955c7450436c2f7176f6f8', num_spec_tokens=7), tokenizer='/root/.cache/huggingface/hub/models--local-inference-lab--GLM-5.3-Flash-NVFP4/snapshots/520de24eabf507659eaef7c70f14fd584527facc', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=65536, download_dir=None, load_format=instanttensor, tensor_parallel_size=4, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=modelopt_mixed, quantization_config=None, enforce_eager=False, enable_return_routed_experts=False, kv_cache_dtype=fp8, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='glm45', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=GLM-5.3-Flash-NVFP4, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [4096], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 32, 40, 48, 64, 96, 128, 192, 256], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': True, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 256, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=False, enable_b12x_autotune=True, enable_cutedsl_warmup=True, enable_jit_warmup=True, enable_bf16x3_router_gemm=False, moe_backend='b12x', sparse_indexer_topk_backend='auto', linear_backend='b12x', linear_backend_per_quant=None)
+(EngineCore pid=813) INFO 09-22 09:10:13 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=192.168.0.115 (local), world_size=4, local_world_size=4
+W0922 09:10:14.236000 827 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:10:14.236000 827 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:10:14.237000 827 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:10:16.578000 832 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:10:16.578000 832 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:10:16.579000 832 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:10:17.004000 827 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:10:17.020000 827 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:10:18.942000 838 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:10:18.943000 838 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:10:18.943000 838 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+ERROR 09-22 09:10:19 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+W0922 09:10:19.347000 832 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:10:19.362000 832 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+WARNING 09-22 09:10:19 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+ERROR 09-22 09:10:19 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(Worker pid=827) INFO 09-22 09:10:20 [parallel_state.py:1859] world_size=4 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_9afad6542c334e6bac21fbc66ea30644 backend=nccl
+W0922 09:10:21.295000 849 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:10:21.295000 849 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:10:21.295000 849 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+ERROR 09-22 09:10:21 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+W0922 09:10:21.888000 838 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:10:21.905000 838 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+WARNING 09-22 09:10:22 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+ERROR 09-22 09:10:22 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(Worker pid=832) INFO 09-22 09:10:23 [parallel_state.py:1859] world_size=4 rank=1 local_rank=1 distributed_init_method=file:///tmp/vllm_dist_9afad6542c334e6bac21fbc66ea30644 backend=nccl
+W0922 09:10:24.108000 849 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0922 09:10:24.124000 849 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+ERROR 09-22 09:10:24 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+WARNING 09-22 09:10:25 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+ERROR 09-22 09:10:25 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+ERROR 09-22 09:10:26 [config.py:29] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(Worker pid=838) INFO 09-22 09:10:26 [parallel_state.py:1859] world_size=4 rank=2 local_rank=2 distributed_init_method=file:///tmp/vllm_dist_9afad6542c334e6bac21fbc66ea30644 backend=nccl
+WARNING 09-22 09:10:26 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+ERROR 09-22 09:10:26 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(Worker pid=849) INFO 09-22 09:10:27 [parallel_state.py:1859] world_size=4 rank=3 local_rank=3 distributed_init_method=file:///tmp/vllm_dist_9afad6542c334e6bac21fbc66ea30644 backend=nccl
+(Worker pid=838) INFO 09-22 09:10:29 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=849) INFO 09-22 09:10:29 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=832) INFO 09-22 09:10:29 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=827) INFO 09-22 09:10:29 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=827) INFO 09-22 09:10:29 [pynccl.py:148] vLLM is using nccl==2.31.2
+(Worker pid=849) WARNING 09-22 09:10:30 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+(Worker pid=838) WARNING 09-22 09:10:30 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+(Worker pid=832) WARNING 09-22 09:10:30 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+(Worker pid=827) INFO 09-22 09:10:30 [b12x_pcie_all_reduce.py:319] Using B12X PCIe all-reduce (algorithm=oneshot, one-shot max=86016, fused max=86016, two-shot bf16 max=off, DMA min=6291456).
+(Worker pid=827) WARNING 09-22 09:10:30 [symm_mem.py:67] SymmMemCommunicator: Device capability 12.0 not supported, communicator is not available.
+(Worker pid=827) INFO 09-22 09:10:30 [cuda_communicator.py:365] Using ['B12X_PCIE', 'PYNCCL'] all-reduce backends (in dispatch order) for group 'tp:0' out of potential backends: ['FLASHINFER_PCIE_IPC', 'B12X_PCIE', 'B12X_ROCENANTE', 'FLASHINFER', 'NCCL_SYMM_MEM', 'QUICK_REDUCE', 'AITER_CUSTOM', 'CUSTOM', 'SYMM_MEM', 'PYNCCL'].
+(Worker pid=832) INFO 09-22 09:10:30 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=849) INFO 09-22 09:10:30 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=838) INFO 09-22 09:10:30 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=827) INFO 09-22 09:10:30 [nccl.py:25] Found nccl from environment variable VLLM_NCCL_SO_PATH=/opt/venv/lib/python3.12/site-packages/local_inference_nccl/lib/libnccl.so.2.31.2
+(Worker pid=827) INFO 09-22 09:10:30 [cuda_communicator.py:365] Using ['PYNCCL'] all-reduce backends (in dispatch order) for group 'ep:0' out of potential backends: ['FLASHINFER_PCIE_IPC', 'B12X_PCIE', 'B12X_ROCENANTE', 'FLASHINFER', 'NCCL_SYMM_MEM', 'QUICK_REDUCE', 'AITER_CUSTOM', 'CUSTOM', 'SYMM_MEM', 'PYNCCL'].
+(Worker pid=827) INFO 09-22 09:10:30 [parallel_state.py:2299] rank 0 in world size 4 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank 0, EPLB rank N/A
+(Worker pid=827) INFO 09-22 09:10:30 [gpu_worker.py:472] Using V2 Model Runner
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [model_runner.py:412] Loading model from scratch...
+(Worker_TP2 pid=838) INFO 09-22 09:10:31 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [cuda.py:597] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=827) WARNING 09-22 09:10:31 [vllm.py:2318] max_num_scheduled_tokens is set to 4096 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+(Worker_TP3 pid=849) INFO 09-22 09:10:31 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(Worker_TP1 pid=832) INFO 09-22 09:10:31 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [mla_attention.py:682] Using fp8_ds_mla KV cache format for B12X backend.
+(Worker_TP0 pid=827) WARNING 09-22 09:10:31 [mla_attention.py:777] Sparse MLA layer has no dense-MHA prefill path; using the top-k MQA path only.
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [deep_gemm.py:196] deep_gemm not found in site-packages, trying vendored vllm.third_party.deep_gemm
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [deep_gemm.py:223] DeepGEMM PDL enabled on vllm.third_party.deep_gemm.
+(Worker_TP0 pid=827) INFO 09-22 09:10:31 [deep_gemm.py:136] DeepGEMM E8M0 enabled on current platform.
+(Worker_TP0 pid=827) INFO 09-22 09:10:32 [nvfp4.py:261] Using 'B12X' NvFp4 MoE backend out of potential backends: ['FLASHINFER_TRTLLM', 'FLASHINFER_CUTEDSL', 'FLASHINFER_CUTLASS', 'VLLM_CUTLASS', 'MARLIN', 'HUMMING', 'EMULATION'].
+(Worker_TP0 pid=827) INFO 09-22 09:10:33 [l2_prefetch.py:508] [l2_prefetch] persisting L2 set-aside on cuda:0: L2 134 MB, max 84 MB, requested 0 MB, now 0 MB
+(Worker_TP2 pid=838) INFO 09-22 09:10:33 [l2_prefetch.py:508] [l2_prefetch] persisting L2 set-aside on cuda:2: L2 134 MB, max 84 MB, requested 0 MB, now 0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:10:33 [l2_prefetch.py:508] [l2_prefetch] persisting L2 set-aside on cuda:3: L2 134 MB, max 84 MB, requested 0 MB, now 0 MB
+(Worker_TP1 pid=832) INFO 09-22 09:10:33 [l2_prefetch.py:508] [l2_prefetch] persisting L2 set-aside on cuda:1: L2 134 MB, max 84 MB, requested 0 MB, now 0 MB
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:   0% Completed | 0.00/184G [00:00<?, ?B/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:   5% Completed | 8.44G/184G [00:01<00:20, 9.06GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:   9% Completed | 16.9G/184G [00:02<00:20, 8.77GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  14% Completed | 25.5G/184G [00:03<00:18, 8.98GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  18% Completed | 33.9G/184G [00:04<00:18, 8.59GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  23% Completed | 42.1G/184G [00:05<00:17, 8.65GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  27% Completed | 50.1G/184G [00:06<00:17, 8.15GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  31% Completed | 57.8G/184G [00:07<00:16, 8.08GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  35% Completed | 65.3G/184G [00:08<00:16, 7.62GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  39% Completed | 72.5G/184G [00:09<00:15, 7.59GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  43% Completed | 79.6G/184G [00:10<00:15, 7.47GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  47% Completed | 86.6G/184G [00:11<00:14, 7.39GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  51% Completed | 94.8G/184G [00:12<00:12, 7.81GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  55% Completed | 102G/184G [00:13<00:11, 7.63GB/s]
+(Worker_TP0 pid=827)  Loading safetensors using InstantTensor loader:  59% Completed | 109G/184G [00:14<00:10, 7.41GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  63% Completed | 116G/184G [00:16<00:10, 7.00GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  67% Completed | 123G/184G [00:17<00:09, 6.73GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  70% Completed | 129G/184G [00:18<00:09, 6.50GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  73% Completed | 135G/184G [00:19<00:08, 6.47GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  77% Completed | 141G/184G [00:20<00:07, 6.57GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  80% Completed | 148G/184G [00:21<00:05, 6.83GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  84% Completed | 155G/184G [00:22<00:04, 6.76GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  88% Completed | 163G/184G [00:23<00:03, 7.25GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  95% Completed | 175G/184G [00:24<00:01, 8.89GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:  99% Completed | 183G/184G [00:26<00:00, 6.48GB/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader: 100% Completed | 184G/184G [00:26<00:00, 7.38GB/s]
+(Worker_TP0 pid=827) 
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [default_loader.py:510] Loading weights took 28.75 seconds
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [nvfp4.py:618] Using MoEPrepareAndFinalizeNoDPEPModular
+(Worker_TP3 pid=849) INFO 09-22 09:11:02 [eagle3_utils.py:27] Using Eagle3 auxiliary layers from config: (6, 15, 25, 34, 43)
+(Worker_TP3 pid=849) INFO 09-22 09:11:02 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [eagle3_utils.py:27] Using Eagle3 auxiliary layers from config: (6, 15, 25, 34, 43)
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP2 pid=838) INFO 09-22 09:11:02 [eagle3_utils.py:27] Using Eagle3 auxiliary layers from config: (6, 15, 25, 34, 43)
+(Worker_TP2 pid=838) INFO 09-22 09:11:02 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP1 pid=832) INFO 09-22 09:11:02 [eagle3_utils.py:27] Using Eagle3 auxiliary layers from config: (6, 15, 25, 34, 43)
+(Worker_TP1 pid=832) INFO 09-22 09:11:02 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [__init__.py:923] Using B12xMxfp8LinearKernel for MXFP8 GEMM
+(Worker_TP3 pid=849) INFO 09-22 09:11:02 [cuda.py:478] Using AttentionBackendEnum.FLASH_ATTN backend.
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [cuda.py:478] Using AttentionBackendEnum.FLASH_ATTN backend.
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [flash_attn.py:1274] Using FlashAttention version 2
+(Worker_TP1 pid=832) INFO 09-22 09:11:02 [cuda.py:478] Using AttentionBackendEnum.FLASH_ATTN backend.
+(Worker_TP2 pid=838) INFO 09-22 09:11:02 [cuda.py:478] Using AttentionBackendEnum.FLASH_ATTN backend.
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader:   0% Completed | 0.00/1.20G [00:00<?, ?B/s]
+(Worker_TP0 pid=827) Loading safetensors using InstantTensor loader: 100% Completed | 1.20G/1.20G [00:00<00:00, 4.76GB/s]
+(Worker_TP0 pid=827) 
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [default_loader.py:510] Loading weights took 0.56 seconds
+(Worker_TP0 pid=827) INFO 09-22 09:11:02 [qwen3_dflash.py:644] Using B12xMxfp8LinearKernel for the fused DFlash context K/V projection.
+(Worker_TP0 pid=827) WARNING 09-22 09:11:02 [speculator.py:240] Draft model DFlash2Qwen3ForCausalLM does not support external multimodal embeddings. Embeddings from the target model will not be passed to the drafter; using text-only draft inputs instead.
+(Worker_TP3 pid=849) INFO 09-22 09:11:03 [model_runner.py:444] Model loading took 45.71 GiB memory and 32.616511 seconds
+(Worker_TP3 pid=849) WARNING 09-22 09:11:03 [interface.py:899] Using split GLM-5.3 cache pages: target block size 2048 tokens, recurrent-state block size 2048 tokens.
+(Worker_TP0 pid=827) INFO 09-22 09:11:03 [model_runner.py:444] Model loading took 45.71 GiB memory and 32.728599 seconds
+(Worker_TP0 pid=827) INFO 09-22 09:11:03 [topk_topp_sampler.py:80] Using FlashInfer for top-p & top-k sampling.
+(Worker_TP0 pid=827) WARNING 09-22 09:11:03 [interface.py:899] Using split GLM-5.3 cache pages: target block size 2048 tokens, recurrent-state block size 2048 tokens.
+(Worker_TP2 pid=838) INFO 09-22 09:11:04 [model_runner.py:444] Model loading took 45.71 GiB memory and 32.824205 seconds
+(Worker_TP2 pid=838) WARNING 09-22 09:11:04 [interface.py:899] Using split GLM-5.3 cache pages: target block size 2048 tokens, recurrent-state block size 2048 tokens.
+(Worker_TP1 pid=832) INFO 09-22 09:11:04 [model_runner.py:444] Model loading took 45.71 GiB memory and 33.171851 seconds
+(Worker_TP1 pid=832) WARNING 09-22 09:11:04 [interface.py:899] Using split GLM-5.3 cache pages: target block size 2048 tokens, recurrent-state block size 2048 tokens.
+(EngineCore pid=813) INFO 09-22 09:11:04 [utils.py:405] Using BLHNC KV cache layout.
+(Worker_TP3 pid=849) INFO 09-22 09:11:06 [b12x_prepare.py:570] b12x weights preparation uses 8 compiler workers
+(Worker_TP2 pid=838) INFO 09-22 09:11:06 [b12x_prepare.py:570] b12x weights preparation uses 8 compiler workers
+(Worker_TP0 pid=827) INFO 09-22 09:11:06 [b12x_prepare.py:570] b12x weights preparation uses 8 compiler workers
+(Worker_TP1 pid=832) INFO 09-22 09:11:06 [b12x_prepare.py:570] b12x weights preparation uses 8 compiler workers
+b12x waiting for ranks: 0/3921 ready, 0 measured, 0 cached, 0 compilations, 0:00
+b12x planning norm.mhc: 0/298 ready, candidates 0/163 prepared, 0 measured, 0 cached, 0 compilations, 0:00
+b12x planning moe.decode: 0/298 ready, candidates 0/33 prepared, 0 measured, 0 cached, 0 compilations, 0:01
+b12x planning gemm.blockscaled_precision: 0/298 ready, candidates 0/17 prepared, 0 measured, 0 cached, 0 compilations, 0:01
+b12x compiling norm.mhc: 0/298 ready, candidates 0/1 prepared, 0 measured, 0 cached, 0 compilations, 0:01
+W0922 09:11:09.399000 2402 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.400000 2402 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.400000 2402 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.407000 2405 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.407000 2405 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.408000 2405 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.411000 2396 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.411000 2396 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.411000 2396 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.418000 2387 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.418000 2387 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.419000 2387 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.428000 2392 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.428000 2392 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.428000 2392 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.440000 2389 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.441000 2389 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.441000 2389 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.445000 2377 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.446000 2377 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.446000 2377 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.447000 2399 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.447000 2399 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.448000 2399 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.450000 2390 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.450000 2390 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.450000 2390 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.452000 2415 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.453000 2415 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.453000 2415 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.467000 2403 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.468000 2403 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.468000 2403 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.475000 2383 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.476000 2383 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.476000 2383 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.484000 2397 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.485000 2397 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.485000 2397 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.489000 2391 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.490000 2391 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.490000 2391 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.503000 2411 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.504000 2411 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.504000 2411 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.513000 2378 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.513000 2378 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.514000 2378 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.513000 2395 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.514000 2395 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.514000 2395 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.514000 2401 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.514000 2401 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.514000 2401 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.516000 2406 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.516000 2406 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.517000 2406 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.517000 2407 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.517000 2407 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.518000 2407 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.517000 2393 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.518000 2393 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.518000 2393 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.518000 2379 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.519000 2379 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.520000 2379 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.520000 2381 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.520000 2416 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.520000 2381 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.521000 2381 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.520000 2376 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.521000 2416 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.521000 2416 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.521000 2376 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.521000 2376 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.521000 2394 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.521000 2380 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.522000 2394 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.522000 2394 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.522000 2388 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.522000 2380 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.522000 2380 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.522000 2400 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.522000 2388 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.523000 2388 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.522000 2400 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.523000 2400 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.523000 2404 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.523000 2382 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.523000 2404 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.523000 2382 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.524000 2404 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.524000 2382 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:11:09.528000 2398 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:11:09.529000 2398 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:11:09.529000 2398 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+b12x preparing candidates norm.mhc: 1/298 ready, candidates 1/41 prepared, rank 0 batch 1, 0 measured, 0 cached, 160 compilations, 0:07
+b12x autotuning norm.mhc: 3/298 ready, candidates 41/41 prepared, rank 0 batch 2, round 0/3, 236 measured, 0 cached, 191 compilations, 0:08
+b12x compiling norm.mhc: 23/298 ready, candidates 188/194 prepared, rank 0 batch 6, 2966 measured, 0 cached, 1135 compilations, 0:18
+b12x autotuning norm.mhc: 31/298 ready, candidates 192/297 prepared, rank 0 batch 6, round 2/3, 5917 measured, 0 cached, 2159 compilations, 0:28
+b12x autotuning norm.mhc: 33/298 ready, candidates 379/379 prepared, rank 0 batch 12, round 2/3, 7777 measured, 0 cached, 3402 compilations, 0:38
+b12x compiling norm.mhc: 37/298 ready, candidates 239/559 prepared, rank 0 batch 8, 10349 measured, 0 cached, 4791 compilations, 0:48
+b12x preparing candidates moe.decode: 40/298 ready, candidates 0/7 prepared, 12310 measured, 0 cached, 5810 compilations, 0:56
+b12x compiling moe.decode: 40/298 ready, candidates 0/7 prepared, rank 0 batch 1, 12310 measured, 0 cached, 5826 compilations, 0:57
+(EngineCore pid=813) INFO 09-22 09:12:07 [shm_broadcast.py:813] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+b12x compiling moe.decode: 40/298 ready, candidates 0/8 prepared, rank 0 batch 1, 12511 measured, 0 cached, 5907 compilations, 1:07
+b12x autotuning moe.decode: 40/298 ready, candidates 9/9 prepared, rank 0 batch 1, round 0/3, 12519 measured, 0 cached, 5909 compilations, 1:07
+b12x compiling moe.decode: 40/298 ready, candidates 2/9 prepared, rank 0 batch 1, 12753 measured, 0 cached, 5956 compilations, 1:17
+b12x calibrating moe.decode: 40/298 ready, candidates 9/9 prepared, rank 0 batch 1, 13135 measured, 0 cached, 5990 compilations, 1:21
+b12x compiling gemm.bf16_vocab_projection: 40/298 ready, candidates 4/6 prepared, rank 0 batch 1, 13179 measured, 0 cached, 6001 compilations, 1:21
+b12x compiling gemm.blockscaled_precision: 68/298 ready, candidates 0/5 prepared, rank 0 batch 1, 13225 measured, 0 cached, 6008 compilations, 1:22
+b12x autotuning gemm.blockscaled_precision: 68/298 ready, candidates 5/5 prepared, rank 0 batch 1, round 0/3, 13757 measured, 0 cached, 6040 compilations, 1:25
+b12x autotuning gemm.blockscaled_precision: 68/298 ready, candidates 5/5 prepared, rank 0 batch 1, round 0/3, 15077 measured, 0 cached, 6129 compilations, 1:35
+b12x compiling gemm.blockscaled_precision: 68/298 ready, candidates 0/5 prepared, rank 0 batch 1, 15417 measured, 0 cached, 6163 compilations, 1:45
+b12x priming moe.decode: 88/298 ready, candidates 5/5 prepared, rank 0 batch 1, 15585 measured, 0 cached, 6181 compilations, 1:48
+b12x compiling gemm.blockscaled_precision: 233/298 ready, candidates 5/5 prepared, rank 0 batch 1, 15585 measured, 0 cached, 6238 compilations, 1:58
+b12x compiling comm.pcie: 269/298 ready, candidates 0/1 prepared, 15585 measured, 0 cached, 6261 compilations, 2:00
+(EngineCore pid=813) INFO 09-22 09:13:07 [shm_broadcast.py:813] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+b12x compiling comm.pcie: 269/298 ready, candidates 0/1 prepared, 15585 measured, 0 cached, 6361 compilations, 2:10
+b12x waiting for ranks comm.pcie: 269/298 ready, candidates 0/1 prepared, 15585 measured, 0 cached, 6385 compilations, 2:13
+b12x priming comm.pcie: 298/298 ready, candidates 0/1 prepared, 15585 measured, 0 cached, 6411 compilations, 2:14
+b12x ready comm.pcie: 298/298 ready, candidates 0/1 prepared, 15585 measured, 0 cached, 6411 compilations, 2:17
+(Worker_TP0 pid=827) INFO 09-22 09:13:27 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 32242 tokens, and profiled with 1 video items of the maximum feature size.
+(Worker_TP1 pid=832) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 0 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 10 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L1.hc_attn_fn:1.6MB, L1.hc_attn_base:0.0MB, L1.input_layernorm.weight:0.0MB, L1.self_attn.dt_bias:0.0MB, L1.self_attn.A_log:0.0MB | C: 5 segs 6.9 MB: L1.self_attn.in_proj_qkvgfab.weight[tail]:4.7MB, L1.self_attn.f_b_proj.weight[tail]:0.5MB, L1.self_attn.conv1d.weight[tail]:0.1MB, L1.self_attn.g_a_proj.weight[tail]:1.0MB, L1.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 0 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 10 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L1.hc_attn_fn:1.6MB, L1.hc_attn_base:0.0MB, L1.input_layernorm.weight:0.0MB, L1.self_attn.dt_bias:0.0MB, L1.self_attn.A_log:0.0MB | C: 5 segs 6.9 MB: L1.self_attn.in_proj_qkvgfab.weight[tail]:4.7MB, L1.self_attn.f_b_proj.weight[tail]:0.5MB, L1.self_attn.conv1d.weight[tail]:0.1MB, L1.self_attn.g_a_proj.weight[tail]:1.0MB, L1.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP0 pid=827) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 0 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 10 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L1.hc_attn_fn:1.6MB, L1.hc_attn_base:0.0MB, L1.input_layernorm.weight:0.0MB, L1.self_attn.dt_bias:0.0MB, L1.self_attn.A_log:0.0MB | C: 5 segs 6.9 MB: L1.self_attn.in_proj_qkvgfab.weight[tail]:4.7MB, L1.self_attn.f_b_proj.weight[tail]:0.5MB, L1.self_attn.conv1d.weight[tail]:0.1MB, L1.self_attn.g_a_proj.weight[tail]:1.0MB, L1.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP2 pid=838) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 0 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 10 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L1.hc_attn_fn:1.6MB, L1.hc_attn_base:0.0MB, L1.input_layernorm.weight:0.0MB, L1.self_attn.dt_bias:0.0MB, L1.self_attn.A_log:0.0MB | C: 5 segs 6.9 MB: L1.self_attn.in_proj_qkvgfab.weight[tail]:4.7MB, L1.self_attn.f_b_proj.weight[tail]:0.5MB, L1.self_attn.conv1d.weight[tail]:0.1MB, L1.self_attn.g_a_proj.weight[tail]:1.0MB, L1.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP2 pid=838) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 2 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 15 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L3.hc_attn_fn:1.6MB, L3.hc_attn_base:0.0MB, L3.input_layernorm.weight:0.0MB, L3.self_attn.fused_qkv_a_proj.weight:16.8MB, L3.self_attn.q_a_layernorm.weight:0.0MB | C: 2 segs 4.6 MB: L3.self_attn.mla_attn.mla_attn.W_UV[tail]:0.4MB, L3.self_attn.mla_attn.mla_attn.W_UK_T[tail]:4.2MB | dropped 0.0 MB
+(Worker_TP1 pid=832) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 2 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 15 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L3.hc_attn_fn:1.6MB, L3.hc_attn_base:0.0MB, L3.input_layernorm.weight:0.0MB, L3.self_attn.fused_qkv_a_proj.weight:16.8MB, L3.self_attn.q_a_layernorm.weight:0.0MB | C: 2 segs 4.6 MB: L3.self_attn.mla_attn.mla_attn.W_UV[tail]:0.4MB, L3.self_attn.mla_attn.mla_attn.W_UK_T[tail]:4.2MB | dropped 0.0 MB
+(Worker_TP0 pid=827) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 2 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 15 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L3.hc_attn_fn:1.6MB, L3.hc_attn_base:0.0MB, L3.input_layernorm.weight:0.0MB, L3.self_attn.fused_qkv_a_proj.weight:16.8MB, L3.self_attn.q_a_layernorm.weight:0.0MB | C: 2 segs 4.6 MB: L3.self_attn.mla_attn.mla_attn.W_UV[tail]:0.4MB, L3.self_attn.mla_attn.mla_attn.W_UK_T[tail]:4.2MB | dropped 0.0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 2 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 15 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, L3.hc_attn_fn:1.6MB, L3.hc_attn_base:0.0MB, L3.input_layernorm.weight:0.0MB, L3.self_attn.fused_qkv_a_proj.weight:16.8MB, L3.self_attn.q_a_layernorm.weight:0.0MB | C: 2 segs 4.6 MB: L3.self_attn.mla_attn.mla_attn.W_UV[tail]:0.4MB, L3.self_attn.mla_attn.mla_attn.W_UK_T[tail]:4.2MB | dropped 0.0 MB
+(Worker_TP1 pid=832) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 3 A: deferred | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L4.hc_attn_fn:1.6MB, L4.hc_attn_base:0.0MB, L4.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L4.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L4.self_attn.f_b_proj.weight[tail]:0.5MB, L4.self_attn.conv1d.weight[tail]:0.1MB, L4.self_attn.g_a_proj.weight[tail]:1.0MB, L4.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 3 A: deferred | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L4.hc_attn_fn:1.6MB, L4.hc_attn_base:0.0MB, L4.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L4.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L4.self_attn.f_b_proj.weight[tail]:0.5MB, L4.self_attn.conv1d.weight[tail]:0.1MB, L4.self_attn.g_a_proj.weight[tail]:1.0MB, L4.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP0 pid=827) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 3 A: deferred | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L4.hc_attn_fn:1.6MB, L4.hc_attn_base:0.0MB, L4.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L4.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L4.self_attn.f_b_proj.weight[tail]:0.5MB, L4.self_attn.conv1d.weight[tail]:0.1MB, L4.self_attn.g_a_proj.weight[tail]:1.0MB, L4.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP2 pid=838) INFO 09-22 09:13:36 [model.py:836] [l2_prefetch] layer 3 A: deferred | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L4.hc_attn_fn:1.6MB, L4.hc_attn_base:0.0MB, L4.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L4.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L4.self_attn.f_b_proj.weight[tail]:0.5MB, L4.self_attn.conv1d.weight[tail]:0.1MB, L4.self_attn.g_a_proj.weight[tail]:1.0MB, L4.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:13:36 [model.py:822] [l2_prefetch] layer 3 deferred MLA A: 2 segs 36.0 MB: o_proj.weight:33.6MB, mla_attn.W_UV[head]:2.4MB
+(Worker_TP1 pid=832) INFO 09-22 09:13:36 [model.py:822] [l2_prefetch] layer 3 deferred MLA A: 2 segs 36.0 MB: o_proj.weight:33.6MB, mla_attn.W_UV[head]:2.4MB
+(Worker_TP0 pid=827) INFO 09-22 09:13:36 [model.py:822] [l2_prefetch] layer 3 deferred MLA A: 2 segs 36.0 MB: o_proj.weight:33.6MB, mla_attn.W_UV[head]:2.4MB
+(Worker_TP2 pid=838) INFO 09-22 09:13:36 [model.py:822] [l2_prefetch] layer 3 deferred MLA A: 2 segs 36.0 MB: o_proj.weight:33.6MB, mla_attn.W_UV[head]:2.4MB
+(Worker_TP2 pid=838) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 4 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L5.hc_attn_fn:1.6MB, L5.hc_attn_base:0.0MB, L5.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L5.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L5.self_attn.f_b_proj.weight[tail]:0.5MB, L5.self_attn.conv1d.weight[tail]:0.1MB, L5.self_attn.g_a_proj.weight[tail]:1.0MB, L5.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 4 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L5.hc_attn_fn:1.6MB, L5.hc_attn_base:0.0MB, L5.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L5.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L5.self_attn.f_b_proj.weight[tail]:0.5MB, L5.self_attn.conv1d.weight[tail]:0.1MB, L5.self_attn.g_a_proj.weight[tail]:1.0MB, L5.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP1 pid=832) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 4 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L5.hc_attn_fn:1.6MB, L5.hc_attn_base:0.0MB, L5.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L5.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L5.self_attn.f_b_proj.weight[tail]:0.5MB, L5.self_attn.conv1d.weight[tail]:0.1MB, L5.self_attn.g_a_proj.weight[tail]:1.0MB, L5.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP0 pid=827) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 4 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 12 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L5.hc_attn_fn:1.6MB, L5.hc_attn_base:0.0MB, L5.input_layernorm.weight:0.0MB | C: 5 segs 9.2 MB: L5.self_attn.in_proj_qkvgfab.weight[tail]:7.0MB, L5.self_attn.f_b_proj.weight[tail]:0.5MB, L5.self_attn.conv1d.weight[tail]:0.1MB, L5.self_attn.g_a_proj.weight[tail]:1.0MB, L5.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP1 pid=832) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 44 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 13 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L0.hc_attn_fn_broadcast:0.4MB, L0.hc_attn_fn:1.6MB, L0.hc_attn_base:0.0MB | C: 5 segs 9.6 MB: L0.self_attn.in_proj_qkvgfab.weight[tail]:7.4MB, L0.self_attn.f_b_proj.weight[tail]:0.5MB, L0.self_attn.conv1d.weight[tail]:0.1MB, L0.self_attn.g_a_proj.weight[tail]:1.0MB, L0.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP3 pid=849) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 44 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 13 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L0.hc_attn_fn_broadcast:0.4MB, L0.hc_attn_fn:1.6MB, L0.hc_attn_base:0.0MB | C: 5 segs 9.6 MB: L0.self_attn.in_proj_qkvgfab.weight[tail]:7.4MB, L0.self_attn.f_b_proj.weight[tail]:0.5MB, L0.self_attn.conv1d.weight[tail]:0.1MB, L0.self_attn.g_a_proj.weight[tail]:1.0MB, L0.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP0 pid=827) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 44 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 13 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L0.hc_attn_fn_broadcast:0.4MB, L0.hc_attn_fn:1.6MB, L0.hc_attn_base:0.0MB | C: 5 segs 9.6 MB: L0.self_attn.in_proj_qkvgfab.weight[tail]:7.4MB, L0.self_attn.f_b_proj.weight[tail]:0.5MB, L0.self_attn.conv1d.weight[tail]:0.1MB, L0.self_attn.g_a_proj.weight[tail]:1.0MB, L0.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP2 pid=838) INFO 09-22 09:13:37 [model.py:836] [l2_prefetch] layer 44 A: 1 segs 16.8 MB: o_proj.weight:16.8MB | B: 13 segs 50.0 MB: post_attention_layernorm.weight:0.0MB, hc_ffn_base:0.0MB, hc_ffn_fn:1.6MB, mlp.gate.weight:2.4MB, mlp.gate.e_score_correction_bias:0.0MB, L0.hc_attn_fn_broadcast:0.4MB, L0.hc_attn_fn:1.6MB, L0.hc_attn_base:0.0MB | C: 5 segs 9.6 MB: L0.self_attn.in_proj_qkvgfab.weight[tail]:7.4MB, L0.self_attn.f_b_proj.weight[tail]:0.5MB, L0.self_attn.conv1d.weight[tail]:0.1MB, L0.self_attn.g_a_proj.weight[tail]:1.0MB, L0.self_attn.g_b_proj.weight[tail]:0.5MB | dropped 0.0 MB
+(Worker_TP1 pid=832) gemm.bf16_vocab_projection: Bf16VocabProjectionQuery (max_tokens=56, dtype=bfloat16, in_features=4096, out_features=38720) was not prepared before its first use; preparing its default configuration. Repeated matching declarations are logged at DEBUG.
+(Worker_TP2 pid=838) gemm.bf16_vocab_projection: Bf16VocabProjectionQuery (max_tokens=56, dtype=bfloat16, in_features=4096, out_features=38720) was not prepared before its first use; preparing its default configuration. Repeated matching declarations are logged at DEBUG.
+(Worker_TP3 pid=849) gemm.bf16_vocab_projection: Bf16VocabProjectionQuery (max_tokens=56, dtype=bfloat16, in_features=4096, out_features=38720) was not prepared before its first use; preparing its default configuration. Repeated matching declarations are logged at DEBUG.
+(Worker_TP0 pid=827) gemm.bf16_vocab_projection: Bf16VocabProjectionQuery (max_tokens=56, dtype=bfloat16, in_features=4096, out_features=38720) was not prepared before its first use; preparing its default configuration. Repeated matching declarations are logged at DEBUG.
+(Worker_TP0 pid=827) INFO 09-22 09:13:39 [gpu_worker.py:638] Initial free memory 93.21 GiB, reserved 12.0 GiB memory for KV Cache as specified by kv_cache_memory_bytes config and skipped memory profiling. This does not respect the gpu_memory_utilization config. Only use kv_cache_memory_bytes config when you want manual control of KV cache memory size. If OOM'ed, check the difference of initial free memory between the current run and the previous run where kv_cache_memory_bytes is suggested and update it correspondingly.
+(Worker_TP3 pid=849) INFO 09-22 09:13:39 [gpu_worker.py:638] Initial free memory 93.21 GiB, reserved 12.0 GiB memory for KV Cache as specified by kv_cache_memory_bytes config and skipped memory profiling. This does not respect the gpu_memory_utilization config. Only use kv_cache_memory_bytes config when you want manual control of KV cache memory size. If OOM'ed, check the difference of initial free memory between the current run and the previous run where kv_cache_memory_bytes is suggested and update it correspondingly.
+(Worker_TP1 pid=832) INFO 09-22 09:13:39 [gpu_worker.py:638] Initial free memory 93.21 GiB, reserved 12.0 GiB memory for KV Cache as specified by kv_cache_memory_bytes config and skipped memory profiling. This does not respect the gpu_memory_utilization config. Only use kv_cache_memory_bytes config when you want manual control of KV cache memory size. If OOM'ed, check the difference of initial free memory between the current run and the previous run where kv_cache_memory_bytes is suggested and update it correspondingly.
+(Worker_TP2 pid=838) INFO 09-22 09:13:39 [gpu_worker.py:638] Initial free memory 93.21 GiB, reserved 12.0 GiB memory for KV Cache as specified by kv_cache_memory_bytes config and skipped memory profiling. This does not respect the gpu_memory_utilization config. Only use kv_cache_memory_bytes config when you want manual control of KV cache memory size. If OOM'ed, check the difference of initial free memory between the current run and the previous run where kv_cache_memory_bytes is suggested and update it correspondingly.
+(EngineCore pid=813) WARNING 09-22 09:13:39 [kv_cache_utils.py:2692] Keeping split GLM-5.3 cache groups with physical page sizes [1148928, 1302528].
+(EngineCore pid=813) INFO 09-22 09:13:39 [kv_cache_utils.py:2635] Keeping 5 parallel draft KV layers in 1 independent cache groups
+(EngineCore pid=813) INFO 09-22 09:13:39 [kv_cache_utils.py:2798] GPU KV cache size: 814,404 tokens, Maximum concurrency for 65,536 tokens per request: 12.43x
+(Worker_TP3 pid=849) INFO 09-22 09:13:39 [b12x_prepare.py:631] b12x autotuning uses 34 temporary KV blocks before allocating 1019 serving blocks
+(Worker_TP1 pid=832) INFO 09-22 09:13:39 [b12x_prepare.py:631] b12x autotuning uses 34 temporary KV blocks before allocating 1019 serving blocks
+(Worker_TP2 pid=838) INFO 09-22 09:13:39 [b12x_prepare.py:631] b12x autotuning uses 34 temporary KV blocks before allocating 1019 serving blocks
+(Worker_TP0 pid=827) INFO 09-22 09:13:39 [b12x_prepare.py:631] b12x autotuning uses 34 temporary KV blocks before allocating 1019 serving blocks
+(Worker_TP2 pid=838) /opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kv_cache.py:833: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+(Worker_TP2 pid=838)   if kv_c.stride(0) % 2 != 0 or kv_c.data_ptr() % 4 != 0:
+(Worker_TP1 pid=832) /opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kv_cache.py:833: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+(Worker_TP1 pid=832)   if kv_c.stride(0) % 2 != 0 or kv_c.data_ptr() % 4 != 0:
+(Worker_TP3 pid=849) /opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kv_cache.py:833: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+(Worker_TP3 pid=849)   if kv_c.stride(0) % 2 != 0 or kv_c.data_ptr() % 4 != 0:
+(Worker_TP0 pid=827) /opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kv_cache.py:833: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+(Worker_TP0 pid=827)   if kv_c.stride(0) % 2 != 0 or kv_c.data_ptr() % 4 != 0:
+(Worker_TP2 pid=838) INFO 09-22 09:13:40 [b12x_prepare.py:570] b12x state preparation uses 8 compiler workers
+(Worker_TP1 pid=832) INFO 09-22 09:13:40 [b12x_prepare.py:570] b12x state preparation uses 8 compiler workers
+(Worker_TP3 pid=849) INFO 09-22 09:13:40 [b12x_prepare.py:570] b12x state preparation uses 8 compiler workers
+(Worker_TP0 pid=827) INFO 09-22 09:13:40 [b12x_prepare.py:570] b12x state preparation uses 8 compiler workers
+b12x planning norm.mhc: 0/299 ready, 0 measured, 0 cached, 0 compilations, 0:00
+b12x compiling attention.gdn: 0/299 ready, candidates 0/1 prepared, rank 0 batch 1, 0 measured, 0 cached, 0 compilations, 0:00
+W0922 09:13:42.010000 42219 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.010000 42219 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.010000 42219 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.016000 42218 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.016000 42218 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.017000 42218 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.023000 42217 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.024000 42217 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.024000 42217 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.034000 42222 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.035000 42222 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.035000 42222 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.036000 42220 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.037000 42220 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.037000 42220 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.039000 42215 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.039000 42215 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.040000 42215 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.040000 42221 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.040000 42221 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.041000 42221 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.053000 42227 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.054000 42227 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.054000 42227 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.059000 42250 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.059000 42250 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.060000 42250 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.065000 42216 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.065000 42245 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.065000 42216 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.066000 42216 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.066000 42245 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.066000 42245 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.069000 42240 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.070000 42240 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.070000 42240 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.075000 42226 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.076000 42226 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.076000 42226 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.083000 42244 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.083000 42244 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.084000 42244 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.085000 42237 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.085000 42237 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.086000 42237 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.088000 42232 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.089000 42232 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.089000 42232 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.096000 42231 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.097000 42231 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.097000 42231 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.099000 42241 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.099000 42241 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.100000 42241 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.103000 42228 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.104000 42228 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.104000 42228 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.107000 42230 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.107000 42230 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.108000 42230 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.108000 42229 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.109000 42229 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.109000 42229 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.118000 42252 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.118000 42246 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.118000 42239 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.119000 42246 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.119000 42252 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.119000 42246 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.119000 42252 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.119000 42233 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.119000 42239 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.119000 42239 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.119000 42233 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.119000 42233 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.122000 42251 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.123000 42251 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.123000 42251 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.123000 42247 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.123000 42247 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.124000 42247 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.125000 42243 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.126000 42243 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.126000 42243 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.129000 42249 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.129000 42249 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.130000 42249 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.130000 42238 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.130000 42238 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.131000 42238 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.146000 42242 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.147000 42242 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.147000 42242 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W0922 09:13:42.147000 42248 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 09:13:42.148000 42248 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 09:13:42.148000 42248 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+b12x compiling sequence.kda_prefill: 0/299 ready, candidates 0/88 prepared, rank 0 batch 1, 2 measured, 0 cached, 23 compilations, 0:04
+b12x preparing candidates sequence.kda_prefill: 0/299 ready, candidates 23/88 prepared, rank 0 batch 1, 66 measured, 0 cached, 237 compilations, 0:06
+b12x autotuning sequence.kda_prefill: 0/299 ready, candidates 32/88 prepared, rank 0 batch 1, round 0/3, 66 measured, 0 cached, 303 compilations, 0:06
+b12x compiling attention.dsa_indexer: 0/299 ready, candidates 0/1 prepared, rank 0 batch 1, 330 measured, 0 cached, 450 compilations, 0:09
+/usr/local/lib/python3.12/dist-packages/torch/_tensor.py:1684: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  return _C._to_dlpack(self, dl_device=dl_device, copy=copy)
+/usr/local/lib/python3.12/dist-packages/torch/_tensor.py:1684: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  return _C._to_dlpack(self, dl_device=dl_device, copy=copy)
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+b12x compiling attention.dsa_indexer: 0/299 ready, candidates 0/1 prepared, rank 0 batch 1, 367 measured, 0 cached, 511 compilations, 0:19
+/usr/local/lib/python3.12/dist-packages/torch/_tensor.py:1684: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  return _C._to_dlpack(self, dl_device=dl_device, copy=copy)
+b12x priming attention.dsa_indexer: 7/299 ready, candidates 0/1 prepared, 372 measured, 0 cached, 572 compilations, 0:25
+/usr/local/lib/python3.12/dist-packages/torch/_tensor.py:1684: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  return _C._to_dlpack(self, dl_device=dl_device, copy=copy)
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+b12x compiling attention.sparse_mla: 11/299 ready, candidates 0/1 prepared, 372 measured, 0 cached, 577 compilations, 0:28
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+/opt/venv/lib/python3.12/site-packages/b12x/attention/_shared/mla/kernel.py:2610: UserWarning: Accessing the data pointer of FakeTensor is deprecated and will error in PyTorch 2.5. This is almost definitely a bug in your code and will cause undefined behavior with subsystems like torch.compile. Please wrap calls to tensor.data_ptr() in an opaque custom op; If all else fails, you can guard accesses to tensor.data_ptr() on isinstance(tensor, FakeTensor). (Triggered internally at /opt/pytorch/pytorch/c10/core/StorageImpl.cpp:46.)
+  and (int(q_all.data_ptr()) if q_alignment is None else q_alignment) % 16 == 0
+b12x compiling attention.sparse_mla: 32/299 ready, candidates 0/1 prepared, 372 measured, 0 cached, 638 compilations, 0:38
+b12x compiling attention.dsa_indexer: 297/299 ready, 372 measured, 0 cached, 675 compilations, 0:48
+b12x ready attention.dsa_indexer: 299/299 ready, 372 measured, 0 cached, 685 compilations, 0:56
+(Worker_TP2 pid=838) INFO 09-22 09:14:39 [b12x_prepare.py:570] b12x bind preparation uses 8 compiler workers
+(Worker_TP1 pid=832) INFO 09-22 09:14:39 [b12x_prepare.py:570] b12x bind preparation uses 8 compiler workers
+(Worker_TP3 pid=849) INFO 09-22 09:14:39 [b12x_prepare.py:570] b12x bind preparation uses 8 compiler workers
+(Worker_TP0 pid=827) INFO 09-22 09:14:39 [b12x_prepare.py:570] b12x bind preparation uses 8 compiler workers
+b12x priming attention.gdn: 0/299 ready, 0 measured, 11 cached, 0 compilations, 0:00
+b12x priming attention.dsa_indexer: 5/299 ready, 0 measured, 11 cached, 0 compilations, 0:00
+b12x priming attention.sparse_mla: 26/299 ready, candidates 0/1 prepared, 0 measured, 11 cached, 0 compilations, 0:01
+b12x ready gemm.blockscaled_precision: 299/299 ready, 0 measured, 11 cached, 0 compilations, 0:02
+(Worker_TP2 pid=838) INFO 09-22 09:14:41 [kernel_warmup.py:171] JIT kernel warmup starting.
+(Worker_TP1 pid=832) INFO 09-22 09:14:41 [kernel_warmup.py:171] JIT kernel warmup starting.
+(Worker_TP3 pid=849) INFO 09-22 09:14:41 [kernel_warmup.py:171] JIT kernel warmup starting.
+(Worker_TP0 pid=827) INFO 09-22 09:14:41 [kernel_warmup.py:171] JIT kernel warmup starting.
+(Worker_TP2 pid=838) INFO 09-22 09:15:26 [kernel_warmup.py:184] JIT kernel warmup finished in 44.33s.
+(Worker_TP2 pid=838) [ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP2 pid=838) [ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP2 pid=838) INFO 09-22 09:15:26 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP0 pid=827) JIT kernel warmup (112 compile keys):   0%|          | 0/4 [00:00<?, ?kernel/s]JIT kernel warmup (112 compile keys):  25%|██▌       | 1/4 [00:16<00:48, 16.04s/kernel, _DecoratedTritonJitKernel (12 keys)]JIT kernel warmup (112 compile keys):  50%|█████     | 2/4 [00:18<00:15,  7.81s/kernel, _DecoratedTritonJitKernel (20 keys)]JIT kernel warmup (112 compile keys):  75%|███████▌  | 3/4 [00:36<00:12, 12.66s/kernel, _DecoratedTritonJitKernel (60 keys)]JIT kernel warmup (112 compile keys): 100%|██████████| 4/4 [00:44<00:00, 10.77s/kernel, _DecoratedTritonJitKernel (20 keys)]JIT kernel warmup (112 compile keys): 100%|██████████| 4/4 [00:44<00:00, 11.10s/kernel, _DecoratedTritonJitKernel (20 keys)]
+(Worker_TP0 pid=827) INFO 09-22 09:15:26 [kernel_warmup.py:184] JIT kernel warmup finished in 44.43s.
+(Worker_TP0 pid=827) [ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP0 pid=827) [ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP0 pid=827) INFO 09-22 09:15:26 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP0 pid=827) INFO 09-22 09:15:26 [kernel_warmup.py:94] Warming up ll_bf16 router GEMM kernels for shapes: ((4096, 288),).
+(Worker_TP3 pid=849) INFO 09-22 09:15:26 [kernel_warmup.py:184] JIT kernel warmup finished in 44.47s.
+(Worker_TP1 pid=832) INFO 09-22 09:15:26 [kernel_warmup.py:184] JIT kernel warmup finished in 44.48s.
+(Worker_TP3 pid=849) [ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP3 pid=849) [ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP3 pid=849) INFO 09-22 09:15:26 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP1 pid=832) [ERROR] `min_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP1 pid=832) [ERROR] `max_frames` is part of Qwen3VLVideoProcessorInitKwargs, but not documented. Make sure to add it to the docstring of the function in /opt/venv/lib/python3.12/site-packages/transformers/models/qwen3_vl/video_processing_qwen3_vl.py.
+(Worker_TP1 pid=832) INFO 09-22 09:15:26 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP0 pid=827) INFO 09-22 09:15:26 [kernel_warmup.py:249] Skipping FlashInfer autotune because it is disabled.
+(Worker_TP3 pid=849) INFO 09-22 09:15:27 [l2_prefetch.py:267] [l2_prefetch] CuTe kernel ready (grid=16 block=128 chunk=4096; budgets A/B/C/A_mla=20/50/15/36 MB)
+(Worker_TP1 pid=832) INFO 09-22 09:15:27 [l2_prefetch.py:267] [l2_prefetch] CuTe kernel ready (grid=16 block=128 chunk=4096; budgets A/B/C/A_mla=20/50/15/36 MB)
+(Worker_TP2 pid=838) INFO 09-22 09:15:27 [l2_prefetch.py:267] [l2_prefetch] CuTe kernel ready (grid=16 block=128 chunk=4096; budgets A/B/C/A_mla=20/50/15/36 MB)
+(Worker_TP0 pid=827) INFO 09-22 09:15:27 [l2_prefetch.py:267] [l2_prefetch] CuTe kernel ready (grid=16 block=128 chunk=4096; budgets A/B/C/A_mla=20/50/15/36 MB)
+(Worker_TP2 pid=838) /usr/local/lib/python3.12/dist-packages/triton/language/core.py:2623: UserWarning: tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.
+(Worker_TP2 pid=838)   warn("tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.")
+(Worker_TP1 pid=832) /usr/local/lib/python3.12/dist-packages/triton/language/core.py:2623: UserWarning: tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.
+(Worker_TP1 pid=832)   warn("tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.")
+(Worker_TP3 pid=849) /usr/local/lib/python3.12/dist-packages/triton/language/core.py:2623: UserWarning: tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.
+(Worker_TP3 pid=849)   warn("tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.")
+(Worker_TP0 pid=827) /usr/local/lib/python3.12/dist-packages/triton/language/core.py:2623: UserWarning: tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.
+(Worker_TP0 pid=827)   warn("tl.make_block_ptr is deprecated. Use TensorDescriptor or tl.make_tensor_descriptor instead.")
+(Worker_TP1 pid=832) INFO 09-22 09:15:30 [__init__.py:98] [dflash_attn] building /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP2 pid=838) INFO 09-22 09:15:30 [__init__.py:98] [dflash_attn] building /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP0 pid=827) INFO 09-22 09:15:30 [__init__.py:98] [dflash_attn] building /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP3 pid=849) INFO 09-22 09:15:30 [__init__.py:98] [dflash_attn] building /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP0 pid=827) INFO 09-22 09:15:32 [__init__.py:147] [dflash_attn] loaded /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP0 pid=827) INFO 09-22 09:15:32 [flash_attn.py:571] [dflash_attn] split-KV draft attention enabled: hkv=2 window=2048 max_reqs=12 ws_reqs=64
+(Worker_TP2 pid=838) INFO 09-22 09:15:32 [__init__.py:147] [dflash_attn] loaded /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP2 pid=838) INFO 09-22 09:15:32 [flash_attn.py:571] [dflash_attn] split-KV draft attention enabled: hkv=2 window=2048 max_reqs=12 ws_reqs=64
+(Worker_TP3 pid=849) INFO 09-22 09:15:32 [__init__.py:147] [dflash_attn] loaded /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP3 pid=849) INFO 09-22 09:15:32 [flash_attn.py:571] [dflash_attn] split-KV draft attention enabled: hkv=2 window=2048 max_reqs=12 ws_reqs=64
+(Worker_TP1 pid=832) INFO 09-22 09:15:32 [__init__.py:147] [dflash_attn] loaded /cache/jit/0b6b1c9671a2b4164a2425dda8930f4ae1c0145fb81f4254e06226b15e7584f4/glm53-flash-59dc36a79e6582cb/vllm/dflash_attn/8a83a57d3d26d7a8/libdflash_attn.so
+(Worker_TP1 pid=832) INFO 09-22 09:15:32 [flash_attn.py:571] [dflash_attn] split-KV draft attention enabled: hkv=2 window=2048 max_reqs=12 ws_reqs=64
+(Worker_TP0 pid=827) INFO 09-22 09:15:36 [breakable_cudagraph.py:327] Breakable CUDA graph enabled
+(Worker_TP0 pid=827) Capturing CUDA graphs (PIECEWISE):   0%|          | 0/9 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):  11%|█         | 1/9 [00:00<00:02,  3.60it/s]Capturing CUDA graphs (PIECEWISE):  22%|██▏       | 2/9 [00:00<00:02,  3.42it/s]Capturing CUDA graphs (PIECEWISE):  33%|███▎      | 3/9 [00:00<00:01,  3.40it/s]Capturing CUDA graphs (PIECEWISE):  44%|████▍     | 4/9 [00:01<00:01,  3.31it/s]Capturing CUDA graphs (PIECEWISE):  56%|█████▌    | 5/9 [00:01<00:01,  3.30it/s]Capturing CUDA graphs (PIECEWISE):  67%|██████▋   | 6/9 [00:01<00:00,  3.34it/s]Capturing CUDA graphs (PIECEWISE):  78%|███████▊  | 7/9 [00:02<00:00,  3.39it/s]Capturing CUDA graphs (PIECEWISE):  89%|████████▉ | 8/9 [00:02<00:00,  3.69it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 9/9 [00:02<00:00,  3.96it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 9/9 [00:02<00:00,  3.59it/s]
+(Worker_TP2 pid=838) INFO 09-22 09:15:40 [speculator.py:152] Capturing model for DFlash2 speculator...
+(Worker_TP3 pid=849) INFO 09-22 09:15:40 [speculator.py:152] Capturing model for DFlash2 speculator...
+(Worker_TP0 pid=827) Capturing CUDA graphs (FULL):   0%|          | 0/6 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):  17%|█▋        | 1/6 [00:00<00:01,  3.69it/s]Capturing CUDA graphs (FULL):  33%|███▎      | 2/6 [00:00<00:01,  3.60it/s]Capturing CUDA graphs (FULL):  50%|█████     | 3/6 [00:00<00:00,  3.67it/s]Capturing CUDA graphs (FULL):  67%|██████▋   | 4/6 [00:01<00:00,  3.68it/s]Capturing CUDA graphs (FULL):  83%|████████▎ | 5/6 [00:01<00:00,  3.69it/s]Capturing CUDA graphs (FULL): 100%|██████████| 6/6 [00:01<00:00,  3.93it/s]Capturing CUDA graphs (FULL): 100%|██████████| 6/6 [00:01<00:00,  3.79it/s]
+(Worker_TP0 pid=827) INFO 09-22 09:15:40 [speculator.py:152] Capturing model for DFlash2 speculator...
+(Worker_TP1 pid=832) INFO 09-22 09:15:40 [speculator.py:152] Capturing model for DFlash2 speculator...
+(Worker_TP0 pid=827) Capturing dflash2 CUDA graphs (FULL):   0%|          | 0/6 [00:00<?, ?it/s]Capturing dflash2 CUDA graphs (FULL): 100%|██████████| 6/6 [00:00<00:00, 55.88it/s]Capturing dflash2 CUDA graphs (FULL): 100%|██████████| 6/6 [00:00<00:00, 55.82it/s]
+(Worker_TP3 pid=849) INFO 09-22 09:15:41 [model_runner.py:1248] Graph capturing finished in 6 secs, took 0.44 GiB
+(Worker_TP0 pid=827) INFO 09-22 09:15:41 [model_runner.py:1248] Graph capturing finished in 6 secs, took 0.44 GiB
+(Worker_TP1 pid=832) INFO 09-22 09:15:41 [model_runner.py:1248] Graph capturing finished in 6 secs, took 0.44 GiB
+(Worker_TP2 pid=838) INFO 09-22 09:15:41 [model_runner.py:1248] Graph capturing finished in 6 secs, took 0.44 GiB
+(Worker_TP3 pid=849) INFO 09-22 09:15:42 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP2 pid=838) INFO 09-22 09:15:42 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP0 pid=827) INFO 09-22 09:15:42 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(Worker_TP1 pid=832) INFO 09-22 09:15:42 [jit_monitor.py:85] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=813) INFO 09-22 09:15:42 [shm_broadcast.py:813] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(EngineCore pid=813) INFO 09-22 09:15:43 [core.py:389] init engine (profile, create kv cache, warmup model) took 278.68 s
+(EngineCore pid=813) INFO 09-22 09:15:44 [kv_cache_utils.py:752] kv cache group sizes [2048, 2048, 2048, 2048, 2048, 2048]
+(EngineCore pid=813) INFO 09-22 09:15:44 [kv_cache_utils.py:753] kv lcm block sizes 2048
+(EngineCore pid=813) WARNING 09-22 09:15:44 [indexer_topk.py:29] Failed to import the DeepSelect extension (vllm._deepselect_C): No module named 'vllm._deepselect_C'
+(EngineCore pid=813) ERROR 09-22 09:15:44 [mxfp4.py:61] Failed to import Triton kernels. Please make sure your triton version is compatible. Error: No module named 'triton_kernels.matmul_ogs'
+(EngineCore pid=813) WARNING 09-22 09:15:46 [scheduler.py:335] EAGLE trailing prefix-cache block dropping is disabled. This is experimental and may affect speculative-token acceptance rates.
+(EngineCore pid=813) INFO 09-22 09:15:46 [kv_cache_manager.py:267] Request-boundary recurrent checkpoint caching is enabled. Supported chat requests retain leading instructions, the complete prompt, and the response endpoint.
+(EngineCore pid=813) INFO 09-22 09:15:46 [kernel.py:430] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(EngineCore pid=813) WARNING 09-22 09:15:46 [vllm.py:2318] max_num_scheduled_tokens is set to 4096 based on the speculative decoding settings. This may lead to suboptimal performance. Consider increasing max_num_batched_tokens to accommodate the additional draft token slots, or decrease num_speculative_tokens.
+(EngineCore pid=813) INFO 09-22 09:15:47 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(APIServer pid=7) INFO 09-22 09:15:47 [entry.py:135] Supported tasks: ['generate']
+(APIServer pid=7) INFO 09-22 09:15:47 [factories.py:76] Scale-out endpoints are disabled. Set --enable-scale-out to enable them.
+(APIServer pid=7) INFO 09-22 09:15:47 [parser_manager.py:36] "auto" tool choice has been enabled.
+(APIServer pid=7) INFO 09-22 09:15:48 [hf.py:642] Detected the chat template content format to be 'openai'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=7) WARNING 09-22 09:15:48 [model.py:1796] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'temperature': 1.0, 'top_p': 0.95}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=7) INFO 09-22 09:15:48 [entry.py:139] Starting vLLM server on http://0.0.0.0:5075
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:61] Available routes are:
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /openapi.json, Methods: HEAD, GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /docs, Methods: HEAD, GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /docs/oauth2-redirect, Methods: HEAD, GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /redoc, Methods: HEAD, GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /load, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /version, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /health, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /metrics, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /tokenize, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /detokenize, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/models, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /ping, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /ping, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /invocations, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/chat/completions, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/chat/completions/batch, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/responses, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/responses/{response_id}, Methods: GET
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/responses/{response_id}/cancel, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/completions, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/messages, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /v1/messages/count_tokens, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /generative_scoring, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /scale_elastic_ep, Methods: POST
+(APIServer pid=7) INFO 09-22 09:15:48 [launcher.py:70] Route: /is_scaling_elastic_ep, Methods: POST
+(APIServer pid=7) INFO:     Started server process [7]
+(APIServer pid=7) INFO:     Waiting for application startup.
+(APIServer pid=7) INFO:     Application startup complete.
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "GET /health HTTP/1.1" 200 OK
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "GET /v1/models HTTP/1.1" 200 OK
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "GET /metrics HTTP/1.1" 200 OK
+(Worker_TP0 pid=827) WARNING 09-22 09:15:56 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _glm_device_token_metadata_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=827) WARNING 09-22 09:15:56 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _pool_seq_lens_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(Worker_TP0 pid=827) WARNING 09-22 09:15:57 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _restore_auxiliary_state_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(Worker_TP0 pid=827) WARNING 09-22 09:15:57 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _post_update_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=7) INFO:     192.168.0.67:42654 - "POST /v1/chat/completions HTTP/1.1" 200 OK

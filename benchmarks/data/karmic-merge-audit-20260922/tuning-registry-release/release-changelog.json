@@ -1,0 +1,83 @@
+{
+  "assembly_sha256": "3221ccacf71002eac3250797037ed0eab821fd3dfd5430bdfdda48ce55417eef",
+  "changes": [
+    {
+      "authors": [
+        "voipmonitor"
+      ],
+      "category": "fix",
+      "compatibility": "No user action required.",
+      "component": "b12x",
+      "details": [
+        "Expose the rejected-candidate count required by vLLM's rank-to-rank tuning exchange.",
+        "Existing tuning results report zero rejections; kernel arithmetic and winner selection are unchanged."
+      ],
+      "fragment_blob_sha": "2bf6bc515a6a75a76ab9925bb0672cd02d356343",
+      "fragment_path": ".lil/changes/b12x-tuning-result-contract.json",
+      "id": "b12x-tuning-result-contract",
+      "models": [
+        "all"
+      ],
+      "pull_requests": [
+        {
+          "author": "@voipmonitor",
+          "number": 414,
+          "title": "fix(preparation): restore Karmic distributed tuning result compatibility",
+          "url": "https://github.com/local-inference-lab/b12x/pull/414"
+        }
+      ],
+      "repository": "local-inference-lab/b12x",
+      "requires": [],
+      "schema": "local-inference-release-change/v1",
+      "summary": "Restore distributed autotuning startup with Karmic vLLM"
+    }
+  ],
+  "channel": "karmic-kraken",
+  "components": {
+    "b12x": {
+      "change_count": 1,
+      "current_commit": "3113aa0b8596fe55a96a28d58efd40f4dfa9955c",
+      "previous_commit": "d16e71c3da2a13c2d73370fba5b1149c95428fbd",
+      "repository": "local-inference-lab/b12x"
+    },
+    "flashinfer": {
+      "change_count": 0,
+      "current_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+      "previous_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+      "repository": "local-inference-lab/flashinfer"
+    },
+    "instanttensor": {
+      "change_count": 0,
+      "current_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+      "previous_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+      "repository": "local-inference-lab/InstantTensor"
+    },
+    "lmcache": {
+      "change_count": 0,
+      "current_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+      "previous_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+      "repository": "local-inference-lab/LMCache"
+    },
+    "nccl": {
+      "change_count": 0,
+      "current_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+      "previous_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+      "repository": "local-inference-lab/nccl-canonical"
+    },
+    "vllm": {
+      "change_count": 0,
+      "current_commit": "622912b9b2cfd04784da5b0dfc69ce8aa5aee02d",
+      "previous_commit": "622912b9b2cfd04784da5b0dfc69ce8aa5aee02d",
+      "repository": "local-inference-lab/vllm"
+    }
+  },
+  "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea",
+  "previous_release": {
+    "digest": "ghcr.io/local-inference-lab/vllm@sha256:37a1aeeaddad12f395eec8735e56b62443a0c091a0657cc97bda22e55d276d88",
+    "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-e5fef1d4361a77ea",
+    "tag": "karmic-kraken-beta-e5fef1d4361a77eaa4ab75b4edc7988a9fb626d4739641abc9fdb2bad1104acd",
+    "url": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-e5fef1d4361a77eaa4ab75b4edc7988a9fb626d4739641abc9fdb2bad1104acd"
+  },
+  "release_channel": "karmic-kraken-beta",
+  "schema": "local-inference-container-changelog/v1"
+}

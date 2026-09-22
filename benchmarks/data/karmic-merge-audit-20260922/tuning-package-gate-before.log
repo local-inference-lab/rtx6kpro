@@ -1,0 +1,15 @@
+W0922 08:04:00.982000 776 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 08:04:00.982000 776 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 08:04:00.983000 776 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/tmp/verify_qwen38_runtime.py", line 156, in verify_b12x_tuning_exchange
+    "tuning": B12xPreparationCoordinator._ready_tuning(coordinator),
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/src/vllm/v1/worker/b12x_startup.py", line 347, in _ready_tuning
+    return tuple(
+           ^^^^^^
+  File "/src/vllm/v1/worker/b12x_startup.py", line 354, in <genexpr>
+    item.rejected_count,
+    ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'TuningRequirement' object has no attribute 'rejected_count'

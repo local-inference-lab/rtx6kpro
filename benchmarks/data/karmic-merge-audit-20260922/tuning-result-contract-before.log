@@ -1,0 +1,72 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_________ test_tuning_contribution_preserves_rejected_candidate_count __________
+
+    def test_tuning_contribution_preserves_rejected_candidate_count():
+        from b12x.preparation import TuningRequirement
+    
+        winner = TuningRequirement("query", (0, 1), {"width": 2}, 1.0, 0)
+>       empty = TuningRequirement("query", (0, 1), None, None, None, rejected_count=2)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: TuningRequirement.__init__() got an unexpected keyword argument 'rejected_count'
+
+/b12xsrc/tests/preparation/test_session.py:962: TypeError
+________ test_tuning_contribution_rejects_invalid_rejection_counts[-1] _________
+
+count = -1
+
+    @pytest.mark.parametrize("count", (-1, True, 1.5, "2"))
+    def test_tuning_contribution_rejects_invalid_rejection_counts(count):
+        from b12x.preparation import TuningRequirement
+    
+        with pytest.raises(ValueError, match="rejected candidate count"):
+>           TuningRequirement("query", (0, 1), None, None, None, rejected_count=count)
+E           TypeError: TuningRequirement.__init__() got an unexpected keyword argument 'rejected_count'
+
+/b12xsrc/tests/preparation/test_session.py:976: TypeError
+_______ test_tuning_contribution_rejects_invalid_rejection_counts[True] ________
+
+count = True
+
+    @pytest.mark.parametrize("count", (-1, True, 1.5, "2"))
+    def test_tuning_contribution_rejects_invalid_rejection_counts(count):
+        from b12x.preparation import TuningRequirement
+    
+        with pytest.raises(ValueError, match="rejected candidate count"):
+>           TuningRequirement("query", (0, 1), None, None, None, rejected_count=count)
+E           TypeError: TuningRequirement.__init__() got an unexpected keyword argument 'rejected_count'
+
+/b12xsrc/tests/preparation/test_session.py:976: TypeError
+________ test_tuning_contribution_rejects_invalid_rejection_counts[1.5] ________
+
+count = 1.5
+
+    @pytest.mark.parametrize("count", (-1, True, 1.5, "2"))
+    def test_tuning_contribution_rejects_invalid_rejection_counts(count):
+        from b12x.preparation import TuningRequirement
+    
+        with pytest.raises(ValueError, match="rejected candidate count"):
+>           TuningRequirement("query", (0, 1), None, None, None, rejected_count=count)
+E           TypeError: TuningRequirement.__init__() got an unexpected keyword argument 'rejected_count'
+
+/b12xsrc/tests/preparation/test_session.py:976: TypeError
+_________ test_tuning_contribution_rejects_invalid_rejection_counts[2] _________
+
+count = '2'
+
+    @pytest.mark.parametrize("count", (-1, True, 1.5, "2"))
+    def test_tuning_contribution_rejects_invalid_rejection_counts(count):
+        from b12x.preparation import TuningRequirement
+    
+        with pytest.raises(ValueError, match="rejected candidate count"):
+>           TuningRequirement("query", (0, 1), None, None, None, rejected_count=count)
+E           TypeError: TuningRequirement.__init__() got an unexpected keyword argument 'rejected_count'
+
+/b12xsrc/tests/preparation/test_session.py:976: TypeError
+=========================== short test summary info ============================
+FAILED ../b12xsrc/tests/preparation/test_session.py::test_tuning_contribution_preserves_rejected_candidate_count
+FAILED ../b12xsrc/tests/preparation/test_session.py::test_tuning_contribution_rejects_invalid_rejection_counts[-1]
+FAILED ../b12xsrc/tests/preparation/test_session.py::test_tuning_contribution_rejects_invalid_rejection_counts[True]
+FAILED ../b12xsrc/tests/preparation/test_session.py::test_tuning_contribution_rejects_invalid_rejection_counts[1.5]
+FAILED ../b12xsrc/tests/preparation/test_session.py::test_tuning_contribution_rejects_invalid_rejection_counts[2]
+5 failed, 56 deselected in 1.39s

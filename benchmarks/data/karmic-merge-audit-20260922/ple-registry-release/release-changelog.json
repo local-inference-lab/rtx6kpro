@@ -1,0 +1,85 @@
+{
+  "assembly_sha256": "e5fef1d4361a77eaa4ab75b4edc7988a9fb626d4739641abc9fdb2bad1104acd",
+  "changes": [
+    {
+      "authors": [
+        "lukealonso"
+      ],
+      "category": "compatibility",
+      "compatibility": "Explicit PLE placement and draft-loader settings are retained. No user action required.",
+      "component": "vllm",
+      "details": [
+        "Infer omitted Qwen PLE storage dtype from checkpoint headers while retaining explicit CPU-offload policy.",
+        "Retain the independently owned MXFP8 context projection alongside pooled DFlash weight transfer and draft subfolder support.",
+        "Preserve canonical mixed-page KV layouts and noncausal paged draft attention, including MiMo loaders and launchers."
+      ],
+      "fragment_blob_sha": "e885b903d4d4eaf22515fd3324253ff9ddf0ebff",
+      "fragment_path": ".lil/changes/vllm-karmic-draft-layout-and-ple-sync.json",
+      "id": "vllm-karmic-draft-layout-and-ple-sync",
+      "models": [
+        "Qwen3.8-Flash-Next",
+        "GLM-5.3-Flash",
+        "MiMo-V2.6"
+      ],
+      "pull_requests": [
+        {
+          "author": "@voipmonitor",
+          "number": 798,
+          "title": "Port caller-owned serving workspaces and DS4.1 API contracts to Karmic Kraken",
+          "url": "https://github.com/local-inference-lab/vllm/pull/798"
+        }
+      ],
+      "repository": "local-inference-lab/vllm",
+      "schema": "local-inference-release-change/v1",
+      "summary": "Preserve serving workspace contracts with checkpoint-aware PLE and pooled draft loading"
+    }
+  ],
+  "channel": "karmic-kraken",
+  "components": {
+    "b12x": {
+      "change_count": 0,
+      "current_commit": "d16e71c3da2a13c2d73370fba5b1149c95428fbd",
+      "previous_commit": "d16e71c3da2a13c2d73370fba5b1149c95428fbd",
+      "repository": "local-inference-lab/b12x"
+    },
+    "flashinfer": {
+      "change_count": 0,
+      "current_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+      "previous_commit": "2206a14e46387a56c093860a46bbbdd00596b75b",
+      "repository": "local-inference-lab/flashinfer"
+    },
+    "instanttensor": {
+      "change_count": 0,
+      "current_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+      "previous_commit": "95d4729b6d6a991bb8de61877147a9d9d9100b23",
+      "repository": "local-inference-lab/InstantTensor"
+    },
+    "lmcache": {
+      "change_count": 0,
+      "current_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+      "previous_commit": "688bee14e157b64623d93c07fc0d4db93470e12f",
+      "repository": "local-inference-lab/LMCache"
+    },
+    "nccl": {
+      "change_count": 0,
+      "current_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+      "previous_commit": "93fe05d9f9b6963ef841166a69cd0b30e4efe97b",
+      "repository": "local-inference-lab/nccl-canonical"
+    },
+    "vllm": {
+      "change_count": 1,
+      "current_commit": "622912b9b2cfd04784da5b0dfc69ce8aa5aee02d",
+      "previous_commit": "47cb3450b11aac466f03a933de576a37f970da53",
+      "repository": "local-inference-lab/vllm"
+    }
+  },
+  "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-e5fef1d4361a77ea",
+  "previous_release": {
+    "digest": "ghcr.io/local-inference-lab/vllm@sha256:9625bbc047d3140ce55bb244fdd3ddf1e2911cc5d8ae109e8a5c1a6675dbb575",
+    "image": "ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635",
+    "tag": "karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271",
+    "url": "https://github.com/local-inference-lab/blackwell-llm-docker/releases/tag/karmic-kraken-beta-4d9905b93165663595c34fbe5739c218938394e5bfcaef215e3c952074dde271"
+  },
+  "release_channel": "karmic-kraken-beta",
+  "schema": "local-inference-container-changelog/v1"
+}

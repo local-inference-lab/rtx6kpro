@@ -242,7 +242,7 @@ Stop: `docker compose -f glm53-tp4-off.compose.yaml down` (keeps model/cache vol
 name: glm53-tp4-off
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-tp4-off
     init: true
     network_mode: host
@@ -796,7 +796,7 @@ Stop: `docker compose -f glm53-tp4-mtp3.compose.yaml down` (keeps model/cache vo
 name: glm53-tp4-mtp3
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-tp4-mtp3
     init: true
     network_mode: host
@@ -1355,7 +1355,7 @@ Stop: `docker compose -f glm53-tp4-dflash2.compose.yaml down` (keeps model/cache
 name: glm53-tp4-dflash2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-tp4-dflash2
     init: true
     network_mode: host
@@ -1915,7 +1915,7 @@ Stop: `docker compose -f glm53-spark-tp2.compose.yaml down` (keeps model/cache v
 name: glm53-spark-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: glm53-spark-tp2
     init: true
     network_mode: host
@@ -2476,7 +2476,7 @@ Stop: `docker compose -f qwen38-tp1.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp1
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: qwen38-tp1
     init: true
     network_mode: host
@@ -2997,7 +2997,7 @@ Stop: `docker compose -f qwen38-tp2.compose.yaml down` (keeps model/cache volume
 name: qwen38-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: qwen38-tp2
     init: true
     network_mode: host
@@ -3519,7 +3519,7 @@ Stop: `docker compose -f ds4-flash-tp2.compose.yaml down` (keeps model/cache vol
 name: ds4-flash-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: ds4-flash-tp2
     init: true
     network_mode: host
@@ -4011,7 +4011,7 @@ Stop: `docker compose -f ds4-vision-tp2.compose.yaml down` (keeps model/cache vo
 name: ds4-vision-tp2
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: ds4-vision-tp2
     init: true
     network_mode: host
@@ -4503,7 +4503,7 @@ Stop: `docker compose -f ds41-flash-tp4.compose.yaml down` (keeps model/cache vo
 name: ds41-flash-tp4
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: ds41-flash-tp4
     init: true
     network_mode: host

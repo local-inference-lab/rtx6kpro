@@ -73,7 +73,7 @@ Stop: `docker compose -f ds41-flash-tp4.compose.yaml down` (keeps model/cache vo
 name: ds41-flash-tp4
 services:
   model:
-    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-4d9905b931656635
+    image: ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260922-3221ccacf71002ea
     container_name: ds41-flash-tp4
     init: true
     network_mode: host

@@ -1,0 +1,107 @@
+╭──────────────────────────── NVIDIA P2P Override ─────────────────────────────╮
+│ Effective: yes                                                               │
+│ Configured file: yes (/etc/modprobe.d/nvidia-p2p-override.conf)              │
+│ Runtime: ForceP2P=0x11; RMForceP2PType=1; RMPcieP2PType=2;                   │
+│ GrdmaPciTopoCheckOverride=1; EnableResizableBar=1; DmaRemapPeerMmio=1        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────── Configuration ────────────────────────────────╮
+│ LLM Inference Benchmark                                                      │
+│ Model: Qwen3.8-Flash-Next @ 192.168.0.115:5071                               │
+│ Decode concurrency: [1, 8]                                                   │
+│ Decode contexts: ['0']                                                       │
+│ Duration: 30.0s per decode test | Max tokens: 32768                          │
+│ Pre-decode warmup: C=1 max-runnable context for 10s                          │
+│ Exact-loop guard: enabled | Output preview: unavailable in plain mode        │
+│ Prefill: skipped | Sustained decode: 2 cells                                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Engine: vLLM 0.1.dev21691+g622912b9b  Models: ['Qwen3.8-Flash-Next']
+KV cache budget (vLLM metrics): 14,912,640 tokens (5178 blocks × 2880)
+Model context length: 524,288 tokens
+Prefill tests: skipped
+Done.
+
+
+
+llm-decode-bench v0.6.2
+╭────────────────────────────────── Phase 2 ───────────────────────────────────╮
+│ Sustained Decode                                                             │
+│ Steady-state decode throughput after the engine has admitted the requested   │
+│ concurrency and passed warmup. Use this as the main tuning/regression signal │
+│ for kernels, NCCL, DCP, MTP, and scheduler changes.                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Aggregate tok/s  + TTFT/ITL               
+╭────────────┬─────────────┬─────────────╮
+│ ctx \ conc │           1 │           8 │
+├────────────┼─────────────┼─────────────┤
+│ 0          │ 229.4 124/4 │ 905.3 207/9 │
+╰────────────┴─────────────┴─────────────╯
+Sustained Decode: aggregate tok/s uses OpenAI stream usage by default 
+(continuous completion_tokens when the server supports it). Prometheus is kept 
+as validation/scheduler data.
+Aggregate source(s): openai_continuous_usage
+Per-Request tok/s             
+╭────────────┬───────┬───────╮
+│ ctx \ conc │     1 │     8 │
+├────────────┼───────┼───────┤
+│ 0          │ 229.4 │ 113.2 │
+╰────────────┴───────┴───────╯
+Client request latency:   
+p50 / p90 ms              
+╭────────────┬─────┬─────╮
+│ ctx \ conc │   1 │   8 │
+├────────────┼─────┼─────┤
+│ 0          │ —/— │ —/— │
+╰────────────┴─────┴─────╯
+Aggregate cells show dim detail as TTFT ms / ITL ms for the same ctx/conc 
+coordinate. ITL is computed from observed generated tokens, including streams 
+stopped at the measurement boundary; a missing ITL means no stream produced at 
+least two measured output tokens. Per-request tok/s and request latency are 
+shown in separate per-cell matrices. Completion/sample counts and full 
+request-level distributions remain in JSON under request_samples.
+Sustained mode: client latency metrics explain request UX variance; aggregate 
+tok/s remains the primary throughput signal. 
+ITL=(last_token_time-first_token_time)/(output_tokens-1), user tok/s=1/ITL.
+Hardware Summary                                                                
+╭───┬─┬───────┬───────────┬───────┬─────────┬─────┬──────┬─────┬───────────────╮
+│ … │ │ mode  │ GPU avg/… │ Mem … │ W avg/… │ T … │ CPU… │ VR… │ PCIe rx/tx a… │
+├───┼─┼───────┼───────────┼───────┼─────────┼─────┼──────┼─────┼───────────────┤
+│ 0 │ │ sust… │      0/0% │    0% │ 329/331 │ 43C │  68C │ 55… │         34/42 │
+│ 0 │ │ sust… │      0/0% │    0% │ 405/405 │ 45C │  67C │ 55… │         34/41 │
+╰───┴─┴───────┴───────────┴───────┴─────────┴─────┴──────┴─────┴───────────────╯
+╭────────────────────── Whole-run GPU Power ──────────────────────╮
+│ avg 344 W | max 405 W | limit 9,600 W | over 1m 11s | 5 samples │
+╰─────────────────────────────────────────────────────────────────╯
+Hardware summary is sampled from nvidia-smi during the measured part of each 
+cell. Whole-run GPU power is the sampled sum of GPU power draw across the 
+complete benchmark run, not wall-outlet system power. PCIe rx/tx is MB/s and is 
+a coarse live diagnostic, not a per-kernel NCCL profiler.
+
+╭────────────────────────────────── Phase 3 ───────────────────────────────────╮
+│ Burst / E2E Decode                                                           │
+│ Not run. Re-run with --run-burst to append a finite client-facing request    │
+│ burst after Sustained Decode. This is intentionally disabled by default      │
+│ because it adds another full decode matrix.                                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+╭────────────────────────────── Primary Summary ───────────────────────────────╮
+│ Primary matrices repeated last so the important numbers are visible without  │
+│ scrolling back through diagnostics.                                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Aggregate decode tok/s        
+╭────────────┬───────┬───────╮
+│ ctx \ conc │     1 │     8 │
+├────────────┼───────┼───────┤
+│ 0          │ 229.4 │ 905.3 │
+╰────────────┴───────┴───────╯
+MTP-normalized decode steps/s (accept len) 
+╭────────────┬─────────────┬──────────────╮
+│ ctx \ conc │           1 │            8 │
+├────────────┼─────────────┼──────────────┤
+│ 0          │ 96.5 (2.38) │ 391.5 (2.31) │
+╰────────────┴─────────────┴──────────────╯
+steps/s = tok/s ÷ accept_len: engine forward passes per second, independent of 
+MTP acceptance, so runs with different acceptance are directly comparable. 
+(accept len) = tokens emitted per engine step.
+
+Results saved to 
+results/integration-audit-20260922/tuning-contract-diagnostic-decode.json

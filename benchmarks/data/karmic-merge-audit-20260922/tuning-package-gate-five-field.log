@@ -1,0 +1,5 @@
+W0922 08:08:32.522000 995 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W0922 08:08:32.522000 995 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W0922 08:08:32.522000 995 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+/opt/venv/lib/python3.12/site-packages/vllm/__init__.py
+b12x_tuning_exchange=PASS

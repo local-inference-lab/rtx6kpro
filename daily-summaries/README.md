@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-09-23](2026-09/2026-09-23.md) | DeepSeek-V4.1-Flash at TP3 on 3×96 GB RTX PRO 6000 (PCIe 4.0 x16, driver 615.71.09, CUDA 13.4): EXL3 |
 | [2026-09-22](2026-09/2026-09-22.md) | vLLM v0.30.0 was released on GitHub (vllm-project/vllm). |
 | [2026-09-21](2026-09/2026-09-21.md) | D-Rock published qad-kk-mtp3-20260920 and -r3 (digest sha256:2ce695acaf709e7d77d15035a6282957398aedc |
 | [2026-09-20](2026-09/2026-09-20.md) | GLM-5.3-Flash NVFP4-Spark on vLLM karmic-kraken-beta 5927520c, 2x RTX 6000 Pro Blackwell WS 96GB TP2 |

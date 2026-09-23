@@ -23,6 +23,7 @@ require_positive_integer() {
 }
 
 readonly mp_host=${LMCACHE_MP_HOST:-127.0.0.1}
+readonly http_host=${LMCACHE_HTTP_HOST:-127.0.0.1}
 readonly mp_port=${LMCACHE_MP_PORT:-5555}
 readonly http_port=${LMCACHE_HTTP_PORT:-8085}
 readonly prometheus_port=${LMCACHE_PROMETHEUS_PORT:-9095}
@@ -48,6 +49,11 @@ require_positive_integer LMCACHE_MIN_SHM_GIB "${min_shm_gib}"
 if [[ ! ${mp_host} =~ ^[A-Za-z0-9_.:-]+$ ]]; then
   printf 'LMCACHE_MP_HOST contains unsupported characters: %s\n' \
     "${mp_host}" >&2
+  exit 2
+fi
+if [[ ! ${http_host} =~ ^[A-Za-z0-9_.:-]+$ ]]; then
+  printf 'LMCACHE_HTTP_HOST contains unsupported characters: %s\n' \
+    "${http_host}" >&2
   exit 2
 fi
 case "${transfer_mode}" in
@@ -130,7 +136,7 @@ lmcache_server=(
   --l1-size-gb "${LMCACHE_L1_SIZE_GB:-64}"
   --l1-init-size-gb "${LMCACHE_L1_INIT_SIZE_GB:-2}"
   --eviction-policy LRU
-  --http-host 127.0.0.1
+  --http-host "${http_host}"
   --http-port "${http_port}"
   --prometheus-port "${prometheus_port}"
 )

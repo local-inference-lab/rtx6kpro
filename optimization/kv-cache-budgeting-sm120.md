@@ -24,7 +24,7 @@ The short version:
 - [Autotune Scales With Chunk Size](#autotune-scales-with-chunk-size)
 - [Measured Configurations](#measured-configurations)
 - [Tuning Procedure](#tuning-procedure)
-- [Tensor Parallelism Does Not Buy Context Under MLA](#tensor-parallelism-does-not-buy-context-under-mla)
+- [What Tensor Parallelism Does And Does Not Do Under MLA](#what-tensor-parallelism-does-and-does-not-do-under-mla)
 - [Reading Parameter Counts From Packed NVFP4 Repositories](#reading-parameter-counts-from-packed-nvfp4-repositories)
 
 ## Why Precision Sets The Context Window
@@ -107,11 +107,36 @@ Same checkpoint and hardware throughout; only the two flags move.
 The last row is the useful one: utilization 0.97 buys back exactly what the
 larger chunk size costs, landing on the same context as the 1024 configuration.
 
-Measured prefill improvement from the 8x chunk raise was **+11%** (1,988 to
-2,210 tokens/s on an identical ~550,000 token prompt), which is modest. On this
-SM120 sparse-MLA path prefill does not appear to be limited by kernel launch
-overhead, so there is little reason to push chunk size further. It was worth
-taking only because at utilization 0.97 it costs no context.
+Measured prefill improvement from the 8x chunk raise was **+11%**, 1,988 to
+2,210 tokens/s, which is modest. On this SM120 sparse-MLA path prefill does not
+appear to be limited by kernel launch overhead, so there is little reason to
+push chunk size further. It was worth taking only because at utilization 0.97
+it costs no context.
+
+Conditions for that pair, so it can be checked or contradicted:
+
+- vLLM `0.1.dev20051+g487ecf187`, a custom build carrying the SM120 sparse MLA
+  backport (`FLASHINFER_MLA_SPARSE_SM120` plus `fp8_ds_mla`). Stock builds
+  select no sparse MLA backend for this checkpoint on SM120.
+- Checkpoint: GLM-5.3, `glm_moe_dsa`, NVFP4, 433 GiB of weights.
+- 8x RTX PRO 6000 Blackwell, PCIe, no NVLink, default clocks.
+
+Server, with only `--max-num-batched-tokens` differing between the two runs:
+
+```bash
+vllm serve <checkpoint>   --tensor-parallel-size 8 --distributed-executor-backend mp   --gpu-memory-utilization 0.97   --max-model-len 589824   --max-num-seqs 8   --max-num-batched-tokens 1024   `# 8192 for the second run`   --enforce-eager --enable-prefix-caching   --attention-config '{"sparse_mla_force_mqa": true}'
+```
+
+Client: a single non-streaming `POST /v1/chat/completions`, `temperature` 0,
+`max_tokens` 256, one synthetic log line per line of prompt, sized with the
+served tokenizer via `POST /tokenize` rather than by character count (the
+corpus is hex identifiers and IP addresses, which tokenise far denser than
+prose). Prompt was 559,799 tokens for the 1024 run and 549,824 for the 8192
+run; the rate is prompt tokens divided by wall time, so the size difference is
+normalised out.
+
+Both runs were the **first** large request against a freshly started engine, so
+the prefix cache was cold for each. That matters, per the caveat below.
 
 Throughput figures taken while `--enable-prefix-caching` is on are not a clean
 benchmark: vLLM counts cache hits toward `Avg prompt throughput`, and runs
@@ -135,19 +160,27 @@ is enough to prevent startup.
    weight load completes. This is a fast, informative failure and is the
    cheapest way to find the true limit.
 
-## Tensor Parallelism Does Not Buy Context Under MLA
+## What Tensor Parallelism Does And Does Not Do Under MLA
 
-Under MLA the KV cache is **replicated per tensor-parallel rank**, not sharded.
-Raising `--tensor-parallel-size` provides room for *weights* and leaves the
-per-GPU cache budget unchanged, so it does not extend the context window.
+Under MLA the KV cache is **replicated per tensor-parallel rank**, not sharded,
+so raising `--tensor-parallel-size` does not reduce the KV bytes required per
+token. It can still increase the *capacity* available for that cache: sharding
+weights across more GPUs lowers the per-GPU weight footprint and leaves more
+room behind it. The 433 GiB checkpoint here is 54.1 GiB/GPU at TP8 and would be
+108 GiB/GPU at TP4, past the 94.97 GiB card, so TP8 is what makes any cache at
+all possible.
 
-Decode Context Parallelism (DCP) would shard it, but the SM120 sparse MLA
-implementation derives from `MLAAttentionImpl` rather than `SparseMLACommonImpl`
-and never defines `dcp_world_size`, so that path is unavailable on this backend.
+What TP does not do is make a token cheaper to cache. Decode Context
+Parallelism (DCP) would shard the cache itself, but in the build measured here
+(vLLM `0.1.dev20051+g487ecf187`) the SM120 sparse MLA implementation derives
+from `MLAAttentionImpl` rather than `SparseMLACommonImpl` and does not define
+`dcp_world_size`, so that path is unavailable on this backend. Verify against
+your own revision before relying on this; the class is a backport and its base
+may differ elsewhere.
 
-The corollary is that the only lever on context for a weight-heavy checkpoint is
-the weight footprint itself, which is what makes the NVFP4 requantisation above
-worth the effort.
+So for a weight-heavy checkpoint already spread across every GPU, the remaining
+lever on context is the weight footprint itself, which is what makes the NVFP4
+requantisation above worth the effort.
 
 ## Reading Parameter Counts From Packed NVFP4 Repositories
 

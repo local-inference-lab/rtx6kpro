@@ -169,6 +169,9 @@ This preserves KV cache calibration quality while removing censorship.
 
 ## KV Cache Considerations
 
+For how weight precision sets the usable context window, and the `flashinfer_autotune` headroom that constrains `--max-num-batched-tokens`, see
+[KV cache budgeting on SM120](kv-cache-budgeting-sm120.md).
+
 ### FP8 KV Cache (NVIDIA Checkpoints)
 
 NVIDIA ModelOpt checkpoints include calibrated k_scale and v_scale tensors, enabling FP8 KV cache with proper quality:

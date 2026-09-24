@@ -13,7 +13,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 ## Landing Pages And Hubs
 
 - [Glossary And Acronym Guide](GLOSSARY.md) - `GLOSSARY.md`
-- [RTX PRO 6000 Blackwell Wiki Index](INDEX.md) - `INDEX.md`
+- [INDEX](INDEX.md) - `INDEX.md`
 - [RTX PRO 6000 Blackwell LLM Wiki](README.md) - `README.md`
 
 ## Contributor And Onboarding Guides
@@ -171,10 +171,13 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [Kimi K3 distribution-fidelity reference](models/kimi-k3/artifacts/distribution-fidelity-1024x2048-README.md) - `models/kimi-k3/artifacts/distribution-fidelity-1024x2048-README.md`
 - [Kimi K3 distribution-fidelity reference: 1,024 contexts × 2,048 tokens](models/kimi-k3/distribution-fidelity-1024x2048.md) - `models/kimi-k3/distribution-fidelity-1024x2048.md`
 - [Kimi-K3 Full-MXFP4 4096-Token Prefill](models/kimi-k3/full-mxfp4-p4096-prefill.md) - `models/kimi-k3/full-mxfp4-p4096-prefill.md`
+- [Kimi-K3 split projection overlap and recurrent prefix checkpoints](models/kimi-k3/kda-projection-qualification.md) - `models/kimi-k3/kda-projection-qualification.md`
 - [Kimi-K3 Native Host KV Offload](models/kimi-k3/native-host-kv-offload.md) - `models/kimi-k3/native-host-kv-offload.md`
 - [Kimi-K3 Production Runtime](models/kimi-k3/production-dspark-lmcache.md) - `models/kimi-k3/production-dspark-lmcache.md`
 - [Kimi-K3 MXFP4 Runtime](models/kimi-k3/production-runtime.md) - `models/kimi-k3/production-runtime.md`
 - [Kimi-K3 QSRT K2 TP16/DCP8 Serving](models/kimi-k3/qsrt-k2-tp16-dcp8.md) - `models/kimi-k3/qsrt-k2-tp16-dcp8.md`
+- [Kimi-K3 QSRT-K2 TP9: source composition and validation](models/kimi-k3/qsrt-tp9-dspark-qualification.md) - `models/kimi-k3/qsrt-tp9-dspark-qualification.md`
+- [Kimi-K3 QSRT-K2 with Red Hat DSpark on nine GPUs](models/kimi-k3/qsrt-tp9-dspark.md) - `models/kimi-k3/qsrt-tp9-dspark.md`
 - [RedHatAI BF16 DSpark for Kimi-K3 with DCP16](models/kimi-k3/redhat-dspark-dcp16.md) - `models/kimi-k3/redhat-dspark-dcp16.md`
 - [Kimi Runbook Hub](models/kimi.md) - `models/kimi.md`
 - [Legacy Model Runbooks](models/legacy.md) - `models/legacy.md`
@@ -204,15 +207,19 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [Czech Tutoring Workload Quality: DeepSeek-V4-Flash vs V4.1-Flash vs Qwen3.8-Flash-Next vs GLM-5.3-Flash](benchmarks/czech-tutor-quality-comparison.md) - `benchmarks/czech-tutor-quality-comparison.md`
 - [GLM serving throughput across compilation-cache restarts](benchmarks/glm-startup-consistency.md) - `benchmarks/glm-startup-consistency.md`
 - [GLM-5.2 KLD Evaluation](benchmarks/glm52-kld-evaluation.md) - `benchmarks/glm52-kld-evaluation.md`
+- [GLM speculative KDA recovery with atomic LMCache checkpoints](benchmarks/glm53-kda-recovery-lmcache.md) - `benchmarks/glm53-kda-recovery-lmcache.md`
 - [Inference Throughput: Qwen3.5-397B-A17B Quantizations](benchmarks/inference-throughput/README.md) - `benchmarks/inference-throughput/README.md`
 - [vLLM vs SGLang Throughput: lukealonso/Qwen3.5-397B-A17B-NVFP4](benchmarks/inference-throughput/vllm-vs-sglang.md) - `benchmarks/inference-throughput/vllm-vs-sglang.md`
+- [Karmic integration: canonical merge and registry qualification](benchmarks/karmic-integration-merge-audit.md) - `benchmarks/karmic-integration-merge-audit.md`
 - [Karmic Kraken model-serving measurements](benchmarks/karmic-kraken-serving.md) - `benchmarks/karmic-kraken-serving.md`
+- [Karmic Kraken public-report validation](benchmarks/karmic-public-feedback.md) - `benchmarks/karmic-public-feedback.md`
 - [Qwen3.5 SGLang KLD reproduction record](benchmarks/kld-evaluation.md) - `benchmarks/kld-evaluation.md`
 - [MTP Quality Evaluation](benchmarks/mtp-quality-evaluation.md) - `benchmarks/mtp-quality-evaluation.md`
 - [Qwen3.5-397B-A17B Quantization Comparison: AWQ vs NVFP4](benchmarks/nvfp4-quantization-comparison.md) - `benchmarks/nvfp4-quantization-comparison.md`
 - [Prepared-kernel ownership and API compatibility qualification](benchmarks/prepared-b12x-contracts/README.md) - `benchmarks/prepared-b12x-contracts/README.md`
 - [Wheel-composed model runtime qualification](benchmarks/prepared-b12x-serving/README.md) - `benchmarks/prepared-b12x-serving/README.md`
 - [Qwen request-boundary cache capacity](benchmarks/qwen-boundary-capacity-accounting.md) - `benchmarks/qwen-boundary-capacity-accounting.md`
+- [Qwen TP2 decode: community SGLang and LIL vLLM](benchmarks/qwen38-tp2-sglang.md) - `benchmarks/qwen38-tp2-sglang.md`
 - [Benchmark Results -- RTX 6000 Pro Blackwell](benchmarks/results.md) - `benchmarks/results.md`
 - [TP4 runtime memory-control measurements](benchmarks/tp4-memory-controls.md) - `benchmarks/tp4-memory-controls.md`
 
@@ -233,6 +240,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [DSpark: ours vs upstream vLLM — consolidation study (2026-07-03)](optimization/dspark-upstream-consolidation.md) - `optimization/dspark-upstream-consolidation.md`
 - [Hybrid NVFP4 Assembly: BF16 Sensitive Layers](optimization/hybrid-nvfp4-assembly.md) - `optimization/hybrid-nvfp4-assembly.md`
 - [Tuning I/O výkonu md RAID5 na inferno-7](optimization/io-tuning.md) - `optimization/io-tuning.md`
+- [KV Cache Budgeting On SM120](optimization/kv-cache-budgeting-sm120.md) - `optimization/kv-cache-budgeting-sm120.md`
 - [NCCL Tuning Guide](optimization/nccl-tuning.md) - `optimization/nccl-tuning.md`
 - [NVFP4 Quantization](optimization/nvfp4-quantization.md) - `optimization/nvfp4-quantization.md`
 - [PCIe Oneshot AllReduce for Inference](optimization/pcie-oneshot-allreduce.md) - `optimization/pcie-oneshot-allreduce.md`
@@ -486,6 +494,10 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [Daily Summary - 2026-09-17](daily-summaries/2026-09/2026-09-18.md) - `daily-summaries/2026-09/2026-09-18.md`
 - [Daily Summary - 2026-09-18](daily-summaries/2026-09/2026-09-19.md) - `daily-summaries/2026-09/2026-09-19.md`
 - [Daily Summary - 2026-09-19](daily-summaries/2026-09/2026-09-20.md) - `daily-summaries/2026-09/2026-09-20.md`
+- [Daily Summary - 2026-09-20](daily-summaries/2026-09/2026-09-21.md) - `daily-summaries/2026-09/2026-09-21.md`
+- [Daily Summary - 2026-09-21](daily-summaries/2026-09/2026-09-22.md) - `daily-summaries/2026-09/2026-09-22.md`
+- [Daily Summary - 2026-09-22](daily-summaries/2026-09/2026-09-23.md) - `daily-summaries/2026-09/2026-09-23.md`
+- [Daily Summary - 2026-09-23](daily-summaries/2026-09/2026-09-24.md) - `daily-summaries/2026-09/2026-09-24.md`
 - [Daily Summaries](daily-summaries/README.md) - `daily-summaries/README.md`
 
 ## Other Documents

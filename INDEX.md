@@ -233,6 +233,7 @@ python3 scripts/generate-wiki-index.py > INDEX.md
 - [DSpark: ours vs upstream vLLM — consolidation study (2026-07-03)](optimization/dspark-upstream-consolidation.md) - `optimization/dspark-upstream-consolidation.md`
 - [Hybrid NVFP4 Assembly: BF16 Sensitive Layers](optimization/hybrid-nvfp4-assembly.md) - `optimization/hybrid-nvfp4-assembly.md`
 - [Tuning I/O výkonu md RAID5 na inferno-7](optimization/io-tuning.md) - `optimization/io-tuning.md`
+- [KV Cache Budgeting On SM120](optimization/kv-cache-budgeting-sm120.md) - `optimization/kv-cache-budgeting-sm120.md`
 - [NCCL Tuning Guide](optimization/nccl-tuning.md) - `optimization/nccl-tuning.md`
 - [NVFP4 Quantization](optimization/nvfp4-quantization.md) - `optimization/nvfp4-quantization.md`
 - [PCIe Oneshot AllReduce for Inference](optimization/pcie-oneshot-allreduce.md) - `optimization/pcie-oneshot-allreduce.md`

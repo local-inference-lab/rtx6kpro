@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-09-27](2026-09/2026-09-27.md) | mrweiner reproduced on GLM-5.3-Flash with vLLM 04c30fa98e79 and LMCache 2915c9d3cd7e: publishing a p |
 | [2026-09-26](2026-09/2026-09-26.md) | A lossless one-bit scale codec reportedly reduces routed-expert E8M0 scale data to about 14% of its  |
 | [2026-09-24](2026-09/2026-09-24.md) | MiMo V2.6 Flash RL b12x rc3/rc4 release and fixes |
 | [2026-09-23](2026-09/2026-09-23.md) | DeepSeek-V4.1-Flash at TP3 on 3×96 GB RTX PRO 6000 (PCIe 4.0 x16, driver 615.71.09, CUDA 13.4): EXL3 |

@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-01](2026-10/2026-10-01.md) | On DeepSeek-V4.1-Flash DGX Spark, unique-prefix real text (documentation and source code) measured 4 |
 | [2026-09-30](2026-09/2026-09-30.md) | KK beta image enables fastokens tokenizer by default (docker #112, vllm #934): a 300K-token conversa |
 | [2026-09-29](2026-09/2026-09-29.md) | Karmic Kraken Engram tables now load into RAM by default. On TP4 measured about 190 tok/s at C1, whi |
 | [2026-09-28](2026-09/2026-09-28.md) | LIL vLLM beta ghcr.io/local-inference-lab/vllm:karmic-kraken-beta-20260927-a7739316 (TP2/DCP2, fixed |

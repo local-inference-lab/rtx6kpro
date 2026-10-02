@@ -1828,6 +1828,8 @@ runtime/checkpoint boundaries of these independent reports:
   and [QAD TV-nucleus](glm-5.3-flash/qad-tvn-step2500-verifier-backed-behavioral-fidelity.md).
 - [BF16/NVFP4 distribution fidelity](../kld/glm-5.3-flash-bf16-nvfp4.md)
   and [QAD quantization reports](../kld/glm-5.3-flash-qad-step2500.md).
+- [Greedy checksum stability and MoE activation precision](glm-5.3-flash/checksum-stability-moe-activations.md):
+  W4A4 vs W4A8 vs W4A16, FP32 router weights, speed cost and determinism.
 - [Community R35 deployment and measurement archive](glm-5.3-flash-community-r35.md):
   release-specific launchers, DCP and no-spec matrices, +6000 measurements,
   source locks, historical LMCache restores and reported constrained-output limits.

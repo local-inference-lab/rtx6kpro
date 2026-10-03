@@ -360,6 +360,7 @@ Without `uvm_disable_hmm=1`, NCCL P2P operations can lock up. This is required o
 - **Resizable BAR:** Enabled (default)
 - **Above 4G Decoding:** Enabled
 - **SR-IOV:** Enabled
+- **USB4 Support:** Disabled (without this, 6+ will not POST)
 - **Slot 6 Warning:** On WRX90E-SAGE SE, slot 6 is limited to Gen5 x8 speed
 
 ### Filesystem Warning

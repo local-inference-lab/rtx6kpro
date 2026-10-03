@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-03](2026-10/2026-10-03.md) | A community post referenced a 64GB DGX Spark; a separate community post mentioned a $4,999 starting  |
 | [2026-10-02](2026-10/2026-10-02.md) | On vLLM 0.1.dev21968+g5df66adce (image karmic-kraken-beta-20260930-7ec3133af4492daf), DeepSeek-V4.1- |
 | [2026-10-01](2026-10/2026-10-01.md) | On DeepSeek-V4.1-Flash DGX Spark, unique-prefix real text (documentation and source code) measured 4 |
 | [2026-09-30](2026-09/2026-09-30.md) | KK beta image enables fastokens tokenizer by default (docker #112, vllm #934): a 300K-token conversa |

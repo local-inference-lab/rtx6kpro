@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-04](2026-10/2026-10-04.md) | With the step-5500 QAD weight update (MXFP8 attention and NVFP4 MTP experts) on KarmicKraken beta a7 |
 | [2026-10-03](2026-10/2026-10-03.md) | A community post referenced a 64GB DGX Spark; a separate community post mentioned a $4,999 starting  |
 | [2026-10-02](2026-10/2026-10-02.md) | On vLLM 0.1.dev21968+g5df66adce (image karmic-kraken-beta-20260930-7ec3133af4492daf), DeepSeek-V4.1- |
 | [2026-10-01](2026-10/2026-10-01.md) | On DeepSeek-V4.1-Flash DGX Spark, unique-prefix real text (documentation and source code) measured 4 |

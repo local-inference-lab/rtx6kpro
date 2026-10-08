@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-08](2026-10/2026-10-08.md) | CSF/MegaMoE support implemented with a load-time encoder and a patched kernel that decodes compresse |
 | [2026-10-07](2026-10/2026-10-07.md) | The b12x kernel stack moved wholesale under FlashInfer as a submodule at commit fc8fdc17, keeping th |
 | [2026-10-05](2026-10/2026-10-05.md) | A runnable MiniMax-H3 SM120 image recipe is available with Dockerfile, build.sh, launcher and reques |
 | [2026-10-04](2026-10/2026-10-04.md) | With the step-5500 QAD weight update (MXFP8 attention and NVFP4 MTP experts) on KarmicKraken beta a7 |

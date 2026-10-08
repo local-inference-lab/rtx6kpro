@@ -166,7 +166,7 @@ Create `/etc/modprobe.d/nvidia-p2p-override.conf`:
 options nvidia NVreg_RegistryDwords="ForceP2P=0x11;RMForceP2PType=1;RMPcieP2PType=2;GrdmaPciTopoCheckOverride=1;EnableResizableBar=1"
 ```
 
-Then reload the nvidia driver:
+Then reload the nvidia driver. To persist in Ubuntu run update-initramfs and reboot, otherwise run: 
 
 ```bash
 # Stop everything using GPUs

@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-09](2026-10/2026-10-09.md) | On 8x RTX PRO 6000 Blackwell Server (driver 615.71.09, ~755 GiB RAM), ufear verified native KV offlo |
 | [2026-10-08](2026-10/2026-10-08.md) | CSF/MegaMoE support implemented with a load-time encoder and a patched kernel that decodes compresse |
 | [2026-10-07](2026-10/2026-10-07.md) | The b12x kernel stack moved wholesale under FlashInfer as a submodule at commit fc8fdc17, keeping th |
 | [2026-10-05](2026-10/2026-10-05.md) | A runnable MiniMax-H3 SM120 image recipe is available with Dockerfile, build.sh, launcher and reques |

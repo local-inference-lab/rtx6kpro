@@ -1,0 +1,182 @@
+name: glm53-flash-jovian-cumem
+
+services:
+  lmcache:
+    profiles: [cumem]
+    image: ${IMAGE:?set IMAGE to the fleet-qualified local image}
+    container_name: ${NAME:-glm53-flash-jovian-cumem}-lmcache
+    user: "0:0"
+    restart: unless-stopped
+    init: true
+    network_mode: host
+    ipc: host
+    shm_size: 56g
+    security_opt:
+      - label=disable
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0", "1", "2", "3"]
+              capabilities: [gpu]
+    environment:
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      CUDA_VISIBLE_DEVICES: "0,1,2,3"
+      NVIDIA_VISIBLE_DEVICES: "0,1,2,3"
+      LMCACHE_CUMEM_BROKER_DIR: /run/lmcache-cumem
+      LMCACHE_MP_TRANSFER_MODE: lmcache_driven
+    volumes:
+      - lmcache-cumem-broker:/run/lmcache-cumem
+    entrypoint: [/opt/venv/bin/lmcache]
+    command:
+      - server
+      - --host
+      - 127.0.0.1
+      - --port
+      - "5555"
+      - --http-host
+      - 127.0.0.1
+      - --http-port
+      - "8080"
+      - --chunk-size
+      - "8192"
+      - --l1-size-gb
+      - "48"
+      - --eviction-policy
+      - LRU
+      - --supported-transfer-mode
+      - lmcache_driven
+      - --separate-object-groups
+      - --shm-name
+      - glm53_flash_jovian_cumem
+    healthcheck:
+      test:
+        - CMD
+        - /opt/venv/bin/python
+        - -c
+        - >-
+          import json, urllib.request;
+          body=json.load(urllib.request.urlopen("http://127.0.0.1:8080/healthcheck", timeout=2));
+          assert body == {"status": "healthy"}
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 20s
+
+  server:
+    profiles: [cumem]
+    image: ${IMAGE:?set IMAGE to the fleet-qualified local image}
+    container_name: ${NAME:-glm53-flash-jovian-cumem}-server
+    user: "0:0"
+    restart: unless-stopped
+    init: true
+    network_mode: host
+    ipc: host
+    shm_size: 32g
+    security_opt:
+      - label=disable
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0", "1", "2", "3"]
+              capabilities: [gpu]
+    depends_on:
+      lmcache:
+        condition: service_healthy
+    ulimits:
+      memlock: -1
+      stack: 67108864
+      nofile:
+        soft: 1048576
+        hard: 1048576
+    environment:
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      CUDA_VISIBLE_DEVICES: "0,1,2,3"
+      NVIDIA_VISIBLE_DEVICES: "0,1,2,3"
+      LMCACHE_CUMEM_BROKER_DIR: /run/lmcache-cumem
+      LMCACHE_MP_TRANSFER_MODE: lmcache_driven
+      PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+      VLLM_WORKER_SHUTDOWN_TIMEOUT_SECONDS: "60"
+    volumes:
+      - lmcache-cumem-broker:/run/lmcache-cumem
+      - ${MODEL_DIR:?set MODEL_DIR to the downloaded checkpoint}:/model:ro
+      - ${CACHE_DIR:?set CACHE_DIR to a writable JIT cache directory}:/cache
+    entrypoint: [/opt/venv/bin/vllm]
+    command:
+      - serve
+      - /model
+      - --served-model-name
+      - glm-5.3-flash
+      - --host
+      - 0.0.0.0
+      - --port
+      - "${PORT:-8001}"
+      - --trust-remote-code
+      - --attention-backend
+      - B12X
+      - --moe-backend
+      - b12x
+      - --linear-backend
+      - b12x
+      - --tensor-parallel-size
+      - "4"
+      - --decode-context-parallel-size
+      - "4"
+      - --distributed-executor-backend
+      - mp
+      - --max-model-len
+      - "1048576"
+      - --max-num-batched-tokens
+      - "8192"
+      - --max-num-seqs
+      - "16"
+      - --block-size
+      - "512"
+      - --kv-cache-memory
+      - "33554432000"
+      - --kv-cache-dtype
+      - fp8
+      - --gpu-memory-utilization
+      - "0.945"
+      - --max-cudagraph-capture-size
+      - "128"
+      - --enable-cumem-allocator
+      - --shutdown-timeout
+      - "60"
+      - --enable-prefix-caching
+      - --enable-prompt-tokens-details
+      - --enable-chunked-prefill
+      - --async-scheduling
+      - --speculative-config
+      - '{"method":"mtp","num_speculative_tokens":3,"moe_backend":"humming","attention_backend":"B12X"}'
+      - --kv-transfer-config
+      - '{"kv_connector":"LMCacheMPConnector","kv_role":"kv_both","kv_connector_extra_config":{"lmcache.mp.host":"tcp://127.0.0.1","lmcache.mp.port":5555,"lmcache.mp.mq_timeout":60,"lmcache.mp.heartbeat_interval":5,"lmcache.mp.mp_transfer_mode":"lmcache_driven"}}'
+      - --reasoning-parser
+      - glm45
+      - --tool-call-parser
+      - glm47
+      - --enable-auto-tool-choice
+      - --default-chat-template-kwargs
+      - '{"reasoning_effort":"high"}'
+    healthcheck:
+      test:
+        - CMD
+        - /opt/venv/bin/python
+        - -c
+        - >-
+          import urllib.request;
+          assert urllib.request.urlopen("http://127.0.0.1:${PORT:-8001}/health", timeout=2).status == 200
+      interval: 10s
+      timeout: 3s
+      retries: 90
+      start_period: 20m
+
+volumes:
+  lmcache-cumem-broker:
+    name: ${BROKER_VOLUME:-glm53-flash-jovian-cumem-broker}
+    labels:
+      local-inference.glm53.owner: root
+      local-inference.glm53.purpose: same-uid-cumem-scm-rights

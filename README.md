@@ -78,6 +78,7 @@ family unless you are reproducing a specific historical result.
 | Speculative decoding | [Speculative decoding](optimization/speculative-decoding.md) |
 | NVFP4 quantization | [NVFP4 quantization](optimization/nvfp4-quantization.md) |
 | Hybrid NVFP4 assembly | [Hybrid NVFP4 assembly](optimization/hybrid-nvfp4-assembly.md) |
+| KV cache budgeting and autotune headroom | [KV cache budgeting on SM120](optimization/kv-cache-budgeting-sm120.md) |
 | B12X FP8 / DeepGEMM comparison | [B12X dense FP8 GEMM vs DeepGEMM](optimization/b12x-dense-fp8-gemm-vs-deepgemm.md) |
 | B12X W4A8 tiny decode | [B12X W4A8 MX tiny decode](optimization/b12x-w4a8mx-tiny-decode-kernel.md) |
 | DSpark upstream consolidation | [DSpark upstream consolidation](optimization/dspark-upstream-consolidation.md) |

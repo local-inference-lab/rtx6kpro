@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-26](2026-10/2026-10-26.md) | A Flare checkpoint built with --max-concurrency 32 --image-concurrency 4 --mtp-draft-tokens 7 --spec |
 | [2026-10-25](2026-10/2026-10-25.md) | JCartu provided gated access to DeepSeek-V4.1-Flash-1017-abliterated-lossless-CSF and a LiL vLLM/B12 |
 | [2026-10-23](2026-10/2026-10-23.md) | On 4x RTX PRO 6000 Blackwell TP4, Flare runtime 5dd67695 vs vLLM karmic-kraken had a 2.26x KV pool ( |
 | [2026-10-22](2026-10/2026-10-22.md) | Catid released DeepInfer patches enabling DeepSeek-V4.1-Flash on an 8x NVIDIA B300 server; it does n |

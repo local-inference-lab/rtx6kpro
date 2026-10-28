@@ -1143,6 +1143,15 @@ Attention KV is FP8, while recurrent state follows the model's native contract.
 Prefix caching is on; the native `auto` policy selects exact recurrent request
 boundaries where supported. Leave this policy to the model profile.
 
+If you switch the KV cache to NVFP4 (`--kv-cache-dtype nvfp4`), also set
+`VLLM_KV_CACHE_LAYOUT=BLHNC`. With the engine's default token-major (BLNHC)
+layout the stock NVFP4 write kernel places K/V and block scales at the wrong
+byte offsets, which produces incoherent output at every context length —
+silently, with no error. See
+[troubleshooting/nvfp4-kv-cache-blnhnc-stride-mismatch.md](../troubleshooting/nvfp4-kv-cache-blnhnc-stride-mismatch.md)
+(root cause, evidence, repro, and the measured fp8-vs-nvfp4 quality/speed
+trade-offs).
+
 PLE is a learned embedding table, not request KV and not an n-gram speculator.
 Historical startup accounting records about 26.82 GiB of mapped host tables;
 leave additional host RAM for loading and the server. Keep offload enabled for

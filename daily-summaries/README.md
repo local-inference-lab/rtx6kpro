@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-28](2026-10/2026-10-28.md) | h1 · DSV41-Flash hardware FP4 exactness test passed** — Reported as passed: DSV41-Flash hybrid infer |
 | [2026-10-27](2026-10/2026-10-27.md) | Four RTX PRO 6000 Blackwell 96GB cards on a Threadripper PRO 7965WX / ASUS Pro WS WRX90E-SAGE SE wer |
 | [2026-10-26](2026-10/2026-10-26.md) | A Flare checkpoint built with --max-concurrency 32 --image-concurrency 4 --mtp-draft-tokens 7 --spec |
 | [2026-10-25](2026-10/2026-10-25.md) | JCartu provided gated access to DeepSeek-V4.1-Flash-1017-abliterated-lossless-CSF and a LiL vLLM/B12 |

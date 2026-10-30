@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-10-30](2026-10/2026-10-30.md) | NVIDIA published Qwen3.8-Flash-Next-FP4-Local with a vLLM container; HunterAP recommended it as the  |
 | [2026-10-29](2026-10/2026-10-29.md) | Users report DeepSeek v4.1-Flash taking unrequested actions: writing to a remote embedded device's m |
 | [2026-10-28](2026-10/2026-10-28.md) | h1 · DSV41-Flash hardware FP4 exactness test passed** — Reported as passed: DSV41-Flash hybrid infer |
 | [2026-10-27](2026-10/2026-10-27.md) | Four RTX PRO 6000 Blackwell 96GB cards on a Threadripper PRO 7965WX / ASUS Pro WS WRX90E-SAGE SE wer |

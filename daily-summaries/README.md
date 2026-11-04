@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-04](2026-11/2026-11-04.md) | Flare engine 18b16e1 vs 6fa01a4 on the same gb202 package, 4x RTX PRO 6000 (2x Max-Q + 2x WS) at 250 |
 | [2026-11-03](2026-11/2026-11-03.md) | On 4x RTX PRO 6000, re-exporting an abliterated DeepSeek V4.1 Flash 1017 package (WARMIND-1017) for  |
 | [2026-11-02](2026-11/2026-11-02.md) | JCartu reported that on 4x RTX PRO 6000, stock vLLM 0.32 cannot serve DeepSeek-V4.1-Flash-1017-NVFP4 |
 | [2026-10-30](2026-10/2026-10-30.md) | NVIDIA published Qwen3.8-Flash-Next-FP4-Local with a vLLM container; HunterAP recommended it as the  |

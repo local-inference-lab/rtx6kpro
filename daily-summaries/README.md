@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-09](2026-11/2026-11-09.md) | GLM-5.3 Flash's separate reasoning stream dies around 128k prompt tokens in the karmic-kraken servin |
 | [2026-11-08](2026-11/2026-11-08.md) | Disk engram prefill: DeepSeek-V4.1-Flash showed the same 28 reads/token on two machines, with relati |
 | [2026-11-07](2026-11/2026-11-07.md) | HashSpamJam pointed disk-engram users at commit c2606aae, advertising about 60% higher random prefil |
 | [2026-11-06](2026-11/2026-11-06.md) | NVIDIA driver 620.70.06 / CUDA 13.5 now runs an IOMMU/PCI ACS topology check before allowing PCIe P2 |

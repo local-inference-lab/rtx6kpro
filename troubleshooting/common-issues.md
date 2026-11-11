@@ -15,6 +15,7 @@
   - [FP8 KV Cache Garbled Output (GLM-5)](#fp8-kv-cache-garbled-output-glm-5)
   - [FP8 KV Cache Slow on Kimi K2.5 (SGLang)](#fp8-kv-cache-slow-on-kimi-k25-sglang)
   - [DeepGemm Scale Format NaN (NVFP4 on SM120)](#deepgemm-scale-format-nan)
+  - [NVFP4 KV Cache Incoherent Output (QSA hybrid, vLLM 0.30.0)](#nvfp4-kv-cache-incoherent-output-qsa-hybrid-vllm-0300)
 - [Model Loading Errors](#model-loading-errors)
   - [Weight Size Mismatch (Qwen3.5 NVFP4)](#weight-size-mismatch-qwen35-nvfp4)
   - [MTP Weights Missing](#mtp-weights-missing)
@@ -229,6 +230,38 @@ export SGLANG_ENABLE_DEEP_GEMM=0
 ```
 
 **SGLang PR**: [#19948](https://github.com/sgl-project/sglang/pull/19948)
+
+---
+
+### NVFP4 KV Cache Incoherent Output (QSA hybrid, vLLM 0.30.0)
+
+**Symptoms**: `--kv-cache-dtype nvfp4` produces incoherent output at **every**
+context length (short deterministic prompts fail too), with no error, no Xid
+and a clean log. The server stays up; outputs are fluent but wrong.
+
+**Cause**: writer/reader stride mismatch. The stock NVFP4 KV write kernel
+(`nvfp4_kv_cache_kernels.cu`) uses internal head-major offsets, while the
+standard read helper scales the *actual* tensor strides. The QSA/hybrid
+backend's layout list is `(BLNHC, BLHNC)` and the engine picks the first
+entry — BLNHC, a **token-major** layout — where the two disagree. Every K/V
+write and block-scale lands in the wrong bytes. Round-trip tests on plain
+or head-major buffers pass, which is why the kernel itself is correct.
+
+**Workaround**: force the head-major layout:
+
+```bash
+VLLM_KV_CACHE_LAYOUT=BLHNC
+```
+
+Quality is 7/7 on the deterministic quality gate, matching FP8 KV (the
+5/6 needle score is a `max_tokens=512` truncation of the final answer
+line, not a retrieval miss — see the page below). NVFP4 KV is ~1.7× slower
+in prefill, near-parity in decode, and buys the larger KV pool (~2.5× vs
+~2.0× for FP8). See
+[`nvfp4-kv-cache-blnhnc-stride-mismatch.md`](nvfp4-kv-cache-blnhnc-stride-mismatch.md)
+for evidence, a minimal repro, and the measured trade-offs.
+
+**Upstream**: [vllm-project/vllm#61225](https://github.com/vllm-project/vllm/issues/61225)
 
 ---
 

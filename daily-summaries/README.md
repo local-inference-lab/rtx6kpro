@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-01](2026-11/2026-11-01.md) | Bernd reported GLM-5.3 hung in 4 of 7 boots on 8x RTX PRO 6000 with glm53-csf-tp6 and glm53-flash-tp |
 | [2026-10-31](2026-10/2026-10-31.md) | A user measured a Flare build from main with the GB202 format-6 package on four GPUs capped at 250 W |
 | [2026-11-10](2026-11/2026-11-10.md) | A caching engine modeled after LMCache and SGLang with reduced write-through supports distributed of |
 | [2026-11-09](2026-11/2026-11-09.md) | GLM-5.3 Flash's separate reasoning stream dies around 128k prompt tokens in the karmic-kraken servin |

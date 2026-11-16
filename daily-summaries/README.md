@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-16](2026-11/2026-11-16.md) | JCartu released WARMIND-1017 v1.1: projecting out a 4D epistemic-abstention basis across layers L4-3 |
 | [2026-11-14](2026-11/2026-11-14.md) | HashSpamJam benchmarked four RTX 6000 Blackwell cards at a 250 W per-card cap, two runs per configur |
 | [2026-11-13](2026-11/2026-11-13.md) | pete8359 compared Hyperflare-tp3-20261111 (HOT=342, --scheduler-policy interactive) with vLLM .11 on |
 | [2026-11-12](2026-11/2026-11-12.md) | ebfio measured vanilla DSv4.1F on two DGX Stations in PP=2: 410 tok/s single-stream (9.25 ms/step),  |

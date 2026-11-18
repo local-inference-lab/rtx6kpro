@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-18](2026-11/2026-11-18.md) | Pmot12 reported Carbon's deepseek-v41-flash-pp2-pair recipe changes: +23.2% at C1, cold TTFT -18.6%, |
 | [2026-11-17](2026-11/2026-11-17.md) | JCartu measured ds4.1f warmind-1017 v1.1 CSF on FLARE 6b68b9b4 at concurrency 4 over 9,000 POPE item |
 | [2026-11-16](2026-11/2026-11-16.md) | JCartu released WARMIND-1017 v1.1: projecting out a 4D epistemic-abstention basis across layers L4-3 |
 | [2026-11-14](2026-11/2026-11-14.md) | HashSpamJam benchmarked four RTX 6000 Blackwell cards at a 250 W per-card cap, two runs per configur |

@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-20](2026-11/2026-11-20.md) | WARMIND-1017 is released as a 668 KB safetensors steering sidecar with 33 directions across layers 4 |
 | [2026-11-19](2026-11/2026-11-19.md) | A Discord message linked v2 of Dsturb/Qwen3.8-Flash-Next-FLARE-Abliterated-YaRN-512k and described i |
 | [2026-11-18](2026-11/2026-11-18.md) | Pmot12 reported Carbon's deepseek-v41-flash-pp2-pair recipe changes: +23.2% at C1, cold TTFT -18.6%, |
 | [2026-11-17](2026-11/2026-11-17.md) | JCartu measured ds4.1f warmind-1017 v1.1 CSF on FLARE 6b68b9b4 at concurrency 4 over 9,000 POPE item |

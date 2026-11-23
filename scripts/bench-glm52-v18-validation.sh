@@ -32,6 +32,9 @@ PREFILL_WARMUP_RUNS="${PREFILL_WARMUP_RUNS:-1}"
 PREFILL_REPEATS="${PREFILL_REPEATS:-3}"
 BETWEEN_RUNS_SECONDS="${BETWEEN_RUNS_SECONDS:-10}"
 TOKEN_TARGETING="${TOKEN_TARGETING:-estimate}"
+NEEDLE_GATE="${NEEDLE_GATE:-1}"
+NEEDLE_SIZES="${NEEDLE_SIZES:-8,64,96}"
+NEEDLE_REQUIRED_CLEAN_K="${NEEDLE_REQUIRED_CLEAN_K:-96}"
 SPARSE_MLA_FORCE_MQA="${SPARSE_MLA_FORCE_MQA:-0}"
 CUDA_ALLOC_CONF="${CUDA_ALLOC_CONF:-expandable_segments:True}"
 TP8_MAX_MODEL_LEN="${TP8_MAX_MODEL_LEN:-131072}"
@@ -237,6 +240,15 @@ text = result["choices"][0]["message"].get("reasoning") or result["choices"][0][
 assert text.strip() and text.count("!") < 16
 open(output, "w").write(json.dumps(result, indent=2) + "\n")
 PY
+
+  if [[ "${NEEDLE_GATE}" == 1 ]]; then
+    progress "NEEDLE case=${key} tp=${tp} dcp=${dcp} mtp=${mtp} sizes=${NEEDLE_SIZES}"
+    python3 "$(dirname "${BASH_SOURCE[0]}")/needle_gate.py" \
+      --host 127.0.0.1 --port "${port}" --model "${served}" \
+      --sizes "${NEEDLE_SIZES}" --required-clean-k "${NEEDLE_REQUIRED_CLEAN_K}" \
+      --output "${out}/needle-gate.json" > "${out}/needle-gate.log" 2>&1 \
+      || { cat "${out}/needle-gate.log"; echo "needle gate FAILED for case=${key}"; exit 1; }
+  fi
 
   progress "DECODE case=${key} tp=${tp} dcp=${dcp} mtp=${mtp}"
   docker logs "${name}" > "${out}/server.before-decode.log" 2>&1

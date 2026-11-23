@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-23](2026-11/2026-11-23.md) | On a Threadripper PRO 9965WX with 4x RTX PRO 6000 Blackwell SM120, one GPU at PCIe Gen5 x8, brandonm |
 | [2026-11-22](2026-11/2026-11-22.md) | brandonmusic released TML-d24-varloop-research, a signed Flare checkpoint of Thinking Machines Lab's |
 | [2026-11-21](2026-11/2026-11-21.md) | Flare served full GLM-5.3 on eight SM120 GPUs: weights were 53.5 GiB per rank, about 20 GiB per GPU  |
 | [2026-11-20](2026-11/2026-11-20.md) | WARMIND-1017 is released as a 668 KB safetensors steering sidecar with 33 directions across layers 4 |

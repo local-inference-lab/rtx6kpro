@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-27](2026-11/2026-11-27.md) | JCartu reported hyperflare-inference issue #517 covers the Xid 31 failure in Qwen _checkpoint_pages  |
 | [2026-11-26](2026-11/2026-11-26.md) | StevTW reported a TP2 hyper-flare run at about 24,500 tok/s prefill and 250 tok/s generation for pro |
 | [2026-11-25](2026-11/2026-11-25.md) | Oyoung compared a Nov 9 WARMIND-1017-FLARE-CSF gb202 package with flare 0.1.0 against a Nov 24 self- |
 | [2026-11-24](2026-11/2026-11-24.md) | On the gb300 branch, commit 79530c updates the DeepSeek-V4.1-Flash-1017 GB300 TP1 core with a Parall |

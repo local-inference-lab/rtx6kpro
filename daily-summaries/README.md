@@ -10,6 +10,7 @@ Each highlight links directly to the relevant Discord message.
 
 | Date | Highlights |
 |------|
+| [2026-11-28](2026-11/2026-11-28.md) | StevTW reported a panic at policy.rs line 446 with the message “terminal retirement has a start time |
 | [2026-11-27](2026-11/2026-11-27.md) | JCartu reported hyperflare-inference issue #517 covers the Xid 31 failure in Qwen _checkpoint_pages  |
 | [2026-11-26](2026-11/2026-11-26.md) | StevTW reported a TP2 hyper-flare run at about 24,500 tok/s prefill and 250 tok/s generation for pro |
 | [2026-11-25](2026-11/2026-11-25.md) | Oyoung compared a Nov 9 WARMIND-1017-FLARE-CSF gb202 package with flare 0.1.0 against a Nov 24 self- |
